@@ -3,21 +3,33 @@
 from contextlib import asynccontextmanager
 from collections.abc import AsyncIterator
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
-from app.database import async_session, init_db, close_db
+from app.database import async_session, get_db, init_db, close_db
 from app.models.schemas import AppInfoResponse
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     """Startup / shutdown lifecycle."""
+    import logging
+
+    logger = logging.getLogger(__name__)
+
     # Startup
     await init_db()
     settings.upload_path  # ensure upload dir exists
     settings.artifacts_path  # ensure artifacts dir exists
+
+    # Load built-in business rules so they run during validation
+    import app.services.extraction.business_rules  # noqa: F401
+
+    # Startup diagnostics — warn early about missing provider keys
+    _log_provider_readiness(logger)
+
     await _recover_orphaned_jobs()
     yield
     # Shutdown
@@ -73,6 +85,31 @@ async def _recover_orphaned_jobs() -> None:
             )
 
 
+def _log_provider_readiness(logger) -> None:  # type: ignore[type-arg]
+    """Log a startup summary of provider availability."""
+    from app.services.llm.registry import list_llm_provider_statuses
+    from app.services.ocr.registry import list_ocr_provider_statuses
+
+    llm_statuses = list_llm_provider_statuses()
+    ocr_statuses = list_ocr_provider_statuses()
+
+    llm_ready = [s for s in llm_statuses if s.available]
+    ocr_ready = [s for s in ocr_statuses if s.available and s.enabled]
+
+    if llm_ready:
+        logger.info("LLM providers ready: %s", ", ".join(s.id for s in llm_ready))
+    else:
+        logger.warning(
+            "No LLM provider API keys configured. "
+            "Set OPENAI_API_KEY, GEMINI_API_KEY, or ANTHROPIC_API_KEY in .env"
+        )
+
+    if ocr_ready:
+        logger.info("OCR providers ready: %s", ", ".join(s.id for s in ocr_ready))
+    else:
+        logger.info("No optional OCR providers enabled (built-in parsers still available)")
+
+
 app = FastAPI(
     title="Agentic Document Extraction",
     description="Intelligent document extraction using OCR + LLMs",
@@ -99,8 +136,60 @@ app.include_router(providers.router)
 
 
 @app.get("/health")
-async def health_check() -> dict[str, str]:
-    return {"status": "ok"}
+async def health_check(db: AsyncSession = Depends(get_db)) -> dict:
+    """Liveness probe with lightweight system stats."""
+    import os
+
+    from sqlalchemy import func as sa_func, select, text
+
+    from app.models.db_models import Document, Extraction
+
+    stats: dict = {"status": "ok"}
+
+    try:
+        # Quick connectivity test + row counts
+        doc_count = (await db.execute(select(sa_func.count(Document.id)))).scalar() or 0
+        ext_count = (await db.execute(select(sa_func.count(Extraction.id)))).scalar() or 0
+        failed_count = (
+            await db.execute(
+                select(sa_func.count(Extraction.id)).where(Extraction.status == "failed")
+            )
+        ).scalar() or 0
+        # SQLite DB file size
+        db_size_row = await db.execute(text("PRAGMA page_count"))
+        page_count = db_size_row.scalar() or 0
+        page_size_row = await db.execute(text("PRAGMA page_size"))
+        page_size = page_size_row.scalar() or 4096
+        stats["db"] = {
+            "documents": doc_count,
+            "extractions": ext_count,
+            "failed": failed_count,
+            "size_mb": round((page_count * page_size) / (1024 * 1024), 2),
+        }
+    except Exception:
+        stats["status"] = "degraded"
+        stats["db"] = {"error": "unreachable"}
+
+    # Disk usage for upload + artifacts dirs
+    def _dir_size_mb(path: str) -> float:
+        total = 0
+        try:
+            for dirpath, _, filenames in os.walk(path):
+                for f in filenames:
+                    try:
+                        total += os.path.getsize(os.path.join(dirpath, f))
+                    except OSError:
+                        pass
+        except OSError:
+            pass
+        return round(total / (1024 * 1024), 2)
+
+    stats["disk"] = {
+        "uploads_mb": _dir_size_mb(settings.upload_dir),
+        "artifacts_mb": _dir_size_mb(settings.artifacts_dir),
+    }
+
+    return stats
 
 
 @app.get("/info")

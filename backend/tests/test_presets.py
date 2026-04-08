@@ -16,9 +16,12 @@ from app.services.extraction.presets import (
 class TestPresetsModule:
     def test_list_presets_returns_all(self):
         presets = list_presets()
-        assert len(presets) == 2
+        assert len(presets) == 4
         ids = {p.id for p in presets}
-        assert ids == {"preset-invoice", "preset-receipt"}
+        assert ids == {
+            "preset-invoice", "preset-receipt",
+            "preset-purchase-order", "preset-bank-statement",
+        }
 
     def test_get_preset_valid(self):
         preset = get_preset("preset-invoice")
@@ -31,6 +34,18 @@ class TestPresetsModule:
         assert preset is not None
         assert preset.name == "Receipt"
         assert len(preset.fields) == 7
+
+    def test_get_preset_purchase_order(self):
+        preset = get_preset("preset-purchase-order")
+        assert preset is not None
+        assert preset.name == "Purchase Order"
+        assert len(preset.fields) == 10
+
+    def test_get_preset_bank_statement(self):
+        preset = get_preset("preset-bank-statement")
+        assert preset is not None
+        assert preset.name == "Bank Statement"
+        assert len(preset.fields) == 9
 
     def test_get_preset_invalid(self):
         assert get_preset("nonexistent") is None
@@ -56,9 +71,12 @@ async def test_list_presets_endpoint(client: AsyncClient):
     resp = await client.get("/api/schemas/presets")
     assert resp.status_code == 200
     data = resp.json()
-    assert len(data) == 2
+    assert len(data) == 4
     ids = {p["id"] for p in data}
-    assert ids == {"preset-invoice", "preset-receipt"}
+    assert ids == {
+        "preset-invoice", "preset-receipt",
+        "preset-purchase-order", "preset-bank-statement",
+    }
     for preset in data:
         assert "name" in preset
         assert "description" in preset

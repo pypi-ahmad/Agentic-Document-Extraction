@@ -8,6 +8,8 @@ import {
   retryExtraction,
   displayName,
   resolvedDisplayName,
+  errorCategoryLabel,
+  timeAgo,
   type ExtractionResponse,
   type ExtractionSchemaResponse,
 } from "@/lib/api";
@@ -307,8 +309,8 @@ export default function HistoryPage() {
                         {STATUS_LABEL[ext.status] ?? ext.status}
                       </span>
                     </div>
-                    <span className="text-xs text-gray-400">
-                      {new Date(ext.created_at).toLocaleTimeString()}
+                    <span className="text-xs text-gray-400" title={new Date(ext.created_at).toLocaleString()}>
+                      {timeAgo(ext.created_at)}
                     </span>
                   </div>
                   <div className="mt-1 flex gap-4 text-xs text-gray-500">
@@ -329,6 +331,13 @@ export default function HistoryPage() {
                         ext.llm_provider_used,
                       )}
                     </span>
+                    {ext.duration_total_ms != null && (
+                      <span>
+                        {ext.duration_total_ms < 1000
+                          ? `${ext.duration_total_ms}ms`
+                          : `${(ext.duration_total_ms / 1000).toFixed(1)}s`}
+                      </span>
+                    )}
                   </div>
                 </button>
               );
@@ -414,7 +423,17 @@ function DetailPanel({
       {sel.error && (
         <div className="flex items-start gap-2 rounded-lg bg-red-50 p-3">
           <XCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-red-500" />
-          <p className="text-sm text-red-700">{sel.error}</p>
+          <div className="min-w-0 flex-1">
+            {(() => {
+              const cat = errorCategoryLabel(sel.error_category);
+              return cat ? (
+                <span className="mb-1 mr-2 inline-block rounded bg-red-100 px-1.5 py-0.5 text-[10px] font-medium text-red-700" title={cat.hint}>
+                  {cat.label}
+                </span>
+              ) : null;
+            })()}
+            <p className="text-sm text-red-700">{sel.error}</p>
+          </div>
         </div>
       )}
 
@@ -585,6 +604,17 @@ function DetailPanel({
             <div>
               <span className="block font-medium text-gray-500">LLM Attempts</span>
               <span className="text-gray-700">{sel.extract_attempts}</span>
+            </div>
+          )}
+          {sel.reviewed_at && (
+            <div>
+              <span className="block font-medium text-gray-500">Reviewed</span>
+              <span
+                className="text-gray-700"
+                title={new Date(sel.reviewed_at).toLocaleString()}
+              >
+                {timeAgo(sel.reviewed_at)}
+              </span>
             </div>
           )}
         </div>

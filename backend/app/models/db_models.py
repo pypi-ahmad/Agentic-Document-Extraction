@@ -75,6 +75,7 @@ class Extraction(Base):
     llm_model_used: Mapped[str | None] = mapped_column(String(100), nullable=True)
     confidence: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     extract_attempts: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    error_category: Mapped[str | None] = mapped_column(String(30), nullable=True)
     created_at: Mapped[datetime.datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
@@ -82,6 +83,9 @@ class Extraction(Base):
         DateTime(timezone=True), nullable=True
     )
     completed_at: Mapped[datetime.datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    reviewed_at: Mapped[datetime.datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True
     )
 

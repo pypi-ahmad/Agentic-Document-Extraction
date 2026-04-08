@@ -152,11 +152,13 @@ export interface ExtractionResponse {
   llm_model_used: string | null;
   confidence: Record<string, number> | null;
   extract_attempts: number | null;
+  error_category: string | null;
   steps: ExtractionStepInfo[];
   reviews: ReviewInfo[];
   created_at: string;
   started_at: string | null;
   completed_at: string | null;
+  reviewed_at: string | null;
   duration_total_ms: number | null;
   validation_summary: string | null;
 }
@@ -410,4 +412,36 @@ export function resolvedDisplayName(
   }
   // Not yet resolved — show what was requested
   return displayName(requested);
+}
+
+// ── Error category labels ───────────────────────────────────────────
+
+const ERROR_CATEGORY_LABELS: Record<string, { label: string; hint: string }> = {
+  auth: { label: "Authentication", hint: "API key is missing or invalid" },
+  rate_limit: { label: "Rate limited", hint: "Provider quota exceeded — try again later" },
+  timeout: { label: "Timed out", hint: "The operation took too long" },
+  parse_error: { label: "Parse error", hint: "AI returned malformed output" },
+  provider_error: { label: "Provider error", hint: "The AI provider returned an error" },
+  file_error: { label: "File error", hint: "The input file could not be read" },
+  validation: { label: "Needs review", hint: "Extraction succeeded but needs human review" },
+  unknown: { label: "Error", hint: "An unexpected error occurred" },
+};
+
+export function errorCategoryLabel(category: string | null): { label: string; hint: string } | null {
+  if (!category) return null;
+  return ERROR_CATEGORY_LABELS[category] ?? { label: category, hint: "" };
+}
+
+// ── Relative time ───────────────────────────────────────────────────
+
+export function timeAgo(iso: string): string {
+  const seconds = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
+  if (seconds < 5) return "just now";
+  if (seconds < 60) return `${seconds}s ago`;
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  return `${days}d ago`;
 }
