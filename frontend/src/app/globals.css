@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground: #171717;
+  --background: #f8fafc;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Friendly card style */
+.card {
+  @apply rounded-xl border border-gray-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md;
+}
+
+/* Status badges */
+.badge {
+  @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+}
+.badge-success {
+  @apply bg-green-100 text-green-800;
+}
+.badge-warning {
+  @apply bg-yellow-100 text-yellow-800;
+}
+.badge-error {
+  @apply bg-red-100 text-red-800;
+}
+.badge-info {
+  @apply bg-blue-100 text-blue-800;
+}
+.badge-pending {
+  @apply bg-gray-100 text-gray-800;
+}
