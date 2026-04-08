@@ -157,11 +157,13 @@ class ExtractionResponse(BaseModel):
     llm_model_used: str | None = None
     confidence: dict[str, float] | None = None
     extract_attempts: int | None = None
+    error_category: str | None = None
     steps: list[ExtractionStepResponse] = []
     reviews: list[ReviewResponse] = []
     created_at: datetime.datetime
     started_at: datetime.datetime | None = None
     completed_at: datetime.datetime | None
+    reviewed_at: datetime.datetime | None = None
 
     model_config = {"from_attributes": True}
 

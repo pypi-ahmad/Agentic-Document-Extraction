@@ -7,6 +7,8 @@ import {
   retryExtraction,
   displayName,
   resolvedDisplayName,
+  errorCategoryLabel,
+  timeAgo,
   type ExtractionResponse,
   type ExtractionSchemaResponse,
 } from "@/lib/api";
@@ -232,7 +234,17 @@ export default function ExtractionResult({
       {extraction.error && (
         <div className="flex items-start gap-2 rounded-lg bg-red-50 p-3">
           <XCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-red-500" />
-          <p className="text-sm text-red-700">{extraction.error}</p>
+          <div className="min-w-0 flex-1">
+            {(() => {
+              const cat = errorCategoryLabel(extraction.error_category);
+              return cat ? (
+                <span className="mb-1 mr-2 inline-block rounded bg-red-100 px-1.5 py-0.5 text-[10px] font-medium text-red-700" title={cat.hint}>
+                  {cat.label}
+                </span>
+              ) : null;
+            })()}
+            <p className="text-sm text-red-700">{extraction.error}</p>
+          </div>
         </div>
       )}
 
@@ -392,6 +404,16 @@ export default function ExtractionResult({
                 </span>
                 <span className="text-gray-700">
                   {extraction.extract_attempts}
+                </span>
+              </div>
+            )}
+            {extraction.reviewed_at && (
+              <div>
+                <span className="block font-medium text-gray-500">
+                  Reviewed
+                </span>
+                <span className="text-gray-700" title={new Date(extraction.reviewed_at).toLocaleString()}>
+                  {timeAgo(extraction.reviewed_at)}
                 </span>
               </div>
             )}

@@ -25,11 +25,17 @@ async def get_db() -> AsyncSession:  # type: ignore[misc]
 
 
 async def init_db() -> None:
-    """Create all tables on startup."""
+    """Create all tables on startup and apply SQLite optimisations."""
+    from sqlalchemy import text
+
     from app.models.db_models import Base  # noqa: F811
 
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+        # WAL mode gives better concurrent-read performance and crash
+        # durability for local-first SQLite deployments.
+        await conn.execute(text("PRAGMA journal_mode=WAL"))
+        await conn.execute(text("PRAGMA optimize"))
 
 
 async def close_db() -> None:

@@ -206,6 +206,11 @@ async def _run_extraction_pipeline(extraction_id: str) -> None:
             completed_at = accumulated.get("completed_at")
             if completed_at:
                 extraction.completed_at = datetime.datetime.fromisoformat(completed_at)
+
+        # Classify the error for reviewer triage
+        from app.services.extraction.error_classify import classify_error
+        extraction.error_category = classify_error(extraction.error, extraction.status)
+
         await db.commit()
 
 
@@ -279,8 +284,10 @@ async def retry_extraction(
     extraction.llm_model_used = None
     extraction.confidence = None
     extraction.extract_attempts = None
+    extraction.error_category = None
     extraction.started_at = None
     extraction.completed_at = None
+    extraction.reviewed_at = None
 
     # Clear previous step records
     await db.execute(
@@ -482,6 +489,7 @@ async def submit_review(
         extraction.status = "completed"
         extraction.review_verdict = "approved"
         extraction.completed_at = now
+        extraction.reviewed_at = now
 
     elif body.decision == "corrected":
         # Merge corrections into the existing result
@@ -492,12 +500,14 @@ async def submit_review(
         extraction.review_verdict = "corrected"
         extraction.validation_errors = None
         extraction.completed_at = now
+        extraction.reviewed_at = now
 
     elif body.decision == "rejected":
         extraction.status = "failed"
         extraction.review_verdict = "rejected"
         extraction.error = body.notes or "Rejected by reviewer"
         extraction.completed_at = now
+        extraction.reviewed_at = now
 
     await db.flush()
     await db.refresh(review)
