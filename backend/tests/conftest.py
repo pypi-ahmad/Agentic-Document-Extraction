@@ -54,11 +54,3 @@ async def client() -> AsyncIterator[AsyncClient]:
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as ac:
         yield ac
-
-
-@pytest.fixture
-def upload_dir(tmp_path: Path) -> Path:
-    """Provide a temp upload directory."""
-    d = tmp_path / "uploads"
-    d.mkdir()
-    return d
