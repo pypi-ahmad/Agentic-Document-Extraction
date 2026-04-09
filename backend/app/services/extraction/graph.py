@@ -9,8 +9,9 @@ Graph
                     └─(fail)─►END└─(fail)─►END
 
 The ``extract`` node retries retryable LLM errors (rate limits,
-transient server errors) up to ``_MAX_LLM_RETRIES`` times with
-exponential backoff.
+transient server errors) with exponential backoff.  Retry count and
+backoff delay are configurable via ``Settings.llm_max_retries`` and
+``Settings.llm_retry_base_delay``.
 
 State is a ``TypedDict`` with last-write-wins reducer fields so each node
 returns only the keys it changes.
@@ -26,12 +27,13 @@ from typing import Annotated, Any, TypedDict
 
 from langgraph.graph import END, START, StateGraph
 
+from app.config import settings
+
 logger = logging.getLogger(__name__)
 
-# Maximum retry attempts for transient LLM errors (rate limits, 5xx).
-_MAX_LLM_RETRIES = 2
-# Base delay (seconds) for exponential backoff between retries.
-_RETRY_BASE_DELAY = 1.0
+# Read pipeline tuning from config (allows env-var / .env override).
+_MAX_LLM_RETRIES = settings.llm_max_retries
+_RETRY_BASE_DELAY = settings.llm_retry_base_delay
 
 
 # ── Reducer ──────────────────────────────────────────────────────────
@@ -42,9 +44,6 @@ def _replace(old: Any, new: Any) -> Any:  # noqa: ARG001
     return new
 
 
-# ── Graph state ──────────────────────────────────────────────────────
-
-
 class PipelineState(TypedDict, total=False):
     """Typed state flowing through the extraction graph.
 
@@ -52,13 +51,13 @@ class PipelineState(TypedDict, total=False):
 
     - ``file_path``, ``schema_fields``, ``ocr_provider_id``,
       ``llm_provider_id``, ``llm_model_id``
-    - ``extraction_id``, ``document_id``, ``schema_id`` (traceability)
 
     *Pipeline-populated fields* (set by nodes):
 
     - ``ocr_text``, ``ocr_provider_used``
     - ``extracted_data``, ``llm_provider_used``, ``llm_model_used``
-    - ``validation_errors``
+    - ``confidence``, ``extract_attempts``
+    - ``validation_errors``, ``validation_results``, ``review_verdict``
     - ``status``, ``error``, ``completed_at``
 
     Status values are drawn from ``ExtractionStatus`` enum strings.
@@ -70,9 +69,6 @@ class PipelineState(TypedDict, total=False):
     ocr_provider_id: Annotated[str, _replace]
     llm_provider_id: Annotated[str, _replace]
     llm_model_id: Annotated[str, _replace]
-    extraction_id: Annotated[str, _replace]
-    document_id: Annotated[str, _replace]
-    schema_id: Annotated[str, _replace]
 
     # ── parse (OCR) ──────────────────────────────────────────────────
     ocr_text: Annotated[str, _replace]
@@ -94,6 +90,24 @@ class PipelineState(TypedDict, total=False):
     status: Annotated[str, _replace]
     error: Annotated[str, _replace]
     completed_at: Annotated[str, _replace]
+
+
+def build_initial_state(
+    *,
+    file_path: str,
+    schema_fields: list[dict],
+    ocr_provider: str = "auto",
+    llm_provider: str = "auto",
+    llm_model: str = "auto",
+) -> PipelineState:
+    """Build the minimal graph input payload used by production and tests."""
+    return {
+        "file_path": file_path,
+        "schema_fields": schema_fields,
+        "ocr_provider_id": ocr_provider,
+        "llm_provider_id": llm_provider,
+        "llm_model_id": llm_model,
+    }
 
 
 # ── Node functions ───────────────────────────────────────────────────
@@ -216,8 +230,15 @@ async def validate_node(state: PipelineState) -> dict:
 
 async def finalize_node(state: PipelineState) -> dict:
     """Stamp terminal status and completion time based on review verdict."""
-    verdict = state.get("review_verdict", "valid")
-    status = "needs_review" if verdict == "needs_review" else "completed"
+    verdict = state.get("review_verdict")
+    if verdict == "needs_review":
+        status = "needs_review"
+    elif verdict == "valid":
+        status = "completed"
+    else:
+        raise ValueError(
+            "Finalize node requires review_verdict to be 'valid' or 'needs_review'."
+        )
     return {
         "status": status,
         "completed_at": datetime.datetime.now(datetime.UTC).isoformat(),
@@ -272,10 +293,6 @@ async def run_extraction(
     ocr_provider: str = "auto",
     llm_provider: str = "auto",
     llm_model: str = "auto",
-    *,
-    extraction_id: str = "",
-    document_id: str = "",
-    schema_id: str = "",
 ) -> PipelineState:
     """Execute the full extraction pipeline.
 
@@ -287,26 +304,19 @@ async def run_extraction(
         List of field definitions (name, description, field_type, required).
     ocr_provider / llm_provider / llm_model:
         Provider and model selections; ``"auto"`` uses the configured defaults.
-    extraction_id / document_id / schema_id:
-        Optional identifiers attached to state for traceability.
 
     Returns
     -------
     PipelineState
         Final state dict with all extraction results.
     """
-    initial_state: PipelineState = {
-        "file_path": file_path,
-        "schema_fields": schema_fields,
-        "ocr_provider_id": ocr_provider,
-        "llm_provider_id": llm_provider,
-        "llm_model_id": llm_model,
-        "extraction_id": extraction_id,
-        "document_id": document_id,
-        "schema_id": schema_id,
-        "status": "pending",
-        "error": "",
-    }
-
-    return await extraction_graph.ainvoke(initial_state)
+    return await extraction_graph.ainvoke(
+        build_initial_state(
+            file_path=file_path,
+            schema_fields=schema_fields,
+            ocr_provider=ocr_provider,
+            llm_provider=llm_provider,
+            llm_model=llm_model,
+        )
+    )
 

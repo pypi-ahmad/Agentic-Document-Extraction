@@ -3,6 +3,7 @@
 from app.config import settings
 from app.services.llm.base import (
     BaseLLMProvider,
+    build_safe_runtime_provider_error,
     ExtractionResult,
     LLMModel,
     LLMProviderError,
@@ -33,7 +34,7 @@ class GeminiProvider(BaseLLMProvider):
             import langchain_google_genai  # noqa: F401
 
             return True
-        except ImportError:
+        except Exception:
             return False
 
     def is_model_listing_client_available(self) -> bool:
@@ -41,7 +42,7 @@ class GeminiProvider(BaseLLMProvider):
             import google.genai  # noqa: F401
 
             return True
-        except ImportError:
+        except Exception:
             return False
 
     async def _list_models_dynamic(self) -> list[LLMModel]:
@@ -124,10 +125,10 @@ class GeminiProvider(BaseLLMProvider):
 
         try:
             from langchain_google_genai import ChatGoogleGenerativeAI
-        except ImportError as exc:
+        except Exception as exc:
             raise LLMProviderError(
                 self.provider_id,
-                "langchain-google-genai is not installed.",
+                "langchain-google-genai is unavailable in the current environment.",
                 code="client_not_installed",
             ) from exc
 
@@ -159,4 +160,8 @@ class GeminiProvider(BaseLLMProvider):
                 code="invalid_json",
             ) from exc
         except Exception as exc:
-            raise LLMProviderError(self.provider_id, str(exc)) from exc
+            raise build_safe_runtime_provider_error(
+                self.provider_id,
+                self.display_name,
+                exc,
+            ) from exc

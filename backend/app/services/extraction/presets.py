@@ -17,15 +17,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-
-@dataclass(frozen=True)
-class PresetField:
-    """A single field in a preset template."""
-
-    name: str
-    description: str
-    field_type: str = "string"
-    required: bool = True
+from app.models.schemas import SchemaFieldDef
 
 
 @dataclass(frozen=True)
@@ -36,7 +28,7 @@ class SchemaPreset:
     name: str
     description: str
     doc_type: str
-    fields: list[PresetField] = field(default_factory=list)
+    fields: list[SchemaFieldDef] = field(default_factory=list)
 
 
 # ── Invoice ──────────────────────────────────────────────────────────
@@ -47,54 +39,54 @@ INVOICE = SchemaPreset(
     description="Standard vendor invoice with line items and payment terms.",
     doc_type="invoice",
     fields=[
-        PresetField(
+        SchemaFieldDef(
             name="vendor_name",
             description="Name of the vendor / supplier",
         ),
-        PresetField(
+        SchemaFieldDef(
             name="invoice_number",
             description="Invoice or reference number",
         ),
-        PresetField(
+        SchemaFieldDef(
             name="invoice_date",
             description="Date the invoice was issued",
             field_type="date",
         ),
-        PresetField(
+        SchemaFieldDef(
             name="due_date",
             description="Payment due date",
             field_type="date",
             required=False,
         ),
-        PresetField(
+        SchemaFieldDef(
             name="subtotal",
             description="Subtotal before tax",
             field_type="number",
             required=False,
         ),
-        PresetField(
+        SchemaFieldDef(
             name="tax_amount",
             description="Tax or VAT amount",
             field_type="number",
             required=False,
         ),
-        PresetField(
+        SchemaFieldDef(
             name="total_amount",
             description="Total amount due",
             field_type="number",
         ),
-        PresetField(
+        SchemaFieldDef(
             name="currency",
             description="Currency code (e.g. USD, EUR)",
             required=False,
         ),
-        PresetField(
+        SchemaFieldDef(
             name="line_items",
             description="List of items/services with description and amount",
             field_type="list",
             required=False,
         ),
-        PresetField(
+        SchemaFieldDef(
             name="payment_terms",
             description="Payment terms (e.g. Net 30)",
             required=False,
@@ -110,38 +102,38 @@ RECEIPT = SchemaPreset(
     description="Purchase receipt from a store or service provider.",
     doc_type="receipt",
     fields=[
-        PresetField(
+        SchemaFieldDef(
             name="merchant_name",
             description="Name of the store or merchant",
         ),
-        PresetField(
+        SchemaFieldDef(
             name="transaction_date",
             description="Date of the purchase",
             field_type="date",
         ),
-        PresetField(
+        SchemaFieldDef(
             name="total_amount",
             description="Total amount paid",
             field_type="number",
         ),
-        PresetField(
+        SchemaFieldDef(
             name="tax_amount",
             description="Tax amount",
             field_type="number",
             required=False,
         ),
-        PresetField(
+        SchemaFieldDef(
             name="payment_method",
             description="Payment method (e.g. Cash, Credit Card, Debit)",
             required=False,
         ),
-        PresetField(
+        SchemaFieldDef(
             name="items",
             description="List of purchased items with price",
             field_type="list",
             required=False,
         ),
-        PresetField(
+        SchemaFieldDef(
             name="receipt_number",
             description="Receipt or transaction number",
             required=False,
@@ -158,51 +150,51 @@ PURCHASE_ORDER = SchemaPreset(
     description="Standard purchase order with line items and shipping details.",
     doc_type="purchase_order",
     fields=[
-        PresetField(
+        SchemaFieldDef(
             name="po_number",
             description="Purchase order number",
         ),
-        PresetField(
+        SchemaFieldDef(
             name="order_date",
             description="Date the order was placed",
             field_type="date",
         ),
-        PresetField(
+        SchemaFieldDef(
             name="buyer_name",
             description="Name of the buying company or person",
         ),
-        PresetField(
+        SchemaFieldDef(
             name="supplier_name",
             description="Name of the supplier or vendor",
         ),
-        PresetField(
+        SchemaFieldDef(
             name="delivery_date",
             description="Expected delivery date",
             field_type="date",
             required=False,
         ),
-        PresetField(
+        SchemaFieldDef(
             name="shipping_address",
             description="Delivery / shipping address",
             required=False,
         ),
-        PresetField(
+        SchemaFieldDef(
             name="line_items",
             description="List of ordered items with quantity, description, and unit price",
             field_type="list",
             required=False,
         ),
-        PresetField(
+        SchemaFieldDef(
             name="total_amount",
             description="Total order amount",
             field_type="number",
         ),
-        PresetField(
+        SchemaFieldDef(
             name="currency",
             description="Currency code (e.g. USD, EUR)",
             required=False,
         ),
-        PresetField(
+        SchemaFieldDef(
             name="payment_terms",
             description="Payment terms (e.g. Net 30, COD)",
             required=False,
@@ -218,46 +210,46 @@ BANK_STATEMENT = SchemaPreset(
     description="Monthly bank account statement with transactions summary.",
     doc_type="bank_statement",
     fields=[
-        PresetField(
+        SchemaFieldDef(
             name="bank_name",
             description="Name of the bank or financial institution",
         ),
-        PresetField(
+        SchemaFieldDef(
             name="account_holder",
             description="Name of the account holder",
         ),
-        PresetField(
+        SchemaFieldDef(
             name="account_number",
             description="Account number (may be partially masked)",
             required=False,
         ),
-        PresetField(
+        SchemaFieldDef(
             name="statement_period",
             description="Statement period (e.g. 'Jan 1 – Jan 31, 2025')",
         ),
-        PresetField(
+        SchemaFieldDef(
             name="opening_balance",
             description="Opening/beginning balance",
             field_type="number",
         ),
-        PresetField(
+        SchemaFieldDef(
             name="closing_balance",
             description="Closing/ending balance",
             field_type="number",
         ),
-        PresetField(
+        SchemaFieldDef(
             name="total_deposits",
             description="Total deposits / credits during the period",
             field_type="number",
             required=False,
         ),
-        PresetField(
+        SchemaFieldDef(
             name="total_withdrawals",
             description="Total withdrawals / debits during the period",
             field_type="number",
             required=False,
         ),
-        PresetField(
+        SchemaFieldDef(
             name="currency",
             description="Currency code (e.g. USD, EUR)",
             required=False,

@@ -244,6 +244,9 @@ async def main() -> None:
 
     configured_providers = [pid for pid, ok in configured.items() if ok]
     if not configured_providers:
+        r.skip("Model listing validation skipped because no providers have valid API keys")
+        r.skip("Provider-specific filtering validation skipped because no providers have valid API keys")
+        r.skip("Auto-routing validation skipped because no providers have valid API keys")
         print(f"\n{WARN} No providers have valid API keys. Set keys in .env to run full validation.")
         print(f"\n{'═' * 40}")
         print(f"  Passed: {r.passed}  |  Failed: {r.failed}  |  Skipped: {r.skipped}")

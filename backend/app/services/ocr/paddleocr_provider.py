@@ -5,6 +5,7 @@ and the feature flag ``ENABLE_PADDLEOCR=true`` in ``.env``.
 Not bundled in the default requirements.
 """
 
+import importlib
 from pathlib import Path
 
 from app.models.enums import ParserEngine
@@ -19,6 +20,7 @@ from app.services.ocr.base import (
 
 class PaddleOCRProvider(BaseOCRProvider):
     feature_flag_name = "enable_paddleocr"
+    supported_file_types = frozenset({"png", "jpeg", "tiff"})
 
     @property
     def provider_id(self) -> str:
@@ -26,7 +28,7 @@ class PaddleOCRProvider(BaseOCRProvider):
 
     @property
     def display_name(self) -> str:
-        return "PaddleOCR (standard OCR engine)"
+        return "PaddleOCR (local image OCR)"
 
     async def extract_text(self, file_path: Path) -> OCRResult:
         if not self.is_available():
@@ -112,7 +114,7 @@ class PaddleOCRProvider(BaseOCRProvider):
                 confidence=doc_confidence,
                 raw={
                     "engine": "paddleocr",
-                    "runtime": "PaddleOCR (standard)",
+                    "runtime": "PaddleOCR (local image OCR)",
                     "paddle_raw_length": len(result),
                 },
             )
@@ -121,7 +123,7 @@ class PaddleOCRProvider(BaseOCRProvider):
 
     def is_available(self) -> bool:
         try:
-            import paddleocr  # noqa: F401
+            importlib.import_module("paddleocr")
             return True
-        except (ImportError, RuntimeError):
+        except Exception:
             return False

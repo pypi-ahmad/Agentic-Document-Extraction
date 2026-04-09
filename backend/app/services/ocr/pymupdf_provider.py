@@ -26,7 +26,7 @@ class PyMuPDFProvider(BaseOCRProvider):
 
     @property
     def display_name(self) -> str:
-        return "PyMuPDF (built-in PDF parser)"
+        return "Built-in PDF reader (PyMuPDF)"
 
     async def extract_text(self, file_path: Path) -> OCRResult:
         import fitz  # pymupdf
@@ -74,5 +74,5 @@ class PyMuPDFProvider(BaseOCRProvider):
         try:
             import fitz  # noqa: F401
             return True
-        except ImportError:
+        except Exception:
             return False

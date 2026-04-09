@@ -63,6 +63,7 @@ async def test_get_app_config(client: AsyncClient):
     # Must include all parser engine values
     assert "auto" in data["parser_engines"]
     assert "paddleocr" in data["parser_engines"]
+    assert "pymupdf" not in data["parser_engines"]
 
     # Must include all LLM provider values
     assert "auto" in data["llm_providers"]
@@ -86,6 +87,12 @@ async def test_get_app_config(client: AsyncClient):
     # File types must include at least pdf and png
     assert "pdf" in data["supported_file_types"]
     assert "png" in data["supported_file_types"]
+    assert "jpeg" in data["supported_file_types"]
+    assert "tif" in data["supported_file_types"]
+
+    # Confidence threshold must be a valid float in range
+    assert isinstance(data["confidence_threshold"], float)
+    assert 0.0 <= data["confidence_threshold"] <= 1.0
 
 
 @pytest.mark.asyncio

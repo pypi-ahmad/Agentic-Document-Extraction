@@ -14,12 +14,19 @@ function formatValue(value: unknown): string {
   if (value === null || value === undefined) return "—";
   if (typeof value === "boolean") return value ? "Yes" : "No";
   if (typeof value === "number") return value.toLocaleString();
-  if (Array.isArray(value)) return value.map(formatValue).join(", ");
-  if (typeof value === "object") return JSON.stringify(value);
+  if (Array.isArray(value) || typeof value === "object") {
+    return JSON.stringify(value, null, 2);
+  }
   return String(value);
 }
 
+function isStructuredValue(value: unknown): boolean {
+  return Array.isArray(value) || (typeof value === "object" && value !== null);
+}
+
 function confidenceColor(score: number): string {
+  // Color bands are decorative. The actual review-routing threshold
+  // is controlled server-side via CONFIDENCE_THRESHOLD (default 0.6).
   if (score >= 0.8) return "text-green-600 bg-green-50";
   if (score >= 0.6) return "text-yellow-600 bg-yellow-50";
   return "text-red-600 bg-red-50";
@@ -61,10 +68,15 @@ export default function FieldTable({
           <div key={key} className="px-4 py-3">
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-gray-800">
-                    {schemaDef?.description || key}
-                  </span>
+                <div className="flex flex-wrap items-center gap-2">
+                  <div className="min-w-0">
+                    <span className="text-sm font-medium text-gray-800">
+                      {schemaDef?.description || key}
+                    </span>
+                    {schemaDef?.description && schemaDef.description !== key && (
+                      <div className="text-xs text-gray-400">{key}</div>
+                    )}
+                  </div>
                   {isRequired && isMissing && (
                     <span className="badge badge-error">Missing</span>
                   )}
@@ -82,11 +94,21 @@ export default function FieldTable({
                 </div>
               </div>
               <div className="flex items-center gap-2 text-right">
-                <span
-                  className={`text-sm ${isMissing ? "italic text-gray-400" : "text-gray-900"}`}
-                >
-                  {formatValue(value)}
-                </span>
+                {isStructuredValue(value) ? (
+                  <pre
+                    className={`max-w-md whitespace-pre-wrap break-words rounded bg-gray-50 px-2 py-1 text-left font-mono text-xs ${
+                      isMissing ? "italic text-gray-400" : "text-gray-800"
+                    }`}
+                  >
+                    {formatValue(value)}
+                  </pre>
+                ) : (
+                  <span
+                    className={`text-sm ${isMissing ? "italic text-gray-400" : "text-gray-900"}`}
+                  >
+                    {formatValue(value)}
+                  </span>
+                )}
               </div>
             </div>
           </div>

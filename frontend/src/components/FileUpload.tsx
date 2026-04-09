@@ -2,7 +2,7 @@
 
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import { Upload, FileText, Image, Loader2 } from "lucide-react";
+import { Upload, FileText, Image as ImageIcon, Loader2 } from "lucide-react";
 import { uploadDocument, type DocumentResponse } from "@/lib/api";
 
 interface FileUploadProps {
@@ -73,7 +73,7 @@ export default function FileUpload({ onUploaded }: FileUploadProps) {
                   : "Drag & drop a document here"}
               </p>
               <p className="mt-1 text-sm text-gray-500">
-                or click to browse &mdash; PDF, PNG, JPG, TIFF supported
+                or click to browse &mdash; PDF, PNG, JPG/JPEG, TIFF/TIF supported
               </p>
             </div>
             <div className="flex gap-4 text-xs text-gray-400">
@@ -81,7 +81,7 @@ export default function FileUpload({ onUploaded }: FileUploadProps) {
                 <FileText className="h-3.5 w-3.5" /> PDF
               </span>
               <span className="flex items-center gap-1">
-                <Image className="h-3.5 w-3.5" /> PNG / JPG / TIFF
+                <ImageIcon className="h-3.5 w-3.5" /> PNG / JPG/JPEG / TIFF/TIF
               </span>
             </div>
           </div>

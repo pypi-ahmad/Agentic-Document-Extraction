@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
+  ApiError,
   getExtraction,
   getSchema,
   retryExtraction,
-  displayName,
+  resolvedModelDisplayName,
   resolvedDisplayName,
   errorCategoryLabel,
   timeAgo,
@@ -60,7 +61,7 @@ const STATUS_CONFIG: Record<
   needs_review: {
     icon: Eye,
     color: "text-orange-500",
-    label: "Review recommended",
+    label: "Needs review",
   },
   failed: { icon: XCircle, color: "text-red-600", label: "Failed" },
 };
@@ -74,6 +75,7 @@ const IN_PROGRESS = [
 ];
 
 const TERMINAL = ["completed", "needs_review", "failed"];
+const ACTIVE_PIPELINE_STATUSES = ["processing", "ocr_complete", "extracted"];
 
 
 // ── Main component ──────────────────────────────────────────────────
@@ -84,81 +86,215 @@ export default function ExtractionResult({
   const [extraction, setExtraction] = useState<ExtractionResponse | null>(
     null,
   );
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [refreshError, setRefreshError] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
   const [schema, setSchema] = useState<ExtractionSchemaResponse | null>(null);
   const [showRawJson, setShowRawJson] = useState(false);
   const [retrying, setRetrying] = useState(false);
   const [pollKey, setPollKey] = useState(0);
+  const pollRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const eventSourceRef = useRef<EventSource | null>(null);
+  const lastStatusRef = useRef<string | null>(null);
 
   // Stream extraction status via SSE, fall back to polling
   useEffect(() => {
     let active = true;
-    let eventSource: EventSource | null = null;
 
-    const startSSE = () => {
-      eventSource = new EventSource(`/api/extractions/${extractionId}/stream`);
+    const clearPoll = () => {
+      if (pollRef.current) {
+        clearTimeout(pollRef.current);
+        pollRef.current = null;
+      }
+    };
 
-      eventSource.onmessage = (event) => {
-        if (!active) return;
+    const closeStream = () => {
+      eventSourceRef.current?.close();
+      eventSourceRef.current = null;
+    };
+
+    const applyExtraction = (data: ExtractionResponse) => {
+      lastStatusRef.current = data.status;
+      setExtraction(data);
+      setLoading(false);
+      setLoadError(null);
+      setRefreshError(null);
+      setActionError(null);
+    };
+
+    const schedulePoll = (delayMs: number, task: () => void) => {
+      clearPoll();
+      pollRef.current = setTimeout(task, delayMs);
+    };
+
+    const fallbackPoll = (delayMs = 0) => {
+      schedulePoll(delayMs, async () => {
         try {
-          const data = JSON.parse(event.data) as ExtractionResponse;
-          if (data.error && !data.status) {
-            // SSE reported extraction not found — stop
-            eventSource?.close();
+          const data = await getExtraction(extractionId);
+          if (!active) return;
+          applyExtraction(data);
+          if (IN_PROGRESS.includes(data.status)) {
+            fallbackPoll(2000);
+          }
+        } catch (err) {
+          if (!active) return;
+          if (err instanceof ApiError && err.status === 404) {
+            setExtraction(null);
+            lastStatusRef.current = null;
+            setLoading(false);
+            setRefreshError(null);
+            setLoadError(err.message);
             return;
           }
-          setExtraction(data);
-          if (TERMINAL.includes(data.status)) {
-            eventSource?.close();
+
+          setLoading(false);
+          if (lastStatusRef.current) {
+            setRefreshError(
+              "Live updates paused. Showing the last known status while retrying.",
+            );
+            fallbackPoll(3000);
+          } else {
+            setLoadError(
+              err instanceof Error
+                ? err.message
+                : "Could not load extraction status.",
+            );
+          }
+        }
+      });
+    };
+
+    const startSSE = () => {
+      closeStream();
+      eventSourceRef.current = new EventSource(
+        `/api/extractions/${extractionId}/stream`,
+      );
+
+      eventSourceRef.current.onmessage = (event) => {
+        if (!active) return;
+        try {
+          const data = JSON.parse(event.data) as
+            | ExtractionResponse
+            | { error?: string; status?: string };
+          if (data.error && !data.status) {
+            closeStream();
+            clearPoll();
+            setExtraction(null);
+            lastStatusRef.current = null;
+            setLoading(false);
+            setRefreshError(null);
+            setLoadError(data.error);
+            return;
+          }
+
+          applyExtraction(data as ExtractionResponse);
+          if (data.status && TERMINAL.includes(data.status)) {
+            closeStream();
           }
         } catch {
           // ignore parse errors
         }
       };
 
-      eventSource.onerror = () => {
-        eventSource?.close();
-        // Fall back to one-shot poll after SSE disconnects
-        if (active) fallbackPoll();
+      eventSourceRef.current.onerror = () => {
+        closeStream();
+        if (!active) return;
+        if (lastStatusRef.current && TERMINAL.includes(lastStatusRef.current)) {
+          return;
+        }
+        setRefreshError("Live stream disconnected. Switching to polling.");
+        fallbackPoll(0);
       };
     };
 
-    const fallbackPoll = async () => {
+    const loadSnapshot = async () => {
+      setLoading(true);
+      setLoadError(null);
+      setRefreshError(null);
+      clearPoll();
+      closeStream();
+
       try {
         const data = await getExtraction(extractionId);
         if (!active) return;
-        setExtraction(data);
+        applyExtraction(data);
         if (IN_PROGRESS.includes(data.status)) {
-          setTimeout(fallbackPoll, 2000);
+          startSSE();
         }
-      } catch {
-        if (active) setTimeout(fallbackPoll, 3000);
+      } catch (err) {
+        if (!active) return;
+        setExtraction(null);
+        lastStatusRef.current = null;
+        setLoading(false);
+        setLoadError(
+          err instanceof Error
+            ? err.message
+            : "Could not load extraction status.",
+        );
       }
     };
 
-    startSSE();
+    void loadSnapshot();
 
     return () => {
       active = false;
-      eventSource?.close();
+      clearPoll();
+      closeStream();
     };
   }, [extractionId, pollKey]);
 
   // Fetch schema once extraction is loaded
   useEffect(() => {
-    if (extraction?.schema_id && !schema) {
-      getSchema(extraction.schema_id).catch(() => null).then((s) => {
-        if (s) setSchema(s);
-      });
+    if (!extraction?.schema_id) {
+      setSchema(null);
+      return;
     }
-  }, [extraction?.schema_id, schema]);
+
+    if (schema?.id === extraction.schema_id) {
+      return;
+    }
+
+    setSchema(null);
+    getSchema(extraction.schema_id)
+      .then(setSchema)
+      .catch(() => setSchema(null));
+  }, [extraction?.schema_id, schema?.id]);
 
   // Loading state
-  if (!extraction) {
+  if (loading) {
     return (
-      <div className="card flex items-center justify-center py-8">
+      <div className="card flex flex-col items-center justify-center gap-2 py-8 text-center">
         <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+        <p className="text-sm text-gray-500">Loading extraction status…</p>
       </div>
     );
+  }
+
+  if (loadError && !extraction) {
+    return (
+      <div className="card space-y-4">
+        <div className="flex items-start gap-2 rounded-lg bg-red-50 p-3">
+          <XCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-red-500" />
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-medium text-red-700">Could not load extraction status.</p>
+            <p className="text-sm text-red-600">{loadError}</p>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={() => setPollKey((k) => k + 1)}
+          className="btn-secondary inline-flex items-center gap-2"
+        >
+          <RefreshCw className="h-4 w-4" />
+          Retry
+        </button>
+      </div>
+    );
+  }
+
+  if (!extraction) {
+    return null;
   }
 
   const config = STATUS_CONFIG[extraction.status] ?? STATUS_CONFIG.processing;
@@ -168,11 +304,31 @@ export default function ExtractionResult({
     extraction.status,
   );
   const needsReview = extraction.status === "needs_review";
+  const wasRejected = extraction.review_verdict === "rejected";
+  const headerLabel = wasRejected ? "Rejected by reviewer" : config.label;
+  const errorLabel = wasRejected
+    ? {
+        label: "Rejected by reviewer",
+        hint: "A reviewer marked this extraction as unusable.",
+      }
+    : errorCategoryLabel(extraction.error_category);
 
   const resultData = extraction.result as Record<string, unknown> | null;
 
   return (
     <div className="card space-y-5">
+      {refreshError && (
+        <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+          {refreshError}
+        </div>
+      )}
+
+      {actionError && (
+        <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+          {actionError}
+        </div>
+      )}
+
       {/* ── Status header ──────────────────────────────────────── */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -180,13 +336,19 @@ export default function ExtractionResult({
             className={`h-5 w-5 ${config.color} ${isInProgress ? "animate-spin" : ""}`}
           />
           <span className={`text-sm font-semibold ${config.color}`}>
-            {config.label}
+            {headerLabel}
           </span>
         </div>
         {needsReview && (
           <span className="badge badge-warning flex items-center gap-1">
             <Eye className="h-3 w-3" />
-            Review needed
+            Needs review
+          </span>
+        )}
+        {wasRejected && (
+          <span className="badge badge-error flex items-center gap-1">
+            <XCircle className="h-3 w-3" />
+            Rejected by reviewer
           </span>
         )}
         {extraction.status === "completed" && (
@@ -202,7 +364,7 @@ export default function ExtractionResult({
       </div>
 
       {/* ── Progress steps ─────────────────────────────────────── */}
-      {(isInProgress || isTerminal) && (
+      {(isInProgress || isTerminal) && extraction.steps.length > 0 && (
         <StepProgress extraction={extraction} />
       )}
 
@@ -213,6 +375,7 @@ export default function ExtractionResult({
 
       {/* ── Validation warnings (non-review states) ──────────── */}
       {!needsReview &&
+        !extraction.review_verdict &&
         extraction.validation_errors &&
         extraction.validation_errors.length > 0 && (
           <div className="flex items-start gap-2 rounded-lg bg-yellow-50 p-3">
@@ -235,14 +398,11 @@ export default function ExtractionResult({
         <div className="flex items-start gap-2 rounded-lg bg-red-50 p-3">
           <XCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-red-500" />
           <div className="min-w-0 flex-1">
-            {(() => {
-              const cat = errorCategoryLabel(extraction.error_category);
-              return cat ? (
-                <span className="mb-1 mr-2 inline-block rounded bg-red-100 px-1.5 py-0.5 text-[10px] font-medium text-red-700" title={cat.hint}>
-                  {cat.label}
-                </span>
-              ) : null;
-            })()}
+            {errorLabel ? (
+              <span className="mb-1 mr-2 inline-block rounded bg-red-100 px-1.5 py-0.5 text-[10px] font-medium text-red-700" title={errorLabel.hint}>
+                {errorLabel.label}
+              </span>
+            ) : null}
             <p className="text-sm text-red-700">{extraction.error}</p>
           </div>
         </div>
@@ -254,9 +414,20 @@ export default function ExtractionResult({
           disabled={retrying}
           onClick={async () => {
             setRetrying(true);
+            setActionError(null);
             try {
-              await retryExtraction(extractionId);
+              const retried = await retryExtraction(extractionId);
+              lastStatusRef.current = retried.status;
+              setExtraction(retried);
+              setLoadError(null);
+              setRefreshError(null);
               setPollKey((k) => k + 1);
+            } catch (err) {
+              setActionError(
+                err instanceof Error
+                  ? err.message
+                  : "Could not retry extraction.",
+              );
             } finally {
               setRetrying(false);
             }
@@ -264,7 +435,13 @@ export default function ExtractionResult({
           className="btn-secondary flex items-center gap-2"
         >
           <RefreshCw className={`h-4 w-4 ${retrying ? "animate-spin" : ""}`} />
-          {retrying ? "Retrying…" : "Retry extraction"}
+          {retrying
+            ? wasRejected
+              ? "Restarting…"
+              : "Retrying…"
+            : wasRejected
+              ? "Run extraction again"
+              : "Retry extraction"}
         </button>
       )}
 
@@ -273,12 +450,15 @@ export default function ExtractionResult({
         <ReviewPanel
           extraction={extraction}
           schema={schema}
-          onReviewed={() => setPollKey((k) => k + 1)}
+          onReviewed={() => {
+            setActionError(null);
+            setPollKey((k) => k + 1);
+          }}
         />
       )}
 
       {/* ── Extracted data (completed / non-review) ────────────── */}
-      {!needsReview && resultData && (
+      {!needsReview && resultData && extraction.review_verdict !== "rejected" && (
         <div>
           <h4 className="mb-3 text-sm font-semibold text-gray-700">
             Extracted Data
@@ -315,11 +495,18 @@ export default function ExtractionResult({
                       : "bg-red-100 text-red-700"
                 }`}
               >
-                {r.decision}
+                {r.decision.charAt(0).toUpperCase() + r.decision.slice(1)}
               </span>
-              {r.notes && (
-                <span className="text-gray-600">{r.notes}</span>
-              )}
+              <div className="min-w-0 flex-1 space-y-1">
+                {r.corrected_fields && Object.keys(r.corrected_fields).length > 0 && (
+                  <div className="text-gray-600">
+                    Updated: {Object.keys(r.corrected_fields).join(", ")}
+                  </div>
+                )}
+                {r.notes && (
+                  <div className="text-gray-600">{r.notes}</div>
+                )}
+              </div>
               <span className="ml-auto whitespace-nowrap text-gray-400">
                 {new Date(r.created_at).toLocaleString()}
               </span>
@@ -329,7 +516,7 @@ export default function ExtractionResult({
       )}
 
       {/* ── Raw JSON toggle ────────────────────────────────────── */}
-      {resultData && (
+      {resultData && extraction.review_verdict !== "rejected" && (
         <div>
           <button
             type="button"
@@ -341,7 +528,7 @@ export default function ExtractionResult({
             ) : (
               <ChevronDown className="h-3 w-3" />
             )}
-            Raw JSON
+            {showRawJson ? "Hide advanced debug JSON" : "Show advanced debug JSON"}
           </button>
           {showRawJson && (
             <div className="mt-2 overflow-auto rounded-lg bg-gray-900 p-4">
@@ -374,7 +561,10 @@ export default function ExtractionResult({
             <div>
               <span className="block font-medium text-gray-500">AI Model</span>
               <span className="text-gray-700">
-                {extraction.llm_model_used ?? extraction.llm_model}
+                {resolvedModelDisplayName(
+                  extraction.llm_model,
+                  extraction.llm_model_used,
+                )}
               </span>
             </div>
             <div>
@@ -436,7 +626,7 @@ const PIPELINE_STEPS = [
 function StepProgress({ extraction }: { extraction: ExtractionResponse }) {
   const steps = extraction.steps ?? [];
   const stepMap = new Map(steps.map((s) => [s.name, s]));
-  const isInProgress = IN_PROGRESS.includes(extraction.status);
+  const canInferRunning = ACTIVE_PIPELINE_STATUSES.includes(extraction.status);
 
   return (
     <div className="flex items-center gap-2 text-xs text-gray-400">
@@ -451,7 +641,7 @@ function StepProgress({ extraction }: { extraction: ExtractionResponse }) {
           step?.status === "running" ||
           (!step &&
             !skipped &&
-            isInProgress &&
+            canInferRunning &&
             PIPELINE_STEPS.slice(0, idx).every((s) => stepMap.has(s.key)));
 
         return (
@@ -460,6 +650,7 @@ function StepProgress({ extraction }: { extraction: ExtractionResponse }) {
             <StepDot
               done={done}
               failed={failed}
+              skipped={skipped}
               active={running}
               label={label}
               durationMs={step?.duration_ms}
@@ -474,27 +665,40 @@ function StepProgress({ extraction }: { extraction: ExtractionResponse }) {
 function StepDot({
   done,
   failed,
+  skipped,
   active,
   label,
   durationMs,
 }: {
   done: boolean;
   failed?: boolean;
+  skipped?: boolean;
   active: boolean;
   label: string;
   durationMs?: number | null;
 }) {
   const durationStr =
     durationMs != null ? `${(durationMs / 1000).toFixed(1)}s` : null;
+  const statusTitle = failed
+    ? `${label}: failed`
+    : skipped
+      ? `${label}: skipped`
+      : active
+        ? `${label}: running`
+        : done
+          ? `${label}: completed`
+          : label;
 
   return (
-    <div className="flex flex-col items-center gap-0.5">
+    <div className="flex flex-col items-center gap-0.5" title={statusTitle}>
       <div
         className={`h-2 w-2 rounded-full ${
           failed
             ? "bg-red-500"
             : done
               ? "bg-primary-500"
+              : skipped
+                ? "border border-gray-400 bg-white"
               : active
                 ? "animate-pulse bg-primary-400"
                 : "bg-gray-300"
@@ -508,6 +712,8 @@ function StepDot({
               ? "text-gray-600"
               : failed
                 ? "text-red-500"
+                : skipped
+                  ? "text-gray-500"
                 : "text-gray-400"
         }
       >

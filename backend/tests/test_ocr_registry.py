@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import builtins
 from unittest.mock import patch
 
 import pytest
@@ -122,7 +123,7 @@ def test_list_provider_statuses_excludes_internal_fallback_by_default():
 def test_get_pymupdf():
     provider = get_ocr_provider("pymupdf")
     assert provider.provider_id == "pymupdf"
-    assert provider.display_name == "PyMuPDF (built-in PDF parser)"
+    assert provider.display_name == "Built-in PDF reader (PyMuPDF)"
 
 
 def test_get_unknown_provider():
@@ -139,11 +140,45 @@ def test_auto_resolves_to_available_provider():
     assert provider.is_available()
 
 
-def test_auto_falls_back_to_pymupdf_for_pdf_when_vi_engines_unavailable():
+def test_auto_uses_builtin_pdf_reader_for_pdf_when_image_ocr_is_unavailable():
     """When no OCR engine is enabled/available, PDF Auto falls back to PyMuPDF."""
     # By default in tests, PaddleOCR is not available/installed
     provider = get_ocr_provider("auto", file_path=Path("sample.pdf"))
     assert provider.provider_id == "pymupdf"
+
+
+def test_auto_prefers_builtin_pdf_reader_for_pdf_even_when_paddleocr_is_ready():
+    """PDF Auto stays on the built-in PDF reader; PaddleOCR is image-only."""
+
+    class FakePaddle(BaseOCRProvider):
+        feature_flag_name = "enable_paddleocr"
+        supported_file_types = frozenset({"png", "jpeg", "tiff"})
+
+        @property
+        def provider_id(self) -> str:
+            return "paddleocr"
+
+        @property
+        def display_name(self) -> str:
+            return "Fake PaddleOCR"
+
+        async def extract_text(self, file_path: Path) -> OCRResult:
+            return OCRResult(text="", pages=[], provider=self.provider_id)
+
+        def is_available(self) -> bool:
+            return True
+
+    from app.services.ocr import registry
+
+    original = registry._PROVIDERS.get("paddleocr")
+    try:
+        registry._PROVIDERS["paddleocr"] = FakePaddle()
+        with patch.object(registry.settings, "enable_paddleocr", True):
+            provider = get_ocr_provider("auto", file_path=Path("sample.pdf"))
+            assert provider.provider_id == "pymupdf"
+    finally:
+        if original is not None:
+            registry._PROVIDERS["paddleocr"] = original
 
 
 def test_auto_rejects_image_when_only_pdf_fallback_exists():
@@ -191,6 +226,31 @@ def test_explicit_pymupdf_rejects_non_pdf_input():
 
     with pytest.raises(OCRProviderUnavailableError, match="does not safely support 'png'"):
         get_ocr_provider("pymupdf", file_path=Path("scan.png"))
+
+
+def test_explicit_paddleocr_rejects_pdf_input():
+    """PaddleOCR is exposed as image OCR only in the current user-facing contract."""
+
+    with patch("app.services.ocr.paddleocr_provider.PaddleOCRProvider.is_available", return_value=True), \
+         patch("app.services.ocr.registry.settings.enable_paddleocr", True):
+        with pytest.raises(OCRProviderUnavailableError, match="does not safely support 'pdf'"):
+            get_ocr_provider("paddleocr", file_path=Path("sample.pdf"))
+
+
+def test_paddleocr_availability_probe_treats_native_import_failure_as_unavailable(monkeypatch: pytest.MonkeyPatch):
+    """Import-time native library errors must not crash provider/status listing."""
+    from app.services.ocr.paddleocr_provider import PaddleOCRProvider
+
+    real_import = builtins.__import__
+
+    def fake_import(name, globals=None, locals=None, fromlist=(), level=0):
+        if name == "paddleocr":
+            raise OSError("missing native dependency")
+        return real_import(name, globals, locals, fromlist, level)
+
+    monkeypatch.setattr(builtins, "__import__", fake_import)
+
+    assert PaddleOCRProvider().is_available() is False
 
 
 # ── Plugin registration ────────────────────────────────────────────
