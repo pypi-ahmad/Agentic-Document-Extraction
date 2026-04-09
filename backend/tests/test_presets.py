@@ -88,8 +88,7 @@ async def test_list_presets_endpoint(client: AsyncClient):
 @pytest.mark.asyncio
 async def test_create_from_preset_invoice(client: AsyncClient):
     resp = await client.post(
-        "/api/schemas/from-preset",
-        json={"preset_id": "preset-invoice"},
+        "/api/schemas/presets/preset-invoice",
     )
     assert resp.status_code == 201
     data = resp.json()
@@ -104,8 +103,7 @@ async def test_create_from_preset_invoice(client: AsyncClient):
 @pytest.mark.asyncio
 async def test_create_from_preset_receipt(client: AsyncClient):
     resp = await client.post(
-        "/api/schemas/from-preset",
-        json={"preset_id": "preset-receipt"},
+        "/api/schemas/presets/preset-receipt",
     )
     assert resp.status_code == 201
     data = resp.json()
@@ -116,8 +114,8 @@ async def test_create_from_preset_receipt(client: AsyncClient):
 @pytest.mark.asyncio
 async def test_create_from_preset_custom_name(client: AsyncClient):
     resp = await client.post(
-        "/api/schemas/from-preset",
-        json={"preset_id": "preset-invoice", "name": "My Custom Invoice"},
+        "/api/schemas/presets/preset-invoice",
+        json={"name": "My Custom Invoice"},
     )
     assert resp.status_code == 201
     assert resp.json()["name"] == "My Custom Invoice"
@@ -126,17 +124,116 @@ async def test_create_from_preset_custom_name(client: AsyncClient):
 @pytest.mark.asyncio
 async def test_create_from_preset_not_found(client: AsyncClient):
     resp = await client.post(
-        "/api/schemas/from-preset",
-        json={"preset_id": "nonexistent"},
+        "/api/schemas/presets/nonexistent",
     )
     assert resp.status_code == 404
 
 
 @pytest.mark.asyncio
-async def test_preset_schema_appears_in_list(client: AsyncClient):
-    await client.post(
+async def test_create_from_preset_legacy_alias_still_works(client: AsyncClient):
+    resp = await client.post(
         "/api/schemas/from-preset",
         json={"preset_id": "preset-invoice"},
+    )
+    assert resp.status_code == 201
+    assert resp.json()["name"] == "Invoice"
+
+
+@pytest.mark.asyncio
+async def test_create_from_preset_duplicate_name_is_conflict(client: AsyncClient):
+    first = await client.post(
+        "/api/schemas/presets/preset-invoice",
+    )
+    assert first.status_code == 201
+
+    second = await client.post(
+        "/api/schemas/presets/preset-invoice",
+    )
+    assert second.status_code == 409
+    assert "already exists" in second.json()["detail"]
+
+
+@pytest.mark.asyncio
+async def test_create_schema_duplicate_name_is_conflict(client: AsyncClient):
+    payload = {
+        "name": "Invoice Contract",
+        "fields": [
+            {"name": "vendor_name", "description": "Vendor", "field_type": "string", "required": True},
+        ],
+    }
+    first = await client.post("/api/schemas/", json=payload)
+    assert first.status_code == 201
+
+    second = await client.post("/api/schemas/", json=payload)
+    assert second.status_code == 409
+    assert "already exists" in second.json()["detail"]
+
+
+@pytest.mark.asyncio
+async def test_update_schema_duplicate_name_is_conflict(client: AsyncClient):
+    alpha = await client.post(
+        "/api/schemas/",
+        json={
+            "name": "Alpha Schema",
+            "fields": [
+                {"name": "vendor_name", "description": "Vendor", "field_type": "string", "required": True},
+            ],
+        },
+    )
+    beta = await client.post(
+        "/api/schemas/",
+        json={
+            "name": "Beta Schema",
+            "fields": [
+                {"name": "invoice_number", "description": "Invoice", "field_type": "string", "required": True},
+            ],
+        },
+    )
+    assert alpha.status_code == 201
+    assert beta.status_code == 201
+
+    resp = await client.put(
+        f"/api/schemas/{beta.json()['id']}",
+        json={"name": "Alpha Schema"},
+    )
+    assert resp.status_code == 409
+    assert "already exists" in resp.json()["detail"]
+
+
+@pytest.mark.asyncio
+async def test_create_schema_duplicate_field_names_rejected(client: AsyncClient):
+    resp = await client.post(
+        "/api/schemas/",
+        json={
+            "name": "Duplicate Fields",
+            "fields": [
+                {"name": "total", "description": "Total", "field_type": "number", "required": True},
+                {"name": "TOTAL", "description": "Total again", "field_type": "number", "required": False},
+            ],
+        },
+    )
+    assert resp.status_code == 422
+    assert "Field names must be unique" in resp.text
+
+
+@pytest.mark.asyncio
+async def test_create_schema_whitespace_only_name_rejected(client: AsyncClient):
+    resp = await client.post(
+        "/api/schemas/",
+        json={
+            "name": "   ",
+            "fields": [
+                {"name": "vendor_name", "description": "Vendor", "field_type": "string", "required": True},
+            ],
+        },
+    )
+    assert resp.status_code == 422
+
+
+@pytest.mark.asyncio
+async def test_preset_schema_appears_in_list(client: AsyncClient):
+    await client.post(
+        "/api/schemas/presets/preset-invoice",
     )
     resp = await client.get("/api/schemas/")
     assert resp.status_code == 200

@@ -152,7 +152,8 @@ def coerce_to_schema(
     for a boolean) are silently fixed rather than causing validation
     failures.
 
-    Unknown fields (not in the schema) are passed through unchanged.
+    Unknown fields (not in the schema) are dropped so the workflow result
+    stays aligned to the declared extraction schema.
     Coercion that fails is a no-op: the original value is kept so
     downstream validation can flag it.
     """
@@ -161,7 +162,9 @@ def coerce_to_schema(
 
     for key, value in data.items():
         field_type = type_map.get(key)
-        if field_type and value is not None:
+        if field_type is None:
+            continue
+        if value is not None:
             result[key] = _coerce_value(value, field_type)
         else:
             result[key] = value

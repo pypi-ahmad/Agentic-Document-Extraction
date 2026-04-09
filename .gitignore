@@ -27,11 +27,17 @@ env/
 
 # Database
 *.db
+*.db-shm
+*.db-wal
 *.sqlite
 *.sqlite3
 
 # Uploads
 /backend/uploads/
+/backend/artifacts/
+
+# Test artifacts
+_test_uploads/
 
 # Node
 node_modules/

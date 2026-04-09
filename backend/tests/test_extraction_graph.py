@@ -186,11 +186,10 @@ async def test_finalize_needs_review():
 
 
 @pytest.mark.asyncio
-async def test_finalize_defaults_to_completed():
-    """When review_verdict is missing from state, finalize defaults to completed."""
-    result = await finalize_node(_state())
-    assert result["status"] == "completed"
-    assert result["completed_at"]
+async def test_finalize_requires_explicit_review_verdict():
+    """Finalize should fail fast if validate did not produce a workflow verdict."""
+    with pytest.raises(ValueError, match="review_verdict"):
+        await finalize_node(_state())
 
 
 @pytest.mark.asyncio
@@ -268,7 +267,6 @@ async def test_run_extraction_full_pipeline(tmp_path: Path, monkeypatch: pytest.
             {"name": "vendor", "field_type": "string", "required": True},
             {"name": "total", "field_type": "number", "required": True},
         ],
-        extraction_id="test-run-1",
     )
 
     assert result["status"] == "completed"

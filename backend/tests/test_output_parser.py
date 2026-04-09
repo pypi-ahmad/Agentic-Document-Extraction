@@ -272,11 +272,11 @@ def test_coerce_bool_to_string():
 # ── coerce_to_schema: edge cases ────────────────────────────────────
 
 
-def test_coerce_unknown_fields_passthrough():
-    """Fields not in the schema are left unchanged."""
+def test_coerce_unknown_fields_dropped():
+    """Fields not declared in the schema are removed from workflow output."""
     fields = [{"name": "vendor", "field_type": "string"}]
     result = coerce_to_schema({"vendor": "Acme", "extra": 123}, fields)
-    assert result == {"vendor": "Acme", "extra": 123}
+    assert result == {"vendor": "Acme"}
 
 
 def test_coerce_unconvertible_keeps_original():
@@ -287,8 +287,8 @@ def test_coerce_unconvertible_keeps_original():
 
 
 def test_coerce_empty_schema():
-    """No schema fields → no coercion."""
-    assert coerce_to_schema({"a": 1}, []) == {"a": 1}
+    """No schema fields means no declared output fields survive."""
+    assert coerce_to_schema({"a": 1}, []) == {}
 
 
 def test_coerce_empty_data():

@@ -18,8 +18,9 @@ from unittest.mock import patch
 import pytest
 import pytest_asyncio
 from httpx import AsyncClient
+from unittest.mock import AsyncMock
 
-from app.models.db_models import Document, ExtractionSchema
+from app.models.db_models import Document, Extraction, ExtractionSchema
 from app.services.llm.base import ExtractionResult
 from app.services.ocr.base import OCRResult
 from tests.conftest import _test_session_maker
@@ -41,8 +42,13 @@ class _FakeOCR:
 class _FakeLLM:
     """Returns canned extraction data, optionally with missing fields."""
 
-    def __init__(self, data: dict | None = None) -> None:
+    def __init__(
+        self,
+        data: dict | None = None,
+        confidence: dict | None = None,
+    ) -> None:
         self._data = data or {"vendor": "Acme Corp", "total": 1250.00}
+        self._confidence = confidence or {}
 
     async def extract(
         self,
@@ -55,6 +61,7 @@ class _FakeLLM:
             raw_response=str(self._data),
             model_used="fake-model",
             provider="fake-llm",
+            confidence=self._confidence,
         )
 
 
@@ -151,6 +158,40 @@ async def _submit_and_run(
 
 
 # ── Happy path: submit → process → validate → fetch ─────────────────
+
+
+@pytest.mark.asyncio
+async def test_submission_commits_queued_job_before_background_execution(
+    client: AsyncClient,
+    seed: dict,
+) -> None:
+    """Background execution sees a durably committed queued row."""
+
+    async def _assert_committed(extraction_id: str) -> None:
+        async with _test_session_maker() as db:
+            extraction = await db.get(Extraction, extraction_id)
+            assert extraction is not None
+            assert extraction.status == "queued"
+            assert extraction.started_at is None
+            assert extraction.completed_at is None
+            assert extraction.error is None
+
+    runner = AsyncMock(side_effect=_assert_committed)
+
+    with patch("app.routers.extractions._run_extraction_job", new=runner):
+        resp = await client.post(
+            "/api/extractions/",
+            json={"document_id": seed["document_id"], "schema_id": seed["schema_id"]},
+        )
+
+    assert resp.status_code == 202
+    data = resp.json()
+    assert data["status"] == "queued"
+    assert data["steps"] == []
+    assert data["started_at"] is None
+    assert data["completed_at"] is None
+    assert data["created_at"] is not None
+    runner.assert_awaited_once_with(data["id"])
 
 
 @pytest.mark.asyncio
@@ -264,7 +305,7 @@ async def test_llm_failure(client: AsyncClient, seed: dict) -> None:
     assert data["status"] == "failed"
     assert "Simulated LLM failure" in data["error"]
     assert data["result"] is None
-    assert data["completed_at"] is None
+    assert data["completed_at"] is not None  # failed jobs still record when they finished
 
     steps = data["steps"]
     assert len(steps) == 4
@@ -531,3 +572,101 @@ async def test_steps_have_timing(client: AsyncClient, seed: dict) -> None:
         assert step["duration_ms"] is not None
         assert step["duration_ms"] >= 0
         assert step["error"] is None
+
+
+# ── Confidence-driven routing (end-to-end) ───────────────────────────
+
+
+@pytest.mark.asyncio
+async def test_low_confidence_routes_to_needs_review(client: AsyncClient, seed: dict) -> None:
+    """LLM returning low confidence on a field triggers needs_review status."""
+    llm = _FakeLLM(
+        data={"vendor": "Acme Corp", "total": 1250.00},
+        confidence={"vendor": 0.9, "total": 0.3},  # total below threshold
+    )
+    eid = await _submit_and_run(client, seed, llm=llm)
+
+    resp = await client.get(f"/api/extractions/{eid}")
+    data = resp.json()
+
+    assert data["status"] == "needs_review"
+    assert data["review_verdict"] == "needs_review"
+    # The low-confidence field should appear in validation_results
+    assert data["validation_results"] is not None
+    low_fields = [e["field_name"] for e in data["validation_results"] if not e["valid"]]
+    assert "total" in low_fields
+
+
+@pytest.mark.asyncio
+async def test_high_confidence_completes(client: AsyncClient, seed: dict) -> None:
+    """All fields above threshold → status completed (no review routing)."""
+    llm = _FakeLLM(
+        data={"vendor": "Acme Corp", "total": 1250.00},
+        confidence={"vendor": 0.95, "total": 0.85},
+    )
+    eid = await _submit_and_run(client, seed, llm=llm)
+
+    resp = await client.get(f"/api/extractions/{eid}")
+    data = resp.json()
+
+    assert data["status"] == "completed"
+    assert data["review_verdict"] == "valid"
+
+
+# ── reviewed_at and error_category lifecycle ─────────────────────────
+
+
+@pytest.mark.asyncio
+async def test_reviewed_at_set_on_review(client: AsyncClient, seed: dict) -> None:
+    """reviewed_at is populated after a review decision."""
+    llm = _FakeLLM(data={"vendor": "Acme Corp"})  # missing total → needs_review
+    eid = await _submit_and_run(client, seed, llm=llm)
+
+    resp = await client.get(f"/api/extractions/{eid}")
+    assert resp.json()["reviewed_at"] is None
+
+    await client.post(
+        f"/api/extractions/{eid}/reviews",
+        json={"decision": "approved"},
+    )
+
+    resp = await client.get(f"/api/extractions/{eid}")
+    data = resp.json()
+    assert data["reviewed_at"] is not None
+    assert data["status"] == "completed"
+
+
+@pytest.mark.asyncio
+async def test_error_category_set_on_failure(client: AsyncClient, seed: dict) -> None:
+    """Failed extraction gets an error_category for triage."""
+    eid = await _submit_and_run(client, seed, llm=_FailingLLM())
+
+    resp = await client.get(f"/api/extractions/{eid}")
+    data = resp.json()
+
+    assert data["status"] == "failed"
+    assert data["error_category"] is not None
+    assert data["error_category"] in (
+        "auth", "rate_limit", "timeout", "parse_error",
+        "provider_error", "file_error", "validation", "unknown",
+    )
+
+
+@pytest.mark.asyncio
+async def test_retry_clears_error_category_and_reviewed_at(client: AsyncClient, seed: dict) -> None:
+    """Retrying a failed extraction clears error_category and reviewed_at."""
+    eid = await _submit_and_run(client, seed, llm=_FailingLLM())
+
+    resp = await client.get(f"/api/extractions/{eid}")
+    assert resp.json()["error_category"] is not None
+
+    # Retry with a working LLM
+    patches = _provider_patches()
+    with patches[0], patches[1], patches[2], patches[3]:
+        resp = await client.post(f"/api/extractions/{eid}/retry")
+        assert resp.status_code == 202
+
+    resp = await client.get(f"/api/extractions/{eid}")
+    data = resp.json()
+    assert data["error_category"] is None
+    assert data["reviewed_at"] is None

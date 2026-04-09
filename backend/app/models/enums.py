@@ -94,3 +94,13 @@ class ReviewDecision(StrEnum):
     APPROVED = "approved"
     CORRECTED = "corrected"
     REJECTED = "rejected"
+
+
+class ReviewVerdict(StrEnum):
+    """Persisted extraction review/validation verdicts exposed via the API."""
+
+    VALID = "valid"
+    NEEDS_REVIEW = "needs_review"
+    APPROVED = "approved"
+    CORRECTED = "corrected"
+    REJECTED = "rejected"

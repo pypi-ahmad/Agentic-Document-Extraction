@@ -3,6 +3,7 @@
 from app.config import settings
 from app.services.llm.base import (
     BaseLLMProvider,
+    build_safe_runtime_provider_error,
     ExtractionResult,
     LLMModel,
     LLMProviderError,
@@ -23,7 +24,7 @@ class ClaudeProvider(BaseLLMProvider):
 
     @property
     def display_name(self) -> str:
-        return "Claude"
+        return "Anthropic Claude"
 
     def get_api_key(self) -> str:
         return settings.anthropic_api_key
@@ -33,7 +34,7 @@ class ClaudeProvider(BaseLLMProvider):
             import langchain_anthropic  # noqa: F401
 
             return True
-        except ImportError:
+        except Exception:
             return False
 
     def is_model_listing_client_available(self) -> bool:
@@ -41,7 +42,7 @@ class ClaudeProvider(BaseLLMProvider):
             import anthropic  # noqa: F401
 
             return True
-        except ImportError:
+        except Exception:
             return False
 
     async def _list_models_dynamic(self) -> list[LLMModel]:
@@ -102,10 +103,10 @@ class ClaudeProvider(BaseLLMProvider):
 
         try:
             from langchain_anthropic import ChatAnthropic
-        except ImportError as exc:
+        except Exception as exc:
             raise LLMProviderError(
                 self.provider_id,
-                "langchain-anthropic is not installed.",
+                "langchain-anthropic is unavailable in the current environment.",
                 code="client_not_installed",
             ) from exc
 
@@ -143,4 +144,8 @@ class ClaudeProvider(BaseLLMProvider):
                 code="invalid_json",
             ) from exc
         except Exception as exc:
-            raise LLMProviderError(self.provider_id, str(exc)) from exc
+            raise build_safe_runtime_provider_error(
+                self.provider_id,
+                self.display_name,
+                exc,
+            ) from exc

@@ -29,6 +29,7 @@ import re
 from collections.abc import Callable
 from typing import Any
 
+from app.config import settings
 from app.models.extraction._base import ValidationResult
 
 
@@ -39,8 +40,8 @@ RuleFunc = Callable[[dict[str, Any], list[dict[str, Any]]], list[ValidationResul
 # Registry of custom business-rule hooks
 _business_rules: list[RuleFunc] = []
 
-# Fields with confidence below this threshold are flagged for review.
-_LOW_CONFIDENCE_THRESHOLD = 0.6
+# Read confidence threshold from config (allows env-var / .env override).
+_LOW_CONFIDENCE_THRESHOLD = settings.confidence_threshold
 
 
 def register_rule(func: RuleFunc) -> RuleFunc:

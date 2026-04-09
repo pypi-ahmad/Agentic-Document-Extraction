@@ -347,3 +347,74 @@ class LLMProviderError(Exception):
             message=self.message,
             retryable=self.retryable,
         )
+
+
+def _is_auth_error(exc: Exception) -> bool:
+    """Best-effort detection of authentication/authorization failures."""
+    msg = str(exc).lower()
+    if any(
+        token in msg
+        for token in (
+            "api key",
+            "authentication",
+            "authorization",
+            "unauthorized",
+            "forbidden",
+            "permission denied",
+            "invalid key",
+            "invalid_api_key",
+            "401",
+            "403",
+        )
+    ):
+        return True
+    cause = getattr(exc, "__cause__", None)
+    if cause is not None and cause is not exc:
+        return _is_auth_error(cause)
+    return False
+
+
+def _is_retryable_error(exc: Exception) -> bool:
+    """Heuristic: detect retryable API errors from SDK exceptions.
+
+    Inspects the exception message (and cause chain) for known transient
+    patterns such as rate limits, server errors, and timeouts.  Used by
+    provider ``extract()`` catch-all handlers so the graph retry loop
+    actually activates for real transient failures.
+    """
+    msg = str(exc).lower()
+    if any(k in msg for k in ("rate limit", "rate_limit", "429", "quota")):
+        return True
+    if any(k in msg for k in ("server error", "503", "502", "500",
+                               "service unavailable", "overloaded")):
+        return True
+    if any(k in msg for k in ("timeout", "timed out", "deadline")):
+        return True
+    cause = getattr(exc, "__cause__", None)
+    if cause is not None and cause is not exc:
+        return _is_retryable_error(cause)
+    return False
+
+
+def build_safe_runtime_provider_error(
+    provider_id: str,
+    display_name: str,
+    exc: Exception,
+) -> LLMProviderError:
+    """Convert a raw provider/runtime exception into a safe API-facing error."""
+    if _is_auth_error(exc):
+        return LLMProviderError(
+            provider_id,
+            f"{display_name} authentication failed.",
+            code="invalid_api_key",
+        )
+    if _is_retryable_error(exc):
+        return LLMProviderError(
+            provider_id,
+            f"{display_name} request failed temporarily. Please retry.",
+            retryable=True,
+        )
+    return LLMProviderError(
+        provider_id,
+        f"{display_name} request failed.",
+    )

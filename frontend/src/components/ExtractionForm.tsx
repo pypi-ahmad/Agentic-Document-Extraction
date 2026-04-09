@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   getParsers,
   getLLMProviders,
@@ -47,15 +47,50 @@ export default function ExtractionForm({
   const [llmModel, setLlmModel] = useState("auto");
 
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [loadingOptions, setLoadingOptions] = useState(true);
+  const [optionsError, setOptionsError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const loadOptions = useCallback(async () => {
+    setLoadingOptions(true);
+    setOptionsError(null);
+
+    const [schemaResult, parserResult, llmResult] = await Promise.allSettled([
+      listSchemas(),
+      getParsers(),
+      getLLMProviders(),
+    ]);
+
+    if (schemaResult.status === "fulfilled") {
+      setSchemas(schemaResult.value);
+    }
+    if (parserResult.status === "fulfilled") {
+      setParsers(parserResult.value);
+    }
+    if (llmResult.status === "fulfilled") {
+      setLlmProviders(llmResult.value);
+    }
+
+    const firstError = [schemaResult, parserResult, llmResult].find(
+      (result): result is PromiseRejectedResult => result.status === "rejected",
+    );
+
+    if (firstError) {
+      setOptionsError(
+        firstError.reason instanceof Error
+          ? firstError.reason.message
+          : "Could not load extraction options.",
+      );
+    }
+
+    setLoadingOptions(false);
+  }, []);
+
   // Load schemas and providers on mount
   useEffect(() => {
-    listSchemas().then(setSchemas).catch(() => {});
-    getParsers().then(setParsers).catch(() => {});
-    getLLMProviders().then(setLlmProviders).catch(() => {});
-  }, []);
+    void loadOptions();
+  }, [loadOptions]);
 
   // Load models when AI provider changes
   useEffect(() => {
@@ -105,7 +140,10 @@ export default function ExtractionForm({
   };
 
   const getParserHint = (p: ParserOptionInfo): string => {
-    if (!p.enabled) return " (disabled)";
+    if (!p.enabled && !p.available) {
+      return " (disabled; install packages and enable flag)";
+    }
+    if (!p.enabled) return " (disabled; enable flag)";
     if (!p.available) return " (not installed)";
     return "";
   };
@@ -136,6 +174,20 @@ export default function ExtractionForm({
         </p>
       </div>
 
+      {optionsError && (
+        <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+          <p>Could not refresh all extraction options.</p>
+          <p className="mt-1 text-xs text-amber-700">{optionsError}</p>
+          <button
+            type="button"
+            onClick={() => void loadOptions()}
+            className="mt-3 text-sm font-medium text-amber-900 hover:underline"
+          >
+            Retry loading options
+          </button>
+        </div>
+      )}
+
       {/* Schema selector */}
       <div>
         <label className="mb-1.5 block text-sm font-medium text-gray-700">
@@ -148,15 +200,18 @@ export default function ExtractionForm({
             setError(null);
           }}
           className={selectCls}
+          disabled={loadingOptions}
         >
-          <option value="">Select a template…</option>
+          <option value="">
+            {loadingOptions ? "Loading templates…" : "Select a template…"}
+          </option>
           {schemas.map((s) => (
             <option key={s.id} value={s.id}>
               {s.name}
             </option>
           ))}
         </select>
-        {schemas.length === 0 && (
+        {!loadingOptions && schemas.length === 0 && !optionsError && (
           <p className="mt-1 text-xs text-gray-400">
             No templates yet.{" "}
             <a href="/schemas" className="text-primary-600 hover:underline">
@@ -207,8 +262,10 @@ export default function ExtractionForm({
               ))}
             </select>
             <p className="mt-1 text-xs text-gray-400">
-              How the text is read from your document. PaddleOCR requires
-              separate install for image files.
+              Auto uses the built-in PDF reader for text-based PDFs. PaddleOCR is
+              optional and only used for PNG, JPG/JPEG, and TIFF/TIF image OCR
+              when it is installed and enabled. Image-only or scanned PDFs are
+              not OCR&apos;d by the current local parser contract.
             </p>
           </div>
 
@@ -233,7 +290,11 @@ export default function ExtractionForm({
               ))}
             </select>
             <p className="mt-1 text-xs text-gray-400">
-              Which AI service extracts the data. Requires a valid API key.
+              OpenAI, Gemini, and Anthropic Claude are the only implemented AI
+              providers. All require valid API keys. Auto first tries the
+              backend&apos;s configured default provider when it is set to a concrete
+              provider and that provider is ready; otherwise it falls back to
+              OpenAI, then Gemini, then Anthropic Claude.
             </p>
           </div>
 
@@ -285,7 +346,7 @@ export default function ExtractionForm({
       <button
         type="button"
         onClick={handleSubmit}
-        disabled={submitting || !selectedSchema}
+        disabled={submitting || loadingOptions || !selectedSchema}
         className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
       >
         {submitting ? (

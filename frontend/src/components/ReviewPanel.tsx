@@ -26,9 +26,13 @@ function formatValue(value: unknown): string {
   if (value === null || value === undefined) return "";
   if (typeof value === "boolean") return value ? "Yes" : "No";
   if (typeof value === "number") return String(value);
-  if (Array.isArray(value)) return JSON.stringify(value);
-  if (typeof value === "object") return JSON.stringify(value);
+  if (Array.isArray(value)) return JSON.stringify(value, null, 2);
+  if (typeof value === "object") return JSON.stringify(value, null, 2);
   return String(value);
+}
+
+function isStructuredValue(value: unknown): boolean {
+  return Array.isArray(value) || (typeof value === "object" && value !== null);
 }
 
 export default function ReviewPanel({
@@ -46,9 +50,9 @@ export default function ReviewPanel({
   >();
   for (const vr of validationResults) {
     if (vr.field_name) {
-      fieldValidation.set(vr.field_name as string, {
-        valid: vr.valid as boolean,
-        message: vr.message as string,
+      fieldValidation.set(vr.field_name, {
+        valid: vr.valid,
+        message: vr.message,
       });
     }
   }
@@ -123,6 +127,23 @@ export default function ReviewPanel({
           Human Review Required
         </h4>
       </div>
+      <p className="text-sm text-orange-800">
+        The extraction finished, but one or more fields need confirmation before you rely on this result.
+      </p>
+      <p className="text-xs text-orange-700">
+        Approve keeps the current values, Save corrections updates only the fields you edit, and Reject marks this run as unusable so it can be rerun.
+      </p>
+
+      {extraction.validation_errors && extraction.validation_errors.length > 0 && (
+        <div className="rounded-lg border border-orange-200 bg-orange-100/70 px-3 py-2 text-sm text-orange-900">
+          <p className="font-medium">Why this needs review</p>
+          <ul className="mt-1 list-inside list-disc text-xs text-orange-800">
+            {extraction.validation_errors.map((warning, index) => (
+              <li key={`${warning}-${index}`}>{warning}</li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {/* Per-field review table */}
       <div className="divide-y divide-gray-100 rounded-lg border border-gray-200 bg-white">
@@ -137,15 +158,20 @@ export default function ReviewPanel({
             <div key={key} className="px-4 py-3">
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-start gap-2">
                     {isValid ? (
-                      <CheckCircle2 className="h-3.5 w-3.5 flex-shrink-0 text-green-500" />
+                      <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-green-500" />
                     ) : (
-                      <XCircle className="h-3.5 w-3.5 flex-shrink-0 text-red-500" />
+                      <XCircle className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-red-500" />
                     )}
-                    <span className="text-sm font-medium text-gray-800">
-                      {schemaDef?.description || key}
-                    </span>
+                    <div className="min-w-0">
+                      <div className="text-sm font-medium text-gray-800">
+                        {schemaDef?.description || key}
+                      </div>
+                      {schemaDef?.description && schemaDef.description !== key && (
+                        <div className="text-xs text-gray-400">{key}</div>
+                      )}
+                    </div>
                     {!isValid && validation?.message && (
                       <span className="text-xs text-red-600">
                         — {validation.message}
@@ -155,27 +181,53 @@ export default function ReviewPanel({
                 </div>
                 <div className="flex items-center gap-2">
                   {isEditing ? (
-                    <input
-                      type="text"
-                      value={corrections[key] ?? ""}
-                      onChange={(e) =>
-                        setCorrections({
-                          ...corrections,
-                          [key]: e.target.value,
-                        })
-                      }
-                      className="rounded border border-orange-300 px-2 py-1 text-sm focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
-                    />
+                    schemaDef?.field_type === "list" || schemaDef?.field_type === "object" ? (
+                      <textarea
+                        value={corrections[key] ?? ""}
+                        onChange={(e) =>
+                          setCorrections({
+                            ...corrections,
+                            [key]: e.target.value,
+                          })
+                        }
+                        rows={3}
+                        className="min-w-[16rem] rounded border border-orange-300 px-2 py-1 font-mono text-xs focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                      />
+                    ) : (
+                      <input
+                        type="text"
+                        value={corrections[key] ?? ""}
+                        onChange={(e) =>
+                          setCorrections({
+                            ...corrections,
+                            [key]: e.target.value,
+                          })
+                        }
+                        className="rounded border border-orange-300 px-2 py-1 text-sm focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                      />
+                    )
                   ) : (
-                    <span
-                      className={`text-sm ${
-                        value === null || value === undefined
-                          ? "italic text-gray-400"
-                          : "text-gray-900"
-                      }`}
-                    >
-                      {formatValue(value) || "—"}
-                    </span>
+                    isStructuredValue(value) ? (
+                      <pre
+                        className={`max-w-md whitespace-pre-wrap break-words rounded bg-gray-50 px-2 py-1 text-left font-mono text-xs ${
+                          value === null || value === undefined
+                            ? "italic text-gray-400"
+                            : "text-gray-800"
+                        }`}
+                      >
+                        {formatValue(value) || "—"}
+                      </pre>
+                    ) : (
+                      <span
+                        className={`text-sm ${
+                          value === null || value === undefined
+                            ? "italic text-gray-400"
+                            : "text-gray-900"
+                        }`}
+                      >
+                        {formatValue(value) || "—"}
+                      </span>
+                    )
                   )}
                   <button
                     type="button"
@@ -277,17 +329,45 @@ function parseFieldValue(
 ): unknown {
   if (raw === "" || raw === "—") return null;
 
+  const trimmed = raw.trim();
+
   switch (fieldType) {
     case "number": {
-      const n = Number(raw);
+      const normalized = trimmed.replaceAll(",", "").replaceAll(" ", "");
+      if (!normalized) return null;
+      const n = Number(normalized);
       return Number.isNaN(n) ? raw : n;
     }
-    case "boolean":
-      return raw.toLowerCase() === "true" || raw.toLowerCase() === "yes";
+    case "boolean": {
+      const normalized = trimmed.toLowerCase();
+      if (["true", "yes", "1"].includes(normalized)) return true;
+      if (["false", "no", "0"].includes(normalized)) return false;
+      return raw;
+    }
+    case "date": {
+      if (/^\d{4}-\d{2}-\d{2}/.test(trimmed)) {
+        return trimmed.slice(0, 10);
+      }
+      const match = trimmed.match(/^(\d{1,2})[/\-.](\d{1,2})[/\-.](\d{4})$/);
+      if (match) {
+        return `${match[3]}-${String(Number(match[1])).padStart(2, "0")}-${String(Number(match[2])).padStart(2, "0")}`;
+      }
+      return raw;
+    }
     case "list":
+      if (!trimmed) return [];
+      if (trimmed.startsWith("[")) {
+        try {
+          const parsed = JSON.parse(trimmed);
+          return Array.isArray(parsed) ? parsed : raw;
+        } catch {
+          return raw;
+        }
+      }
+      return trimmed.split(",").map((item) => item.trim()).filter(Boolean);
     case "object":
       try {
-        return JSON.parse(raw);
+        return JSON.parse(trimmed);
       } catch {
         return raw;
       }

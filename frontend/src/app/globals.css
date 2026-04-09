@@ -38,3 +38,11 @@ body {
 .badge-pending {
   @apply bg-gray-100 text-gray-800;
 }
+
+/* Buttons */
+.btn-primary {
+  @apply rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50;
+}
+.btn-secondary {
+  @apply rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50;
+}

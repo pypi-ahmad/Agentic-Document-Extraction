@@ -5,7 +5,7 @@ import datetime
 import json
 import logging
 
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Response, status
 from fastapi.responses import StreamingResponse
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -28,6 +28,167 @@ logger = logging.getLogger(__name__)
 
 # Maximum wall-clock time for a single extraction job (seconds).
 _JOB_TIMEOUT = 300
+_PIPELINE_STEPS = ("parse", "extract", "validate", "finalize")
+
+
+def _no_store_headers(extra_headers: dict[str, str] | None = None) -> dict[str, str]:
+    headers = {
+        "Cache-Control": "no-store",
+        "Pragma": "no-cache",
+        "Expires": "0",
+    }
+    if extra_headers:
+        headers.update(extra_headers)
+    return headers
+
+
+def _apply_no_store_headers(response: Response) -> None:
+    response.headers.update(_no_store_headers())
+
+
+def _normalize_utc(dt: datetime.datetime) -> datetime.datetime:
+    """Treat naive SQLite datetimes as UTC for duration math."""
+    if dt.tzinfo is None:
+        return dt.replace(tzinfo=datetime.UTC)
+    return dt.astimezone(datetime.UTC)
+
+
+def _duration_ms(started_at: datetime.datetime, finished_at: datetime.datetime) -> int:
+    """Return non-negative duration across naive/aware datetime mixes."""
+    return max(
+        int((_normalize_utc(finished_at) - _normalize_utc(started_at)).total_seconds() * 1000),
+        0,
+    )
+
+
+def _build_queued_response(extraction: Extraction) -> ExtractionResponse:
+    """Serialize a freshly queued extraction without lazy-loading relations."""
+    return ExtractionResponse(
+        id=extraction.id,
+        document_id=extraction.document_id,
+        schema_id=extraction.schema_id,
+        ocr_provider=extraction.ocr_provider,
+        llm_provider=extraction.llm_provider,
+        llm_model=extraction.llm_model,
+        status=extraction.status,
+        ocr_text=extraction.ocr_text,
+        result=extraction.result,
+        validation_errors=extraction.validation_errors,
+        validation_results=extraction.validation_results,
+        review_verdict=extraction.review_verdict,
+        error=extraction.error,
+        ocr_provider_used=extraction.ocr_provider_used,
+        llm_provider_used=extraction.llm_provider_used,
+        llm_model_used=extraction.llm_model_used,
+        confidence=extraction.confidence,
+        extract_attempts=extraction.extract_attempts,
+        error_category=extraction.error_category,
+        steps=[],
+        reviews=[],
+        created_at=extraction.created_at,
+        started_at=extraction.started_at,
+        completed_at=extraction.completed_at,
+        reviewed_at=extraction.reviewed_at,
+    )
+
+
+def _sse_step_signature(steps: list[ExtractionStep]) -> tuple[tuple[str, str, str | None, int | None, str | None], ...]:
+    return tuple(
+        (
+            step.name,
+            step.status,
+            step.error,
+            step.duration_ms,
+            step.completed_at.isoformat() if step.completed_at else None,
+        )
+        for step in steps
+    )
+
+
+def _apply_failure_state(
+    extraction: Extraction,
+    error_msg: str,
+    *,
+    error_category: str,
+    finished_at: datetime.datetime | None = None,
+) -> None:
+    """Normalize failed extraction fields in one place."""
+    finished_at = finished_at or datetime.datetime.now(datetime.UTC)
+    extraction.status = "failed"
+    extraction.error = error_msg
+    if not extraction.completed_at:
+        extraction.completed_at = finished_at
+    extraction.error_category = error_category
+
+
+def _finalize_failed_step(
+    step: ExtractionStep,
+    error_msg: str,
+    *,
+    finished_at: datetime.datetime | None = None,
+) -> None:
+    """Finalize a running step as failed with coherent timing metadata."""
+    finished_at = finished_at or datetime.datetime.now(datetime.UTC)
+    step.status = "failed"
+    step.error = error_msg
+    if not step.completed_at:
+        step.completed_at = finished_at
+    if step.started_at and step.duration_ms is None and step.completed_at:
+        step.duration_ms = _duration_ms(step.started_at, step.completed_at)
+
+
+async def _finalize_running_steps(
+    db: AsyncSession,
+    extraction_id: str,
+    error_msg: str,
+    *,
+    finished_at: datetime.datetime | None = None,
+) -> None:
+    """Convert any lingering running steps into failed terminal rows."""
+    finished_at = finished_at or datetime.datetime.now(datetime.UTC)
+    result = await db.execute(
+        select(ExtractionStep)
+        .where(ExtractionStep.extraction_id == extraction_id)
+        .where(ExtractionStep.status == "running")
+    )
+    for step in result.scalars():
+        _finalize_failed_step(step, error_msg, finished_at=finished_at)
+
+
+async def _backfill_missing_terminal_steps(
+    db: AsyncSession,
+    extraction_id: str,
+) -> None:
+    """Add skipped rows for downstream pipeline steps missing after a terminal failure."""
+    result = await db.execute(
+        select(ExtractionStep)
+        .where(ExtractionStep.extraction_id == extraction_id)
+        .order_by(ExtractionStep.id)
+    )
+    steps = list(result.scalars())
+    if not steps:
+        return
+
+    existing_names = {step.name for step in steps}
+    existing_indexes = [
+        _PIPELINE_STEPS.index(step.name)
+        for step in steps
+        if step.name in _PIPELINE_STEPS
+    ]
+    if not existing_indexes:
+        return
+
+    highest_index = max(existing_indexes)
+    for step_name in _PIPELINE_STEPS[highest_index + 1:]:
+        if step_name in existing_names:
+            continue
+        db.add(
+            ExtractionStep(
+                extraction_id=extraction_id,
+                name=step_name,
+                status="skipped",
+            )
+        )
 
 
 async def _run_extraction_job(extraction_id: str) -> None:
@@ -44,20 +205,46 @@ async def _run_extraction_job(extraction_id: str) -> None:
         )
     except asyncio.TimeoutError:
         logger.error("Extraction %s timed out after %ds", extraction_id, _JOB_TIMEOUT)
-        async with async_session() as db:
-            extraction = await db.get(Extraction, extraction_id)
-            if extraction and extraction.status not in ("completed", "needs_review", "failed"):
-                extraction.status = "failed"
-                extraction.error = f"Job timed out after {_JOB_TIMEOUT}s. Please retry."
-                await db.commit()
+        await _mark_job_failed(
+            extraction_id,
+            f"Job timed out after {_JOB_TIMEOUT}s. Please retry.",
+        )
     except Exception:
         logger.exception("Unexpected error in extraction job %s", extraction_id)
-        async with async_session() as db:
-            extraction = await db.get(Extraction, extraction_id)
-            if extraction and extraction.status not in ("completed", "needs_review", "failed"):
-                extraction.status = "failed"
-                extraction.error = "An unexpected error occurred. Please retry."
-                await db.commit()
+        await _mark_job_failed(
+            extraction_id,
+            "An unexpected error occurred. Please retry.",
+        )
+
+
+async def _mark_job_failed(extraction_id: str, error_msg: str) -> None:
+    """Mark an extraction as failed and clean up any stuck steps.
+
+    Called from the outer job wrapper when the pipeline times out or
+    crashes.  Sets ``completed_at`` and ``error_category`` so the
+    failure is fully visible, and marks any lingering ``running``
+    steps as ``failed`` so they don't stay stuck.
+    """
+    from app.services.extraction.error_classify import classify_error
+
+    async with async_session() as db:
+        extraction = await db.get(Extraction, extraction_id)
+        if extraction and extraction.status not in ("completed", "needs_review", "failed"):
+            finished_at = datetime.datetime.now(datetime.UTC)
+            _apply_failure_state(
+                extraction,
+                error_msg,
+                error_category=classify_error(error_msg, "failed") or "unknown",
+                finished_at=finished_at,
+            )
+            await _finalize_running_steps(
+                db,
+                extraction_id,
+                error_msg,
+                finished_at=finished_at,
+            )
+            await _backfill_missing_terminal_steps(db, extraction_id)
+            await db.commit()
 
 
 async def _run_extraction_pipeline(extraction_id: str) -> None:
@@ -68,9 +255,7 @@ async def _run_extraction_pipeline(extraction_id: str) -> None:
     extraction's status is updated after every node, making intermediate
     progress visible to frontend polls.
     """
-    from app.services.extraction.graph import extraction_graph, PipelineState
-
-    _ALL_STEPS = ("parse", "extract", "validate", "finalize")
+    from app.services.extraction.graph import build_initial_state, extraction_graph
 
     async with async_session() as db:
         extraction = await db.get(Extraction, extraction_id)
@@ -83,30 +268,31 @@ async def _run_extraction_pipeline(extraction_id: str) -> None:
 
         schema = await db.get(ExtractionSchema, extraction.schema_id)
         if not schema:
-            extraction.status = "failed"
-            extraction.error = "Schema not found"
+            _apply_failure_state(
+                extraction,
+                "Schema not found",
+                error_category="unknown",
+            )
             await db.commit()
             return
 
         doc = await db.get(Document, extraction.document_id)
         if not doc:
-            extraction.status = "failed"
-            extraction.error = "Document not found"
+            _apply_failure_state(
+                extraction,
+                "Document not found",
+                error_category="unknown",
+            )
             await db.commit()
             return
 
-        initial_state: PipelineState = {
-            "file_path": doc.file_path,
-            "schema_fields": schema.fields,
-            "ocr_provider_id": extraction.ocr_provider,
-            "llm_provider_id": extraction.llm_provider,
-            "llm_model_id": extraction.llm_model,
-            "extraction_id": extraction.id,
-            "document_id": extraction.document_id,
-            "schema_id": extraction.schema_id,
-            "status": "pending",
-            "error": "",
-        }
+        initial_state = build_initial_state(
+            file_path=doc.file_path,
+            schema_fields=schema.fields,
+            ocr_provider=extraction.ocr_provider,
+            llm_provider=extraction.llm_provider,
+            llm_model=extraction.llm_model,
+        )
 
         accumulated: dict = {}
         created_steps: dict[str, ExtractionStep] = {}
@@ -129,7 +315,7 @@ async def _run_extraction_pipeline(extraction_id: str) -> None:
                 initial_state, stream_mode="updates",
             ):
                 node_name = next(iter(chunk))
-                if node_name not in _ALL_STEPS:
+                if node_name not in _PIPELINE_STEPS:
                     continue  # skip __start__ / __end__
 
                 node_output = chunk[node_name]
@@ -155,9 +341,9 @@ async def _run_extraction_pipeline(extraction_id: str) -> None:
                     extraction.status = node_output["status"]
 
                 # Create the next step as "running" when pipeline continues
-                step_idx = _ALL_STEPS.index(node_name)
-                if step_status != "failed" and step_idx + 1 < len(_ALL_STEPS):
-                    next_name = _ALL_STEPS[step_idx + 1]
+                step_idx = _PIPELINE_STEPS.index(node_name)
+                if step_status != "failed" and step_idx + 1 < len(_PIPELINE_STEPS):
+                    next_name = _PIPELINE_STEPS[step_idx + 1]
                     current_step = ExtractionStep(
                         extraction_id=extraction_id,
                         name=next_name,
@@ -170,15 +356,14 @@ async def _run_extraction_pipeline(extraction_id: str) -> None:
                 await db.commit()
                 step_start = now
         except Exception as exc:
-            pipeline_error = f"Pipeline error: {exc}"
+            logger.exception("Pipeline error in extraction %s", extraction_id)
+            pipeline_error = "Pipeline error: an internal error occurred. Please retry."
             # Mark any in-flight step as failed
             if current_step.status == "running":
-                current_step.status = "failed"
-                current_step.error = str(exc)
-                current_step.completed_at = datetime.datetime.now(datetime.UTC)
+                _finalize_failed_step(current_step, "Internal error")
 
         # Mark skipped steps (pipeline short-circuited on failure)
-        for name in _ALL_STEPS:
+        for name in _PIPELINE_STEPS:
             if name not in created_steps:
                 db.add(ExtractionStep(
                     extraction_id=extraction_id,
@@ -207,6 +392,10 @@ async def _run_extraction_pipeline(extraction_id: str) -> None:
             if completed_at:
                 extraction.completed_at = datetime.datetime.fromisoformat(completed_at)
 
+        # Ensure completed_at is set for all terminal states (including failures)
+        if extraction.status in ("completed", "needs_review", "failed") and not extraction.completed_at:
+            extraction.completed_at = datetime.datetime.now(datetime.UTC)
+
         # Classify the error for reviewer triage
         from app.services.extraction.error_classify import classify_error
         extraction.error_category = classify_error(extraction.error, extraction.status)
@@ -218,9 +407,11 @@ async def _run_extraction_pipeline(extraction_id: str) -> None:
 async def create_extraction(
     body: ExtractionCreate,
     background_tasks: BackgroundTasks,
+    response: Response,
     db: AsyncSession = Depends(get_db),
-) -> Extraction:
+) -> ExtractionResponse:
     """Start a new extraction job (runs in background)."""
+    _apply_no_store_headers(response)
     # Validate references
     doc = await db.get(Document, body.document_id)
     if not doc:
@@ -237,13 +428,13 @@ async def create_extraction(
         llm_provider=body.llm_provider,
         llm_model=body.llm_model,
         status="queued",
+        created_at=datetime.datetime.now(datetime.UTC),
     )
     db.add(extraction)
     await db.commit()
-    await db.refresh(extraction)
 
     background_tasks.add_task(_run_extraction_job, extraction.id)
-    return extraction
+    return _build_queued_response(extraction)
 
 
 @router.post(
@@ -254,13 +445,15 @@ async def create_extraction(
 async def retry_extraction(
     extraction_id: str,
     background_tasks: BackgroundTasks,
+    response: Response,
     db: AsyncSession = Depends(get_db),
-) -> Extraction:
+) -> ExtractionResponse:
     """Re-queue a failed extraction job.
 
     Only extractions in ``failed`` status can be retried.  The row is
     reset to ``queued`` and re-submitted to the background worker.
     """
+    _apply_no_store_headers(response)
     extraction = await db.get(Extraction, extraction_id)
     if not extraction:
         raise HTTPException(status_code=404, detail="Extraction not found")
@@ -293,20 +486,29 @@ async def retry_extraction(
     await db.execute(
         delete(ExtractionStep).where(ExtractionStep.extraction_id == extraction_id)
     )
+    extraction.steps = []
+
+    # Clear prior review history so a retried run does not inherit stale
+    # reviewer decisions from an earlier failed attempt on the same row.
+    await db.execute(
+        delete(ExtractionReview).where(ExtractionReview.extraction_id == extraction_id)
+    )
+    extraction.reviews = []
 
     await db.commit()
-    await db.refresh(extraction)
 
     background_tasks.add_task(_run_extraction_job, extraction.id)
-    return extraction
+    return _build_queued_response(extraction)
 
 
 @router.get("/", response_model=list[ExtractionResponse])
 async def list_extractions(
+    response: Response,
     document_id: str | None = None,
     db: AsyncSession = Depends(get_db),
 ) -> list[Extraction]:
     """List extractions, optionally filtered by document."""
+    _apply_no_store_headers(response)
     stmt = select(Extraction).order_by(Extraction.created_at.desc())
     if document_id:
         stmt = stmt.where(Extraction.document_id == document_id)
@@ -317,9 +519,11 @@ async def list_extractions(
 @router.get("/{extraction_id}", response_model=ExtractionResponse)
 async def get_extraction(
     extraction_id: str,
+    response: Response,
     db: AsyncSession = Depends(get_db),
 ) -> Extraction:
     """Get extraction status and results."""
+    _apply_no_store_headers(response)
     extraction = await db.get(Extraction, extraction_id)
     if not extraction:
         raise HTTPException(status_code=404, detail="Extraction not found")
@@ -331,22 +535,23 @@ async def get_extraction(
 
 _SSE_POLL_INTERVAL = 1.0  # seconds between DB polls
 _SSE_TERMINAL = frozenset({"completed", "needs_review", "failed"})
+_SSE_MAX_ITERATIONS = 600  # hard ceiling: stop after 10 minutes even if not terminal
 
 
 @router.get("/{extraction_id}/stream")
 async def stream_extraction_progress(extraction_id: str) -> StreamingResponse:
     """Stream extraction progress as Server-Sent Events.
 
-    Emits a JSON event each time the extraction status or step count
+    Emits a JSON event each time the extraction status or step state
     changes.  Closes automatically when the extraction reaches a
     terminal state (completed / needs_review / failed).
     """
 
     async def _event_generator():
         last_status: str | None = None
-        last_step_count = -1
+        last_step_signature: tuple[tuple[str, str, str | None, int | None, str | None], ...] | None = None
 
-        while True:
+        for _ in range(_SSE_MAX_ITERATIONS):
             async with async_session() as db:
                 extraction = await db.get(Extraction, extraction_id)
                 if not extraction:
@@ -355,27 +560,39 @@ async def stream_extraction_progress(extraction_id: str) -> StreamingResponse:
 
                 steps = extraction.steps or []
                 cur_status = extraction.status
-                cur_step_count = len(steps)
+                cur_step_signature = _sse_step_signature(steps)
 
-                # Only emit when something changed
-                if cur_status != last_status or cur_step_count != last_step_count:
+                # Only emit when live progress actually changed.
+                if cur_status != last_status or cur_step_signature != last_step_signature:
                     payload = ExtractionResponse.model_validate(extraction)
                     yield _sse_event(payload.model_dump(mode="json"))
                     last_status = cur_status
-                    last_step_count = cur_step_count
+                    last_step_signature = cur_step_signature
 
                 if cur_status in _SSE_TERMINAL:
                     return
 
             await asyncio.sleep(_SSE_POLL_INTERVAL)
 
+        # One final snapshot prevents a late status/step transition from being
+        # dropped exactly when the bounded stream loop expires.
+        async with async_session() as db:
+            extraction = await db.get(Extraction, extraction_id)
+            if not extraction:
+                return
+
+            steps = extraction.steps or []
+            cur_status = extraction.status
+            cur_step_signature = _sse_step_signature(steps)
+
+            if cur_status != last_status or cur_step_signature != last_step_signature:
+                payload = ExtractionResponse.model_validate(extraction)
+                yield _sse_event(payload.model_dump(mode="json"))
+
     return StreamingResponse(
         _event_generator(),
         media_type="text/event-stream",
-        headers={
-            "Cache-Control": "no-cache",
-            "X-Accel-Buffering": "no",
-        },
+        headers=_no_store_headers({"X-Accel-Buffering": "no"}),
     )
 
 
@@ -387,9 +604,11 @@ def _sse_event(data: dict) -> str:
 @router.get("/{extraction_id}/result", response_model=ExtractionResultResponse)
 async def get_extraction_result(
     extraction_id: str,
+    response: Response,
     db: AsyncSession = Depends(get_db),
 ) -> ExtractionResultResponse:
     """Get only the extraction result data."""
+    _apply_no_store_headers(response)
     extraction = await db.get(Extraction, extraction_id)
     if not extraction:
         raise HTTPException(status_code=404, detail="Extraction not found")
@@ -407,9 +626,11 @@ async def get_extraction_result(
 @router.get("/{extraction_id}/validation", response_model=ExtractionValidationResponse)
 async def get_extraction_validation(
     extraction_id: str,
+    response: Response,
     db: AsyncSession = Depends(get_db),
 ) -> ExtractionValidationResponse:
     """Get the validation / review status for an extraction."""
+    _apply_no_store_headers(response)
     extraction = await db.get(Extraction, extraction_id)
     if not extraction:
         raise HTTPException(status_code=404, detail="Extraction not found")
@@ -427,9 +648,11 @@ async def get_extraction_validation(
 @router.get("/{extraction_id}/steps", response_model=list[ExtractionStepResponse])
 async def get_extraction_steps(
     extraction_id: str,
+    response: Response,
     db: AsyncSession = Depends(get_db),
 ) -> list[ExtractionStep]:
     """Get pipeline step records for an extraction."""
+    _apply_no_store_headers(response)
     extraction = await db.get(Extraction, extraction_id)
     if not extraction:
         raise HTTPException(status_code=404, detail="Extraction not found")
@@ -447,6 +670,7 @@ async def get_extraction_steps(
 async def submit_review(
     extraction_id: str,
     body: ReviewCreate,
+    response: Response,
     db: AsyncSession = Depends(get_db),
 ) -> ExtractionReview:
     """Submit a human review decision for an extraction.
@@ -457,6 +681,7 @@ async def submit_review(
     An ``approved`` review transitions the extraction to ``completed``.
     A ``rejected`` review transitions the extraction to ``failed``.
     """
+    _apply_no_store_headers(response)
     extraction = await db.get(Extraction, extraction_id)
     if not extraction:
         raise HTTPException(status_code=404, detail="Extraction not found")
@@ -488,7 +713,10 @@ async def submit_review(
     if body.decision == "approved":
         extraction.status = "completed"
         extraction.review_verdict = "approved"
-        extraction.completed_at = now
+        extraction.validation_errors = None
+        extraction.validation_results = None
+        extraction.error = None
+        extraction.error_category = None
         extraction.reviewed_at = now
 
     elif body.decision == "corrected":
@@ -496,20 +724,33 @@ async def submit_review(
         current_result = dict(extraction.result or {})
         current_result.update(body.corrected_fields)
         extraction.result = current_result
+        if extraction.confidence:
+            remaining_confidence = dict(extraction.confidence)
+            for field_name in body.corrected_fields:
+                remaining_confidence.pop(field_name, None)
+            extraction.confidence = remaining_confidence or None
         extraction.status = "completed"
         extraction.review_verdict = "corrected"
         extraction.validation_errors = None
-        extraction.completed_at = now
+        extraction.validation_results = None
+        extraction.error = None
+        extraction.error_category = None
         extraction.reviewed_at = now
 
     elif body.decision == "rejected":
         extraction.status = "failed"
         extraction.review_verdict = "rejected"
+        extraction.validation_errors = None
+        extraction.validation_results = None
         extraction.error = body.notes or "Rejected by reviewer"
-        extraction.completed_at = now
+        extraction.error_category = "validation"
         extraction.reviewed_at = now
 
-    await db.flush()
+    # Safety: ensure completed_at is set if the pipeline didn't set it
+    if not extraction.completed_at:
+        extraction.completed_at = now
+
+    await db.commit()
     await db.refresh(review)
     return review
 
@@ -517,9 +758,11 @@ async def submit_review(
 @router.get("/{extraction_id}/reviews", response_model=list[ReviewResponse])
 async def list_reviews(
     extraction_id: str,
+    response: Response,
     db: AsyncSession = Depends(get_db),
 ) -> list[ExtractionReview]:
     """List all review records for an extraction."""
+    _apply_no_store_headers(response)
     extraction = await db.get(Extraction, extraction_id)
     if not extraction:
         raise HTTPException(status_code=404, detail="Extraction not found")

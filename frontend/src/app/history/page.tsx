@@ -2,11 +2,12 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
+  ApiError,
   listExtractions,
   getExtraction,
   getSchema,
   retryExtraction,
-  displayName,
+  resolvedModelDisplayName,
   resolvedDisplayName,
   errorCategoryLabel,
   timeAgo,
@@ -70,7 +71,15 @@ const IN_PROGRESS_STATUSES = new Set([
   "ocr_complete",
   "extracted",
 ]);
+const LIVE_REFRESH_STATUSES = new Set([
+  "pending",
+  "queued",
+  "processing",
+  "ocr_complete",
+  "extracted",
+]);
 const TERMINAL_STATUSES = new Set(["completed", "needs_review", "failed"]);
+const ACTIVE_PIPELINE_STATUSES = new Set(["processing", "ocr_complete", "extracted"]);
 
 const FILTER_OPTIONS = [
   { value: "all", label: "All" },
@@ -86,31 +95,63 @@ export default function HistoryPage() {
   const [extractions, setExtractions] = useState<ExtractionResponse[]>([]);
   const [selected, setSelected] = useState<ExtractionResponse | null>(null);
   const [schema, setSchema] = useState<ExtractionSchemaResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [refreshError, setRefreshError] = useState<string | null>(null);
   const [showRawJson, setShowRawJson] = useState(false);
   const [statusFilter, setStatusFilter] = useState<FilterValue>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [schemaNames, setSchemaNames] = useState<Record<string, string>>({});
+  const failedSchemaLookupsRef = useRef<Set<string>>(new Set());
   const pollRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const loadHistory = useCallback(async () => {
+    setLoading(true);
+    setLoadError(null);
+    try {
+      const items = await listExtractions();
+      setExtractions(items);
+      setRefreshError(null);
+    } catch (err) {
+      setLoadError(
+        err instanceof Error
+          ? err.message
+          : "Could not load extraction history.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   // Initial load
   useEffect(() => {
-    listExtractions().then(setExtractions).catch(() => {});
-  }, []);
+    void loadHistory();
+  }, [loadHistory]);
 
-  // Poll in-progress extractions every 3 seconds
+  // Poll active extractions every 3 seconds.
   useEffect(() => {
-    const hasInProgress = extractions.some((e) =>
-      IN_PROGRESS_STATUSES.has(e.status),
+    const hasLiveRefresh = extractions.some((e) =>
+      LIVE_REFRESH_STATUSES.has(e.status),
     );
-    if (!hasInProgress) return;
+    if (!hasLiveRefresh) return;
 
     const tick = async () => {
-      const inProgressIds = extractions
-        .filter((e) => IN_PROGRESS_STATUSES.has(e.status))
+      const liveRefreshIds = extractions
+        .filter((e) => LIVE_REFRESH_STATUSES.has(e.status))
         .map((e) => e.id);
 
       const updates = await Promise.allSettled(
-        inProgressIds.map((id) => getExtraction(id)),
+        liveRefreshIds.map((id) => getExtraction(id)),
+      );
+
+      const refreshedCount = updates.filter(
+        (result): result is PromiseFulfilledResult<ExtractionResponse> =>
+          result.status === "fulfilled",
+      ).length;
+      setRefreshError(
+        refreshedCount === 0
+          ? "Live updates are temporarily unavailable. Retrying automatically."
+          : null,
       );
 
       setExtractions((prev) => {
@@ -123,7 +164,7 @@ export default function HistoryPage() {
       });
 
       // Also refresh selected if it was in-progress
-      if (selected && inProgressIds.includes(selected.id)) {
+      if (selected && liveRefreshIds.includes(selected.id)) {
         const match = updates.find(
           (r) => r.status === "fulfilled" && r.value.id === selected.id,
         );
@@ -143,7 +184,12 @@ export default function HistoryPage() {
       new Set(
         extractions
           .map((e) => e.schema_id)
-          .filter((id) => id && !schemaNames[id]),
+          .filter(
+            (id) =>
+              id &&
+              !schemaNames[id] &&
+              !failedSchemaLookupsRef.current.has(id),
+          ),
       ),
     );
     if (unknownIds.length === 0) return;
@@ -152,19 +198,30 @@ export default function HistoryPage() {
         .then((s) =>
           setSchemaNames((prev) => ({ ...prev, [id]: s.name })),
         )
-        .catch(() => {});
+        .catch(() => {
+          failedSchemaLookupsRef.current.add(id);
+        });
     });
   }, [extractions, schemaNames]);
 
-  // Fetch schema when selection changes
+  // Reset detail-only UI when selection changes
   useEffect(() => {
-    if (selected) {
+    if (selected?.id) {
       setShowRawJson(false);
-      getSchema(selected.schema_id)
-        .then(setSchema)
-        .catch(() => setSchema(null));
     }
   }, [selected?.id]);
+
+  // Fetch schema metadata for the current selection
+  useEffect(() => {
+    if (!selected?.schema_id) {
+      setSchema(null);
+      return;
+    }
+
+    getSchema(selected.schema_id)
+      .then(setSchema)
+      .catch(() => setSchema(null));
+  }, [selected?.schema_id]);
 
   // Filtered list
   const filtered = useMemo(() => {
@@ -181,19 +238,50 @@ export default function HistoryPage() {
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       list = list.filter((e) => {
-        const sName = schemaNames[e.schema_id]?.toLowerCase() ?? "";
-        const provider = (e.llm_provider_used ?? e.llm_provider).toLowerCase();
-        const reader = (e.ocr_provider_used ?? e.ocr_provider).toLowerCase();
-        return sName.includes(q) || provider.includes(q) || reader.includes(q);
+        const sName = (schemaNames[e.schema_id] ?? e.schema_id).toLowerCase();
+        const provider = resolvedDisplayName(
+          e.llm_provider,
+          e.llm_provider_used,
+        ).toLowerCase();
+        const reader = resolvedDisplayName(
+          e.ocr_provider,
+          e.ocr_provider_used,
+        ).toLowerCase();
+        const rawIds = `${e.llm_provider_used ?? e.llm_provider} ${e.ocr_provider_used ?? e.ocr_provider}`.toLowerCase();
+        return (
+          sName.includes(q) ||
+          provider.includes(q) ||
+          reader.includes(q) ||
+          rawIds.includes(q)
+        );
       });
     }
 
     return list;
   }, [extractions, statusFilter, searchQuery, schemaNames]);
 
-  const handleRetried = useCallback(() => {
-    listExtractions().then(setExtractions).catch(() => {});
-    setSelected(null);
+  const refreshSelection = useCallback((extractionId: string) => {
+    void Promise.allSettled([
+      listExtractions(),
+      getExtraction(extractionId),
+    ]).then(([listResult, selectedResult]) => {
+      setRefreshError(
+        listResult.status === "rejected" && selectedResult.status === "rejected"
+          ? "Could not refresh extraction details."
+          : null,
+      );
+      if (listResult.status === "fulfilled") {
+        setExtractions(listResult.value);
+      }
+      if (selectedResult.status === "fulfilled") {
+        setSelected(selectedResult.value);
+      } else if (
+        selectedResult.reason instanceof ApiError &&
+        selectedResult.reason.status === 404
+      ) {
+        setSelected(null);
+      }
+    });
   }, []);
 
   return (
@@ -241,7 +329,31 @@ export default function HistoryPage() {
         )}
       </div>
 
-      {extractions.length === 0 ? (
+      {refreshError && !loading && !loadError && (
+        <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+          {refreshError}
+        </div>
+      )}
+
+      {loading ? (
+        <div className="card flex flex-col items-center justify-center gap-2 py-10 text-center">
+          <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+          <p className="text-sm text-gray-500">Loading extraction history…</p>
+        </div>
+      ) : loadError ? (
+        <div className="rounded-xl border border-red-200 bg-red-50 p-8 text-center">
+          <p className="text-sm font-medium text-red-700">Could not load extraction history.</p>
+          <p className="mt-1 text-sm text-red-600">{loadError}</p>
+          <button
+            type="button"
+            onClick={() => void loadHistory()}
+            className="btn-secondary mt-4 inline-flex items-center gap-2"
+          >
+            <RefreshCw className="h-4 w-4" />
+            Retry
+          </button>
+        </div>
+      ) : extractions.length === 0 ? (
         <div className="rounded-xl border-2 border-dashed border-gray-200 p-12 text-center">
           <p className="text-gray-500">No extractions yet.</p>
           <p className="mt-1 text-sm text-gray-400">
@@ -276,6 +388,14 @@ export default function HistoryPage() {
               const Icon = STATUS_ICON[ext.status] ?? Clock;
               const color = STATUS_COLOR[ext.status] ?? "text-gray-500";
               const isActive = IN_PROGRESS_STATUSES.has(ext.status);
+              const statusBadgeLabel =
+                ext.review_verdict === "approved"
+                  ? "Approved"
+                  : ext.review_verdict === "corrected"
+                    ? "Corrected"
+                    : ext.review_verdict === "rejected"
+                      ? "Rejected"
+                      : STATUS_LABEL[ext.status] ?? ext.status;
               return (
                 <button
                   key={ext.id}
@@ -293,7 +413,7 @@ export default function HistoryPage() {
                         className={`h-4 w-4 ${color} ${isActive ? "animate-spin" : ""}`}
                       />
                       <span className="text-sm font-medium text-gray-900">
-                        {schemaNames[ext.schema_id] ?? "—"}
+                        {schemaNames[ext.schema_id] ?? ext.schema_id}
                       </span>
                       <span
                         className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${
@@ -306,7 +426,7 @@ export default function HistoryPage() {
                                 : "bg-blue-100 text-blue-700"
                         }`}
                       >
-                        {STATUS_LABEL[ext.status] ?? ext.status}
+                        {statusBadgeLabel}
                       </span>
                     </div>
                     <span className="text-xs text-gray-400" title={new Date(ext.created_at).toLocaleString()}>
@@ -351,7 +471,7 @@ export default function HistoryPage() {
               schema={schema}
               showRawJson={showRawJson}
               setShowRawJson={setShowRawJson}
-              onRetried={handleRetried}
+              onRetried={refreshSelection}
             />
           )}
         </div>
@@ -374,15 +494,27 @@ function DetailPanel({
   schema: ExtractionSchemaResponse | null;
   showRawJson: boolean;
   setShowRawJson: (v: boolean) => void;
-  onRetried: () => void;
+  onRetried: (extractionId: string) => void;
 }) {
   const [retrying, setRetrying] = useState(false);
+  const [actionError, setActionError] = useState<string | null>(null);
   const needsReview = sel.status === "needs_review";
+  const wasRejected = sel.review_verdict === "rejected";
   const resultData = sel.result as Record<string, unknown> | null;
   const isTerminal = TERMINAL_STATUSES.has(
     sel.status,
   );
   const isInProgress = IN_PROGRESS_STATUSES.has(sel.status);
+  const errorLabel = wasRejected
+    ? {
+        label: "Rejected by reviewer",
+        hint: "A reviewer marked this extraction as unusable.",
+      }
+    : errorCategoryLabel(sel.error_category);
+
+  useEffect(() => {
+    setActionError(null);
+  }, [sel.id]);
 
   return (
     <div className="card space-y-5">
@@ -394,7 +526,13 @@ function DetailPanel({
         {needsReview && (
           <span className="badge badge-warning flex items-center gap-1">
             <Eye className="h-3 w-3" />
-            Review needed
+            Needs review
+          </span>
+        )}
+        {wasRejected && (
+          <span className="badge badge-error flex items-center gap-1">
+            <XCircle className="h-3 w-3" />
+            Rejected by reviewer
           </span>
         )}
         {sel.status === "completed" && (
@@ -419,46 +557,9 @@ function DetailPanel({
         <p className="text-xs text-gray-500">{sel.validation_summary}</p>
       )}
 
-      {/* Error */}
-      {sel.error && (
-        <div className="flex items-start gap-2 rounded-lg bg-red-50 p-3">
-          <XCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-red-500" />
-          <div className="min-w-0 flex-1">
-            {(() => {
-              const cat = errorCategoryLabel(sel.error_category);
-              return cat ? (
-                <span className="mb-1 mr-2 inline-block rounded bg-red-100 px-1.5 py-0.5 text-[10px] font-medium text-red-700" title={cat.hint}>
-                  {cat.label}
-                </span>
-              ) : null;
-            })()}
-            <p className="text-sm text-red-700">{sel.error}</p>
-          </div>
-        </div>
-      )}
-
-      {sel.status === "failed" && (
-        <button
-          type="button"
-          disabled={retrying}
-          onClick={async () => {
-            setRetrying(true);
-            try {
-              await retryExtraction(sel.id);
-              onRetried();
-            } finally {
-              setRetrying(false);
-            }
-          }}
-          className="btn-secondary flex items-center gap-2"
-        >
-          <RefreshCw className={`h-4 w-4 ${retrying ? "animate-spin" : ""}`} />
-          {retrying ? "Retrying…" : "Retry extraction"}
-        </button>
-      )}
-
       {/* Validation warnings (non-review states) */}
       {!needsReview &&
+        !sel.review_verdict &&
         sel.validation_errors &&
         sel.validation_errors.length > 0 && (
           <div className="flex items-start gap-2 rounded-lg bg-yellow-50 p-3">
@@ -476,17 +577,71 @@ function DetailPanel({
           </div>
         )}
 
+      {/* Error */}
+      {sel.error && (
+        <div className="flex items-start gap-2 rounded-lg bg-red-50 p-3">
+          <XCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-red-500" />
+          <div className="min-w-0 flex-1">
+            {errorLabel ? (
+              <span className="mb-1 mr-2 inline-block rounded bg-red-100 px-1.5 py-0.5 text-[10px] font-medium text-red-700" title={errorLabel.hint}>
+                {errorLabel.label}
+              </span>
+            ) : null}
+            <p className="text-sm text-red-700">{sel.error}</p>
+          </div>
+        </div>
+      )}
+
+      {actionError && (
+        <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+          {actionError}
+        </div>
+      )}
+
+      {sel.status === "failed" && (
+        <button
+          type="button"
+          disabled={retrying}
+          onClick={async () => {
+            setRetrying(true);
+            setActionError(null);
+            try {
+              await retryExtraction(sel.id);
+              onRetried(sel.id);
+            } catch (err) {
+              setActionError(
+                err instanceof Error
+                  ? err.message
+                  : "Could not retry extraction.",
+              );
+            } finally {
+              setRetrying(false);
+            }
+          }}
+          className="btn-secondary flex items-center gap-2"
+        >
+          <RefreshCw className={`h-4 w-4 ${retrying ? "animate-spin" : ""}`} />
+          {retrying
+            ? wasRejected
+              ? "Restarting…"
+              : "Retrying…"
+            : wasRejected
+              ? "Run extraction again"
+              : "Retry extraction"}
+        </button>
+      )}
+
       {/* Human review panel */}
       {needsReview && resultData && (
         <ReviewPanel
           extraction={sel}
           schema={schema}
-          onReviewed={onRetried}
+          onReviewed={() => onRetried(sel.id)}
         />
       )}
 
       {/* Structured result (non-review states) */}
-      {!needsReview && resultData && (
+      {!needsReview && resultData && sel.review_verdict !== "rejected" && (
         <div>
           <h4 className="mb-3 text-sm font-semibold text-gray-700">
             Extracted Data
@@ -517,11 +672,18 @@ function DetailPanel({
                       : "bg-red-100 text-red-700"
                 }`}
               >
-                {r.decision}
+                {r.decision.charAt(0).toUpperCase() + r.decision.slice(1)}
               </span>
-              {r.notes && (
-                <span className="text-gray-600">{r.notes}</span>
-              )}
+              <div className="min-w-0 flex-1 space-y-1">
+                {r.corrected_fields && Object.keys(r.corrected_fields).length > 0 && (
+                  <div className="text-gray-600">
+                    Updated: {Object.keys(r.corrected_fields).join(", ")}
+                  </div>
+                )}
+                {r.notes && (
+                  <div className="text-gray-600">{r.notes}</div>
+                )}
+              </div>
               <span className="ml-auto whitespace-nowrap text-gray-400">
                 {new Date(r.created_at).toLocaleString()}
               </span>
@@ -537,7 +699,7 @@ function DetailPanel({
       )}
 
       {/* Raw JSON toggle */}
-      {resultData && (
+      {resultData && sel.review_verdict !== "rejected" && (
         <div>
           <button
             type="button"
@@ -549,7 +711,7 @@ function DetailPanel({
             ) : (
               <ChevronDown className="h-3 w-3" />
             )}
-            Raw JSON
+            {showRawJson ? "Hide advanced debug JSON" : "Show advanced debug JSON"}
           </button>
           {showRawJson && (
             <div className="mt-2 overflow-auto rounded-lg bg-gray-900 p-4">
@@ -579,7 +741,7 @@ function DetailPanel({
           <div>
             <span className="block font-medium text-gray-500">AI Model</span>
             <span className="text-gray-700">
-              {sel.llm_model_used ?? sel.llm_model}
+              {resolvedModelDisplayName(sel.llm_model, sel.llm_model_used)}
             </span>
           </div>
           <div>
@@ -640,7 +802,7 @@ function HistoryStepProgress({
 }) {
   const steps = extraction.steps ?? [];
   const stepMap = new Map(steps.map((s) => [s.name, s]));
-  const isInProgress = IN_PROGRESS_STATUSES.has(extraction.status);
+  const canInferRunning = ACTIVE_PIPELINE_STATUSES.has(extraction.status);
 
   return (
     <div className="flex items-center gap-2 text-xs text-gray-400">
@@ -653,7 +815,7 @@ function HistoryStepProgress({
           step?.status === "running" ||
           (!step &&
             !skipped &&
-            isInProgress &&
+            canInferRunning &&
             PIPELINE_STEPS.slice(0, idx).every((s) => stepMap.has(s.key)));
 
         const durationStr =
@@ -671,6 +833,8 @@ function HistoryStepProgress({
                     ? "bg-red-500"
                     : done
                       ? "bg-primary-500"
+                      : skipped
+                        ? "border border-gray-400 bg-white"
                       : running
                         ? "animate-pulse bg-primary-400"
                         : "bg-gray-300"
@@ -684,7 +848,20 @@ function HistoryStepProgress({
                       ? "text-gray-600"
                       : failed
                         ? "text-red-500"
+                        : skipped
+                          ? "text-gray-500"
                         : "text-gray-400"
+                }
+                title={
+                  failed
+                    ? `${label}: failed`
+                    : skipped
+                      ? `${label}: skipped`
+                      : running
+                        ? `${label}: running`
+                        : done
+                          ? `${label}: completed`
+                          : label
                 }
               >
                 {label}

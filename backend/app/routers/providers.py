@@ -11,9 +11,9 @@ from app.models.schemas import (
     ModelInfo,
     OCREngineFlags,
     ParserOptionInfo,
+    ProviderInfo,
     ProviderAvailabilityStatus,
     ProviderErrorState,
-    ProviderInfo,
 )
 from app.services.llm.base import LLMModelCatalog, LLMProviderStatus
 from app.services.llm.registry import (
@@ -26,21 +26,46 @@ from app.utils.file_handler import SUPPORTED_FILE_TYPES
 router = APIRouter(prefix="/api/providers", tags=["Providers"])
 
 
-@router.get("/ocr", response_model=list[ProviderInfo])
-async def get_ocr_providers() -> list[ProviderInfo]:
-    """List available OCR providers."""
+def _apply_no_store_headers(response: Response) -> None:
+    response.headers["Cache-Control"] = "no-store"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+
+
+def _serialize_parser_option(status) -> ParserOptionInfo:
+    return ParserOptionInfo(
+        id=status.provider_id,
+        name=status.display_name,
+        enabled=status.enabled,
+        available=status.available,
+    )
+
+
+def _serialize_legacy_ocr_provider(status) -> ProviderInfo:
+    return ProviderInfo(
+        id=status.provider_id,
+        name=status.display_name,
+        available=status.enabled and status.available,
+    )
+
+
+@router.get("/ocr", response_model=list[ProviderInfo], deprecated=True)
+async def get_ocr_providers(response: Response) -> list[ProviderInfo]:
+    """Legacy alias for /parsers kept for backward compatibility.
+
+    Internal parsers (for example the built-in PyMuPDF PDF reader) stay
+    excluded here exactly as they do on /parsers, but the response shape
+    intentionally preserves the older simpler ``available`` readiness flag.
+    """
+    _apply_no_store_headers(response)
     return [
-        ProviderInfo(
-            id=status.provider_id,
-            name=status.display_name,
-            available=status.enabled and status.available,
-        )
-        for status in list_ocr_provider_statuses()
+        _serialize_legacy_ocr_provider(status)
+        for status in list_ocr_provider_statuses(include_internal=False)
     ]
 
 
 @router.get("/parsers", response_model=list[ParserOptionInfo])
-async def get_parser_options() -> list[ParserOptionInfo]:
+async def get_parser_options(response: Response) -> list[ParserOptionInfo]:
     """List user-facing parser/OCR options with availability.
 
     Internal parsers (e.g. PyMuPDF) are **not** included.  They are
@@ -48,13 +73,9 @@ async def get_parser_options() -> list[ParserOptionInfo]:
     The frontend should render every item in this list as a choosable
     option (greyed-out when ``enabled=False`` or ``available=False``).
     """
+    _apply_no_store_headers(response)
     return [
-        ParserOptionInfo(
-            id=status.provider_id,
-            name=status.display_name,
-            enabled=status.enabled,
-            available=status.available,
-        )
+        _serialize_parser_option(status)
         for status in list_ocr_provider_statuses(include_internal=False)
     ]
 
@@ -122,8 +143,9 @@ def _serialize_llm_models(catalog: LLMModelCatalog) -> LLMModelListResponse:
 
 
 @router.get("/llm", response_model=list[LLMProviderInfo])
-async def get_llm_providers() -> list[LLMProviderInfo]:
-    """List available LLM providers."""
+async def get_llm_providers(response: Response) -> list[LLMProviderInfo]:
+    """List implemented LLM providers with their current availability state."""
+    _apply_no_store_headers(response)
     return [
         _serialize_llm_provider(status)
         for status in list_llm_provider_statuses()
@@ -131,12 +153,13 @@ async def get_llm_providers() -> list[LLMProviderInfo]:
 
 
 @router.get("/llm/{provider_id}/models", response_model=LLMModelListResponse)
-async def get_llm_models(provider_id: str) -> LLMModelListResponse:
-    """List models available from a specific LLM provider."""
+async def get_llm_models(provider_id: str, response: Response) -> LLMModelListResponse:
+    """Return a provider's model catalog or its current placeholder/error state."""
+    _apply_no_store_headers(response)
     try:
         catalog = await list_models_for_provider(provider_id)
     except ValueError as exc:
-        raise HTTPException(status_code=404, detail=str(exc))
+        raise HTTPException(status_code=404, detail="LLM provider not found") from exc
 
     return _serialize_llm_models(catalog)
 
@@ -149,7 +172,9 @@ async def get_app_config(response: Response) -> AppConfigResponse:
     """Return non-secret application configuration for UI consumption.
 
     This is the single source-of-truth the frontend uses to populate
-    dropdowns, enforce limits, and toggle features.
+    dropdowns, enforce limits, and toggle features. ``supported_file_types``
+    reports accepted upload extensions; actual parsing still depends on the
+    selected parser/runtime and local installs.
     """
     response.headers["Cache-Control"] = "public, max-age=300"
     return AppConfigResponse(
@@ -162,4 +187,5 @@ async def get_app_config(response: Response) -> AppConfigResponse:
         ),
         max_upload_size_mb=settings.max_upload_size_mb,
         supported_file_types=list(SUPPORTED_FILE_TYPES),
+        confidence_threshold=settings.confidence_threshold,
     )

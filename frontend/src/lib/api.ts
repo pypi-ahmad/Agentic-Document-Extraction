@@ -80,6 +80,16 @@ export const ReviewDecision = {
 export type ReviewDecision =
   (typeof ReviewDecision)[keyof typeof ReviewDecision];
 
+export const ReviewVerdict = {
+  VALID: "valid",
+  NEEDS_REVIEW: "needs_review",
+  APPROVED: "approved",
+  CORRECTED: "corrected",
+  REJECTED: "rejected",
+} as const;
+export type ReviewVerdict =
+  (typeof ReviewVerdict)[keyof typeof ReviewVerdict];
+
 // ── Interfaces ──────────────────────────────────────────────────────
 
 export interface DocumentResponse {
@@ -107,6 +117,12 @@ export interface ExtractionSchemaResponse {
   fields: SchemaFieldDef[];
   created_at: string;
   updated_at: string;
+}
+
+export interface ValidationResultInfo {
+  field_name: string | null;
+  valid: boolean;
+  message: string;
 }
 
 export interface ExtractionStepInfo {
@@ -137,15 +153,15 @@ export interface ExtractionResponse {
   id: string;
   document_id: string;
   schema_id: string;
-  ocr_provider: string;
-  llm_provider: string;
+  ocr_provider: ParserEngine;
+  llm_provider: LLMProviderID;
   llm_model: string;
-  status: string;
+  status: ExtractionStatus;
   ocr_text: string | null;
   result: Record<string, unknown> | null;
   validation_errors: string[] | null;
-  validation_results: Record<string, unknown>[] | null;
-  review_verdict: string | null;
+  validation_results: ValidationResultInfo[] | null;
+  review_verdict: ReviewVerdict | null;
   error: string | null;
   ocr_provider_used: string | null;
   llm_provider_used: string | null;
@@ -164,7 +180,7 @@ export interface ExtractionResponse {
 }
 
 export interface ParserOptionInfo {
-  id: string;
+  id: ParserEngine;
   name: string;
   enabled: boolean;
   available: boolean;
@@ -172,7 +188,7 @@ export interface ParserOptionInfo {
 
 export interface ExtractionResultResponse {
   extraction_id: string;
-  status: string;
+  status: ExtractionStatus;
   result: Record<string, unknown> | null;
   ocr_provider_used: string | null;
   llm_provider_used: string | null;
@@ -182,17 +198,11 @@ export interface ExtractionResultResponse {
 
 export interface ExtractionValidationResponse {
   extraction_id: string;
-  status: string;
+  status: ExtractionStatus;
   validation_errors: string[];
-  validation_results: Record<string, unknown>[] | null;
-  review_verdict: string | null;
+  validation_results: ValidationResultInfo[] | null;
+  review_verdict: ReviewVerdict | null;
   completed_at: string | null;
-}
-
-export interface ProviderInfo {
-  id: string;
-  name: string;
-  available: boolean;
 }
 
 export interface ProviderErrorState {
@@ -211,7 +221,7 @@ export interface ProviderAvailabilityStatus {
 }
 
 export interface LLMProviderInfo {
-  id: string;
+  id: LLMProviderID;
   name: string;
   available: boolean;
   availability: ProviderAvailabilityStatus;
@@ -222,19 +232,19 @@ export interface LLMProviderInfo {
 export interface ModelInfo {
   id: string;
   name: string;
-  provider: string;
+  provider: LLMProviderID;
   is_default: boolean;
 }
 
 export interface LLMModelListResponse {
-  provider_id: string;
+  provider_id: LLMProviderID;
   provider_name: string;
   available: boolean;
   source: ModelCatalogSource;
   availability: ProviderAvailabilityStatus;
   models: ModelInfo[];
   error: ProviderErrorState | null;
-  resolved_provider_id: string | null;
+  resolved_provider_id: LLMProviderID | null;
 }
 
 export interface OCREngineFlags {
@@ -249,21 +259,83 @@ export interface AppConfigResponse {
   ocr_engine_flags: OCREngineFlags;
   max_upload_size_mb: number;
   supported_file_types: string[];
+  confidence_threshold: number;
+}
+
+export interface CreateSchemaRequest {
+  name: string;
+  description?: string;
+  fields: SchemaFieldDef[];
+}
+
+export interface CreateSchemaFromPresetRequest {
+  name?: string | null;
+}
+
+export interface StartExtractionRequest {
+  document_id: string;
+  schema_id: string;
+  ocr_provider?: ParserEngine;
+  llm_provider?: LLMProviderID;
+  llm_model?: string;
+}
+
+export class ApiError extends Error {
+  status: number;
+  detail: unknown;
+
+  constructor(status: number, message: string, detail: unknown) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+    this.detail = detail;
+  }
+}
+
+function formatErrorDetail(detail: unknown): string {
+  if (typeof detail === "string" && detail.trim()) {
+    return detail;
+  }
+  if (Array.isArray(detail) && detail.length > 0) {
+    const validationLines = detail
+      .map((entry) => {
+        if (!entry || typeof entry !== "object") return null;
+        const maybeLoc = "loc" in entry ? (entry as { loc?: unknown }).loc : undefined;
+        const maybeMsg = "msg" in entry ? (entry as { msg?: unknown }).msg : undefined;
+        if (typeof maybeMsg !== "string") return null;
+        const location = Array.isArray(maybeLoc)
+          ? maybeLoc.filter((part) => typeof part === "string" || typeof part === "number").join(".")
+          : null;
+        return location ? `${location}: ${maybeMsg}` : maybeMsg;
+      })
+      .filter((line): line is string => Boolean(line));
+    if (validationLines.length > 0) {
+      return validationLines.join("; ");
+    }
+  }
+  return "Request failed";
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  const { headers, cache, ...rest } = init ?? {};
   const res = await fetch(`${API_BASE}${path}`, {
-    ...init,
+    ...rest,
+    cache: cache ?? "no-store",
     headers: {
-      ...(init?.headers ?? {}),
-      ...(init?.body instanceof FormData
+      ...(headers ?? {}),
+      ...(rest.body instanceof FormData
         ? {}
         : { "Content-Type": "application/json" }),
     },
   });
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
-    throw new Error(body.detail ?? `HTTP ${res.status}`);
+    const detail = body.detail;
+    throw new ApiError(
+      res.status,
+      formatErrorDetail(detail) || `HTTP ${res.status}`,
+      detail,
+    );
   }
   if (res.status === 204) return undefined as T;
   return res.json();
@@ -301,36 +373,23 @@ export const getSchema = async (id: string): Promise<ExtractionSchemaResponse> =
   return schema;
 };
 
-// Schema presets
-export interface SchemaPresetField {
-  name: string;
-  description: string;
-  field_type: string;
-  required: boolean;
-}
 export interface SchemaPreset {
   id: string;
   name: string;
   description: string;
   doc_type: string;
-  fields: SchemaPresetField[];
+  fields: SchemaFieldDef[];
 }
 export const getSchemaPresets = () =>
-  request<SchemaPreset[]>("/schemas/presets");
+  request<SchemaPreset[]>("/schemas/presets", { cache: "force-cache" });
 export const createSchemaFromPreset = (presetId: string, name?: string) =>
-  request<ExtractionSchemaResponse>("/schemas/from-preset", {
+  request<ExtractionSchemaResponse>(`/schemas/presets/${encodeURIComponent(presetId)}`, {
     method: "POST",
-    body: JSON.stringify({ preset_id: presetId, name: name || undefined }),
+    body: JSON.stringify({ name: name || undefined }),
   });
 
 // Extractions
-export const startExtraction = (data: {
-  document_id: string;
-  schema_id: string;
-  ocr_provider?: ParserEngine;
-  llm_provider?: LLMProviderID;
-  llm_model?: string;
-}) =>
+export const startExtraction = (data: StartExtractionRequest) =>
   request<ExtractionResponse>("/extractions/", {
     method: "POST",
     body: JSON.stringify(data),
@@ -347,8 +406,6 @@ export const retryExtraction = (id: string) =>
   });
 
 // Providers
-export const getOCRProviders = () =>
-  request<ProviderInfo[]>("/providers/ocr");
 export const getParsers = () =>
   request<ParserOptionInfo[]>("/providers/parsers");
 export const getLLMProviders = () =>
@@ -358,7 +415,7 @@ export const getLLMModels = (providerId: string) =>
 
 // App config (non-secret settings for UI)
 export const getAppConfig = () =>
-  request<AppConfigResponse>("/providers/config");
+  request<AppConfigResponse>("/providers/config", { cache: "force-cache" });
 
 // Extraction sub-endpoints
 export const getExtractionResult = (id: string) =>
@@ -380,16 +437,22 @@ export const listReviews = (id: string) =>
 /** Human-friendly labels for provider/parser IDs shown in the UI. */
 export const PROVIDER_DISPLAY_NAMES: Record<string, string> = {
   auto: "Auto",
-  pymupdf: "PyMuPDF",
-  paddleocr: "PaddleOCR",
+  pymupdf: "Built-in PDF reader (PyMuPDF)",
+  paddleocr: "PaddleOCR (local image OCR)",
   openai: "OpenAI",
   gemini: "Gemini",
-  anthropic: "Anthropic",
+  anthropic: "Anthropic Claude",
 };
 
 /** Resolve a provider/parser ID to its display name. */
 export function displayName(id: string): string {
   return PROVIDER_DISPLAY_NAMES[id] ?? id;
+}
+
+function normalizeSelection(value: string | null | undefined): string | null {
+  if (!value) return null;
+  const normalized = value.trim();
+  return normalized ? normalized : null;
 }
 
 /**
@@ -403,15 +466,37 @@ export function resolvedDisplayName(
   requested: string,
   actual: string | null,
 ): string {
-  if (actual) {
-    // Auto resolved to a concrete provider
-    if (requested === "auto" && actual !== "auto") {
-      return `Auto \u2192 ${displayName(actual)}`;
-    }
-    return displayName(actual);
+  const requestedValue = normalizeSelection(requested);
+  const actualValue = normalizeSelection(actual);
+
+  if (!requestedValue && !actualValue) return "\u2014";
+  if (!actualValue) return displayName(requestedValue ?? "auto");
+  if (!requestedValue || actualValue === requestedValue) {
+    return displayName(actualValue);
   }
-  // Not yet resolved — show what was requested
-  return displayName(requested);
+  return `${displayName(requestedValue)} \u2192 ${displayName(actualValue)}`;
+}
+
+export function displayModelName(modelId: string | null | undefined): string {
+  const normalized = normalizeSelection(modelId);
+  if (!normalized) return "\u2014";
+  if (normalized === "auto") return "Auto";
+  return normalized;
+}
+
+export function resolvedModelDisplayName(
+  requested: string | null | undefined,
+  actual: string | null,
+): string {
+  const requestedValue = normalizeSelection(requested);
+  const actualValue = normalizeSelection(actual);
+
+  if (!requestedValue && !actualValue) return "\u2014";
+  if (!actualValue) return displayModelName(requestedValue);
+  if (!requestedValue || actualValue === requestedValue) {
+    return displayModelName(actualValue);
+  }
+  return `${displayModelName(requestedValue)} \u2192 ${displayModelName(actualValue)}`;
 }
 
 // ── Error category labels ───────────────────────────────────────────
@@ -423,7 +508,7 @@ const ERROR_CATEGORY_LABELS: Record<string, { label: string; hint: string }> = {
   parse_error: { label: "Parse error", hint: "AI returned malformed output" },
   provider_error: { label: "Provider error", hint: "The AI provider returned an error" },
   file_error: { label: "File error", hint: "The input file could not be read" },
-  validation: { label: "Needs review", hint: "Extraction succeeded but needs human review" },
+  validation: { label: "Validation", hint: "Validation or reviewer feedback blocked this extraction" },
   unknown: { label: "Error", hint: "An unexpected error occurred" },
 };
 

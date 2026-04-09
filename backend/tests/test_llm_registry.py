@@ -69,7 +69,7 @@ def test_get_openai():
 def test_get_claude():
     provider = get_llm_provider("anthropic")
     assert provider.provider_id == "anthropic"
-    assert provider.display_name == "Claude"
+    assert provider.display_name == "Anthropic Claude"
 
 
 def test_get_unknown_provider():

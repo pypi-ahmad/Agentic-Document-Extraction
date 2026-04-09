@@ -88,9 +88,40 @@ async def test_info(client: AsyncClient):
     assert isinstance(data["pipeline_nodes"], list)
     assert "parse" in data["pipeline_nodes"]
     assert isinstance(data["ocr_providers_available"], int)
+    assert isinstance(data["user_selectable_parsers_available"], int)
+    assert isinstance(data["internal_parsers_available"], int)
     assert isinstance(data["llm_providers_available"], int)
     assert isinstance(data["supported_file_types"], list)
+    assert "jpeg" in data["supported_file_types"]
+    assert "tif" in data["supported_file_types"]
     assert data["max_upload_size_mb"] > 0
+    assert isinstance(data["confidence_threshold"], float)
+    assert 0.0 <= data["confidence_threshold"] <= 1.0
+
+
+@pytest.mark.asyncio
+async def test_info_counts_internal_runtime_parsers(client: AsyncClient):
+    from types import SimpleNamespace
+    from unittest.mock import patch
+
+    def _fake_ocr_statuses(*, include_internal: bool = False):
+        assert include_internal is True
+        return [
+            SimpleNamespace(available=True, enabled=True, user_selectable=False),
+            SimpleNamespace(available=True, enabled=True, user_selectable=True),
+            SimpleNamespace(available=False, enabled=True, user_selectable=True),
+        ]
+
+    with (
+        patch("app.services.ocr.registry.list_ocr_provider_statuses", side_effect=_fake_ocr_statuses),
+        patch("app.services.llm.registry.list_llm_provider_statuses", return_value=[]),
+    ):
+        resp = await client.get("/info")
+
+    assert resp.status_code == 200
+    assert resp.json()["ocr_providers_available"] == 2
+    assert resp.json()["user_selectable_parsers_available"] == 1
+    assert resp.json()["internal_parsers_available"] == 1
 
 
 @pytest.mark.asyncio
@@ -226,6 +257,21 @@ async def test_extraction_response_includes_new_fields(client: AsyncClient):
     assert data["ocr_provider_used"] == "pymupdf"
     assert data["llm_provider_used"] == "openai"
     assert data["llm_model_used"] == "gpt-4o-mini"
+
+
+@pytest.mark.asyncio
+async def test_extraction_response_normalizes_internal_ocr_provider(client: AsyncClient):
+    eid = await _seed_extraction()
+
+    async with _test_session_maker() as db:
+        extraction = await db.get(Extraction, eid)
+        assert extraction is not None
+        extraction.ocr_provider = "pymupdf"
+        await db.commit()
+
+    resp = await client.get(f"/api/extractions/{eid}")
+    assert resp.status_code == 200
+    assert resp.json()["ocr_provider"] == "auto"
 
 
 # ── Validation/review fields roundtrip ──────────────────────────────
