@@ -2,7 +2,9 @@
 
 from fastapi import APIRouter, HTTPException, Response
 
+from app.cache import config_cache, parsers_cache
 from app.config import settings
+from app.constants import CACHE_MAX_AGE_CONFIG_S, CACHE_MAX_AGE_PRESETS_S
 from app.models.enums import LLMProviderID, ModelSelectionMode, ParserEngine
 from app.models.schemas import (
     AppConfigResponse,
@@ -22,6 +24,7 @@ from app.services.llm.registry import (
 )
 from app.services.ocr.registry import list_ocr_provider_statuses
 from app.utils.file_handler import SUPPORTED_FILE_TYPES
+from app.utils.http import apply_cache
 from app.utils.http import apply_no_store as _apply_no_store_headers
 
 router = APIRouter(prefix="/api/providers", tags=["Providers"])
@@ -69,6 +72,15 @@ async def get_parser_options(response: Response) -> list[ParserOptionInfo]:
     option (greyed-out when ``enabled=False`` or ``available=False``).
     """
     _apply_no_store_headers(response)
+    payload = await parsers_cache.get_or_set(
+        "parsers",
+        _load_parsers,
+        ttl_seconds=CACHE_MAX_AGE_PRESETS_S,
+    )
+    return payload  # type: ignore[return-value]
+
+
+async def _load_parsers() -> list[ParserOptionInfo]:
     return [
         _serialize_parser_option(status)
         for status in list_ocr_provider_statuses(include_internal=False)
@@ -163,12 +175,20 @@ async def get_llm_models(provider_id: str, response: Response) -> LLMModelListRe
 async def get_app_config(response: Response) -> AppConfigResponse:
     """Return non-secret application configuration for UI consumption.
 
-    This is the single source-of-truth the frontend uses to populate
-    dropdowns, enforce limits, and toggle features. ``supported_file_types``
-    reports accepted upload extensions; actual parsing still depends on the
-    selected parser/runtime and local installs.
+    Cached for CACHE_MAX_AGE_CONFIG_S so the SPA does not hammer it on
+    every render. The cache is per-process; multi-replica deployments
+    should swap it for a Redis-backed implementation.
     """
-    response.headers["Cache-Control"] = "public, max-age=300"
+    apply_cache(response, CACHE_MAX_AGE_CONFIG_S)
+    payload = await config_cache.get_or_set(
+        "app_config",
+        _load_app_config,
+        ttl_seconds=CACHE_MAX_AGE_CONFIG_S,
+    )
+    return payload  # type: ignore[return-value]
+
+
+async def _load_app_config() -> AppConfigResponse:
     return AppConfigResponse(
         parser_engines=[e.value for e in ParserEngine],
         llm_providers=[p.value for p in LLMProviderID],

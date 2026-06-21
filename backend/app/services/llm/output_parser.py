@@ -23,6 +23,17 @@ _FENCED_JSON_RE = re.compile(r"```(?:json)?\s*\n?(.*?)```", re.DOTALL)
 _TRAILING_COMMA_RE = re.compile(r",\s*([\]}])")
 
 
+def _try_parse_obj(text: str) -> dict[str, Any] | None:
+    """Parse a string, return the first dict (or None)."""
+    try:
+        obj = json.loads(text)
+    except json.JSONDecodeError:
+        return None
+    if isinstance(obj, dict):
+        return obj
+    return None
+
+
 def parse_llm_json(raw: str) -> dict[str, Any]:
     """Parse a JSON object from raw LLM output.
 
