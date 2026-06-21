@@ -74,6 +74,11 @@ class Metrics:
             labelnames=("provider", "category"),
             registry=self.registry,
         )
+        self.reflection_attempts_total = Counter(
+            "ade_reflection_attempts_total",
+            "Reflection loop re-extractions (one increment per successful reflect round).",
+            registry=self.registry,
+        )
 
     def render(self) -> tuple[bytes, str]:
         """Return the Prometheus text-format payload and content type."""
