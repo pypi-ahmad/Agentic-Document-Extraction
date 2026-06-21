@@ -1,8 +1,9 @@
 """Shared test fixtures."""
 
 import os
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Awaitable, Callable
 from pathlib import Path
+from typing import Any
 
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
@@ -37,12 +38,53 @@ async def _override_get_db() -> AsyncIterator[AsyncSession]:
 app.dependency_overrides[get_db] = _override_get_db
 
 
+class _SyncJobQueue:
+    """In-process test queue: runs the job to completion before returning.
+
+    This preserves the synchronous semantics that the test suite
+    relied on under FastAPI's BackgroundTasks — the test sends a
+    POST, the job runs inside the request, and by the time the test
+    asserts, the row is in its final state.
+    """
+
+    def __init__(self) -> None:
+        self._draining = False
+        self._inflight: set[Awaitable[Any]] = set()
+
+    @property
+    def draining(self) -> bool:
+        return self._draining
+
+    @property
+    def in_flight(self) -> int:
+        return len(self._inflight)
+
+    async def submit(self, job_id: str, run: Callable[[], Awaitable[Any]]) -> None:
+        if self._draining:
+            raise RuntimeError("test queue is draining")
+        # Run synchronously (await) so the test sees the final state.
+        await run()
+
+    async def shutdown(self, timeout: float = 5.0) -> None:
+        self._draining = True
+
+
 @pytest_asyncio.fixture(autouse=True)
 async def setup_db():
-    """Create tables before each test and drop after."""
+    """Create tables before each test and reset the in-process job queue."""
     async with _test_engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+    # Install the synchronous test queue for the duration of the test.
+    from app.services.jobs import reset_job_queue_for_tests
+
+    reset_job_queue_for_tests()
+    from app.services import jobs as jobs_module
+
+    jobs_module._job_queue = _SyncJobQueue()  # type: ignore[attr-defined]
     yield
+    # Drain anything still in flight (none, in the sync queue, but
+    # be defensive) and then drop the schema.
+    jobs_module._job_queue = None  # type: ignore[attr-defined]
     async with _test_engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
 
