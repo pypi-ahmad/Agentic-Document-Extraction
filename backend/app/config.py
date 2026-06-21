@@ -51,6 +51,8 @@ class Settings(BaseSettings):
     # ── Agentic pipeline tuning ──
     confidence_threshold: float = 0.6
     """Fields below this confidence score are flagged for review (0.0-1.0)."""
+    confidence_calibration_path: str = "./calibration.json"
+    """Path to a per-field isotonic calibration artifact. Set to '' to disable."""
     llm_max_retries: int = 2
     """Maximum retry attempts for transient LLM errors (rate limits, 5xx)."""
     llm_retry_base_delay: float = 1.0
