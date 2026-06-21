@@ -62,6 +62,9 @@ dependencies = [
   "Pillow>=10.0",      # Image handling
   # paddleocr / paddlepaddle are optional; install with
   # `uv pip install "agentic-document-extraction[paddleocr]"`
+  "opentelemetry-api>=1.42.1",
+  "opentelemetry-sdk>=1.42.1",
+  "opentelemetry-exporter-otlp>=1.42.1",
 ]
 
 [project.optional-dependencies]

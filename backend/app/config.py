@@ -65,6 +65,16 @@ class Settings(BaseSettings):
     checkpointing (the pipeline will still run, but resume-after-interrupt
     will not survive a process restart)."""
 
+    # ── OpenTelemetry ──
+    otel_exporter_otlp_endpoint: str = ""
+    """OTLP gRPC endpoint for trace export (e.g. http://phoenix:4317).
+    Empty string disables telemetry."""
+    otel_exporter_insecure: bool = True
+    """Use insecure (h2c) OTLP. Disable in production behind TLS."""
+    otel_service_name: str = "agentic-document-extraction"
+    otel_service_version: str = "0.4.0"
+    otel_deployment_environment: str = "dev"
+
     # ── Server ──
     host: str = "0.0.0.0"
     port: int = 8000

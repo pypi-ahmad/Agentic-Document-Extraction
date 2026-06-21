@@ -70,6 +70,15 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     _ = settings.upload_path  # ensure upload dir exists
     _ = settings.artifacts_path  # ensure artifacts dir exists
 
+    # OpenTelemetry / Phoenix: graceful no-op when endpoint unset
+    # or OTEL_SDK_DISABLED=true.
+    try:
+        from app.telemetry import setup_telemetry
+
+        setup_telemetry()
+    except Exception as exc:
+        _logger.warning("startup.telemetry_setup_failed", error=str(exc))
+
     # Load built-in business rules so they run during validation
     import app.services.extraction.business_rules
 
@@ -109,6 +118,12 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
             await queue.shutdown(timeout=settings.job_shutdown_grace_seconds)
         except Exception as exc:
             _logger.warning("shutdown.queue_drain_failed", error=str(exc))
+        try:
+            from app.telemetry import shutdown_telemetry
+
+            shutdown_telemetry()
+        except Exception as exc:
+            _logger.warning("shutdown.telemetry_shutdown_failed", error=str(exc))
         await close_db()
         _logger.info("shutdown.complete")
 
