@@ -1,0 +1,80 @@
+# Dependabot weekly updates for Python and npm.
+version: 2
+updates:
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    groups:
+      runtime:
+        patterns:
+          - "fastapi"
+          - "uvicorn"
+          - "pydantic"
+          - "sqlalchemy"
+          - "aiosqlite"
+          - "langgraph"
+          - "langchain-*"
+          - "openai"
+          - "google-genai"
+          - "anthropic"
+          - "pymupdf"
+          - "Pillow"
+          - "python-multipart"
+          - "aiofiles"
+          - "httpx"
+          - "structlog"
+          - "prometheus-client"
+          - "slowapi"
+          - "arq"
+          - "redis"
+          - "pyjwt"
+          - "hiredis"
+      dev:
+        patterns:
+          - "pytest"
+          - "pytest-asyncio"
+          - "pytest-cov"
+          - "ruff"
+          - "hypothesis"
+          - "alembic"
+      ignore:
+        - dependency-name: "alembic"
+          versions: ["<1.13"]
+
+  - package-ecosystem: "npm"
+    directory: "/frontend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    groups:
+      runtime:
+        patterns:
+          - "next"
+          - "react"
+          - "react-dom"
+          - "react-dropzone"
+          - "lucide-react"
+          - "clsx"
+          - "tailwind-merge"
+      dev:
+        patterns:
+          - "@types/*"
+          - "typescript"
+          - "eslint"
+          - "eslint-config-next"
+          - "tailwindcss"
+          - "postcss"
+          - "autoprefixer"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      actions:
+        patterns:
+          - "*"

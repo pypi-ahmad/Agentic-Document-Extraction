@@ -3,9 +3,6 @@
 from __future__ import annotations
 
 import asyncio
-import time
-
-import pytest
 
 from app.cache import TTLCache
 
@@ -47,7 +44,7 @@ async def test_eviction_at_capacity() -> None:
     await cache.get_or_set("b", lambda: loader(2), ttl_seconds=10.0)
     await cache.get_or_set("c", lambda: loader(3), ttl_seconds=10.0)
     # Three entries were attempted but only 2 should remain.
-    assert len(cache._store) == 2  # noqa: SLF001 - test-only inspection
+    assert len(cache._store) == 2
 
 
 async def test_invalidate() -> None:
@@ -57,9 +54,9 @@ async def test_invalidate() -> None:
         return 99
 
     await cache.get_or_set("k", loader, ttl_seconds=10.0)
-    assert len(cache._store) == 1  # noqa: SLF001
+    assert len(cache._store) == 1
     cache.invalidate("k")
-    assert len(cache._store) == 0  # noqa: SLF001
+    assert len(cache._store) == 0
     cache.invalidate()  # no-op on empty
 
 
@@ -71,6 +68,6 @@ async def test_invalidate_all() -> None:
 
     await cache.get_or_set("a", loader, ttl_seconds=10.0)
     await cache.get_or_set("b", loader, ttl_seconds=10.0)
-    assert len(cache._store) == 2  # noqa: SLF001
+    assert len(cache._store) == 2
     cache.invalidate()
-    assert len(cache._store) == 0  # noqa: SLF001
+    assert len(cache._store) == 0
