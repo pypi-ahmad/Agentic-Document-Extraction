@@ -143,3 +143,26 @@ class ExtractionReview(Base):
     )
 
     extraction: Mapped["Extraction"] = relationship(back_populates="reviews")
+
+
+class ExtractionAuditLog(Base):
+    """Append-only audit trail for extraction lifecycle events.
+
+    One row per meaningful state transition. Used for compliance, ops
+    debugging, and "what happened to job X" investigation. The
+    application writes through app.services.audit.record_audit_event
+    and never updates or deletes rows.
+    """
+
+    __tablename__ = "extraction_audit_log"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    extraction_id: Mapped[str] = mapped_column(
+        String(32), ForeignKey("extractions.id", ondelete="CASCADE"), nullable=False
+    )
+    event: Mapped[str] = mapped_column(String(64), nullable=False)
+    request_id: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    payload: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    created_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )

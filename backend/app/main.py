@@ -11,15 +11,21 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
 from app.database import async_session, close_db, get_db, init_db
+from app.logging_setup import configure_logging, get_logger
+from app.metrics import metrics
+from app.middleware import RequestContextMiddleware
 from app.models.schemas import AppInfoResponse
 from app.utils.datetime import ensure_utc as _normalize_utc
 from app.utils.http import apply_no_store as _apply_no_store_headers
+
+_logger = get_logger("app.main")
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     """Startup / shutdown lifecycle."""
-    logger = logging.getLogger(__name__)
+    configure_logging()
+    _logger.info("startup.begin", version=app.version)
 
     # Startup
     await init_db()
@@ -27,15 +33,17 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     _ = settings.artifacts_path  # ensure artifacts dir exists
 
     # Load built-in business rules so they run during validation
-    import app.services.extraction.business_rules  # noqa: F401
+    import app.services.extraction.business_rules
 
     # Startup diagnostics — warn early about missing provider keys
-    _log_provider_readiness(logger)
+    _log_provider_readiness(_logger)
 
     await _recover_orphaned_jobs()
+    _logger.info("startup.complete")
     yield
     # Shutdown
     await close_db()
+    _logger.info("shutdown.complete")
 
 
 async def _recover_orphaned_jobs() -> None:
@@ -155,7 +163,7 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# CORS
+# CORS (must be registered before user middleware so it can short-circuit)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origin_list,
@@ -163,6 +171,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Request id, context binding, access log
+app.add_middleware(RequestContextMiddleware)
 
 # Register routers
 from app.routers import documents, extractions, providers, schemas  # noqa: E402
@@ -242,6 +253,18 @@ async def health_check(
     }
 
     return stats
+
+
+@app.get("/metrics", include_in_schema=False)
+async def prometheus_metrics() -> Response:
+    """Prometheus scrape endpoint.
+
+    Always available (even with no auth) so the test suite and local
+    observability tooling can hit it. In a real deployment, restrict
+    access at the reverse-proxy layer.
+    """
+    body, content_type = metrics.render()
+    return Response(content=body, media_type=content_type)
 
 
 @app.get("/info")
