@@ -226,7 +226,7 @@ app = FastAPI(
         "Document extraction using the built-in PyMuPDF PDF text reader, "
         "optional PaddleOCR image OCR, and LLM providers."
     ),
-    version="0.2.0",
+    version="0.3.0",
     lifespan=lifespan,
 )
 
