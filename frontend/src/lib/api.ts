@@ -8,6 +8,7 @@ const API_BASE = "/api";
 export const ParserEngine = {
   AUTO: "auto",
   PADDLEOCR: "paddleocr",
+  GLMOCR: "glmocr",
 } as const;
 export type ParserEngine = (typeof ParserEngine)[keyof typeof ParserEngine];
 
@@ -249,6 +250,7 @@ export interface LLMModelListResponse {
 
 export interface OCREngineFlags {
   paddleocr: boolean;
+  glm_ocr: boolean;
 }
 
 export interface AppConfigResponse {
@@ -439,6 +441,7 @@ export const PROVIDER_DISPLAY_NAMES: Record<string, string> = {
   auto: "Auto",
   pymupdf: "Built-in PDF reader (PyMuPDF)",
   paddleocr: "PaddleOCR (local image OCR)",
+  glmocr: "GLM-OCR (local Ollama)",
   openai: "OpenAI",
   gemini: "Gemini",
   anthropic: "Anthropic Claude",

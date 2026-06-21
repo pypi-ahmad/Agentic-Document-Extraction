@@ -14,6 +14,10 @@ build/
 venv/
 env/
 
+# uv
+.venv/
+.uv-cache/
+
 # IDE
 .vscode/
 .idea/

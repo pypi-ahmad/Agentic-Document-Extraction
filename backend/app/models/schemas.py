@@ -426,6 +426,9 @@ class OCREngineFlags(BaseModel):
     paddleocr: bool = Field(
         description="Whether the optional PaddleOCR image OCR integration is enabled. This is standard image OCR, not a vision-language engine. PDFs are still handled by the built-in PyMuPDF text reader.",
     )
+    glm_ocr: bool = Field(
+        description="Whether the optional GLM-OCR vision-language OCR integration is enabled. GLM-OCR runs against a local Ollama server (default http://localhost:11434) and supports PNG, JPEG, and TIFF inputs.",
+    )
 
 
 class AppConfigResponse(BaseModel):

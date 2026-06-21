@@ -16,6 +16,7 @@ class ParserEngine(StrEnum):
 
     AUTO = "auto"
     PADDLEOCR = "paddleocr"
+    GLMOCR = "glmocr"
 
 
 # ── LLM provider ────────────────────────────────────────────────────

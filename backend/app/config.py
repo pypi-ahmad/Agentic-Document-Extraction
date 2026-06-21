@@ -33,6 +33,11 @@ class Settings(BaseSettings):
     # ── OCR engine feature flags ──
     # Each flag enables/disables the corresponding parser in the UI.
     enable_paddleocr: bool = False
+    enable_glm_ocr: bool = False
+    # Local Ollama endpoint used by the GLM-OCR provider.
+    ollama_base_url: str = "http://localhost:11434"
+    ollama_glm_ocr_model: str = "glm-ocr:latest"
+    glm_ocr_timeout_seconds: float = 120.0
 
     # ── Agentic pipeline tuning ──
     confidence_threshold: float = 0.6

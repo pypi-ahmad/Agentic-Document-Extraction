@@ -117,7 +117,8 @@ def test_list_provider_statuses_excludes_internal_fallback_by_default():
     statuses = list_ocr_provider_statuses()
     ids = [status.provider_id for status in statuses]
     assert "pymupdf" not in ids
-    assert ids == ["paddleocr"]
+    # User-selectable engines (auto never appears in this list).
+    assert ids == ["glmocr", "paddleocr"]
 
 
 def test_get_pymupdf():
