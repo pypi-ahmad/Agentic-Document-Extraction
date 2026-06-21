@@ -1,0 +1,98 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Lint + test (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.12.10"]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          enable-cache: true
+          cache-dependency-glob: |
+            pyproject.toml
+            uv.lock
+
+      - name: Set up Python ${{ matrix.python-version }}
+        run: uv python install ${{ matrix.python-version }}
+
+      - name: Create venv
+        run: uv venv --python ${{ matrix.python-version }} .venv
+
+      - name: Install backend + test + lint extras
+        run: |
+          source .venv/bin/activate
+          uv pip install -e ".[test,lint,ollama]"
+
+      - name: Ruff lint
+        run: |
+          source .venv/bin/activate
+          ruff check backend/app backend/tests scripts/release.py
+
+      - name: Ruff format check
+        run: |
+          source .venv/bin/activate
+          ruff format --check backend/app backend/tests scripts/release.py
+
+      - name: Pytest
+        run: |
+          source .venv/bin/activate
+          pytest backend/tests/ -q --no-header
+
+      - name: Coverage (xml, for Codecov if enabled)
+        run: |
+          source .venv/bin/activate
+          pytest backend/tests/ --cov=app --cov-report=xml --cov-report=term -q
+
+      - name: Upload coverage artifact
+        if: matrix.python-version == '3.12.10'
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-xml
+          path: coverage.xml
+          if-no-files-found: ignore
+
+  frontend:
+    name: Frontend lint + build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
