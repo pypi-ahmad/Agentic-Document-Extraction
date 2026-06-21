@@ -8,8 +8,8 @@ must stay stable.  Frontend TypeScript mirrors live in
 
 from enum import StrEnum
 
-
 # ── OCR / parser engine ──────────────────────────────────────────────
+
 
 class ParserEngine(StrEnum):
     """Local OCR/parser choices exposed in the UI dropdown."""
@@ -20,6 +20,7 @@ class ParserEngine(StrEnum):
 
 
 # ── LLM provider ────────────────────────────────────────────────────
+
 
 class LLMProviderID(StrEnum):
     """LLM provider choices exposed in the UI dropdown."""
@@ -32,6 +33,7 @@ class LLMProviderID(StrEnum):
 
 # ── Model selection mode ─────────────────────────────────────────────
 
+
 class ModelSelectionMode(StrEnum):
     """How the model is chosen for an extraction job."""
 
@@ -40,6 +42,7 @@ class ModelSelectionMode(StrEnum):
 
 
 # ── Provider/model loading state ────────────────────────────────────
+
 
 class ProviderAvailabilityState(StrEnum):
     """Provider availability states exposed via the API."""
@@ -61,6 +64,7 @@ class ModelCatalogSource(StrEnum):
 
 # ── Extraction job status ────────────────────────────────────────────
 
+
 class ExtractionStatus(StrEnum):
     """Lifecycle states for an extraction job."""
 
@@ -76,6 +80,7 @@ class ExtractionStatus(StrEnum):
 
 # ── Extraction field types ───────────────────────────────────────────
 
+
 class FieldType(StrEnum):
     """Data types for extraction schema fields."""
 
@@ -88,6 +93,7 @@ class FieldType(StrEnum):
 
 
 # ── Review decision ─────────────────────────────────────────────────
+
 
 class ReviewDecision(StrEnum):
     """Human reviewer's decision on an extraction that needs review."""

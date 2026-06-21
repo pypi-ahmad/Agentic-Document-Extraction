@@ -7,7 +7,6 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-
 # ── Structured sub-result types ──────────────────────────────────────
 
 
@@ -25,7 +24,7 @@ class OCRBlock:
 class OCRTable:
     """A detected table within a page."""
 
-    cells: list[list[str]]  # 2-D grid: rows × columns
+    cells: list[list[str]]  # 2-D grid: rows x columns
     bbox: tuple[float, float, float, float] | None = None
     confidence: float | None = None
     page_index: int = 0
@@ -81,24 +80,14 @@ class OCRResult:
 
         normalized_blocks = list(self.blocks)
         if not normalized_blocks and normalized_page_results:
-            normalized_blocks = [
-                block
-                for page in normalized_page_results
-                for block in page.blocks
-            ]
+            normalized_blocks = [block for page in normalized_page_results for block in page.blocks]
 
         normalized_tables = list(self.tables)
         if not normalized_tables and normalized_page_results:
-            normalized_tables = [
-                table
-                for page in normalized_page_results
-                for table in page.tables
-            ]
+            normalized_tables = [table for page in normalized_page_results for table in page.tables]
 
         normalized_raw = self.raw if self.raw is not None else self.metadata
-        normalized_metadata = (
-            self.metadata if self.metadata is not None else normalized_raw
-        )
+        normalized_metadata = self.metadata if self.metadata is not None else normalized_raw
         normalized_text = self.text or "\n\n".join(normalized_pages)
 
         object.__setattr__(self, "text", normalized_text)

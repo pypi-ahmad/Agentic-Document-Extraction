@@ -14,13 +14,10 @@ import json
 import re
 from typing import Any
 
-
 # ── JSON extraction ──────────────────────────────────────────────────
 
 # Matches ```json ... ``` or ``` ... ``` fenced blocks (DOTALL so . matches newlines)
-_FENCED_JSON_RE = re.compile(
-    r"```(?:json)?\s*\n?(.*?)```", re.DOTALL
-)
+_FENCED_JSON_RE = re.compile(r"```(?:json)?\s*\n?(.*?)```", re.DOTALL)
 
 # Trailing commas before } or ]
 _TRAILING_COMMA_RE = re.compile(r",\s*([\]}])")
@@ -280,7 +277,7 @@ def extract_confidence(data: dict[str, Any]) -> tuple[dict[str, Any], dict[str, 
     """Split the ``_confidence`` map out of LLM-returned data.
 
     Returns a ``(clean_data, confidence)`` tuple.  ``confidence`` maps
-    field names to 0.0–1.0 scores.  If the model didn't return a
+    field names to 0.0-1.0 scores.  If the model didn't return a
     ``_confidence`` key the map is empty.  Invalid entries are silently
     dropped.
     """

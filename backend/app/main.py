@@ -1,30 +1,19 @@
 """FastAPI application with lifespan."""
 
-import datetime
+import datetime as _dt
 import logging
-from contextlib import asynccontextmanager
 from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 
 from fastapi import Depends, FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
-from app.database import async_session, get_db, init_db, close_db
+from app.database import async_session, close_db, get_db, init_db
 from app.models.schemas import AppInfoResponse
-
-
-def _apply_no_store_headers(response: Response) -> None:
-    response.headers["Cache-Control"] = "no-store"
-    response.headers["Pragma"] = "no-cache"
-    response.headers["Expires"] = "0"
-
-
-def _normalize_utc(dt: datetime.datetime) -> datetime.datetime:
-    """Treat naive SQLite datetimes as UTC for duration math."""
-    if dt.tzinfo is None:
-        return dt.replace(tzinfo=datetime.UTC)
-    return dt.astimezone(datetime.UTC)
+from app.utils.datetime import ensure_utc as _normalize_utc
+from app.utils.http import apply_no_store as _apply_no_store_headers
 
 
 @asynccontextmanager
@@ -34,8 +23,8 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 
     # Startup
     await init_db()
-    settings.upload_path  # ensure upload dir exists
-    settings.artifacts_path  # ensure artifacts dir exists
+    _ = settings.upload_path  # ensure upload dir exists
+    _ = settings.artifacts_path  # ensure artifacts dir exists
 
     # Load built-in business rules so they run during validation
     import app.services.extraction.business_rules  # noqa: F401
@@ -65,14 +54,12 @@ async def _recover_orphaned_jobs() -> None:
     logger = logging.getLogger(__name__)
     stuck_statuses = ("queued", "processing", "ocr_complete", "extracted")
     recovery_error = "Server restarted while this job was running. Please retry."
-    recovered_at = datetime.datetime.now(datetime.UTC)
+    recovered_at = _dt.datetime.now(_dt.UTC)
 
     async with async_session() as db:
         orphaned_ids = list(
             (
-                await db.execute(
-                    select(Extraction.id).where(Extraction.status.in_(stuck_statuses))
-                )
+                await db.execute(select(Extraction.id).where(Extraction.status.in_(stuck_statuses)))
             ).scalars()
         )
 
@@ -89,10 +76,8 @@ async def _recover_orphaned_jobs() -> None:
         result = await db.execute(stmt)
 
         # Also finalize any "running" steps left over from a crash.
-        running_steps = (
-            await db.execute(
-                select(ExtractionStep).where(ExtractionStep.status == "running")
-            )
+        running_steps = await db.execute(
+            select(ExtractionStep).where(ExtractionStep.status == "running")
         )
         recovered_steps = 0
         for step in running_steps.scalars():
@@ -102,9 +87,12 @@ async def _recover_orphaned_jobs() -> None:
                 step.completed_at = recovered_at
             if step.started_at and step.duration_ms is None:
                 step.duration_ms = max(
-                    int((
-                        _normalize_utc(step.completed_at) - _normalize_utc(step.started_at)
-                    ).total_seconds() * 1000),
+                    int(
+                        (
+                            _normalize_utc(step.completed_at) - _normalize_utc(step.started_at)
+                        ).total_seconds()
+                        * 1000
+                    ),
                     0,
                 )
             recovered_steps += 1
@@ -116,7 +104,8 @@ async def _recover_orphaned_jobs() -> None:
         if result.rowcount:
             logger.warning(
                 "Recovered %d orphaned extraction job(s) stuck in %s",
-                result.rowcount, stuck_statuses,
+                result.rowcount,
+                stuck_statuses,
             )
         if recovered_steps:
             logger.warning(
@@ -176,7 +165,7 @@ app.add_middleware(
 )
 
 # Register routers
-from app.routers import documents, schemas, extractions, providers  # noqa: E402
+from app.routers import documents, extractions, providers, schemas  # noqa: E402
 
 app.include_router(documents.router)
 app.include_router(schemas.router)
@@ -207,7 +196,8 @@ async def health_check(
     # ── Detailed stats (opt-in) ──────────────────────────────────────
     import os
 
-    from sqlalchemy import func as sa_func, select, text
+    from sqlalchemy import func as sa_func
+    from sqlalchemy import select, text
 
     from app.models.db_models import Document, Extraction
 
@@ -234,14 +224,14 @@ async def health_check(
         stats["db"] = {"error": "unreachable"}
 
     def _dir_size_mb(path: str) -> float:
+        import contextlib
+
         total = 0
         try:
             for dirpath, _, filenames in os.walk(path):
                 for f in filenames:
-                    try:
+                    with contextlib.suppress(OSError):
                         total += os.path.getsize(os.path.join(dirpath, f))
-                    except OSError:
-                        pass
         except OSError:
             pass
         return round(total / (1024 * 1024), 2)
@@ -276,8 +266,8 @@ async def app_info(response: Response) -> AppInfoResponse:
         pass
 
     # Count available providers at call-time
-    from app.services.ocr.registry import list_ocr_provider_statuses
     from app.services.llm.registry import list_llm_provider_statuses
+    from app.services.ocr.registry import list_ocr_provider_statuses
 
     # /info reports both total runtime capability and the user-facing subset.
     ocr_statuses = list_ocr_provider_statuses(include_internal=True)

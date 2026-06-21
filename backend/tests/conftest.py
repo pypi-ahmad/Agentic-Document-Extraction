@@ -1,10 +1,9 @@
 """Shared test fixtures."""
 
 import os
-from pathlib import Path
 from collections.abc import AsyncIterator
+from pathlib import Path
 
-import pytest
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
@@ -16,14 +15,12 @@ os.environ["OPENAI_API_KEY"] = ""
 os.environ["GEMINI_API_KEY"] = ""
 os.environ["ANTHROPIC_API_KEY"] = ""
 
-from app.database import get_db  # noqa: E402
-from app.main import app  # noqa: E402
-from app.models.db_models import Base  # noqa: E402
+from app.database import get_db
+from app.main import app
+from app.models.db_models import Base
 
 _test_engine = create_async_engine("sqlite+aiosqlite:///:memory:", echo=False)
-_test_session_maker = async_sessionmaker(
-    _test_engine, class_=AsyncSession, expire_on_commit=False
-)
+_test_session_maker = async_sessionmaker(_test_engine, class_=AsyncSession, expire_on_commit=False)
 
 
 async def _override_get_db() -> AsyncIterator[AsyncSession]:

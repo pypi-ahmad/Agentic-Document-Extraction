@@ -27,7 +27,9 @@ class Settings(BaseSettings):
 
     # ── File / artifact storage ──
     upload_dir: Annotated[str, Field(description="Directory for uploaded files")] = "./uploads"
-    artifacts_dir: Annotated[str, Field(description="Directory for extraction artifacts")] = "./artifacts"
+    artifacts_dir: Annotated[str, Field(description="Directory for extraction artifacts")] = (
+        "./artifacts"
+    )
     max_upload_size_mb: int = 50
 
     # ── OCR engine feature flags ──
@@ -41,7 +43,7 @@ class Settings(BaseSettings):
 
     # ── Agentic pipeline tuning ──
     confidence_threshold: float = 0.6
-    """Fields below this confidence score are flagged for review (0.0–1.0)."""
+    """Fields below this confidence score are flagged for review (0.0-1.0)."""
     llm_max_retries: int = 2
     """Maximum retry attempts for transient LLM errors (rate limits, 5xx)."""
     llm_retry_base_delay: float = 1.0

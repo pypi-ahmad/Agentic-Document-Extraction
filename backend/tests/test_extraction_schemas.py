@@ -5,7 +5,6 @@ from __future__ import annotations
 from app.models.enums import FieldType
 from app.models.extraction._base import ValidationResult
 
-
 # ── ValidationResult ─────────────────────────────────────────────────
 
 

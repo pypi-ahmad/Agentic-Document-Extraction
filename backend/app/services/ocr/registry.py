@@ -23,19 +23,18 @@ boundary; the router always uses the default ``False``.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 import logging
+from collections.abc import Sequence
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Sequence
 
+from app.config import settings
 from app.models.enums import ParserEngine
 from app.services.ocr.base import (
     BaseOCRProvider,
     OCRProviderUnavailableError,
 )
 from app.utils.file_handler import get_file_type
-
-from app.config import settings
 
 logger = logging.getLogger(__name__)
 
@@ -50,6 +49,7 @@ class OCRProviderStatus:
     available: bool
     user_selectable: bool
 
+
 # ── Provider class catalogue (append new engines here) ───────────────
 
 _PROVIDER_CLASSES: list[type[BaseOCRProvider]] = []
@@ -61,11 +61,13 @@ def _import_builtin_providers() -> None:
     from app.services.ocr.paddleocr_provider import PaddleOCRProvider
     from app.services.ocr.pymupdf_provider import PyMuPDFProvider
 
-    _PROVIDER_CLASSES.extend([
-        GLMOCRProvider,
-        PaddleOCRProvider,
-        PyMuPDFProvider,
-    ])
+    _PROVIDER_CLASSES.extend(
+        [
+            GLMOCRProvider,
+            PaddleOCRProvider,
+            PyMuPDFProvider,
+        ]
+    )
 
 
 # ── Singleton registry ──────────────────────────────────────────────
@@ -180,10 +182,7 @@ def get_ocr_provider(
 
     provider = _PROVIDERS.get(provider_id)
     if provider is None:
-        raise ValueError(
-            f"Unknown OCR provider: '{provider_id}'. "
-            f"Registered: {sorted(_PROVIDERS)}"
-        )
+        raise ValueError(f"Unknown OCR provider: '{provider_id}'. Registered: {sorted(_PROVIDERS)}")
 
     if not _is_enabled(provider):
         flag_name = _get_flag_name(provider) or ""
@@ -196,8 +195,7 @@ def get_ocr_provider(
     if not provider.is_available():
         raise OCRProviderUnavailableError(
             provider_id,
-            f"Engine '{provider_id}' is enabled but its runtime "
-            f"dependencies are not installed.",
+            f"Engine '{provider_id}' is enabled but its runtime dependencies are not installed.",
         )
 
     requested_file_type = _resolve_file_type(file_path)

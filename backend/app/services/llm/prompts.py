@@ -12,7 +12,7 @@ def build_extraction_prompt(text: str, schema_fields: list[dict]) -> str:
     for f in schema_fields:
         req = "required" if f.get("required", True) else "optional"
         field_descriptions.append(
-            f"  - \"{f['name']}\" ({f.get('field_type', 'string')}, {req}): {f.get('description', '')}"
+            f'  - "{f["name"]}" ({f.get("field_type", "string")}, {req}): {f.get("description", "")}'
         )
     fields_block = "\n".join(field_descriptions)
 

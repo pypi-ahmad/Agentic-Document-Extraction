@@ -225,7 +225,7 @@ BANK_STATEMENT = SchemaPreset(
         ),
         SchemaFieldDef(
             name="statement_period",
-            description="Statement period (e.g. 'Jan 1 – Jan 31, 2025')",
+            description="Statement period (e.g. 'Jan 1 - Jan 31, 2025')",
         ),
         SchemaFieldDef(
             name="opening_balance",

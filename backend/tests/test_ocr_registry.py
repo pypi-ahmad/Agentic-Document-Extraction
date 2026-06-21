@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 import builtins
+from pathlib import Path
 from unittest.mock import patch
 
 import pytest
@@ -24,7 +24,6 @@ from app.services.ocr.registry import (
     register_provider,
     reset_registry,
 )
-
 
 # ── Result-type tests ───────────────────────────────────────────────
 
@@ -232,13 +231,19 @@ def test_explicit_pymupdf_rejects_non_pdf_input():
 def test_explicit_paddleocr_rejects_pdf_input():
     """PaddleOCR is exposed as image OCR only in the current user-facing contract."""
 
-    with patch("app.services.ocr.paddleocr_provider.PaddleOCRProvider.is_available", return_value=True), \
-         patch("app.services.ocr.registry.settings.enable_paddleocr", True):
+    with (
+        patch(
+            "app.services.ocr.paddleocr_provider.PaddleOCRProvider.is_available", return_value=True
+        ),
+        patch("app.services.ocr.registry.settings.enable_paddleocr", True),
+    ):
         with pytest.raises(OCRProviderUnavailableError, match="does not safely support 'pdf'"):
             get_ocr_provider("paddleocr", file_path=Path("sample.pdf"))
 
 
-def test_paddleocr_availability_probe_treats_native_import_failure_as_unavailable(monkeypatch: pytest.MonkeyPatch):
+def test_paddleocr_availability_probe_treats_native_import_failure_as_unavailable(
+    monkeypatch: pytest.MonkeyPatch,
+):
     """Import-time native library errors must not crash provider/status listing."""
     from app.services.ocr.paddleocr_provider import PaddleOCRProvider
 

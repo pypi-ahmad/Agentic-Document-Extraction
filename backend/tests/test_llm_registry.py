@@ -8,8 +8,8 @@ from app.models.enums import LLMProviderID, ModelCatalogSource, ProviderAvailabi
 from app.services.llm.base import (
     BaseLLMProvider,
     LLMModel,
-    LLMProviderStatus,
     LLMProviderError,
+    LLMProviderStatus,
     ProviderAvailability,
     ProviderErrorInfo,
 )
@@ -56,7 +56,10 @@ def test_list_providers():
 def test_provider_statuses_default_to_missing_api_key():
     statuses = list_llm_provider_statuses()
     assert [status.provider_id for status in statuses] == ["openai", "gemini", "anthropic"]
-    assert all(status.availability.state == ProviderAvailabilityState.MISSING_API_KEY for status in statuses)
+    assert all(
+        status.availability.state == ProviderAvailabilityState.MISSING_API_KEY
+        for status in statuses
+    )
     assert all(status.error and status.error.code == "missing_api_key" for status in statuses)
 
 
@@ -101,7 +104,9 @@ def test_auto_uses_default_provider_when_ready(monkeypatch: pytest.MonkeyPatch):
             can_extract=False,
             can_list_models=False,
             auto_eligible=False,
-            error=ProviderErrorInfo(code="missing_api_key", message="OpenAI API key is not configured."),
+            error=ProviderErrorInfo(
+                code="missing_api_key", message="OpenAI API key is not configured."
+            ),
         ),
     )
     monkeypatch.setattr(
@@ -155,7 +160,9 @@ def test_auto_falls_back_when_default_not_ready(monkeypatch: pytest.MonkeyPatch)
             can_extract=False,
             can_list_models=False,
             auto_eligible=False,
-            error=ProviderErrorInfo(code="missing_api_key", message="Gemini API key is not configured."),
+            error=ProviderErrorInfo(
+                code="missing_api_key", message="Gemini API key is not configured."
+            ),
         ),
     )
     monkeypatch.setattr(
@@ -169,7 +176,9 @@ def test_auto_falls_back_when_default_not_ready(monkeypatch: pytest.MonkeyPatch)
             can_extract=False,
             can_list_models=False,
             auto_eligible=False,
-            error=ProviderErrorInfo(code="client_not_installed", message="langchain-anthropic is not installed."),
+            error=ProviderErrorInfo(
+                code="client_not_installed", message="langchain-anthropic is not installed."
+            ),
         ),
     )
 
@@ -272,7 +281,12 @@ def test_prompts_build():
     from app.services.llm.prompts import build_extraction_prompt
 
     fields = [
-        {"name": "company", "field_type": "string", "required": True, "description": "Company name"},
+        {
+            "name": "company",
+            "field_type": "string",
+            "required": True,
+            "description": "Company name",
+        },
     ]
     prompt = build_extraction_prompt("Some document text", fields)
     assert "company" in prompt

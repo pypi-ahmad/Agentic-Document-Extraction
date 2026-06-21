@@ -153,9 +153,7 @@ async def list_schemas(
     db: AsyncSession = Depends(get_db),
 ) -> list[ExtractionSchema]:
     """List all extraction schemas."""
-    result = await db.execute(
-        select(ExtractionSchema).order_by(ExtractionSchema.created_at.desc())
-    )
+    result = await db.execute(select(ExtractionSchema).order_by(ExtractionSchema.created_at.desc()))
     return list(result.scalars().all())
 
 
@@ -183,7 +181,9 @@ async def update_schema(
         raise HTTPException(status_code=404, detail="Schema not found")
 
     if body.name is not None:
-        if body.name != schema.name and await _schema_name_exists(db, body.name, exclude_schema_id=schema.id):
+        if body.name != schema.name and await _schema_name_exists(
+            db, body.name, exclude_schema_id=schema.id
+        ):
             raise _schema_name_conflict(body.name)
         schema.name = body.name
     if body.description is not None:

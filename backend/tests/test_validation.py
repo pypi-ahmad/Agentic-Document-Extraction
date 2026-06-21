@@ -12,42 +12,31 @@ from app.services.extraction.validation import (
     validate_extraction,
 )
 
-
 # ── Required-field checks ────────────────────────────────────────────
 
 
 class TestValidateRequired:
     def test_required_present(self):
-        results = _validate_required(
-            {"name": "Acme"}, [{"name": "name", "required": True}]
-        )
+        results = _validate_required({"name": "Acme"}, [{"name": "name", "required": True}])
         assert len(results) == 1
         assert results[0].valid is True
 
     def test_required_missing(self):
-        results = _validate_required(
-            {}, [{"name": "name", "required": True}]
-        )
+        results = _validate_required({}, [{"name": "name", "required": True}])
         assert len(results) == 1
         assert results[0].valid is False
         assert "missing" in results[0].message.lower()
 
     def test_required_empty_string(self):
-        results = _validate_required(
-            {"name": ""}, [{"name": "name", "required": True}]
-        )
+        results = _validate_required({"name": ""}, [{"name": "name", "required": True}])
         assert results[0].valid is False
 
     def test_required_none(self):
-        results = _validate_required(
-            {"name": None}, [{"name": "name", "required": True}]
-        )
+        results = _validate_required({"name": None}, [{"name": "name", "required": True}])
         assert results[0].valid is False
 
     def test_optional_missing_ok(self):
-        results = _validate_required(
-            {}, [{"name": "notes", "required": False}]
-        )
+        results = _validate_required({}, [{"name": "notes", "required": False}])
         assert results == []
 
     def test_multiple_fields(self):
@@ -69,61 +58,43 @@ class TestValidateRequired:
 
 class TestValidateTypes:
     def test_number_valid_int(self):
-        results = _validate_types(
-            {"total": 100}, [{"name": "total", "field_type": "number"}]
-        )
+        results = _validate_types({"total": 100}, [{"name": "total", "field_type": "number"}])
         assert results == []
 
     def test_number_valid_float(self):
-        results = _validate_types(
-            {"total": 99.5}, [{"name": "total", "field_type": "number"}]
-        )
+        results = _validate_types({"total": 99.5}, [{"name": "total", "field_type": "number"}])
         assert results == []
 
     def test_number_string_castable(self):
-        results = _validate_types(
-            {"total": "42"}, [{"name": "total", "field_type": "number"}]
-        )
+        results = _validate_types({"total": "42"}, [{"name": "total", "field_type": "number"}])
         assert results == []
 
     def test_number_invalid(self):
-        results = _validate_types(
-            {"total": "abc"}, [{"name": "total", "field_type": "number"}]
-        )
+        results = _validate_types({"total": "abc"}, [{"name": "total", "field_type": "number"}])
         assert len(results) == 1
         assert results[0].valid is False
 
     def test_boolean_valid(self):
-        results = _validate_types(
-            {"flag": True}, [{"name": "flag", "field_type": "boolean"}]
-        )
+        results = _validate_types({"flag": True}, [{"name": "flag", "field_type": "boolean"}])
         assert results == []
 
     def test_boolean_invalid(self):
-        results = _validate_types(
-            {"flag": "yes"}, [{"name": "flag", "field_type": "boolean"}]
-        )
+        results = _validate_types({"flag": "yes"}, [{"name": "flag", "field_type": "boolean"}])
         assert len(results) == 1
         assert results[0].valid is False
 
     def test_date_valid(self):
-        results = _validate_types(
-            {"date": "2024-01-15"}, [{"name": "date", "field_type": "date"}]
-        )
+        results = _validate_types({"date": "2024-01-15"}, [{"name": "date", "field_type": "date"}])
         assert results == []
 
     def test_date_invalid_format(self):
-        results = _validate_types(
-            {"date": "01/15/2024"}, [{"name": "date", "field_type": "date"}]
-        )
+        results = _validate_types({"date": "01/15/2024"}, [{"name": "date", "field_type": "date"}])
         assert len(results) == 1
         assert results[0].valid is False
         assert "ISO" in results[0].message
 
     def test_list_valid(self):
-        results = _validate_types(
-            {"items": [1, 2]}, [{"name": "items", "field_type": "list"}]
-        )
+        results = _validate_types({"items": [1, 2]}, [{"name": "items", "field_type": "list"}])
         assert results == []
 
     def test_list_invalid(self):
@@ -147,15 +118,11 @@ class TestValidateTypes:
         assert results[0].valid is False
 
     def test_string_any_value_ok(self):
-        results = _validate_types(
-            {"name": 123}, [{"name": "name", "field_type": "string"}]
-        )
+        results = _validate_types({"name": 123}, [{"name": "name", "field_type": "string"}])
         assert results == []
 
     def test_skips_none_values(self):
-        results = _validate_types(
-            {"total": None}, [{"name": "total", "field_type": "number"}]
-        )
+        results = _validate_types({"total": None}, [{"name": "total", "field_type": "number"}])
         assert results == []
 
 
@@ -176,12 +143,16 @@ class TestBusinessRules:
                 return [ValidationResult(field_name="total", valid=False, message="Negative total")]
             return []
 
-        results = validate_extraction({"total": -5}, [{"name": "total", "required": True, "field_type": "number"}])
+        results = validate_extraction(
+            {"total": -5}, [{"name": "total", "required": True, "field_type": "number"}]
+        )
         messages = [r.message for r in results if not r.valid]
         assert "Negative total" in messages
 
     def test_rule_not_run_when_not_registered(self):
-        results = validate_extraction({"total": -5}, [{"name": "total", "required": True, "field_type": "number"}])
+        results = validate_extraction(
+            {"total": -5}, [{"name": "total", "required": True, "field_type": "number"}]
+        )
         messages = [r.message for r in results if not r.valid]
         assert "Negative total" not in messages
 
@@ -274,6 +245,7 @@ class TestValidateExtraction:
 
     def test_business_rule_returning_empty(self):
         """A rule that returns [] should not affect the verdict."""
+
         @register_rule
         def no_op_rule(data, fields):
             return []

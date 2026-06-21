@@ -73,6 +73,7 @@ class PyMuPDFProvider(BaseOCRProvider):
     def is_available(self) -> bool:
         try:
             import fitz  # noqa: F401
+
             return True
         except Exception:
             return False

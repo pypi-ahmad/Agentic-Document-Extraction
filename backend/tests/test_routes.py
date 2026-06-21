@@ -8,7 +8,6 @@ from httpx import AsyncClient
 from app.models.db_models import Document, Extraction, ExtractionSchema, ExtractionStep
 from tests.conftest import _test_session_maker
 
-
 # ── Helpers ──────────────────────────────────────────────────────────
 
 
@@ -113,7 +112,9 @@ async def test_info_counts_internal_runtime_parsers(client: AsyncClient):
         ]
 
     with (
-        patch("app.services.ocr.registry.list_ocr_provider_statuses", side_effect=_fake_ocr_statuses),
+        patch(
+            "app.services.ocr.registry.list_ocr_provider_statuses", side_effect=_fake_ocr_statuses
+        ),
         patch("app.services.llm.registry.list_llm_provider_statuses", return_value=[]),
     ):
         resp = await client.get("/info")

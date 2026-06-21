@@ -1,8 +1,9 @@
 """Tests for the built-in business rules module."""
 
+from typing import ClassVar
+
 import pytest
 
-from app.models.extraction._base import ValidationResult
 from app.services.extraction.business_rules import check_financial_totals
 from app.services.extraction.validation import clear_rules
 
@@ -17,7 +18,7 @@ def _clean_rules():
 class TestCheckFinancialTotals:
     """Exercise the check_financial_totals business rule."""
 
-    _fields_with_totals = [
+    _fields_with_totals: ClassVar[list[dict]] = [
         {"name": "subtotal", "field_type": "number", "required": False},
         {"name": "total_amount", "field_type": "number", "required": False},
         {"name": "tax_amount", "field_type": "number", "required": False},

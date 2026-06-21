@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from dataclasses import replace
 import logging
+from dataclasses import replace
 
 from app.config import settings
 from app.models.enums import LLMProviderID, ModelCatalogSource, ProviderAvailabilityState
@@ -89,7 +89,9 @@ def list_llm_provider_statuses() -> list[LLMProviderStatus]:
     """Return structured provider statuses in stable UI order."""
 
     _ensure_registered()
-    return [_decorate_status(_PROVIDERS[provider_id]) for provider_id in _iter_provider_ids_in_order()]
+    return [
+        _decorate_status(_PROVIDERS[provider_id]) for provider_id in _iter_provider_ids_in_order()
+    ]
 
 
 async def list_models_for_provider(provider_id: str) -> LLMModelCatalog:
