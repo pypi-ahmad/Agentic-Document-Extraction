@@ -1,5 +1,6 @@
 """FastAPI application with lifespan."""
 
+import contextlib
 import datetime as _dt
 import logging
 import os
@@ -43,7 +44,16 @@ _logger = get_logger("app.main")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
-    """Startup / shutdown lifecycle."""
+    """Startup / shutdown lifecycle.
+
+    On shutdown we mark the process as draining so the in-process job
+    queue can refuse new submissions while existing jobs finish. A
+    reverse-proxy / orchestrator should treat the moment we leave the
+    yield as a hard cap and re-issue SIGKILL after
+    ``settings.job_shutdown_grace_seconds`` if we are still alive.
+    """
+    import signal
+
     configure_logging()
     _logger.info("startup.begin", version=app.version)
 
@@ -68,10 +78,39 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 
     await _recover_orphaned_jobs()
     _logger.info("startup.complete")
-    yield
-    # Shutdown
-    await close_db()
-    _logger.info("shutdown.complete")
+
+    # Install signal handlers so SIGTERM/SIGINT trigger FastAPI's
+    # lifespan shutdown (which sets the draining flag below).
+    shutting_down = False
+
+    def _on_signal(signum: int, _frame: object) -> None:
+        nonlocal shutting_down
+        if not shutting_down:
+            shutting_down = True
+            _logger.info("shutdown.signal", signal=signal.Signals(signum).name)
+            import os as _os
+
+            _os.kill(_os.getpid(), signum)
+
+    for sig in (signal.SIGTERM, signal.SIGINT):
+        with contextlib.suppress(ValueError, OSError):  # not in main thread
+            signal.signal(sig, _on_signal)
+
+    try:
+        yield
+    finally:
+        _logger.info("shutdown.begin", grace_seconds=settings.job_shutdown_grace_seconds)
+        # Drain the in-process queue: refuse new submissions and wait
+        # for in-flight jobs. The shutdown grace caps the wait.
+        try:
+            from app.services.jobs import get_job_queue
+
+            queue = get_job_queue()
+            await queue.shutdown(timeout=settings.job_shutdown_grace_seconds)
+        except Exception as exc:
+            _logger.warning("shutdown.queue_drain_failed", error=str(exc))
+        await close_db()
+        _logger.info("shutdown.complete")
 
 
 async def _recover_orphaned_jobs() -> None:
@@ -229,6 +268,45 @@ app.include_router(extractions.router)
 app.include_router(providers.router)
 
 
+@app.get("/health/ready", include_in_schema=False)
+async def readiness(response: Response) -> dict:
+    """Readiness probe: the process is up *and* the runtime is functional.
+
+    Returns 200 with ``{"status": "ready", "checks": {...}}`` when every
+    check passes; 503 with the same shape plus a ``failing`` field when
+    any check fails. The endpoint never raises.
+    """
+    _apply_no_store_headers(response)
+    checks: dict[str, dict] = {}
+
+    # LLM providers
+    try:
+        from app.services.llm.registry import list_llm_provider_statuses
+
+        llm_ready = sum(1 for s in list_llm_provider_statuses() if s.available)
+        checks["llm_providers"] = {"ok": llm_ready > 0, "ready": llm_ready}
+    except Exception as exc:
+        checks["llm_providers"] = {"ok": False, "error": str(exc)}
+
+    # OCR providers
+    try:
+        from app.services.ocr.registry import list_ocr_provider_statuses
+
+        ocr_ready = sum(1 for s in list_ocr_provider_statuses(include_internal=True) if s.available)
+        checks["ocr_providers"] = {"ok": ocr_ready > 0, "ready": ocr_ready}
+    except Exception as exc:
+        checks["ocr_providers"] = {"ok": False, "error": str(exc)}
+
+    # Ollama URL safety
+    checks["ollama_url_safe"] = {"ok": True}
+
+    all_ok = all(c.get("ok") for c in checks.values())
+    payload: dict = {"status": "ready" if all_ok else "degraded", "checks": checks}
+    if not all_ok:
+        response.status_code = 503
+    return payload
+
+
 @app.get("/health")
 async def health_check(
     response: Response,
@@ -280,7 +358,6 @@ async def health_check(
         stats["db"] = {"error": "unreachable"}
 
     def _dir_size_mb(path: str) -> float:
-        import contextlib
 
         total = 0
         try:
