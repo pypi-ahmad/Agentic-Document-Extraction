@@ -2,21 +2,41 @@
 
 import datetime as _dt
 import logging
+import os
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
 from fastapi import Depends, FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from slowapi import Limiter
+from slowapi.errors import RateLimitExceeded
+from slowapi.middleware import SlowAPIMiddleware
+from slowapi.util import get_remote_address
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
+from app.constants import RATE_LIMIT_DEFAULT
 from app.database import async_session, close_db, get_db, init_db
 from app.logging_setup import configure_logging, get_logger
 from app.metrics import metrics
 from app.middleware import RequestContextMiddleware
 from app.models.schemas import AppInfoResponse
+from app.security_middleware import SecurityHeadersMiddleware
 from app.utils.datetime import ensure_utc as _normalize_utc
 from app.utils.http import apply_no_store as _apply_no_store_headers
+from app.utils.network import UnsafeOllamaURLError, validate_ollama_base_url
+
+# In-process rate limiter. Disabled when ``TESTING=1`` so the test suite
+# can hammer endpoints in tight loops. The default limit is intentionally
+# conservative; the per-endpoint overrides in the routers are tighter.
+_limiter = Limiter(
+    key_func=get_remote_address,
+    default_limits=[RATE_LIMIT_DEFAULT],
+    enabled=os.environ.get("TESTING", "0") != "1",
+    headers_enabled=True,
+    strategy="fixed-window",
+)
 
 _logger = get_logger("app.main")
 
@@ -26,6 +46,14 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     """Startup / shutdown lifecycle."""
     configure_logging()
     _logger.info("startup.begin", version=app.version)
+
+    # Fail fast on a misconfigured OLLAMA_BASE_URL pointing at a non-local
+    # host — see app/utils/network.py for the security policy.
+    try:
+        validate_ollama_base_url(settings.ollama_base_url)
+    except UnsafeOllamaURLError as exc:
+        _logger.error("startup.ollama_url_rejected", error=str(exc))
+        raise
 
     # Startup
     await init_db()
@@ -163,6 +191,17 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+# SlowAPI rate limiter — must be attached to app.state so decorators work.
+app.state.limiter = _limiter
+app.add_exception_handler(
+    RateLimitExceeded,
+    lambda request, exc: JSONResponse(
+        status_code=429,
+        content={"detail": f"Rate limit exceeded: {exc.detail}"},
+        headers={"Retry-After": "60"},
+    ),
+)
+
 # CORS (must be registered before user middleware so it can short-circuit)
 app.add_middleware(
     CORSMiddleware,
@@ -171,6 +210,12 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Security headers on every response.
+app.add_middleware(SecurityHeadersMiddleware)
+
+# Rate limiter middleware (last so it wraps the rest of the stack).
+app.add_middleware(SlowAPIMiddleware)
 
 # Request id, context binding, access log
 app.add_middleware(RequestContextMiddleware)
