@@ -1,0 +1,60 @@
+# Multi-stage build; see Dockerfile in the repo root.
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: agentic-document-extraction:0.3.0
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      DEBUG: "false"
+      LOG_JSON: "1"
+      # At least one of these must be set for LLM extraction.
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      # Optional: enable image OCR via local Ollama.
+      ENABLE_GLM_OCR: ${ENABLE_GLM_OCR:-false}
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://ollama:11434}
+      # Required for the GLM-OCR container to be reachable from the app
+      # when OLLAMA_BASE_URL is not localhost. Set to "true" only if the
+      # Ollama host is outside the loopback range.
+      OLLAMA_ALLOW_PRIVATE_HOSTS: ${OLLAMA_ALLOW_PRIVATE_HOSTS:-true}
+      # Optional Redis-backed job queue (Arq).
+      REDIS_URL: ${REDIS_URL:-}
+    volumes:
+      - app-data:/app/data
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8000/health/ready"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    depends_on:
+      ollama:
+        condition: service_started
+        required: false
+
+  ollama:
+    image: ollama/ollama:latest
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    # GLM-OCR is a vision model; pull on first start. The app's
+    # ENABLED flag controls whether it is actually used.
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        ollama serve &
+        OLLAMA_PID=$$!
+        sleep 5
+        ollama pull glm-ocr:latest || true
+        wait $$OLLAMA_PID
+
+volumes:
+  app-data:
+  ollama-data:

@@ -40,6 +40,13 @@ class Settings(BaseSettings):
     ollama_base_url: str = "http://localhost:11434"
     ollama_glm_ocr_model: str = "glm-ocr:latest"
     glm_ocr_timeout_seconds: float = 120.0
+    # Grace period (seconds) given to in-flight jobs to finish on shutdown.
+    job_shutdown_grace_seconds: float = 30.0
+    # Maximum number of concurrent in-process jobs.
+    job_max_concurrent: int = 8
+    # Optional Redis URL. When set, the Arq-backed job queue is used
+    # instead of the in-process queue.
+    redis_url: str = ""
 
     # ── Agentic pipeline tuning ──
     confidence_threshold: float = 0.6
