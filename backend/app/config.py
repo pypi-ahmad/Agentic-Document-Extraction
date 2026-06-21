@@ -57,6 +57,9 @@ class Settings(BaseSettings):
     """Maximum retry attempts for transient LLM errors (rate limits, 5xx)."""
     llm_retry_base_delay: float = 1.0
     """Base delay in seconds for exponential backoff between retries."""
+    max_reflection_attempts: int = 2
+    """Maximum times the pipeline re-extracts after a validation failure.
+    Set to 0 to disable the reflection loop entirely."""
 
     # ── Server ──
     host: str = "0.0.0.0"
