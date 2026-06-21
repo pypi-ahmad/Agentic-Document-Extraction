@@ -1,0 +1,23 @@
+"""v1 of the golden set for the eval pipeline.
+
+The set is built from the CORD receipt dataset (Apache-2.0). Use
+``scripts/fetch_golden_set.py`` to download and normalize it. The
+manifest.json file is the single source of truth for the version
+and content hash of the JSONL; rerun the script to refresh.
+"""
+
+{
+  "version": "v1",
+  "license": "CORD is Apache-2.0; this normalization is MIT.",
+  "source": "https://github.com/clovaai/cord",
+  "sample_count": 0,
+  "schema_fields": [
+    "items",
+    "merchant_name",
+    "subtotal",
+    "tax_amount",
+    "total_amount",
+    "transaction_date"
+  ],
+  "files": []
+}
