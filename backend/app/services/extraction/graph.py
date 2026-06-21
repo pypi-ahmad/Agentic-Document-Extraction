@@ -52,6 +52,7 @@ from langgraph.types import interrupt
 from app.config import settings
 from app.logging_setup import get_logger
 from app.metrics import metrics
+from app.telemetry import manual_span
 
 logger = get_logger("app.pipeline")
 
@@ -164,7 +165,12 @@ async def parse_node(state: PipelineState) -> dict:
             file_path=file_path,
         )
         _t0 = _t.perf_counter()
-        result = await provider.extract_text(file_path)
+        with manual_span(
+            "ocr.parse",
+            ocr_provider=state.get("ocr_provider_id", "auto"),
+            file_size=file_path.stat().st_size if file_path.exists() else 0,
+        ):
+            result = await provider.extract_text(file_path)
         metrics.ocr_call_duration_seconds.observe(_t.perf_counter() - _t0)
         return {
             "ocr_text": result.text,
@@ -264,6 +270,15 @@ async def validate_node(state: PipelineState) -> dict:
 
     # Legacy compat: plain-string error list for existing UI/persistence
     errors = [v.message for v in validations if not v.valid]
+    n_invalid = len(errors)
+
+    with manual_span(
+        "extraction.validate",
+        verdict=verdict,
+        invalid_fields=n_invalid,
+        total_fields=len(validations),
+    ):
+        pass  # The work is already done; this wraps it for tracing.
 
     return {
         "validation_errors": errors,

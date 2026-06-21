@@ -24,6 +24,11 @@ services:
       OLLAMA_ALLOW_PRIVATE_HOSTS: ${OLLAMA_ALLOW_PRIVATE_HOSTS:-true}
       # Optional Redis-backed job queue (Arq).
       REDIS_URL: ${REDIS_URL:-}
+      # OpenTelemetry / Phoenix: leave OTEL_EXPORTER_OTLP_ENDPOINT empty
+      # to disable. When the phoenix service below is running, set it to
+      # "http://phoenix:4317" to ship traces.
+      OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-}
+      OTEL_EXPORTER_INSECURE: ${OTEL_EXPORTER_INSECURE:-true}
     volumes:
       - app-data:/app/data
     healthcheck:
@@ -36,6 +41,23 @@ services:
       ollama:
         condition: service_started
         required: false
+      phoenix:
+        condition: service_started
+        required: false
+
+  phoenix:
+    # Self-hosted Phoenix UI + collector for OpenTelemetry traces.
+    # Open http://localhost:6006 to see the trace UI. The collector
+    # accepts OTLP gRPC on port 4317.
+    image: arizephoenix/phoenix:latest
+    restart: unless-stopped
+    ports:
+      - "6006:6006"   # Phoenix UI
+      - "4317:4317"   # OTLP gRPC ingest
+    environment:
+      PHOENIX_WORK_DIR: /phoenix-data
+    volumes:
+      - phoenix-data:/phoenix-data
 
   ollama:
     image: ollama/ollama:latest
@@ -58,3 +80,4 @@ services:
 volumes:
   app-data:
   ollama-data:
+  phoenix-data:
