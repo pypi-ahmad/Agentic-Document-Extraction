@@ -49,9 +49,7 @@ class PaddleOCRProvider(BaseOCRProvider):
             for idx, page_result in enumerate(result):
                 if page_result is None:
                     pages.append("")
-                    page_results.append(
-                        OCRPageResult(page_index=idx, text="")
-                    )
+                    page_results.append(OCRPageResult(page_index=idx, text=""))
                     continue
 
                 blocks: list[OCRBlock] = []
@@ -81,16 +79,8 @@ class PaddleOCRProvider(BaseOCRProvider):
 
                 page_text = "\n".join(lines)
                 pages.append(page_text)
-                confidences = [
-                    block.confidence
-                    for block in blocks
-                    if block.confidence is not None
-                ]
-                page_conf = (
-                    sum(confidences) / len(confidences)
-                    if confidences
-                    else None
-                )
+                confidences = [block.confidence for block in blocks if block.confidence is not None]
+                page_conf = sum(confidences) / len(confidences) if confidences else None
                 page_results.append(
                     OCRPageResult(
                         page_index=idx,
@@ -101,9 +91,7 @@ class PaddleOCRProvider(BaseOCRProvider):
                 )
 
             doc_confidence = (
-                sum(all_confidences) / len(all_confidences)
-                if all_confidences
-                else None
+                sum(all_confidences) / len(all_confidences) if all_confidences else None
             )
 
             return OCRResult(

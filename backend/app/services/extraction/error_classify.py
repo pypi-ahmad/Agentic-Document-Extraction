@@ -40,15 +40,27 @@ def classify_error(error: str | None, status: str = "") -> str | None:
     if any(k in lower for k in ("timed out", "timeout", "deadline")):
         return "timeout"
 
-    if any(k in lower for k in ("unparseable", "invalid_json", "could not extract a json",
-                                  "json", "parse")):
+    if any(
+        k in lower
+        for k in ("unparseable", "invalid_json", "could not extract a json", "json", "parse")
+    ):
         return "parse_error"
 
     if any(k in lower for k in ("not found", "file not found", "does not exist")):
         return "file_error"
 
-    if any(k in lower for k in ("server error", "5xx", "502", "503", "500",
-                                  "service unavailable", "provider_api_error")):
+    if any(
+        k in lower
+        for k in (
+            "server error",
+            "5xx",
+            "502",
+            "503",
+            "500",
+            "service unavailable",
+            "provider_api_error",
+        )
+    ):
         return "provider_error"
 
     return "unknown"

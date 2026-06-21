@@ -184,3 +184,32 @@ known-first-party = ["app", "backend"]
 quote-style = "double"
 indent-style = "space"
 docstring-code-format = true
+
+# ── Pyright (strict type-checker) ────────────────────────────────────
+[tool.pyright]
+include = ["backend/app", "scripts/release.py", "backend/tests"]
+exclude = [
+  "backend/.venv",
+  "backend/tests/_test_uploads",
+  "frontend",
+]
+pythonVersion = "3.12"
+pythonPlatform = "Linux"
+typeCheckingMode = "basic"
+useLibraryCodeForTypes = true
+reportMissingImports = "error"
+reportMissingTypeStubs = "warning"
+reportUnknownMemberType = "warning"
+reportUnknownVariableType = "warning"
+reportUnknownArgumentType = "warning"
+reportUnknownParameterType = "warning"
+reportUnknownLambdaType = "warning"
+reportMissingTypeArgument = "warning"
+reportInvalidTypeVarUse = "warning"
+reportPrivateImportUsage = "warning"
+reportUnusedImport = "warning"
+reportUnusedClass = "warning"
+reportUnusedFunction = "warning"
+reportUnusedVariable = "warning"
+reportUnnecessaryIsInstance = "warning"
+reportUnnecessaryCast = "warning"

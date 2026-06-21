@@ -11,7 +11,6 @@ from httpx import AsyncClient
 from app.models.db_models import Document, Extraction, ExtractionSchema, ExtractionStep
 from tests.conftest import _test_session_maker
 
-
 # ── SSE stream endpoint ─────────────────────────────────────────────
 
 # The SSE generator uses ``async_session`` directly (not get_db DI).
@@ -65,9 +64,7 @@ async def _seed_extraction(
 async def test_stream_not_found(client: AsyncClient):
     """SSE stream for non-existent extraction returns error event."""
     with patch(_SSE_SESSION_PATH, _test_session_maker):
-        async with client.stream(
-            "GET", "/api/extractions/nonexistent/stream"
-        ) as resp:
+        async with client.stream("GET", "/api/extractions/nonexistent/stream") as resp:
             assert resp.status_code == 200
             assert resp.headers["content-type"].startswith("text/event-stream")
             assert resp.headers.get("cache-control") == "no-store"
@@ -87,20 +84,14 @@ async def test_stream_terminal_extraction(client: AsyncClient):
     ext_id = await _seed_extraction(status="completed", result={"x": "hello"})
 
     with patch(_SSE_SESSION_PATH, _test_session_maker):
-        async with client.stream(
-            "GET", f"/api/extractions/{ext_id}/stream"
-        ) as resp:
+        async with client.stream("GET", f"/api/extractions/{ext_id}/stream") as resp:
             assert resp.status_code == 200
             assert resp.headers.get("cache-control") == "no-store"
             body = b""
             async for chunk in resp.aiter_bytes():
                 body += chunk
 
-    events = [
-        line[6:]
-        for line in body.decode().strip().split("\n")
-        if line.startswith("data: ")
-    ]
+    events = [line[6:] for line in body.decode().strip().split("\n") if line.startswith("data: ")]
     assert len(events) == 1
     payload = json.loads(events[0])
     assert payload["status"] == "completed"
@@ -117,9 +108,7 @@ async def test_stream_stops_after_max_iterations(client: AsyncClient):
         patch("app.routers.extractions._SSE_MAX_ITERATIONS", 3),
         patch("app.routers.extractions._SSE_POLL_INTERVAL", 0.01),
     ):
-        async with client.stream(
-            "GET", f"/api/extractions/{ext_id}/stream"
-        ) as resp:
+        async with client.stream("GET", f"/api/extractions/{ext_id}/stream") as resp:
             assert resp.status_code == 200
             body = b""
             async for chunk in resp.aiter_bytes():
@@ -127,10 +116,7 @@ async def test_stream_stops_after_max_iterations(client: AsyncClient):
 
     # Should have emitted exactly 1 event (first iteration detects change)
     # then stopped after 3 iterations total without hanging
-    events = [
-        line for line in body.decode().strip().split("\n")
-        if line.startswith("data: ")
-    ]
+    events = [line for line in body.decode().strip().split("\n") if line.startswith("data: ")]
     assert len(events) >= 1  # at least the initial status
     payload = json.loads(events[0][6:])
     assert payload["status"] == "processing"
@@ -162,9 +148,7 @@ async def test_stream_emits_when_step_state_changes_without_count_change(client:
         patch("app.routers.extractions._SSE_MAX_ITERATIONS", 6),
         patch("app.routers.extractions._SSE_POLL_INTERVAL", 0.01),
     ):
-        async with client.stream(
-            "GET", f"/api/extractions/{ext_id}/stream"
-        ) as resp:
+        async with client.stream("GET", f"/api/extractions/{ext_id}/stream") as resp:
             assert resp.status_code == 200
             body = b""
             async for chunk in resp.aiter_bytes():
@@ -181,8 +165,7 @@ async def test_stream_emits_when_step_state_changes_without_count_change(client:
     assert events[0]["status"] == "processing"
     assert events[0]["steps"][0]["status"] == "running"
     assert any(
-        event["status"] == "processing"
-        and event["steps"][0]["status"] == "completed"
+        event["status"] == "processing" and event["steps"][0]["status"] == "completed"
         for event in events[1:]
     )
 

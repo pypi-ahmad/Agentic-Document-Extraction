@@ -1,7 +1,7 @@
 """Extraction job endpoints — run and retrieve extractions."""
 
 import asyncio
-import datetime
+import datetime as _dt
 import json
 import logging
 
@@ -10,8 +10,21 @@ from fastapi.responses import StreamingResponse
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.database import get_db, async_session
-from app.models.db_models import Document, Extraction, ExtractionSchema, ExtractionStep, ExtractionReview
+from app.constants import (
+    JOB_TIMEOUT_S,
+    NO_STORE_HEADERS,
+    SSE_KEEPALIVE_S,
+    SSE_MAX_ITERATIONS,
+    SSE_TERMINAL_STATUSES,
+)
+from app.database import async_session, get_db
+from app.models.db_models import (
+    Document,
+    Extraction,
+    ExtractionReview,
+    ExtractionSchema,
+    ExtractionStep,
+)
 from app.models.schemas import (
     ExtractionCreate,
     ExtractionResponse,
@@ -21,44 +34,22 @@ from app.models.schemas import (
     ReviewCreate,
     ReviewResponse,
 )
+from app.utils.datetime import duration_ms as _duration_ms
+from app.utils.http import apply_no_store as _apply_no_store_headers
 
 router = APIRouter(prefix="/api/extractions", tags=["Extractions"])
 
 logger = logging.getLogger(__name__)
 
 # Maximum wall-clock time for a single extraction job (seconds).
-_JOB_TIMEOUT = 300
+_JOB_TIMEOUT = JOB_TIMEOUT_S
 _PIPELINE_STEPS = ("parse", "extract", "validate", "finalize")
 
 
 def _no_store_headers(extra_headers: dict[str, str] | None = None) -> dict[str, str]:
-    headers = {
-        "Cache-Control": "no-store",
-        "Pragma": "no-cache",
-        "Expires": "0",
-    }
-    if extra_headers:
-        headers.update(extra_headers)
-    return headers
-
-
-def _apply_no_store_headers(response: Response) -> None:
-    response.headers.update(_no_store_headers())
-
-
-def _normalize_utc(dt: datetime.datetime) -> datetime.datetime:
-    """Treat naive SQLite datetimes as UTC for duration math."""
-    if dt.tzinfo is None:
-        return dt.replace(tzinfo=datetime.UTC)
-    return dt.astimezone(datetime.UTC)
-
-
-def _duration_ms(started_at: datetime.datetime, finished_at: datetime.datetime) -> int:
-    """Return non-negative duration across naive/aware datetime mixes."""
-    return max(
-        int((_normalize_utc(finished_at) - _normalize_utc(started_at)).total_seconds() * 1000),
-        0,
-    )
+    if not extra_headers:
+        return dict(NO_STORE_HEADERS)
+    return {**NO_STORE_HEADERS, **extra_headers}
 
 
 def _build_queued_response(extraction: Extraction) -> ExtractionResponse:
@@ -92,7 +83,9 @@ def _build_queued_response(extraction: Extraction) -> ExtractionResponse:
     )
 
 
-def _sse_step_signature(steps: list[ExtractionStep]) -> tuple[tuple[str, str, str | None, int | None, str | None], ...]:
+def _sse_step_signature(
+    steps: list[ExtractionStep],
+) -> tuple[tuple[str, str, str | None, int | None, str | None], ...]:
     return tuple(
         (
             step.name,
@@ -110,10 +103,10 @@ def _apply_failure_state(
     error_msg: str,
     *,
     error_category: str,
-    finished_at: datetime.datetime | None = None,
+    finished_at: _dt.datetime | None = None,
 ) -> None:
     """Normalize failed extraction fields in one place."""
-    finished_at = finished_at or datetime.datetime.now(datetime.UTC)
+    finished_at = finished_at or _dt.datetime.now(_dt.UTC)
     extraction.status = "failed"
     extraction.error = error_msg
     if not extraction.completed_at:
@@ -125,10 +118,10 @@ def _finalize_failed_step(
     step: ExtractionStep,
     error_msg: str,
     *,
-    finished_at: datetime.datetime | None = None,
+    finished_at: _dt.datetime | None = None,
 ) -> None:
     """Finalize a running step as failed with coherent timing metadata."""
-    finished_at = finished_at or datetime.datetime.now(datetime.UTC)
+    finished_at = finished_at or _dt.datetime.now(_dt.UTC)
     step.status = "failed"
     step.error = error_msg
     if not step.completed_at:
@@ -142,10 +135,10 @@ async def _finalize_running_steps(
     extraction_id: str,
     error_msg: str,
     *,
-    finished_at: datetime.datetime | None = None,
+    finished_at: _dt.datetime | None = None,
 ) -> None:
     """Convert any lingering running steps into failed terminal rows."""
-    finished_at = finished_at or datetime.datetime.now(datetime.UTC)
+    finished_at = finished_at or _dt.datetime.now(_dt.UTC)
     result = await db.execute(
         select(ExtractionStep)
         .where(ExtractionStep.extraction_id == extraction_id)
@@ -171,15 +164,13 @@ async def _backfill_missing_terminal_steps(
 
     existing_names = {step.name for step in steps}
     existing_indexes = [
-        _PIPELINE_STEPS.index(step.name)
-        for step in steps
-        if step.name in _PIPELINE_STEPS
+        _PIPELINE_STEPS.index(step.name) for step in steps if step.name in _PIPELINE_STEPS
     ]
     if not existing_indexes:
         return
 
     highest_index = max(existing_indexes)
-    for step_name in _PIPELINE_STEPS[highest_index + 1:]:
+    for step_name in _PIPELINE_STEPS[highest_index + 1 :]:
         if step_name in existing_names:
             continue
         db.add(
@@ -203,7 +194,7 @@ async def _run_extraction_job(extraction_id: str) -> None:
             _run_extraction_pipeline(extraction_id),
             timeout=_JOB_TIMEOUT,
         )
-    except asyncio.TimeoutError:
+    except TimeoutError:
         logger.error("Extraction %s timed out after %ds", extraction_id, _JOB_TIMEOUT)
         await _mark_job_failed(
             extraction_id,
@@ -230,7 +221,7 @@ async def _mark_job_failed(extraction_id: str, error_msg: str) -> None:
     async with async_session() as db:
         extraction = await db.get(Extraction, extraction_id)
         if extraction and extraction.status not in ("completed", "needs_review", "failed"):
-            finished_at = datetime.datetime.now(datetime.UTC)
+            finished_at = _dt.datetime.now(_dt.UTC)
             _apply_failure_state(
                 extraction,
                 error_msg,
@@ -263,7 +254,7 @@ async def _run_extraction_pipeline(extraction_id: str) -> None:
             return
 
         extraction.status = "processing"
-        extraction.started_at = datetime.datetime.now(datetime.UTC)
+        extraction.started_at = _dt.datetime.now(_dt.UTC)
         await db.commit()
 
         schema = await db.get(ExtractionSchema, extraction.schema_id)
@@ -296,7 +287,7 @@ async def _run_extraction_pipeline(extraction_id: str) -> None:
 
         accumulated: dict = {}
         created_steps: dict[str, ExtractionStep] = {}
-        step_start = datetime.datetime.now(datetime.UTC)
+        step_start = _dt.datetime.now(_dt.UTC)
         pipeline_error: str | None = None
 
         # Create first step as "running" so SSE/polls see it immediately
@@ -312,14 +303,15 @@ async def _run_extraction_pipeline(extraction_id: str) -> None:
 
         try:
             async for chunk in extraction_graph.astream(
-                initial_state, stream_mode="updates",
+                initial_state,
+                stream_mode="updates",
             ):
                 node_name = next(iter(chunk))
                 if node_name not in _PIPELINE_STEPS:
                     continue  # skip __start__ / __end__
 
                 node_output = chunk[node_name]
-                now = datetime.datetime.now(datetime.UTC)
+                now = _dt.datetime.now(_dt.UTC)
                 duration_ms = int((now - step_start).total_seconds() * 1000)
 
                 accumulated.update(node_output)
@@ -355,7 +347,7 @@ async def _run_extraction_pipeline(extraction_id: str) -> None:
 
                 await db.commit()
                 step_start = now
-        except Exception as exc:
+        except Exception:
             logger.exception("Pipeline error in extraction %s", extraction_id)
             pipeline_error = "Pipeline error: an internal error occurred. Please retry."
             # Mark any in-flight step as failed
@@ -365,11 +357,13 @@ async def _run_extraction_pipeline(extraction_id: str) -> None:
         # Mark skipped steps (pipeline short-circuited on failure)
         for name in _PIPELINE_STEPS:
             if name not in created_steps:
-                db.add(ExtractionStep(
-                    extraction_id=extraction_id,
-                    name=name,
-                    status="skipped",
-                ))
+                db.add(
+                    ExtractionStep(
+                        extraction_id=extraction_id,
+                        name=name,
+                        status="skipped",
+                    )
+                )
 
         # Persist final accumulated state
         if pipeline_error:
@@ -390,14 +384,18 @@ async def _run_extraction_pipeline(extraction_id: str) -> None:
             extraction.extract_attempts = accumulated.get("extract_attempts") or None
             completed_at = accumulated.get("completed_at")
             if completed_at:
-                extraction.completed_at = datetime.datetime.fromisoformat(completed_at)
+                extraction.completed_at = _dt.datetime.fromisoformat(completed_at)
 
         # Ensure completed_at is set for all terminal states (including failures)
-        if extraction.status in ("completed", "needs_review", "failed") and not extraction.completed_at:
-            extraction.completed_at = datetime.datetime.now(datetime.UTC)
+        if (
+            extraction.status in ("completed", "needs_review", "failed")
+            and not extraction.completed_at
+        ):
+            extraction.completed_at = _dt.datetime.now(_dt.UTC)
 
         # Classify the error for reviewer triage
         from app.services.extraction.error_classify import classify_error
+
         extraction.error_category = classify_error(extraction.error, extraction.status)
 
         await db.commit()
@@ -428,7 +426,7 @@ async def create_extraction(
         llm_provider=body.llm_provider,
         llm_model=body.llm_model,
         status="queued",
-        created_at=datetime.datetime.now(datetime.UTC),
+        created_at=_dt.datetime.now(_dt.UTC),
     )
     db.add(extraction)
     await db.commit()
@@ -483,9 +481,7 @@ async def retry_extraction(
     extraction.reviewed_at = None
 
     # Clear previous step records
-    await db.execute(
-        delete(ExtractionStep).where(ExtractionStep.extraction_id == extraction_id)
-    )
+    await db.execute(delete(ExtractionStep).where(ExtractionStep.extraction_id == extraction_id))
     extraction.steps = []
 
     # Clear prior review history so a retried run does not inherit stale
@@ -533,9 +529,9 @@ async def get_extraction(
 # ── SSE live progress stream ─────────────────────────────────────────
 
 
-_SSE_POLL_INTERVAL = 1.0  # seconds between DB polls
-_SSE_TERMINAL = frozenset({"completed", "needs_review", "failed"})
-_SSE_MAX_ITERATIONS = 600  # hard ceiling: stop after 10 minutes even if not terminal
+_SSE_POLL_INTERVAL = SSE_KEEPALIVE_S
+_SSE_TERMINAL = SSE_TERMINAL_STATUSES
+_SSE_MAX_ITERATIONS = SSE_MAX_ITERATIONS
 
 
 @router.get("/{extraction_id}/stream")
@@ -549,7 +545,9 @@ async def stream_extraction_progress(extraction_id: str) -> StreamingResponse:
 
     async def _event_generator():
         last_status: str | None = None
-        last_step_signature: tuple[tuple[str, str, str | None, int | None, str | None], ...] | None = None
+        last_step_signature: (
+            tuple[tuple[str, str, str | None, int | None, str | None], ...] | None
+        ) = None
 
         for _ in range(_SSE_MAX_ITERATIONS):
             async with async_session() as db:
@@ -708,7 +706,7 @@ async def submit_review(
     db.add(review)
 
     # Apply the review decision to the extraction
-    now = datetime.datetime.now(datetime.UTC)
+    now = _dt.datetime.now(_dt.UTC)
 
     if body.decision == "approved":
         extraction.status = "completed"

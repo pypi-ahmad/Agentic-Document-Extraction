@@ -5,9 +5,16 @@ from __future__ import annotations
 import datetime
 from typing import Any
 
-from pydantic import BaseModel, ConfigDict, Field, ValidationInfo, computed_field, field_validator, model_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    ValidationInfo,
+    computed_field,
+    field_validator,
+    model_validator,
+)
 
-from app.models.extraction._base import ValidationResult
 from app.models.enums import (
     ExtractionStatus,
     FieldType,
@@ -19,7 +26,7 @@ from app.models.enums import (
     ReviewDecision,
     ReviewVerdict,
 )
-
+from app.models.extraction._base import ValidationResult
 
 # ── Schema Field definition ──────────────────────────────────────────
 
@@ -30,9 +37,7 @@ class SchemaFieldDef(BaseModel):
     model_config = ConfigDict(str_strip_whitespace=True)
 
     name: str = Field(..., min_length=1, max_length=100, description="Field name / key")
-    description: str = Field(
-        default="", max_length=500, description="What this field represents"
-    )
+    description: str = Field(default="", max_length=500, description="What this field represents")
     field_type: FieldType = Field(
         default=FieldType.STRING,
         description="Expected data type",
@@ -68,7 +73,7 @@ class ExtractionSchemaCreate(BaseModel):
     fields: list[SchemaFieldDef] = Field(..., min_length=1)
 
     @model_validator(mode="after")
-    def validate_fields(self) -> "ExtractionSchemaCreate":
+    def validate_fields(self) -> ExtractionSchemaCreate:
         _validate_unique_schema_fields(self.fields)
         return self
 
@@ -81,7 +86,7 @@ class ExtractionSchemaUpdate(BaseModel):
     fields: list[SchemaFieldDef] | None = Field(default=None, min_length=1)
 
     @model_validator(mode="after")
-    def validate_fields(self) -> "ExtractionSchemaUpdate":
+    def validate_fields(self) -> ExtractionSchemaUpdate:
         if self.fields is not None:
             _validate_unique_schema_fields(self.fields)
         return self
@@ -244,11 +249,7 @@ class ExtractionResponse(BaseModel):
         total = len(self.validation_results)
         if total == 0:
             return None
-        passed = sum(
-            1
-            for validation_result in self.validation_results
-            if validation_result.valid
-        )
+        passed = sum(1 for validation_result in self.validation_results if validation_result.valid)
         failed = total - passed
         if failed == 0:
             return f"All {total} checks passed"
@@ -286,16 +287,12 @@ class ReviewCreate(BaseModel):
 
     model_config = ConfigDict(str_strip_whitespace=True)
 
-    decision: ReviewDecision = Field(
-        ..., description="approved | corrected | rejected"
-    )
+    decision: ReviewDecision = Field(..., description="approved | corrected | rejected")
     corrected_fields: dict[str, Any] | None = Field(
         default=None,
         description="New field values overriding the AI-extracted result (required when decision is corrected).",
     )
-    notes: str | None = Field(
-        default=None, max_length=2000, description="Optional reviewer notes"
-    )
+    notes: str | None = Field(default=None, max_length=2000, description="Optional reviewer notes")
 
     @field_validator("corrected_fields")
     @classmethod
@@ -310,7 +307,7 @@ class ReviewCreate(BaseModel):
         return value
 
     @model_validator(mode="after")
-    def validate_corrected_fields_required(self) -> "ReviewCreate":
+    def validate_corrected_fields_required(self) -> ReviewCreate:
         if self.decision == ReviewDecision.CORRECTED and not self.corrected_fields:
             raise ValueError("corrected_fields is required when decision is 'corrected'")
         return self

@@ -6,7 +6,6 @@ import pytest
 
 from app.services.llm.output_parser import coerce_to_schema, parse_llm_json
 
-
 # ── parse_llm_json: clean JSON ──────────────────────────────────────
 
 
@@ -103,7 +102,7 @@ def test_parse_no_json_raises():
 def test_parse_array_not_object_raises():
     """We only accept JSON objects (dicts), not arrays at the top level."""
     with pytest.raises(ValueError, match="Could not extract"):
-        parse_llm_json('[1, 2, 3]')
+        parse_llm_json("[1, 2, 3]")
 
 
 def test_parse_incomplete_json_raises():
@@ -116,7 +115,7 @@ def test_parse_incomplete_json_raises():
 
 def test_parse_gemini_style():
     """Gemini sometimes returns JSON with leading newline inside fence."""
-    raw = "```json\n\n{\n  \"invoice_number\": \"INV-001\",\n  \"total\": 1234.56\n}\n```"
+    raw = '```json\n\n{\n  "invoice_number": "INV-001",\n  "total": 1234.56\n}\n```'
     result = parse_llm_json(raw)
     assert result["invoice_number"] == "INV-001"
     assert result["total"] == 1234.56

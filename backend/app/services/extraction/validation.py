@@ -16,11 +16,15 @@ more ``ValidationResult`` entries.
 
     from app.services.extraction.validation import register_rule
 
+
     @register_rule
     def check_total_matches_line_items(data, fields):
         ...
-        return [ValidationResult(field_name="total_amount", valid=False,
-                                  message="Total does not match line items")]
+        return [
+            ValidationResult(
+                field_name="total_amount", valid=False, message="Total does not match line items"
+            )
+        ]
 """
 
 from __future__ import annotations
@@ -31,7 +35,6 @@ from typing import Any
 
 from app.config import settings
 from app.models.extraction._base import ValidationResult
-
 
 # ── Types ────────────────────────────────────────────────────────────
 
@@ -77,9 +80,7 @@ def _validate_required(
                 )
             )
         elif required:
-            results.append(
-                ValidationResult(field_name=name, valid=True, message="")
-            )
+            results.append(ValidationResult(field_name=name, valid=True, message=""))
     return results
 
 
@@ -125,10 +126,9 @@ def _validate_types(
             if not isinstance(value, list):
                 ok = False
                 msg = f"Field '{name}' expected a list, got '{type(value).__name__}'."
-        elif expected_type == "object":
-            if not isinstance(value, dict):
-                ok = False
-                msg = f"Field '{name}' expected an object, got '{type(value).__name__}'."
+        elif expected_type == "object" and not isinstance(value, dict):
+            ok = False
+            msg = f"Field '{name}' expected an object, got '{type(value).__name__}'."
 
         if not ok:
             results.append(ValidationResult(field_name=name, valid=False, message=msg))
@@ -136,6 +136,7 @@ def _validate_types(
 
 
 # ── Aggregate ────────────────────────────────────────────────────────
+
 
 def _validate_confidence(
     data: dict[str, Any],
@@ -162,6 +163,7 @@ def _validate_confidence(
                 )
             )
     return results
+
 
 def validate_extraction(
     data: dict[str, Any],

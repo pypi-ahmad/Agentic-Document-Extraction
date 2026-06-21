@@ -3,7 +3,7 @@
 import datetime
 import uuid
 
-from sqlalchemy import JSON, DateTime, Integer, String, Text, ForeignKey, func
+from sqlalchemy import JSON, DateTime, ForeignKey, Integer, String, Text, func
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
@@ -54,9 +54,7 @@ class Extraction(Base):
     __tablename__ = "extractions"
 
     id: Mapped[str] = mapped_column(String(32), primary_key=True, default=_uuid)
-    document_id: Mapped[str] = mapped_column(
-        String(32), ForeignKey("documents.id"), nullable=False
-    )
+    document_id: Mapped[str] = mapped_column(String(32), ForeignKey("documents.id"), nullable=False)
     schema_id: Mapped[str] = mapped_column(
         String(32), ForeignKey("extraction_schemas.id"), nullable=False
     )

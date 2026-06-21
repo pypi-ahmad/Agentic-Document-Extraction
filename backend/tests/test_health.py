@@ -5,7 +5,6 @@ from types import SimpleNamespace
 import pytest
 from httpx import AsyncClient
 
-
 # ── Lightweight (default) health check ───────────────────────────────
 
 
@@ -56,13 +55,15 @@ async def test_health_detail_db_counts_increase(client: AsyncClient):
     from tests.conftest import _test_session_maker
 
     async with _test_session_maker() as db:
-        db.add(Document(
-            filename="healthcheck.pdf",
-            original_filename="healthcheck.pdf",
-            file_path="/tmp/healthcheck.pdf",
-            file_type="pdf",
-            file_size=512,
-        ))
+        db.add(
+            Document(
+                filename="healthcheck.pdf",
+                original_filename="healthcheck.pdf",
+                file_path="/tmp/healthcheck.pdf",
+                file_type="pdf",
+                file_size=512,
+            )
+        )
         await db.commit()
 
     resp = await client.get("/health", params={"detail": "true"})

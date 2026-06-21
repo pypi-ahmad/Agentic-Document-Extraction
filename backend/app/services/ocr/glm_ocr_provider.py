@@ -155,9 +155,7 @@ class GLMOCRProvider(BaseOCRProvider):
 
     async def extract_text(self, file_path: Path) -> OCRResult:
         if not file_path.exists():
-            raise OCRProviderError(
-                self.provider_id, f"File not found: {file_path.name}"
-            )
+            raise OCRProviderError(self.provider_id, f"File not found: {file_path.name}")
 
         try:
             image_bytes = file_path.read_bytes()
@@ -184,9 +182,7 @@ class GLMOCRProvider(BaseOCRProvider):
 
         try:
             async with httpx.AsyncClient(timeout=self._timeout) as client:
-                resp = await client.post(
-                    f"{self._base_url}/api/generate", json=payload
-                )
+                resp = await client.post(f"{self._base_url}/api/generate", json=payload)
         except httpx.HTTPError as exc:
             raise OCRProviderError(
                 self.provider_id,

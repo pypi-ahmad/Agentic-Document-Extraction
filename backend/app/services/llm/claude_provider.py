@@ -3,10 +3,10 @@
 from app.config import settings
 from app.services.llm.base import (
     BaseLLMProvider,
-    build_safe_runtime_provider_error,
     ExtractionResult,
     LLMModel,
     LLMProviderError,
+    build_safe_runtime_provider_error,
 )
 from app.services.llm.output_parser import coerce_to_schema, extract_confidence, parse_llm_json
 from app.services.llm.prompts import build_extraction_prompt
@@ -46,7 +46,12 @@ class ClaudeProvider(BaseLLMProvider):
             return False
 
     async def _list_models_dynamic(self) -> list[LLMModel]:
-        from anthropic import APIStatusError, AsyncAnthropic, AuthenticationError, PermissionDeniedError
+        from anthropic import (
+            APIStatusError,
+            AsyncAnthropic,
+            AuthenticationError,
+            PermissionDeniedError,
+        )
 
         client = AsyncAnthropic(api_key=self.get_api_key())
         models: list[LLMModel] = []

@@ -153,8 +153,7 @@ class BaseLLMProvider(ABC):
 
         can_extract = self.is_extraction_client_available()
         can_list_models = (
-            self.supports_dynamic_model_listing()
-            and self.is_model_listing_client_available()
+            self.supports_dynamic_model_listing() and self.is_model_listing_client_available()
         )
         if not can_extract:
             dependency_name = self.extraction_dependency_name or "provider client"
@@ -299,7 +298,10 @@ class BaseLLMProvider(ABC):
         unique: dict[str, LLMModel] = {}
         for model in models:
             unique[model.id] = model
-        return sorted(unique.values(), key=lambda model: (not model.is_default, model.name.lower(), model.id.lower()))
+        return sorted(
+            unique.values(),
+            key=lambda model: (not model.is_default, model.name.lower(), model.id.lower()),
+        )
 
     @abstractmethod
     async def _list_models_dynamic(self) -> list[LLMModel]:
@@ -385,8 +387,9 @@ def _is_retryable_error(exc: Exception) -> bool:
     msg = str(exc).lower()
     if any(k in msg for k in ("rate limit", "rate_limit", "429", "quota")):
         return True
-    if any(k in msg for k in ("server error", "503", "502", "500",
-                               "service unavailable", "overloaded")):
+    if any(
+        k in msg for k in ("server error", "503", "502", "500", "service unavailable", "overloaded")
+    ):
         return True
     if any(k in msg for k in ("timeout", "timed out", "deadline")):
         return True

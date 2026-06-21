@@ -19,7 +19,6 @@ from app.services.extraction.graph import (
 )
 from app.services.ocr.base import OCRResult
 
-
 # ── Helpers ──────────────────────────────────────────────────────────
 
 
@@ -91,7 +90,9 @@ async def test_extract_node_calls_provider(monkeypatch: pytest.MonkeyPatch):
     from app.services.llm.base import ExtractionResult
 
     class DummyLLM:
-        async def extract(self, text: str, schema_fields: list[dict], model_id: str = "auto") -> ExtractionResult:
+        async def extract(
+            self, text: str, schema_fields: list[dict], model_id: str = "auto"
+        ) -> ExtractionResult:
             return ExtractionResult(
                 data={"vendor": "Acme"},
                 raw_response='{"vendor":"Acme"}',
@@ -104,10 +105,12 @@ async def test_extract_node_calls_provider(monkeypatch: pytest.MonkeyPatch):
         lambda pid: DummyLLM(),
     )
 
-    result = await extract_node(_state(
-        ocr_text="Invoice from Acme",
-        schema_fields=[{"name": "vendor", "field_type": "string", "required": True}],
-    ))
+    result = await extract_node(
+        _state(
+            ocr_text="Invoice from Acme",
+            schema_fields=[{"name": "vendor", "field_type": "string", "required": True}],
+        )
+    )
     assert result["status"] == "extracted"
     assert result["extracted_data"]["vendor"] == "Acme"
     assert result["llm_provider_used"] == "test-llm"
@@ -132,13 +135,15 @@ async def test_extract_node_handles_error(monkeypatch: pytest.MonkeyPatch):
 
 @pytest.mark.asyncio
 async def test_validate_all_present():
-    result = await validate_node(_state(
-        extracted_data={"vendor": "Acme", "total": 100},
-        schema_fields=[
-            {"name": "vendor", "required": True, "field_type": "string"},
-            {"name": "total", "required": True, "field_type": "number"},
-        ],
-    ))
+    result = await validate_node(
+        _state(
+            extracted_data={"vendor": "Acme", "total": 100},
+            schema_fields=[
+                {"name": "vendor", "required": True, "field_type": "string"},
+                {"name": "total", "required": True, "field_type": "number"},
+            ],
+        )
+    )
     assert result["validation_errors"] == []
     assert result["review_verdict"] == "valid"
     assert isinstance(result["validation_results"], list)
@@ -146,13 +151,15 @@ async def test_validate_all_present():
 
 @pytest.mark.asyncio
 async def test_validate_missing_required():
-    result = await validate_node(_state(
-        extracted_data={"vendor": "Acme"},
-        schema_fields=[
-            {"name": "vendor", "required": True, "field_type": "string"},
-            {"name": "total", "required": True, "field_type": "number"},
-        ],
-    ))
+    result = await validate_node(
+        _state(
+            extracted_data={"vendor": "Acme"},
+            schema_fields=[
+                {"name": "vendor", "required": True, "field_type": "string"},
+                {"name": "total", "required": True, "field_type": "number"},
+            ],
+        )
+    )
     assert len(result["validation_errors"]) >= 1
     assert any("total" in e for e in result["validation_errors"])
     assert result["review_verdict"] == "needs_review"
@@ -160,10 +167,12 @@ async def test_validate_missing_required():
 
 @pytest.mark.asyncio
 async def test_validate_optional_missing_ok():
-    result = await validate_node(_state(
-        extracted_data={},
-        schema_fields=[{"name": "notes", "required": False}],
-    ))
+    result = await validate_node(
+        _state(
+            extracted_data={},
+            schema_fields=[{"name": "notes", "required": False}],
+        )
+    )
     assert result["validation_errors"] == []
     assert result["review_verdict"] == "valid"
 
@@ -195,13 +204,15 @@ async def test_finalize_requires_explicit_review_verdict():
 @pytest.mark.asyncio
 async def test_validate_empty_data_all_optional():
     """Empty extraction data with only optional fields → valid."""
-    result = await validate_node(_state(
-        extracted_data={},
-        schema_fields=[
-            {"name": "notes", "required": False, "field_type": "string"},
-            {"name": "comments", "required": False, "field_type": "string"},
-        ],
-    ))
+    result = await validate_node(
+        _state(
+            extracted_data={},
+            schema_fields=[
+                {"name": "notes", "required": False, "field_type": "string"},
+                {"name": "comments", "required": False, "field_type": "string"},
+            ],
+        )
+    )
     assert result["validation_errors"] == []
     assert result["review_verdict"] == "valid"
 
@@ -209,12 +220,14 @@ async def test_validate_empty_data_all_optional():
 @pytest.mark.asyncio
 async def test_validate_empty_data_with_required():
     """Empty extraction data with required fields → needs_review."""
-    result = await validate_node(_state(
-        extracted_data={},
-        schema_fields=[
-            {"name": "vendor", "required": True, "field_type": "string"},
-        ],
-    ))
+    result = await validate_node(
+        _state(
+            extracted_data={},
+            schema_fields=[
+                {"name": "vendor", "required": True, "field_type": "string"},
+            ],
+        )
+    )
     assert len(result["validation_errors"]) >= 1
     assert result["review_verdict"] == "needs_review"
     assert isinstance(result["validation_results"], list)
@@ -241,10 +254,14 @@ async def test_run_extraction_full_pipeline(tmp_path: Path, monkeypatch: pytest.
 
     class DummyOCR:
         async def extract_text(self, file_path: Path) -> OCRResult:
-            return OCRResult(text="Invoice from Acme, Total $500", pages=["p1"], provider="dummy-ocr")
+            return OCRResult(
+                text="Invoice from Acme, Total $500", pages=["p1"], provider="dummy-ocr"
+            )
 
     class DummyLLM:
-        async def extract(self, text: str, schema_fields: list[dict], model_id: str = "auto") -> ExtractionResult:
+        async def extract(
+            self, text: str, schema_fields: list[dict], model_id: str = "auto"
+        ) -> ExtractionResult:
             return ExtractionResult(
                 data={"vendor": "Acme", "total": 500},
                 raw_response='{"vendor":"Acme","total":500}',

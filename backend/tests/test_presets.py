@@ -4,11 +4,9 @@ import pytest
 from httpx import AsyncClient
 
 from app.services.extraction.presets import (
-    PRESETS,
     get_preset,
     list_presets,
 )
-
 
 # ── Unit tests for presets module ────────────────────────────────────
 
@@ -19,8 +17,10 @@ class TestPresetsModule:
         assert len(presets) == 4
         ids = {p.id for p in presets}
         assert ids == {
-            "preset-invoice", "preset-receipt",
-            "preset-purchase-order", "preset-bank-statement",
+            "preset-invoice",
+            "preset-receipt",
+            "preset-purchase-order",
+            "preset-bank-statement",
         }
 
     def test_get_preset_valid(self):
@@ -74,8 +74,10 @@ async def test_list_presets_endpoint(client: AsyncClient):
     assert len(data) == 4
     ids = {p["id"] for p in data}
     assert ids == {
-        "preset-invoice", "preset-receipt",
-        "preset-purchase-order", "preset-bank-statement",
+        "preset-invoice",
+        "preset-receipt",
+        "preset-purchase-order",
+        "preset-bank-statement",
     }
     for preset in data:
         assert "name" in preset
@@ -158,7 +160,12 @@ async def test_create_schema_duplicate_name_is_conflict(client: AsyncClient):
     payload = {
         "name": "Invoice Contract",
         "fields": [
-            {"name": "vendor_name", "description": "Vendor", "field_type": "string", "required": True},
+            {
+                "name": "vendor_name",
+                "description": "Vendor",
+                "field_type": "string",
+                "required": True,
+            },
         ],
     }
     first = await client.post("/api/schemas/", json=payload)
@@ -176,7 +183,12 @@ async def test_update_schema_duplicate_name_is_conflict(client: AsyncClient):
         json={
             "name": "Alpha Schema",
             "fields": [
-                {"name": "vendor_name", "description": "Vendor", "field_type": "string", "required": True},
+                {
+                    "name": "vendor_name",
+                    "description": "Vendor",
+                    "field_type": "string",
+                    "required": True,
+                },
             ],
         },
     )
@@ -185,7 +197,12 @@ async def test_update_schema_duplicate_name_is_conflict(client: AsyncClient):
         json={
             "name": "Beta Schema",
             "fields": [
-                {"name": "invoice_number", "description": "Invoice", "field_type": "string", "required": True},
+                {
+                    "name": "invoice_number",
+                    "description": "Invoice",
+                    "field_type": "string",
+                    "required": True,
+                },
             ],
         },
     )
@@ -208,7 +225,12 @@ async def test_create_schema_duplicate_field_names_rejected(client: AsyncClient)
             "name": "Duplicate Fields",
             "fields": [
                 {"name": "total", "description": "Total", "field_type": "number", "required": True},
-                {"name": "TOTAL", "description": "Total again", "field_type": "number", "required": False},
+                {
+                    "name": "TOTAL",
+                    "description": "Total again",
+                    "field_type": "number",
+                    "required": False,
+                },
             ],
         },
     )
@@ -223,7 +245,12 @@ async def test_create_schema_whitespace_only_name_rejected(client: AsyncClient):
         json={
             "name": "   ",
             "fields": [
-                {"name": "vendor_name", "description": "Vendor", "field_type": "string", "required": True},
+                {
+                    "name": "vendor_name",
+                    "description": "Vendor",
+                    "field_type": "string",
+                    "required": True,
+                },
             ],
         },
     )

@@ -11,9 +11,9 @@ from app.models.schemas import (
     ModelInfo,
     OCREngineFlags,
     ParserOptionInfo,
-    ProviderInfo,
     ProviderAvailabilityStatus,
     ProviderErrorState,
+    ProviderInfo,
 )
 from app.services.llm.base import LLMModelCatalog, LLMProviderStatus
 from app.services.llm.registry import (
@@ -22,14 +22,9 @@ from app.services.llm.registry import (
 )
 from app.services.ocr.registry import list_ocr_provider_statuses
 from app.utils.file_handler import SUPPORTED_FILE_TYPES
+from app.utils.http import apply_no_store as _apply_no_store_headers
 
 router = APIRouter(prefix="/api/providers", tags=["Providers"])
-
-
-def _apply_no_store_headers(response: Response) -> None:
-    response.headers["Cache-Control"] = "no-store"
-    response.headers["Pragma"] = "no-cache"
-    response.headers["Expires"] = "0"
 
 
 def _serialize_parser_option(status) -> ParserOptionInfo:
@@ -146,10 +141,7 @@ def _serialize_llm_models(catalog: LLMModelCatalog) -> LLMModelListResponse:
 async def get_llm_providers(response: Response) -> list[LLMProviderInfo]:
     """List implemented LLM providers with their current availability state."""
     _apply_no_store_headers(response)
-    return [
-        _serialize_llm_provider(status)
-        for status in list_llm_provider_statuses()
-    ]
+    return [_serialize_llm_provider(status) for status in list_llm_provider_statuses()]
 
 
 @router.get("/llm/{provider_id}/models", response_model=LLMModelListResponse)

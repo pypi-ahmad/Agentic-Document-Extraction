@@ -20,7 +20,6 @@ from app.models.db_models import (
 )
 from tests.conftest import _test_session_maker
 
-
 # ── Helpers ──────────────────────────────────────────────────────────
 
 
@@ -286,9 +285,12 @@ async def test_timeout_marks_job_failed() -> None:
         await asyncio.sleep(9999)
 
     p1, p2 = _patch_async_session()
-    with p1, p2, \
-         patch("app.routers.extractions._run_extraction_pipeline", new=_hang), \
-         patch("app.routers.extractions._JOB_TIMEOUT", 0.1):
+    with (
+        p1,
+        p2,
+        patch("app.routers.extractions._run_extraction_pipeline", new=_hang),
+        patch("app.routers.extractions._JOB_TIMEOUT", 0.1),
+    ):
         await _run_extraction_job(eid)
 
     async with _test_session_maker() as db:
@@ -325,9 +327,12 @@ async def test_timeout_finalizes_running_step_metadata() -> None:
         await asyncio.sleep(9999)
 
     p1, p2 = _patch_async_session()
-    with p1, p2, \
-         patch("app.routers.extractions._run_extraction_pipeline", new=_hang), \
-         patch("app.routers.extractions._JOB_TIMEOUT", 0.1):
+    with (
+        p1,
+        p2,
+        patch("app.routers.extractions._run_extraction_pipeline", new=_hang),
+        patch("app.routers.extractions._JOB_TIMEOUT", 0.1),
+    ):
         await _run_extraction_job(eid)
 
     async with _test_session_maker() as db:
@@ -366,9 +371,12 @@ async def test_timeout_backfills_downstream_steps_as_skipped() -> None:
         await asyncio.sleep(9999)
 
     p1, p2 = _patch_async_session()
-    with p1, p2, \
-         patch("app.routers.extractions._run_extraction_pipeline", new=_hang), \
-         patch("app.routers.extractions._JOB_TIMEOUT", 0.1):
+    with (
+        p1,
+        p2,
+        patch("app.routers.extractions._run_extraction_pipeline", new=_hang),
+        patch("app.routers.extractions._JOB_TIMEOUT", 0.1),
+    ):
         await _run_extraction_job(eid)
 
     async with _test_session_maker() as db:
@@ -399,8 +407,7 @@ async def test_unexpected_error_marks_job_failed() -> None:
         raise RuntimeError("kaboom")
 
     p1, p2 = _patch_async_session()
-    with p1, p2, \
-         patch("app.routers.extractions._run_extraction_pipeline", new=_explode):
+    with p1, p2, patch("app.routers.extractions._run_extraction_pipeline", new=_explode):
         await _run_extraction_job(eid)
 
     async with _test_session_maker() as db:
@@ -508,9 +515,8 @@ async def test_retry_clears_steps(client: AsyncClient) -> None:
     # Verify in DB
     async with _test_session_maker() as db:
         from sqlalchemy import select
-        result = await db.execute(
-            select(ExtractionStep).where(ExtractionStep.extraction_id == eid)
-        )
+
+        result = await db.execute(select(ExtractionStep).where(ExtractionStep.extraction_id == eid))
         assert result.scalars().all() == []
 
 

@@ -3,14 +3,28 @@
 import pytest
 from httpx import AsyncClient
 
-
 SAMPLE_SCHEMA = {
     "name": "Invoice",
     "description": "Extract invoice data",
     "fields": [
-        {"name": "vendor_name", "description": "Name of the vendor", "field_type": "string", "required": True},
-        {"name": "total_amount", "description": "Total invoice amount", "field_type": "number", "required": True},
-        {"name": "invoice_date", "description": "Date of the invoice", "field_type": "date", "required": False},
+        {
+            "name": "vendor_name",
+            "description": "Name of the vendor",
+            "field_type": "string",
+            "required": True,
+        },
+        {
+            "name": "total_amount",
+            "description": "Total invoice amount",
+            "field_type": "number",
+            "required": True,
+        },
+        {
+            "name": "invoice_date",
+            "description": "Date of the invoice",
+            "field_type": "date",
+            "required": False,
+        },
     ],
 }
 

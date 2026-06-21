@@ -42,24 +42,20 @@ def check_financial_totals(
         and "total_amount" in field_names
         and isinstance(subtotal, (int, float))
         and isinstance(total_amount, (int, float))
+        and total_amount < subtotal
     ):
-        if total_amount < subtotal:
-            results.append(
-                ValidationResult(
-                    field_name="total_amount",
-                    valid=False,
-                    message=(
-                        f"Total amount ({total_amount}) is less than subtotal ({subtotal}). "
-                        f"Please verify the amounts."
-                    ),
-                )
+        results.append(
+            ValidationResult(
+                field_name="total_amount",
+                valid=False,
+                message=(
+                    f"Total amount ({total_amount}) is less than subtotal ({subtotal}). "
+                    f"Please verify the amounts."
+                ),
             )
+        )
 
-    if (
-        "tax_amount" in field_names
-        and isinstance(tax_amount, (int, float))
-        and tax_amount < 0
-    ):
+    if "tax_amount" in field_names and isinstance(tax_amount, (int, float)) and tax_amount < 0:
         results.append(
             ValidationResult(
                 field_name="tax_amount",

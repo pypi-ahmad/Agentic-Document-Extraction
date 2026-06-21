@@ -28,7 +28,7 @@ async def init_db() -> None:
     """Create all tables on startup and apply SQLite optimisations."""
     from sqlalchemy import text
 
-    from app.models.db_models import Base  # noqa: F811
+    from app.models.db_models import Base
 
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)

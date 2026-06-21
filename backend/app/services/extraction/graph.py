@@ -39,7 +39,7 @@ _RETRY_BASE_DELAY = settings.llm_retry_base_delay
 # ── Reducer ──────────────────────────────────────────────────────────
 
 
-def _replace(old: Any, new: Any) -> Any:  # noqa: ARG001
+def _replace(old: Any, new: Any) -> Any:
     """Last-write-wins reducer — new value replaces old."""
     return new
 
@@ -124,7 +124,8 @@ async def parse_node(state: PipelineState) -> dict:
 
     try:
         provider = get_ocr_provider(
-            state.get("ocr_provider_id", "auto"), file_path=file_path,
+            state.get("ocr_provider_id", "auto"),
+            file_path=file_path,
         )
         result = await provider.extract_text(file_path)
         return {
@@ -160,9 +161,7 @@ async def extract_node(state: PipelineState) -> dict:
             )
             # Guard: provider must return a dict
             if not isinstance(result.data, dict):
-                raise ValueError(
-                    f"Provider returned {type(result.data).__name__} instead of dict"
-                )
+                raise ValueError(f"Provider returned {type(result.data).__name__} instead of dict")
             return {
                 "extracted_data": result.data,
                 "llm_provider_used": result.provider,
@@ -174,10 +173,13 @@ async def extract_node(state: PipelineState) -> dict:
         except LLMProviderError as exc:
             last_error = exc
             if exc.retryable and attempt < _MAX_LLM_RETRIES:
-                delay = _RETRY_BASE_DELAY * (2 ** attempt)
+                delay = _RETRY_BASE_DELAY * (2**attempt)
                 logger.warning(
                     "Retryable LLM error (attempt %d/%d): %s — retrying in %.1fs",
-                    attempts, _MAX_LLM_RETRIES + 1, exc, delay,
+                    attempts,
+                    _MAX_LLM_RETRIES + 1,
+                    exc,
+                    delay,
                 )
                 await asyncio.sleep(delay)
                 continue
@@ -236,9 +238,7 @@ async def finalize_node(state: PipelineState) -> dict:
     elif verdict == "valid":
         status = "completed"
     else:
-        raise ValueError(
-            "Finalize node requires review_verdict to be 'valid' or 'needs_review'."
-        )
+        raise ValueError("Finalize node requires review_verdict to be 'valid' or 'needs_review'.")
     return {
         "status": status,
         "completed_at": datetime.datetime.now(datetime.UTC).isoformat(),
@@ -272,10 +272,14 @@ def build_extraction_graph() -> Any:
 
     graph.add_edge(START, "parse")
     graph.add_conditional_edges(
-        "parse", _after_parse, {"extract": "extract", "end": END},
+        "parse",
+        _after_parse,
+        {"extract": "extract", "end": END},
     )
     graph.add_conditional_edges(
-        "extract", _after_extract, {"validate": "validate", "end": END},
+        "extract",
+        _after_extract,
+        {"validate": "validate", "end": END},
     )
     graph.add_edge("validate", "finalize")
     graph.add_edge("finalize", END)
@@ -319,4 +323,3 @@ async def run_extraction(
             llm_model=llm_model,
         )
     )
-

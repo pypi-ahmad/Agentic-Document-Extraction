@@ -8,19 +8,33 @@ import pytest
 from httpx import AsyncClient
 
 from app.config import settings
-from app.services.llm.base import LLMModel, LLMModelCatalog, ProviderAvailability
-from app.services.llm.base import LLMProviderError
+from app.models.enums import ModelCatalogSource, ProviderAvailabilityState
+from app.services.extraction.graph import extract_node
+from app.services.llm.base import LLMModel, LLMModelCatalog, LLMProviderError, ProviderAvailability
 from app.services.llm.claude_provider import ClaudeProvider
 from app.services.llm.gemini_provider import GeminiProvider
 from app.services.llm.openai_provider import OpenAIProvider
-from app.services.extraction.graph import extract_node
-from app.models.enums import ModelCatalogSource, ProviderAvailabilityState
-
 
 PROVIDER_CASES = [
-    pytest.param(OpenAIProvider, "openai_api_key", "langchain_openai", "ChatOpenAI", "openai", id="openai"),
-    pytest.param(GeminiProvider, "gemini_api_key", "langchain_google_genai", "ChatGoogleGenerativeAI", "gemini", id="gemini"),
-    pytest.param(ClaudeProvider, "anthropic_api_key", "langchain_anthropic", "ChatAnthropic", "anthropic", id="anthropic"),
+    pytest.param(
+        OpenAIProvider, "openai_api_key", "langchain_openai", "ChatOpenAI", "openai", id="openai"
+    ),
+    pytest.param(
+        GeminiProvider,
+        "gemini_api_key",
+        "langchain_google_genai",
+        "ChatGoogleGenerativeAI",
+        "gemini",
+        id="gemini",
+    ),
+    pytest.param(
+        ClaudeProvider,
+        "anthropic_api_key",
+        "langchain_anthropic",
+        "ChatAnthropic",
+        "anthropic",
+        id="anthropic",
+    ),
 ]
 
 
@@ -64,7 +78,9 @@ async def test_list_ocr_providers(client: AsyncClient):
 
 
 @pytest.mark.asyncio
-async def test_list_ocr_providers_uses_legacy_ready_semantics(client: AsyncClient, monkeypatch: pytest.MonkeyPatch):
+async def test_list_ocr_providers_uses_legacy_ready_semantics(
+    client: AsyncClient, monkeypatch: pytest.MonkeyPatch
+):
     from app.routers import providers as providers_router
 
     monkeypatch.setattr(
@@ -346,11 +362,13 @@ async def test_extract_node_retries_with_real_provider_translation(
     )
     monkeypatch.setattr("app.services.extraction.graph._RETRY_BASE_DELAY", 0.0)
 
-    result = await extract_node(_state(
-        ocr_text="Invoice text",
-        llm_provider_id=provider_id,
-        schema_fields=[{"name": "vendor", "field_type": "string", "required": True}],
-    ))
+    result = await extract_node(
+        _state(
+            ocr_text="Invoice text",
+            llm_provider_id=provider_id,
+            schema_fields=[{"name": "vendor", "field_type": "string", "required": True}],
+        )
+    )
 
     assert result["status"] == "extracted"
     assert result["extract_attempts"] == 3
@@ -422,11 +440,13 @@ async def test_extract_node_fails_without_retry_when_provider_import_is_broken(
     )
     monkeypatch.setattr("app.services.extraction.graph._RETRY_BASE_DELAY", 0.0)
 
-    result = await extract_node(_state(
-        ocr_text="Invoice text",
-        llm_provider_id=provider_id,
-        schema_fields=[{"name": "vendor", "field_type": "string", "required": True}],
-    ))
+    result = await extract_node(
+        _state(
+            ocr_text="Invoice text",
+            llm_provider_id=provider_id,
+            schema_fields=[{"name": "vendor", "field_type": "string", "required": True}],
+        )
+    )
 
     assert result["status"] == "failed"
     assert result["extract_attempts"] == 1

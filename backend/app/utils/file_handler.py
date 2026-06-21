@@ -33,9 +33,7 @@ def validate_upload(file: UploadFile) -> None:
         )
 
     if file.content_type and file.content_type not in ALLOWED_CONTENT_TYPES:
-        raise FileValidationError(
-            f"Unsupported content type '{file.content_type}'."
-        )
+        raise FileValidationError(f"Unsupported content type '{file.content_type}'.")
 
 
 async def save_upload(file: UploadFile) -> tuple[str, str, int]:
@@ -55,7 +53,7 @@ async def save_upload(file: UploadFile) -> tuple[str, str, int]:
 
     if file_size > settings.max_upload_bytes:
         raise FileValidationError(
-            f"File too large ({file_size // (1024*1024)}MB). "
+            f"File too large ({file_size // (1024 * 1024)}MB). "
             f"Maximum is {settings.max_upload_size_mb}MB."
         )
 

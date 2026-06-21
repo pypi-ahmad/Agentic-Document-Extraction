@@ -8,7 +8,6 @@ from httpx import AsyncClient
 from app.models.db_models import Document, Extraction, ExtractionSchema
 from tests.conftest import _test_session_maker
 
-
 # ── Helpers ──────────────────────────────────────────────────────────
 
 
@@ -40,8 +39,18 @@ async def _seed_review_extraction(
         schema = ExtractionSchema(
             name="Invoice",
             fields=[
-                {"name": "vendor", "field_type": "string", "required": True, "description": "Vendor name"},
-                {"name": "total", "field_type": "number", "required": True, "description": "Total amount"},
+                {
+                    "name": "vendor",
+                    "field_type": "string",
+                    "required": True,
+                    "description": "Vendor name",
+                },
+                {
+                    "name": "total",
+                    "field_type": "number",
+                    "required": True,
+                    "description": "Total amount",
+                },
             ],
         )
         db.add_all([doc, schema])

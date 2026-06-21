@@ -12,7 +12,6 @@ from app.models.enums import (
     ProviderAvailabilityState,
 )
 
-
 # ── Enum value stability ─────────────────────────────────────────────
 
 

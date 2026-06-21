@@ -13,18 +13,16 @@ from __future__ import annotations
 
 import uuid
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import AsyncMock, patch
 
 import pytest
 import pytest_asyncio
 from httpx import AsyncClient
-from unittest.mock import AsyncMock
 
 from app.models.db_models import Document, Extraction, ExtractionSchema
 from app.services.llm.base import ExtractionResult
 from app.services.ocr.base import OCRResult
 from tests.conftest import _test_session_maker
-
 
 # ── Test doubles ─────────────────────────────────────────────────────
 
@@ -647,8 +645,14 @@ async def test_error_category_set_on_failure(client: AsyncClient, seed: dict) ->
     assert data["status"] == "failed"
     assert data["error_category"] is not None
     assert data["error_category"] in (
-        "auth", "rate_limit", "timeout", "parse_error",
-        "provider_error", "file_error", "validation", "unknown",
+        "auth",
+        "rate_limit",
+        "timeout",
+        "parse_error",
+        "provider_error",
+        "file_error",
+        "validation",
+        "unknown",
     )
 
 

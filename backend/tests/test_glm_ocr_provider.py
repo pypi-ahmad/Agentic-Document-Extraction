@@ -25,11 +25,7 @@ def test_clean_text_strips_layout_markup():
         "Total: $1,234.56</invoice>\n"
         "<table><tr><td></td></tr></table>"
     )
-    assert _clean_glm_ocr_text(raw) == (
-        "Invoice #12345\n"
-        "Date: 2026-06-22\n"
-        "Total: $1,234.56"
-    )
+    assert _clean_glm_ocr_text(raw) == ("Invoice #12345\nDate: 2026-06-22\nTotal: $1,234.56")
 
 
 def test_clean_text_strips_html_comments_and_collapses_blank_lines():
