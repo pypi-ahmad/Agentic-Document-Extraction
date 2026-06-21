@@ -1,0 +1,35 @@
+{
+  "name": "Agentic Document Extraction",
+  "image": "mcr.microsoft.com/devcontainers/python:3.12-bookworm",
+  "features": {
+    "ghcr.io/astral-sh/uv/uv:latest": {},
+    "node": "22"
+  },
+  "postCreateCommand": "just install && just sync",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "astral-sh.ruff",
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "tamasfe.even-better-toml"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": ".venv/bin/python",
+        "python.testing.pytestEnabled": true,
+        "[python]": {
+          "editor.defaultFormatter": "charliermarsh.ruff",
+          "editor.formatOnSave": true
+        },
+        "ruff.lineLength": 100,
+        "ruff.organizeImports": true
+      }
+    }
+  },
+  "forwardPorts": [8000, 11434, 6379],
+  "portsAttributes": {
+    "8000": {"label": "ADE backend", "protocol": "http"},
+    "11434": {"label": "Ollama (optional)", "protocol": "http"},
+    "6379": {"label": "Redis (optional)", "protocol": "tcp"}
+  }
+}
