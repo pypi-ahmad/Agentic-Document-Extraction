@@ -62,6 +62,24 @@ test-one *args:
 test-props:
     .venv/bin/python -m pytest backend/tests/test_output_parser_property.py -v
 
+# Run only the eval/calibration unit tests.
+test-eval:
+    .venv/bin/python -m pytest backend/tests/test_eval_metrics.py backend/tests/test_eval_calibration.py -v
+
+# ── Eval pipeline ────────────────────────────────────────────────────
+
+# Fit a per-field isotonic confidence calibrator from the golden set.
+# Writes ./calibration.json by default. The artifact is JSON, so it
+# is safe to commit and diff.
+eval-fit-calibrator manifest="eval/golden_set/v1/manifest.json" out="./calibration.json":
+    .venv/bin/python -c "from scripts.fit_calibrator import main; main('{{ manifest }}', '{{ out }}')"
+
+# Run the eval pass against the golden set: field-F1, ECE, AUROC,
+# reliability diagram, etc. Writes a JSON report and a PNG diagram
+# under eval/runs/.
+eval manifest="eval/golden_set/v1/manifest.json":
+    .venv/bin/python -c "from scripts.run_eval import main; main('{{ manifest }}')"
+
 # ── Running the app ──────────────────────────────────────────────────
 
 # Run the backend on port 8000 with hot reload.
