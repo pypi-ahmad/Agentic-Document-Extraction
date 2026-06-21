@@ -184,6 +184,7 @@ async def get_app_config(response: Response) -> AppConfigResponse:
         model_selection_modes=[mode.value for mode in ModelSelectionMode],
         ocr_engine_flags=OCREngineFlags(
             paddleocr=settings.enable_paddleocr,
+            glm_ocr=settings.enable_glm_ocr,
         ),
         max_upload_size_mb=settings.max_upload_size_mb,
         supported_file_types=list(SUPPORTED_FILE_TYPES),

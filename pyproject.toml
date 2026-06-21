@@ -1,0 +1,186 @@
+[project]
+name = "agentic-document-extraction"
+version = "0.2.0"
+description = "Extract structured data from documents (PDF + image) using a LangGraph pipeline of pluggable OCR/parser engines and LLM providers, with per-field confidence scoring and human-in-the-loop review."
+authors = [
+  { name = "Ahmad" },
+]
+license = { text = "MIT" }
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+keywords = [
+  "document-extraction",
+  "ocr",
+  "llm",
+  "langgraph",
+  "fastapi",
+  "nextjs",
+  "ollama",
+  "glm-ocr",
+  "paddleocr",
+  "pymupdf",
+  "openai",
+  "anthropic",
+  "gemini",
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Office/Business :: Financial",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "Topic :: Text Processing :: Markup :: Markdown",
+]
+# Web (frontend) + Python (backend) live in one repo. We declare the Python
+# dependencies here; the Next.js app uses its own package.json and node_modules.
+dependencies = [
+  # ── Web framework ───────────────────────────────────────────────────
+  "fastapi>=0.115.0,<1.0",
+  "uvicorn[standard]>=0.30.0,<1.0",
+  "pydantic>=2.0,<3.0",
+  "pydantic-settings>=2.0,<3.0",
+  "python-multipart>=0.0.9",  # FastAPI file uploads
+  "aiofiles>=24.0",
+
+  # ── Database ───────────────────────────────────────────────────────
+  "sqlalchemy[asyncio]>=2.0,<3.0",
+  "aiosqlite>=0.20.0,<1.0",
+
+  # ── LLM orchestration (LangGraph) ──────────────────────────────────
+  "langgraph>=0.2.0",
+  "langchain-core>=0.3.0",
+  "langchain-openai>=0.2.0",
+  "langchain-google-genai>=2.0.0",
+  "langchain-anthropic>=0.2.0",
+  "openai>=1.0.0",
+  "google-genai>=1.0.0",
+  "anthropic>=0.40.0",
+  "httpx>=0.27.0",  # also used by the GLM-OCR local-Ollama client
+
+  # ── OCR / Document parsing ─────────────────────────────────────────
+  "pymupdf>=1.24.0",   # PDF text extraction (built-in, always available)
+  "Pillow>=10.0",      # Image handling
+  # paddleocr / paddlepaddle are optional; install with
+  # `uv pip install "agentic-document-extraction[paddleocr]"`
+]
+
+[project.optional-dependencies]
+# Image OCR (PaddleOCR). Optional because it pulls paddlepaddle.
+paddleocr = [
+  "paddleocr>=2.7",
+  "paddlepaddle>=2.6",
+]
+# Local LLM / OCR via Ollama (used for GLM-OCR). Only httpx is strictly
+# required at runtime, but having the dep here makes the feature
+# discoverable.
+ollama = [
+  "httpx>=0.27.0",
+]
+# Everything needed to run the test suite.
+test = [
+  "pytest>=8.0",
+  "pytest-asyncio>=0.24.0",
+  "pytest-cov>=5.0",
+  "httpx>=0.27.0",
+  "pillow>=10.0",
+  "pymupdf>=1.24.0",
+]
+# Linting + formatting.
+lint = [
+  "ruff>=0.6.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/pypi-ahmad/Agentic-Document-Extraction"
+Repository = "https://github.com/pypi-ahmad/Agentic-Document-Extraction"
+Issues = "https://github.com/pypi-ahmad/Agentic-Document-Extraction/issues"
+Changelog = "https://github.com/pypi-ahmad/Agentic-Document-Extraction/blob/main/CHANGELOG.md"
+
+[project.scripts]
+# A convenience entry-point. Real serving is done with `uvicorn`.
+ade-info = "app.main:app"
+
+# ── Build system ─────────────────────────────────────────────────────
+# We use a flat layout (app package at the repo root) so the existing
+# `backend/app/*` structure can be kept as-is and `uv` can install the
+# project in editable mode from the root.
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["backend/app"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "backend/app/**",
+  "backend/app/py.typed",
+  "README.md",
+  "LICENSE",
+  "CHANGELOG.md",
+]
+
+# ── uv: workspace-like config for the backend ────────────────────────
+[tool.uv]
+# Resolve against Python 3.12.x; the .python-version pins the exact patch.
+required-version = ">=0.5.0"
+
+# ── Pytest ───────────────────────────────────────────────────────────
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["backend/tests"]
+addopts = [
+  "-ra",
+  "--strict-markers",
+  "--strict-config",
+  "--tb=short",
+]
+filterwarnings = [
+  "error",
+  "ignore::DeprecationWarning:websockets.*",
+  "ignore::DeprecationWarning:uvicorn.*",
+  "ignore::DeprecationWarning:pydantic.*",
+]
+
+# ── Ruff (lint + format) ─────────────────────────────────────────────
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+extend-exclude = [
+  "backend/.venv",
+  "frontend/node_modules",
+  "frontend/.next",
+  "dist",
+  "build",
+]
+
+[tool.ruff.lint]
+select = [
+  "E",   # pycodestyle errors
+  "W",   # pycodestyle warnings
+  "F",   # pyflakes
+  "I",   # isort
+  "B",   # flake8-bugbear
+  "UP",  # pyupgrade
+  "C4",  # flake8-comprehensions
+  "SIM", # flake8-simplify
+  "RUF", # ruff-specific
+]
+ignore = [
+  "E501",   # line length handled by formatter
+  "B008",   # FastAPI uses function calls in argument defaults
+  "B904",   # raise from inside except is noisy in pipeline code
+]
+
+[tool.ruff.lint.per-file-ignores]
+"backend/tests/**" = ["B", "SIM"]  # tests are allowed to be slightly looser
+
+[tool.ruff.lint.isort]
+known-first-party = ["app", "backend"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+docstring-code-format = true
