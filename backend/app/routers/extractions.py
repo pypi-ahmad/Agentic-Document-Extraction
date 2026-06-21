@@ -5,7 +5,7 @@ import datetime as _dt
 import json
 import logging
 
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from fastapi.responses import StreamingResponse
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -438,7 +438,6 @@ async def _run_extraction_pipeline(extraction_id: str) -> None:
 @router.post("/", response_model=ExtractionResponse, status_code=status.HTTP_202_ACCEPTED)
 async def create_extraction(
     body: ExtractionCreate,
-    background_tasks: BackgroundTasks,
     response: Response,
     db: AsyncSession = Depends(get_db),
 ) -> ExtractionResponse:
@@ -467,7 +466,13 @@ async def create_extraction(
 
     _metrics.in_flight_jobs.inc()
     _metrics.extractions_total.labels(status="queued").inc()
-    background_tasks.add_task(_run_extraction_job, extraction.id)
+    from app.services.jobs import get_job_queue
+
+    queue = get_job_queue()
+    try:
+        await queue.submit(extraction.id, lambda: _run_extraction_job(extraction.id))
+    except RuntimeError as exc:
+        raise HTTPException(status_code=503, detail=str(exc))
     await record_audit_event(
         db,
         extraction_id=extraction.id,
@@ -485,7 +490,6 @@ async def create_extraction(
 )
 async def retry_extraction(
     extraction_id: str,
-    background_tasks: BackgroundTasks,
     response: Response,
     db: AsyncSession = Depends(get_db),
 ) -> ExtractionResponse:
@@ -537,7 +541,13 @@ async def retry_extraction(
     await db.commit()
 
     _metrics.extractions_total.labels(status="retried").inc()
-    background_tasks.add_task(_run_extraction_job, extraction.id)
+    from app.services.jobs import get_job_queue
+
+    queue = get_job_queue()
+    try:
+        await queue.submit(extraction.id, lambda: _run_extraction_job(extraction.id))
+    except RuntimeError as exc:
+        raise HTTPException(status_code=503, detail=str(exc))
     await record_audit_event(
         db,
         extraction_id=extraction.id,
