@@ -60,6 +60,10 @@ class Settings(BaseSettings):
     max_reflection_attempts: int = 2
     """Maximum times the pipeline re-extracts after a validation failure.
     Set to 0 to disable the reflection loop entirely."""
+    checkpoint_db_path: str = "./checkpoints.db"
+    """SQLite path for LangGraph graph checkpoints. Set to '' to disable
+    checkpointing (the pipeline will still run, but resume-after-interrupt
+    will not survive a process restart)."""
 
     # ── Server ──
     host: str = "0.0.0.0"
