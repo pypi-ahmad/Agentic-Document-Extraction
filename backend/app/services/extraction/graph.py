@@ -21,15 +21,16 @@ from __future__ import annotations
 
 import asyncio
 import datetime
-import logging
 from pathlib import Path
 from typing import Annotated, Any, TypedDict
 
 from langgraph.graph import END, START, StateGraph
 
 from app.config import settings
+from app.logging_setup import get_logger
+from app.metrics import metrics
 
-logger = logging.getLogger(__name__)
+logger = get_logger("app.pipeline")
 
 # Read pipeline tuning from config (allows env-var / .env override).
 _MAX_LLM_RETRIES = settings.llm_max_retries
@@ -123,11 +124,15 @@ async def parse_node(state: PipelineState) -> dict:
         return {"status": "failed", "error": f"File not found: {file_path.name}"}
 
     try:
+        import time as _t
+
         provider = get_ocr_provider(
             state.get("ocr_provider_id", "auto"),
             file_path=file_path,
         )
+        _t0 = _t.perf_counter()
         result = await provider.extract_text(file_path)
+        metrics.ocr_call_duration_seconds.observe(_t.perf_counter() - _t0)
         return {
             "ocr_text": result.text,
             "ocr_provider_used": result.provider,
@@ -153,12 +158,16 @@ async def extract_node(state: PipelineState) -> dict:
     for attempt in range(_MAX_LLM_RETRIES + 1):
         attempts = attempt + 1
         try:
+            import time as _t
+
+            _t0 = _t.perf_counter()
             provider = get_llm_provider(state.get("llm_provider_id", "auto"))
             result = await provider.extract(
                 text=state.get("ocr_text", ""),
                 schema_fields=state.get("schema_fields", []),
                 model_id=state.get("llm_model_id", "auto"),
             )
+            metrics.llm_call_duration_seconds.observe(_t.perf_counter() - _t0)
             # Guard: provider must return a dict
             if not isinstance(result.data, dict):
                 raise ValueError(f"Provider returned {type(result.data).__name__} instead of dict")

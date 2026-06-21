@@ -11,6 +11,12 @@ from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.constants import (
+    AUDIT_EVENT_COMPLETED,
+    AUDIT_EVENT_FAILED,
+    AUDIT_EVENT_NEEDS_REVIEW,
+    AUDIT_EVENT_RETRIED,
+    AUDIT_EVENT_REVIEW_SUBMITTED,
+    AUDIT_EVENT_STARTED,
     JOB_TIMEOUT_S,
     NO_STORE_HEADERS,
     SSE_KEEPALIVE_S,
@@ -18,6 +24,8 @@ from app.constants import (
     SSE_TERMINAL_STATUSES,
 )
 from app.database import async_session, get_db
+from app.logging_setup import get_logger as _get_logger
+from app.metrics import metrics as _metrics
 from app.models.db_models import (
     Document,
     Extraction,
@@ -34,10 +42,12 @@ from app.models.schemas import (
     ReviewCreate,
     ReviewResponse,
 )
+from app.services.audit import record_audit_event
 from app.utils.datetime import duration_ms as _duration_ms
 from app.utils.http import apply_no_store as _apply_no_store_headers
 
 router = APIRouter(prefix="/api/extractions", tags=["Extractions"])
+_log = _get_logger("app.extractions")
 
 logger = logging.getLogger(__name__)
 
@@ -398,6 +408,30 @@ async def _run_extraction_pipeline(extraction_id: str) -> None:
 
         extraction.error_category = classify_error(extraction.error, extraction.status)
 
+        # Observability: record the terminal event in metrics + audit.
+        if extraction.status in ("completed", "needs_review", "failed"):
+            _metrics.in_flight_jobs.dec()
+            _metrics.extractions_total.labels(status=extraction.status).inc()
+            if extraction.started_at and extraction.completed_at:
+                _metrics.extraction_duration_seconds.observe(
+                    (extraction.completed_at - extraction.started_at).total_seconds()
+                )
+            event = {
+                "completed": AUDIT_EVENT_COMPLETED,
+                "needs_review": AUDIT_EVENT_NEEDS_REVIEW,
+                "failed": AUDIT_EVENT_FAILED,
+            }.get(extraction.status)
+            if event:
+                await record_audit_event(
+                    db,
+                    extraction_id=extraction_id,
+                    event=event,
+                    payload={
+                        "error_category": extraction.error_category,
+                        "extract_attempts": extraction.extract_attempts,
+                    },
+                )
+
         await db.commit()
 
 
@@ -431,7 +465,16 @@ async def create_extraction(
     db.add(extraction)
     await db.commit()
 
+    _metrics.in_flight_jobs.inc()
+    _metrics.extractions_total.labels(status="queued").inc()
     background_tasks.add_task(_run_extraction_job, extraction.id)
+    await record_audit_event(
+        db,
+        extraction_id=extraction.id,
+        event=AUDIT_EVENT_STARTED,
+        payload={"schema_id": extraction.schema_id, "document_id": extraction.document_id},
+    )
+    await db.commit()
     return _build_queued_response(extraction)
 
 
@@ -493,7 +536,14 @@ async def retry_extraction(
 
     await db.commit()
 
+    _metrics.extractions_total.labels(status="retried").inc()
     background_tasks.add_task(_run_extraction_job, extraction.id)
+    await record_audit_event(
+        db,
+        extraction_id=extraction.id,
+        event=AUDIT_EVENT_RETRIED,
+    )
+    await db.commit()
     return _build_queued_response(extraction)
 
 
@@ -750,6 +800,14 @@ async def submit_review(
 
     await db.commit()
     await db.refresh(review)
+    _metrics.reviews_total.labels(decision=body.decision.value).inc()
+    await record_audit_event(
+        db,
+        extraction_id=extraction.id,
+        event=AUDIT_EVENT_REVIEW_SUBMITTED,
+        payload={"decision": body.decision.value},
+    )
+    await db.commit()
     return review
 
 
