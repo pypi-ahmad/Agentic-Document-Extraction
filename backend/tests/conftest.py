@@ -14,6 +14,7 @@ os.environ["UPLOAD_DIR"] = str(Path(__file__).parent / "_test_uploads")
 os.environ["OPENAI_API_KEY"] = ""
 os.environ["GEMINI_API_KEY"] = ""
 os.environ["ANTHROPIC_API_KEY"] = ""
+os.environ["TESTING"] = "1"  # disable the in-process rate limiter
 
 from app.database import get_db
 from app.main import app
