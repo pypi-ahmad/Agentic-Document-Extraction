@@ -1,0 +1,32 @@
+# Pre-commit hooks. Install with `uvx pre-commit install` (or
+# `pipx install pre-commit && pre-commit install`).
+# Run on demand with `pre-commit run --all-files`.
+
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.6.0
+    hooks:
+      - id: ruff
+        args: ["--fix", "--exit-non-zero-on-fix"]
+        types_or: [python, pyi]
+      - id: ruff-format
+        types_or: [python, pyi]
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: check-yaml
+        exclude: "^(backend/alembic/versions/.*\\.py)$"
+      - id: check-toml
+      - id: check-json
+      - id: check-merge-conflict
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: detect-private-key
+
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v3.3.3
+    hooks:
+      - id: prettier
+        types_or: [markdown, yaml, json, ts, tsx, js, css]
+        additional_dependencies: []
