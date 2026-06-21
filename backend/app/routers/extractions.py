@@ -53,7 +53,7 @@ logger = logging.getLogger(__name__)
 
 # Maximum wall-clock time for a single extraction job (seconds).
 _JOB_TIMEOUT = JOB_TIMEOUT_S
-_PIPELINE_STEPS = ("parse", "extract", "validate", "reflect", "finalize")
+_PIPELINE_STEPS = ("parse", "extract", "validate", "reflect", "await_review", "finalize")
 
 
 def _no_store_headers(extra_headers: dict[str, str] | None = None) -> dict[str, str]:

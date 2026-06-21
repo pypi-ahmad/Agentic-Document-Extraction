@@ -261,6 +261,7 @@ async def test_recover_orphaned_jobs_backfills_skipped_steps() -> None:
             "extract": "failed",
             "validate": "skipped",
             "reflect": "skipped",
+            "await_review": "skipped",
             "finalize": "skipped",
         }
 
@@ -388,6 +389,7 @@ async def test_timeout_backfills_downstream_steps_as_skipped() -> None:
             "extract": "skipped",
             "validate": "skipped",
             "reflect": "skipped",
+            "await_review": "skipped",
             "finalize": "skipped",
         }
 

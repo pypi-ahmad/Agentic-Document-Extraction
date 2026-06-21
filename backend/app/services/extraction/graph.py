@@ -4,13 +4,17 @@ Graph
 -----
 ::
 
-    START ──► parse ──► extract ──► validate ──► reflect ──► finalize ──► END
+    START ──► parse ──► extract ──► validate ──► reflect ──► await_review ──► finalize ──► END
+                    │                                       │                │
+                    │            ┌────(valid)───────────────┘                │
+                    │            │                                            │
+                    │            └─(needs_review, attempts < max)─► re-extract
+                    │                                                     │
+                    │                                       ┌─(valid)──────┘
                     │                                       │
-                    │            ┌────(valid)───────────────┘
-                    │            │
-                    │            └─(needs_review, attempts < max)─► re-extract ──► validate
-                    │
-                    └─(fail)─►END
+                    │                                       └─(needs_review)─► interrupt()
+                    │                                                              │
+                    └─(fail)─►END                                                  └─(resume)─► finalize
 
 The ``extract`` node retries retryable LLM errors (rate limits,
 transient server errors) with exponential backoff.  Retry count and
@@ -24,6 +28,13 @@ self-refine pattern (Madaan et al. 2023) and is the single biggest
 quality lever for single-shot LLM extraction. Set
 ``max_reflection_attempts=0`` to disable the loop entirely.
 
+The ``await_review`` node calls LangGraph's ``interrupt()`` to pause
+the graph when validation still fails after reflection is exhausted.
+The pipeline is then resumable: the review endpoint calls
+``graph.ainvoke(Command(resume=...))`` to continue. This requires a
+checkpointer; pass one to :func:`build_extraction_graph` (or use
+:func:`build_extraction_graph_with_sqlite` for the production default).
+
 State is a ``TypedDict`` with last-write-wins reducer fields so each node
 returns only the keys it changes.
 """
@@ -36,6 +47,7 @@ from pathlib import Path
 from typing import Annotated, Any, TypedDict
 
 from langgraph.graph import END, START, StateGraph
+from langgraph.types import interrupt
 
 from app.config import settings
 from app.logging_setup import get_logger
@@ -102,6 +114,11 @@ class PipelineState(TypedDict, total=False):
     # ── reflect ──────────────────────────────────────────────────────
     reflection_attempts: Annotated[int, _replace]
     reflection_history: Annotated[list[dict], _replace]
+
+    # ── await_review (interrupts for human review) ──────────────────
+    review_decision: Annotated[str, _replace]  # "approved" | "corrected" | "rejected"
+    review_corrections: Annotated[dict[str, Any], _replace]
+    review_notes: Annotated[str, _replace]
 
     # ── global ───────────────────────────────────────────────────────
     status: Annotated[str, _replace]
@@ -373,6 +390,103 @@ async def finalize_node(state: PipelineState) -> dict:
     }
 
 
+async def await_review_node(state: PipelineState) -> dict:
+    """Pause for human review when validation still fails after reflection.
+
+    On a valid verdict this is a no-op and the graph proceeds to
+    finalize. On ``needs_review`` it calls LangGraph's ``interrupt()``
+    with a payload describing the extraction's state; the graph
+    pauses, the state is checkpointed, and the caller (the review
+    endpoint) resumes it with ``graph.ainvoke(Command(resume=...))``.
+
+    The resumed value is a dict of the form::
+
+        {
+            "decision": "approved" | "corrected" | "rejected",
+            "corrected_fields": {...},
+            "notes": "...",
+        }
+
+    The node merges the corrections into ``extracted_data``, sets the
+    review verdict, and clears the validation errors so the finalize
+    node can stamp a terminal status.
+
+    When the graph is compiled without a checkpointer, ``interrupt()``
+    is unavailable and the node falls through to finalize with
+    ``needs_review`` (the existing direct-DB-update review endpoint
+    handles the decision in that case). This keeps the legacy
+    in-process flow working for tests and for setups that have not yet
+    migrated to a persisted checkpointer.
+    """
+    verdict = state.get("review_verdict")
+    if verdict == "valid":
+        return {}
+
+    # If the graph was compiled without a checkpointer, skip the
+    # interrupt and let the existing direct-review path take over.
+    if not _graph_has_checkpointer():
+        return {}
+
+    payload = {
+        "extraction_id": state.get("extraction_id"),
+        "validation_errors": list(state.get("validation_errors") or []),
+        "validation_results": list(state.get("validation_results") or []),
+        "extracted_data": state.get("extracted_data", {}),
+        "confidence": state.get("confidence", {}),
+        "reflection_attempts": state.get("reflection_attempts", 0) or 0,
+    }
+
+    # Pause here. The graph's checkpointer persists the state; the
+    # review endpoint will resume with Command(resume=...).
+    decision_payload = interrupt(payload)
+
+    if not isinstance(decision_payload, dict):
+        logger.warning("await_review_node: bad resume payload, falling back to needs_review")
+        return {"review_decision": "rejected", "review_notes": "Bad resume payload"}
+
+    decision = decision_payload.get("decision", "rejected")
+    corrections = decision_payload.get("corrected_fields", {}) or {}
+    notes = decision_payload.get("notes", "")
+
+    if decision == "approved":
+        return {
+            "review_decision": "approved",
+            "review_corrections": {},
+            "review_notes": notes,
+            "validation_errors": [],
+            "review_verdict": "valid",
+        }
+    if decision == "corrected":
+        current = dict(state.get("extracted_data") or {})
+        current.update(corrections)
+        return {
+            "extracted_data": current,
+            "review_decision": "corrected",
+            "review_corrections": corrections,
+            "review_notes": notes,
+            "validation_errors": [],
+            "review_verdict": "valid",
+        }
+    if decision == "rejected":
+        return {
+            "review_decision": "rejected",
+            "review_corrections": {},
+            "review_notes": notes,
+            "review_verdict": "valid",
+        }
+    logger.warning("await_review_node: unknown decision %r, falling back to needs_review", decision)
+    return {"review_decision": "rejected", "review_notes": f"Unknown decision: {decision}"}
+
+
+# Module-level flag, toggled by ``build_extraction_graph`` so that
+# ``await_review_node`` knows whether ``interrupt()`` is supported.
+_graph_checkpointer_enabled: bool = False
+
+
+def _graph_has_checkpointer() -> bool:
+    return _graph_checkpointer_enabled
+
+
 # ── Edge routing ─────────────────────────────────────────────────────
 
 
@@ -397,23 +511,48 @@ def _after_reflect(state: PipelineState) -> str:
     attempts = state.get("reflection_attempts", 0) or 0
     max_reflection_attempts = settings.max_reflection_attempts
     if verdict == "valid":
-        return "finalize"
+        return "await_review"
     if attempts >= max_reflection_attempts or max_reflection_attempts <= 0:
-        return "finalize"
+        return "await_review"
     return "validate"
+
+
+def _after_await_review(state: PipelineState) -> str:
+    """Decide based on the post-resume verdict."""
+    if state.get("review_verdict") == "valid":
+        return "finalize"
+    return "finalize"  # Always finalize; await_review has done its job.
 
 
 # ── Graph construction ───────────────────────────────────────────────
 
 
-def build_extraction_graph() -> Any:
-    """Build and compile the extraction pipeline graph."""
+def build_extraction_graph(checkpointer: Any | None = None) -> Any:
+    """Build and compile the extraction pipeline graph.
+
+    Parameters
+    ----------
+    checkpointer:
+        Optional LangGraph checkpointer (e.g.
+        ``langgraph.checkpoint.sqlite.aio.AsyncSqliteSaver`` or
+        ``langgraph.checkpoint.memory.InMemorySaver``). When supplied,
+        the graph is compiled with checkpointing enabled and the
+        ``await_review_node`` can pause and resume via
+        ``Command(resume=...)``. When ``None`` (default), the graph
+        still works but ``await_review_node`` will fall through to
+        finalize with ``needs_review`` for backward compatibility
+        with the in-process / no-checkpoint flow.
+    """
+    global _graph_checkpointer_enabled
+    _graph_checkpointer_enabled = checkpointer is not None
+
     graph = StateGraph(PipelineState)
 
     graph.add_node("parse", parse_node)
     graph.add_node("extract", extract_node)
     graph.add_node("validate", validate_node)
     graph.add_node("reflect", reflect_node)
+    graph.add_node("await_review", await_review_node)
     graph.add_node("finalize", finalize_node)
 
     graph.add_edge(START, "parse")
@@ -435,11 +574,31 @@ def build_extraction_graph() -> Any:
     graph.add_conditional_edges(
         "reflect",
         _after_reflect,
-        {"validate": "validate", "finalize": "finalize"},
+        {"validate": "validate", "await_review": "await_review"},
+    )
+    graph.add_conditional_edges(
+        "await_review",
+        _after_await_review,
+        {"finalize": "finalize"},
     )
     graph.add_edge("finalize", END)
 
-    return graph.compile()
+    return graph.compile(checkpointer=checkpointer)
+
+
+async def build_extraction_graph_with_sqlite(db_path: str) -> Any:
+    """Production factory: compile the graph with a SQLite checkpointer.
+
+    The checkpointer is opened once at app startup and shared across
+    all graph invocations. The returned compiled graph is the
+    long-lived singleton; resumes look it up by ``thread_id``
+    (== ``extraction_id``) and pull the latest checkpoint.
+    """
+    from langgraph.checkpoint.sqlite.aio import AsyncSqliteSaver
+
+    saver = AsyncSqliteSaver.from_conn_string(db_path)
+    await saver.setup()
+    return build_extraction_graph(checkpointer=saver)
 
 
 # ── Module-level compiled graph (stateless, reusable) ────────────────
