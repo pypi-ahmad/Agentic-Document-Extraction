@@ -57,6 +57,7 @@ _PROVIDER_CLASSES: list[type[BaseOCRProvider]] = []
 
 def _import_builtin_providers() -> None:
     """Lazy-import to avoid circular deps and keep the catalogue tidy."""
+    from app.services.ocr.docling_provider import DoclingProvider
     from app.services.ocr.glm_ocr_provider import GLMOCRProvider
     from app.services.ocr.paddleocr_provider import PaddleOCRProvider
     from app.services.ocr.pymupdf_provider import PyMuPDFProvider
@@ -65,6 +66,7 @@ def _import_builtin_providers() -> None:
         [
             GLMOCRProvider,
             PaddleOCRProvider,
+            DoclingProvider,
             PyMuPDFProvider,
         ]
     )
@@ -117,6 +119,7 @@ def _iter_provider_ids_in_order() -> list[str]:
 AUTO_PRIORITY: Sequence[str] = (
     ParserEngine.GLMOCR.value,
     ParserEngine.PADDLEOCR.value,
+    ParserEngine.DOCLING.value,
     "pymupdf",
 )
 
