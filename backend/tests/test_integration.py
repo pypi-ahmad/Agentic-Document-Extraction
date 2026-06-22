@@ -211,11 +211,12 @@ async def test_happy_path_completed(client: AsyncClient, seed: dict) -> None:
     assert data["llm_model_used"] == "fake-model"
     assert data["completed_at"] is not None
 
-    # Steps should be recorded (6 in the v0.4.0 pipeline: parse, extract,
-    # validate, reflect, await_review, finalize).
-    assert len(data["steps"]) == 6
+    # Steps should be recorded (7 in the v0.4.0 pipeline: triage, parse,
+    # extract, validate, reflect, await_review, finalize).
+    assert len(data["steps"]) == 7
     step_names = [s["name"] for s in data["steps"]]
     assert step_names == [
+        "triage",
         "parse",
         "extract",
         "validate",
@@ -267,12 +268,12 @@ async def test_happy_path_steps_endpoint(client: AsyncClient, seed: dict) -> Non
     assert resp.status_code == 200
     steps = resp.json()
 
-    # 6 steps in the happy path: parse, extract, validate, reflect,
-    # await_review, finalize. (The reflect and await_review nodes run
-    # as no-ops when validation already passed.)
-    assert len(steps) == 6
+    # 7 steps in the happy path: triage, parse, extract, validate,
+    # reflect, await_review, finalize. (The reflect and await_review
+    # nodes run as no-ops when validation already passed.)
+    assert len(steps) == 7
     assert all(s["status"] == "completed" for s in steps)
-    assert steps[0]["name"] == "parse"
+    assert steps[0]["name"] == "triage"
     assert steps[-1]["name"] == "finalize"
 
 
@@ -324,8 +325,8 @@ async def test_llm_failure(client: AsyncClient, seed: dict) -> None:
     assert data["completed_at"] is not None  # failed jobs still record when they finished
 
     steps = data["steps"]
-    # 6 steps total now: parse, extract, validate, reflect, await_review, finalize.
-    assert len(steps) == 6
+    # 7 steps total now: parse, extract, validate, reflect, await_review, finalize.
+    assert len(steps) == 7
     step_map = {s["name"]: s["status"] for s in steps}
     assert step_map["parse"] == "completed"
     assert step_map["extract"] == "failed"
@@ -397,8 +398,8 @@ async def test_retry_after_failure(client: AsyncClient, seed: dict) -> None:
     assert data["result"]["vendor"] == "Acme Corp"
     assert data["error"] is None
 
-    # Steps reset: should have 6 fresh completed steps (not 12)
-    assert len(data["steps"]) == 6
+    # Steps reset: should have 7 fresh completed steps (not 14)
+    assert len(data["steps"]) == 7
     assert all(s["status"] == "completed" for s in data["steps"])
 
 
@@ -418,8 +419,8 @@ async def test_list_extractions_after_run(client: AsyncClient, seed: dict) -> No
     assert len(match) == 1
     assert match[0]["status"] == "completed"
     assert match[0]["result"]["vendor"] == "Acme Corp"
-    # 6 steps in the v0.4.0 pipeline.
-    assert len(match[0]["steps"]) == 6
+    # 7 steps in the v0.4.0 pipeline.
+    assert len(match[0]["steps"]) == 7
 
 
 # ── Computed fields ──────────────────────────────────────────────────

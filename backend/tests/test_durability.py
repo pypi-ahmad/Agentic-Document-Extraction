@@ -443,7 +443,10 @@ async def test_pipeline_crash_finalizes_current_step_metadata() -> None:
         ext = await db.get(Extraction, eid)
         assert ext.status == "failed"
         parse_step = ext.steps[0]
-        assert parse_step.name == "parse"
+        # v0.4.0 pipeline starts with triage; the test simulates a
+        # crash inside the graph stream, so the first recorded step
+        # is triage (the running one) — not parse.
+        assert parse_step.name == "triage"
         assert parse_step.status == "failed"
         assert parse_step.completed_at is not None
         assert parse_step.duration_ms is not None

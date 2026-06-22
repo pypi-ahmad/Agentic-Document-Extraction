@@ -96,6 +96,11 @@ class PipelineState(TypedDict, total=False):
     llm_provider_id: Annotated[str, _replace]
     llm_model_id: Annotated[str, _replace]
 
+    # ── triage (engine selection hints) ──────────────────────────────
+    triage_decision: Annotated[str, _replace]
+    triage_reason: Annotated[str, _replace]
+    triage_engine: Annotated[str, _replace]
+
     # ── parse (OCR) ──────────────────────────────────────────────────
     ocr_text: Annotated[str, _replace]
     ocr_provider_used: Annotated[str, _replace]
@@ -146,6 +151,75 @@ def build_initial_state(
 
 
 # ── Node functions ───────────────────────────────────────────────────
+
+
+async def triage_node(state: PipelineState) -> dict:
+    """Decide which OCR/parser engine to use before parse.
+
+    Pure routing logic, no I/O. The decision is recorded in
+    state for observability (the audit log + the per-extraction
+    record both surface ``triage_decision`` and ``triage_reason``)
+    and the explicit ``ocr_provider_id`` chosen by the caller is
+    honored: triage only acts when ``ocr_provider_id`` is
+    ``"auto"`` or unset.
+
+    Policy
+    ------
+
+    - **PDF files** prefer Docling (best layout + table extraction
+      for multi-page reports), then GLM-OCR, then PaddleOCR,
+      then the PyMuPDF fallback. Docling wins on PDFs because
+      the per-page Markdown export is much closer to what the
+      LLM extractor needs than free-form OCR text.
+    - **Images (PNG / JPEG / TIFF)** prefer GLM-OCR (vision
+      model, handles forms and stamps), then PaddleOCR.
+    - **DOCX / PPTX / XLSX** prefer Docling.
+    - **HTML** prefers Docling; everything else is routed via
+      the Auto path.
+
+    The decision is a *recommendation* that flows into
+    ``state["ocr_provider_id"]`` only when the caller said
+    ``"auto"``; explicit selections are never overridden.
+    """
+    requested = (state.get("ocr_provider_id") or "auto").lower()
+    if requested != "auto":
+        return {
+            "triage_decision": "honor_caller",
+            "triage_reason": f"caller requested {requested}",
+            "triage_engine": requested,
+        }
+
+    file_path_str = state.get("file_path", "")
+    suffix = Path(file_path_str).suffix.lower().lstrip(".")
+    pdf = suffix == "pdf"
+    image = suffix in {"png", "jpg", "jpeg", "tiff", "tif", "bmp", "webp"}
+    office = suffix in {"docx", "pptx", "xlsx"}
+    html = suffix in {"html", "htm"}
+
+    if pdf:
+        # Multi-page reports: Docling wins on layout/tables.
+        return {
+            "triage_decision": "recommend_docling",
+            "triage_reason": "PDF: prefer Docling for layout + tables",
+            "triage_engine": "docling",
+        }
+    if image:
+        return {
+            "triage_decision": "recommend_glmocr",
+            "triage_reason": "image: GLM-OCR handles forms and stamps well",
+            "triage_engine": "glmocr",
+        }
+    if office or html:
+        return {
+            "triage_decision": "recommend_docling",
+            "triage_reason": f"{suffix}: Docling handles structured docs",
+            "triage_engine": "docling",
+        }
+    return {
+        "triage_decision": "auto_default",
+        "triage_reason": "no file-type rule; leaving default routing",
+        "triage_engine": "auto",
+    }
 
 
 async def parse_node(state: PipelineState) -> dict:
@@ -563,6 +637,7 @@ def build_extraction_graph(checkpointer: Any | None = None) -> Any:
 
     graph = StateGraph(PipelineState)
 
+    graph.add_node("triage", triage_node)
     graph.add_node("parse", parse_node)
     graph.add_node("extract", extract_node)
     graph.add_node("validate", validate_node)
@@ -570,7 +645,8 @@ def build_extraction_graph(checkpointer: Any | None = None) -> Any:
     graph.add_node("await_review", await_review_node)
     graph.add_node("finalize", finalize_node)
 
-    graph.add_edge(START, "parse")
+    graph.add_edge(START, "triage")
+    graph.add_edge("triage", "parse")
     graph.add_conditional_edges(
         "parse",
         _after_parse,
