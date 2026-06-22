@@ -136,6 +136,7 @@ required-version = ">=0.5.0"
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["backend/tests"]
+pythonpath = ["."]
 addopts = [
   "-ra",
   "--strict-markers",
