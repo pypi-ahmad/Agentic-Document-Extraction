@@ -1,3 +1,89 @@
+# Migration guide: v0.3.x → v0.4.0
+
+> v0.4.0 is the **quality + OCR refresh** release. It adds a
+> golden-set-driven eval layer (field F1, ECE, AUROC, Brier,
+> reliability diagrams), per-field isotonic confidence
+> calibration, a self-refine reflection loop, LangGraph
+> checkpointing + interrupt for human review, OpenTelemetry +
+> Phoenix tracing, a G-Eval LLM-as-judge, versioned prompts,
+> the PaddleOCR 3.x API, a Docling parser, a VLM-as-extractor
+> path (PaddleOCR-VL-1.6 + Ollama), and a triage node for
+> engine selection.
+
+The HTTP API is unchanged. Internal schema changes:
+
+- New columns on `extractions` (`prompt_version`,
+  `schema_version`).
+- New table `extraction_judgments`.
+
+## Steps
+
+1. **Pull the new code:**
+   ```
+   git pull origin main
+   git checkout v0.4.0
+   ```
+
+2. **Sync dependencies** (new transitive deps: opentelemetry-*
+   packages; docling is opt-in via the `docling` extra):
+   ```
+   uv sync --frozen --all-extras
+   ```
+
+3. **Run migrations** (adds `prompt_version`, `schema_version`,
+   and the `extraction_judgments` table):
+   ```
+   alembic upgrade head
+   ```
+
+4. **(Optional) Install the new optional engines:**
+   ```
+   pip install docling                          # Docling parser
+   pip install paddleocr-vl>=1.6                # VLM-as-extractor (PaddleOCR-VL)
+   pip install "agentic-document-extraction[docling,vlm]"
+   ```
+
+5. **(Optional) Enable the new flags** in `.env`:
+   ```
+   ENABLE_DOCLING=true
+   ENABLE_VLM_EXTRACT=false    # opt-in per request
+   ```
+
+6. **(Optional) Start the Phoenix service** for trace UI:
+   ```
+   docker compose up phoenix
+   OTEL_EXPORTER_OTLP_ENDPOINT=http://phoenix:4317
+   ```
+
+7. **Verify**: the existing test suite (`just test`) and the
+   new eval metrics tests (`just test-eval`) should all pass.
+
+## Behavior changes to be aware of
+
+- The pipeline now has **7 steps** instead of 4. External
+  integrations that read the step list (UI dashboards, BI
+  pipelines) should account for the new steps.
+- The `await_review` node is a no-op when the graph is
+  compiled without a checkpointer. To enable the interrupt
+  + resume flow, pass a checkpointer to
+  `build_extraction_graph(...)` (or use
+  `build_extraction_graph_with_sqlite(...)`).
+- PaddleOCR 3.x is the default path. Set `PADDLEOCR_USE_V2=1`
+  to force the legacy 2.x code path on installs that
+  cannot upgrade.
+- The G-Eval judge samples 5% of completed extractions by
+  default. Set `judge_enabled=False` to skip entirely.
+
+## Reverting
+
+The v0.3.0 tag stays on the remote; to roll back:
+
+```
+git checkout v0.3.0
+alembic downgrade -1   # reverts the 0002 and 0003 migrations
+uv sync --frozen       # restore the v0.3.0 lockfile
+```
+
 # Migration guide: v0.2.x → v0.3.0
 
 > v0.3.0 is the modernization release. There is **one** required

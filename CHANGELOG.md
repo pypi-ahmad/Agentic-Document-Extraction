@@ -7,6 +7,56 @@ and this project aims to follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-06-22
+
+### Added
+
+- Golden set + quality metrics module (Commit 1): field F1,
+  schema conformance, ANLS, ECE, Brier, AUROC, coverage at
+  target accuracy, reliability diagram, eval report.
+- Per-field isotonic confidence calibration (Commit 2):
+  PAVA-based calibrator, JSON artifact, `just
+  eval-fit-calibrator` target.
+- Self-refine reflection loop (Commit 3): re-invokes the LLM
+  with validation feedback on failure, up to
+  `max_reflection_attempts` times.
+- LangGraph checkpointing + interrupt (Commit 4):
+  `await_review` node, `SqliteSaver` for production,
+  `InMemorySaver` for tests, `Command(resume=...)` from the
+  review endpoint.
+- OpenTelemetry + Phoenix (Commit 5): full pipeline tracing
+  with the OpenInference LangChain instrumentor, Phoenix
+  service in `docker-compose.yml`.
+- G-Eval LLM-as-judge (Commit 6): scores a sampled fraction
+  of completed extractions on four criteria; persists to the
+  new `extraction_judgments` table.
+- Versioned prompt templates + `schema_version` column
+  (Commit 7): `prompts/v1/*.md` with YAML front-matter,
+  `just eval-diff` for A/B testing.
+- PaddleOCR 3.x API (Commit 8): `predict()` with the
+  2.x `ocr()` shim behind `PADDLEOCR_USE_V2=1`.
+- Docling parser (Commit 9): IBM structured local parser;
+  best for PDFs / DOCX with tables and multi-column layouts.
+- VLM-as-extractor (Commit 10): PaddleOCR-VL-1.6 + Ollama
+  (glm-ocr in chat mode) for one-shot vision extraction.
+- Triage node (Commit 11): records the engine selection
+  decision in state for observability; `docs/ENGINES.md`
+  is the v0.4.0 reference for engines and the deprecation
+  policy.
+
+### Migration
+
+- New columns on `extractions` (`prompt_version`,
+  `schema_version`); Alembic migration `0003_prompt_schema_version`.
+- New table `extraction_judgments`; Alembic migration
+  `0002_judgments`.
+- New columns on `extractions` (none — extraction_judgments
+  is a separate table).
+- The pipeline now has 7 steps instead of 4
+  (triage + parse + extract + validate + reflect +
+  await_review + finalize). External integrations that read
+  the step list should account for the new steps.
+
 ## [0.3.0] - 2026-06-22
 
 ### Release notes

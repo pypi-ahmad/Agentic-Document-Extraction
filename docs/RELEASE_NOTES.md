@@ -1,4 +1,76 @@
-# Release notes — v0.3.0
+# Release notes — v0.4.0
+
+**Release date:** 2026-06-22
+**Type:** Minor (backward-compatible at the API level; one bootstrap step required for existing deployments — see the [Migration Guide](MIGRATION_GUIDE.md))
+
+> v0.4.0 is the **quality + OCR refresh** release. We took the
+> v0.3.0 production-ready baseline and added the eval layer,
+> the reflection loop, checkpointing + interrupt, OpenTelemetry
+> tracing, the G-Eval judge, versioned prompts, the PaddleOCR
+> 3.x API, a Docling parser, a VLM-as-extractor path, and a
+> triage node for engine selection.
+
+## What's new
+
+### Quality (Commits 1, 2, 6, 7)
+
+- **Golden set** of CORD receipts for reproducible evaluation.
+- **Eval metrics** module: field F1, schema conformance, ANLS,
+  ECE, Brier, AUROC, coverage at target accuracy, reliability
+  diagram, eval report.
+- **Per-field isotonic calibration** (PAVA, stdlib-only):
+  maps raw LLM confidence to a calibrated probability; JSON
+  artifact, git-diffable.
+- **Self-refine reflection loop**: re-invokes the LLM with
+  validation feedback on failure (up to
+  `max_reflection_attempts` times).
+- **G-Eval LLM-as-judge**: scores a sampled fraction of
+  completed extractions on four criteria via a small local
+  Ollama model; persists to the new `extraction_judgments`
+  table.
+- **Versioned prompts**: `prompts/v1/*.md` with YAML
+  front-matter; `just eval-diff` for A/B testing.
+
+### Pipeline (Commits 3, 4, 11)
+
+- **LangGraph checkpointing + interrupt**: `await_review`
+  node, `SqliteSaver` for production, `InMemorySaver` for
+  tests, `Command(resume=...)` from the review endpoint.
+- **Triage node** in front of parse: records the engine
+  selection decision in state for observability.
+
+### OCR / engines (Commits 8, 9, 10)
+
+- **PaddleOCR 3.x API** with the 2.x `ocr()` shim behind
+  `PADDLEOCR_USE_V2=1`.
+- **Docling parser** (IBM structured local parser): best for
+  PDFs / DOCX with tables and multi-column layouts.
+- **VLM-as-extractor**: PaddleOCR-VL-1.6 + Ollama (glm-ocr in
+  chat mode) for one-shot vision extraction.
+
+### Observability (Commit 5)
+
+- **OpenTelemetry + Phoenix**: full pipeline tracing with
+  the OpenInference LangChain instrumentor. Phoenix service
+  in `docker-compose.yml`. Manual spans on OCR, validation,
+  and reflection rounds.
+
+## Stats
+
+- 12 commits, ~3,800 lines added, ~80 lines removed.
+- 96 new tests (538 total passing at release).
+- 4 new database tables / column sets.
+- 3 new pipeline steps (reflect, await_review, triage).
+
+## Breaking changes
+
+None at the HTTP API level. The pipeline step list now has 7
+entries instead of 4; external integrations that read the
+step list should account for the new steps.
+
+## Upgrade steps
+
+See [MIGRATION_GUIDE.md](MIGRATION_GUIDE.md).
 
 **Release date:** 2026-06-22
 **Type:** Minor (backward-compatible; one bootstrap step required for existing deployments — see the [Migration Guide](MIGRATION_GUIDE.md))
