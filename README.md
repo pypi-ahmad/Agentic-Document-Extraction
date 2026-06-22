@@ -22,6 +22,7 @@ Built with **FastAPI**, **LangGraph**, **SQLAlchemy (async)**, **Next.js
 - [Supported file types and parsers](#supported-file-types-and-parsers)
 - [Configuration](#configuration)
 - [API at a glance](#api-at-a-glance)
+- [MCP server](#mcp-server)
 - [Documentation](#documentation)
 - [Testing](#testing)
 - [Architecture in one diagram](#architecture-in-one-diagram)
@@ -239,6 +240,57 @@ All settings live in `backend/.env` (template in `backend/.env.example`).
 
 ---
 
+## MCP server
+
+v0.6.0 adds a stdio MCP server so MCP-aware clients (Claude Desktop,
+Cursor, Cline, Continue) can call extraction tools directly.
+
+### Install MCP extra
+
+```bash
+source .venv/bin/activate
+uv pip install -e ".[mcp]"
+```
+
+### Run MCP server
+
+```bash
+# from repo root
+just mcp
+
+# or if installed as an entry point
+ade-mcp
+```
+
+### Example client config (Claude Desktop)
+
+```json
+{
+  "mcpServers": {
+    "agentic-document-extraction": {
+      "command": "/ABSOLUTE/PATH/Agentic-Document-Extraction/.venv/bin/python",
+      "args": ["-m", "app.mcp_server"],
+      "cwd": "/ABSOLUTE/PATH/Agentic-Document-Extraction",
+      "env": {
+        "PYTHONPATH": "."
+      }
+    }
+  }
+}
+```
+
+Tools exposed by MCP server:
+
+- `extract_document`
+- `verify_extraction`
+- `resolve_entities`
+- `eval_golden_set`
+
+Full guide, tool schemas, and troubleshooting:
+[`docs/MCP.md`](docs/MCP.md)
+
+---
+
 ## Documentation
 
 The project ships with a zero-to-hero docs set:
@@ -251,6 +303,8 @@ The project ships with a zero-to-hero docs set:
 - [`docs/GLM_OCR.md`](docs/GLM_OCR.md) — what GLM-OCR is, when to
   use it, how to install it via Ollama, and the contract it exposes
   inside this project.
+- [`docs/MCP.md`](docs/MCP.md) — full MCP setup guide, client
+  configuration examples, tool I/O contracts, and troubleshooting.
 - [`docs/LIMITATIONS.md`](docs/LIMITATIONS.md) — what this stack
   explicitly does **not** do (scanned-PDF OCR, multi-worker
   queueing, etc.) and why.
@@ -271,6 +325,9 @@ pytest backend/tests/ -v
 
 # With coverage
 pytest --cov=app --cov-report=term-missing backend/tests/
+
+# MCP server tests only
+pytest backend/tests/test_mcp_server.py -v
 
 # Only the GLM-OCR provider
 pytest backend/tests/test_glm_ocr_provider.py -v
@@ -323,7 +380,7 @@ breakdown.
 
 ## Status, limitations, and roadmap
 
-This is **beta software** (0.2.x). It is feature-complete for the
+This is **beta software** (0.6.x). It is feature-complete for the
 local-first extraction workflow it was designed for, but it is not yet
 production-grade at scale. Known limitations:
 

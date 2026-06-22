@@ -82,8 +82,8 @@ async def test_info(client: AsyncClient):
     assert resp.status_code == 200
     data = resp.json()
     assert data["app_name"] == "Agentic Document Extraction"
-    # v0.5.0 bumped the version to 0.5.0.
-    assert data["version"] == "0.5.0"
+    # v0.6.0 bumped the version to 0.6.0.
+    assert data["version"] == "0.6.0"
     assert data["python_version"]
     assert isinstance(data["pipeline_nodes"], list)
     assert "parse" in data["pipeline_nodes"]

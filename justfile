@@ -114,6 +114,23 @@ logs:
 down:
     docker compose down
 
+# ── MCP server (v0.6.0) ───────────────────────────────────────────
+
+# Install the MCP extra (mcp[cli]>=1.0.0).
+install-mcp:
+    uv pip install -e ".[mcp]"
+
+# Run the MCP server over stdio. Configure your MCP client
+# (Claude Desktop, Cursor, Cline, Continue) to launch this
+# command. See docs/MCP.md for client config examples.
+mcp:
+    .venv/bin/python -m app.mcp_server
+
+# Run the MCP server via the installed `ade-mcp` entry point.
+# (Requires: uv pip install -e ".[mcp]")
+mcp-entry:
+    ade-mcp
+
 # ── Database ─────────────────────────────────────────────────────────
 
 # Create or upgrade the SQLite database to the latest Alembic revision.
