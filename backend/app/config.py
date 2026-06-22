@@ -75,6 +75,22 @@ class Settings(BaseSettings):
     otel_service_version: str = "0.4.0"
     otel_deployment_environment: str = "dev"
 
+    # ── G-Eval LLM-as-judge ──
+    judge_enabled: bool = True
+    """Set to False to skip the G-Eval sampling and judge calls entirely."""
+    judge_sample_rate: float = 0.05
+    """Fraction of completed extractions to send to the judge (0.0-1.0)."""
+    judge_ollama_model: str = "qwen3.5:4b"
+    """Ollama model used as the G-Eval judge. 4B is the floor for reliable
+    G-Eval CoT scoring; 9B is the recommended opt-in for the strictest
+    grading."""
+    judge_ollama_base_url: str = ""  # falls back to settings.ollama_base_url
+    judge_ollama_timeout_seconds: float = 60.0
+    judge_min_overall_score: float = 3.5
+    """Extractions whose judge overall score falls below this are
+    flagged in the audit log (does not change the user-visible status)."""
+    judge_version: str = "geval-1"
+
     # ── Server ──
     host: str = "0.0.0.0"
     port: int = 8000
