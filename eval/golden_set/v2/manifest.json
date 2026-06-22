@@ -1,0 +1,6 @@
+{
+  "version": "v2",
+  "license": "Mixed; per-dataset license is recorded in the entries below.",
+  "note": "Empty manifest; populated by `python scripts/fetch_docvqa.py --enable-multi-dataset`.",
+  "datasets": []
+}
