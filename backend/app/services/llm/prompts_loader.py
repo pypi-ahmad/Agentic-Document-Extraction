@@ -84,9 +84,7 @@ def _parse(path: Path) -> Prompt:
     text = path.read_text(encoding="utf-8")
     match = _FRONTMATTER_RE.match(text)
     if not match:
-        raise ValueError(
-            f"prompt {path} has no YAML front-matter; expected '---' delimiter"
-        )
+        raise ValueError(f"prompt {path} has no YAML front-matter; expected '---' delimiter")
     meta = yaml.safe_load(match.group("meta")) or {}
     body = match.group("body").strip("\n")
     return Prompt(

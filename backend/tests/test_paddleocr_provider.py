@@ -86,9 +86,7 @@ async def test_extract_v3_returns_ocr_result(
         raising=False,
     )
     # Replace the import in the function body.
-    monkeypatch.setitem(
-        __import__("sys").modules, "paddleocr", _FakePaddleOcr3Module()
-    )
+    monkeypatch.setitem(__import__("sys").modules, "paddleocr", _FakePaddleOcr3Module())
 
     p = PaddleOCRProvider()
     file = tmp_path / "x.png"

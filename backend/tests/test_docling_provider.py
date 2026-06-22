@@ -78,17 +78,13 @@ _TEXT_FALLBACK = ""
 
 
 @pytest.mark.asyncio
-async def test_extract_text_per_page(
-    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
-) -> None:
+async def test_extract_text_per_page(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     global _PAGES_TO_RETURN, _TEXT_FALLBACK
     _PAGES_TO_RETURN = [_FakePage("Page 1"), _FakePage("Page 2")]
     _TEXT_FALLBACK = "ignored when pages present"
 
     monkeypatch.setattr(provider_mod, "importlib", _FakeImportModule())  # docling "installed"
-    monkeypatch.setitem(
-        sys.modules, "docling", _FakeDoclingModule(_FakeConverter)
-    )
+    monkeypatch.setitem(sys.modules, "docling", _FakeDoclingModule(_FakeConverter))
 
     p = DoclingProvider()
     file = tmp_path / "doc.pdf"
@@ -114,9 +110,7 @@ async def test_extract_text_no_pages_falls_back_to_markdown(
     _TEXT_FALLBACK = "# Full document\n\nAll content here."
 
     monkeypatch.setattr(provider_mod, "importlib", _FakeImportModule())
-    monkeypatch.setitem(
-        sys.modules, "docling", _FakeDoclingModule(_FakeConverter)
-    )
+    monkeypatch.setitem(sys.modules, "docling", _FakeDoclingModule(_FakeConverter))
 
     p = DoclingProvider()
     file = tmp_path / "x.docx"
