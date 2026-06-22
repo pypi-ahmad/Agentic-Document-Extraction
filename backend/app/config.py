@@ -42,6 +42,24 @@ class Settings(BaseSettings):
     (it ships its own ML models) but produces structured Markdown
     out of the box, which downstream extractors can parse more
     reliably than free-form OCR text."""
+    # v0.5.0 — multi-modal evidence-grounded pipeline
+    enable_layout_parsing: bool = True
+    """When true (default in v0.5.0), the parse node uses the layout
+    provider to emit per-region metadata (bbox, region_type, reading
+    order) on top of flat text. Disable to fall back to the v0.4.0
+    OCR-only path."""
+    enable_verifier: bool = True
+    """When true, the graph runs the verifier node between
+    validation and finalization. The verifier checks the LLM's
+    output against the evidence map and the document text; any
+    disagreement routes the disputed field to human review."""
+    enable_double_pass: bool = True
+    """When true, the reflect node runs the extractor twice with
+    different seeds and forces an explanation of any diff. v0.4.0
+    behaviour (single pass) is preserved when this is false."""
+    enable_cross_page_entities: bool = True
+    """When true, the graph runs the cross-page entity resolver
+    to merge mentions of the same entity across pages."""
     # Local Ollama endpoint used by the GLM-OCR provider.
     ollama_base_url: str = "http://localhost:11434"
     ollama_glm_ocr_model: str = "glm-ocr:latest"
