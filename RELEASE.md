@@ -81,7 +81,51 @@ If `--notes` is omitted, the script drafts release notes from the
 conventional-commit subjects since the last tag. **Always review the
 draft** before running with `--push`.
 
-### 3.3 Manual flow (small fixes only)
+### 3.3 Publish Python package (TestPyPI + PyPI)
+
+v0.6.0+ uses GitHub Actions + Trusted Publishing (OIDC).
+
+Workflows:
+
+- `.github/workflows/publish-testpypi.yml`
+- `.github/workflows/publish-pypi.yml`
+
+Trigger behavior:
+
+- TestPyPI: manual `workflow_dispatch` or prerelease publish.
+- PyPI: release `published` (non-prerelease) or manual `workflow_dispatch`.
+
+Both workflows build with `uv build`, validate with `twine check`, then publish
+with `pypa/gh-action-pypi-publish`.
+
+#### One-time setup in package indexes
+
+Create Trusted Publisher entries in both TestPyPI and PyPI for this repository.
+
+- Owner: `pypi-ahmad`
+- Repository: `Agentic-Document-Extraction`
+- Workflow file:
+  - TestPyPI: `.github/workflows/publish-testpypi.yml`
+  - PyPI: `.github/workflows/publish-pypi.yml`
+- Environment names:
+  - TestPyPI: `testpypi`
+  - PyPI: `pypi`
+
+No API tokens needed when Trusted Publishing is configured correctly.
+
+#### Verify published artifacts
+
+```bash
+# PyPI
+pip install agentic-document-extraction
+
+# TestPyPI
+pip install --index-url https://test.pypi.org/simple/ \
+  --extra-index-url https://pypi.org/simple \
+  agentic-document-extraction
+```
+
+### 3.4 Manual flow (small fixes only)
 
 If you really want to do it by hand:
 

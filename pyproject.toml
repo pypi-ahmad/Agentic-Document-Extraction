@@ -127,10 +127,14 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 packages = ["backend/app"]
 
+[tool.hatch.build.targets.wheel.force-include]
+"prompts" = "app/prompts"
+
 [tool.hatch.build.targets.sdist]
 include = [
   "backend/app/**",
   "backend/app/py.typed",
+  "prompts/**",
   "README.md",
   "LICENSE",
   "CHANGELOG.md",

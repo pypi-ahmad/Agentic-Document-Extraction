@@ -88,6 +88,16 @@ jobs:
           path: coverage.xml
           if-no-files-found: ignore
 
+      - name: Build package distributions
+        run: |
+          source .venv/bin/activate
+          uv build
+
+      - name: Validate package metadata
+        run: |
+          source .venv/bin/activate
+          uvx twine check dist/*
+
   frontend:
     name: Frontend lint + build
     runs-on: ubuntu-latest

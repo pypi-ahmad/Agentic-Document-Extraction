@@ -91,6 +91,7 @@ from app.services.extraction.verifier import (
     VerifierOutput,
     resolve_disputes,
 )
+from app.services.llm.prompts_loader import load_prompt
 
 logger = logging.getLogger(__name__)
 
@@ -731,10 +732,12 @@ async def _call_ollama(document_text: str, fields_block: str) -> dict[str, Any]:
 def _build_v2_prompt(document_text: str, fields_block: str) -> str:
     """Build the v2/extraction.md prompt with fields + text filled in."""
 
-    template_path = Path(__file__).parent.parent / "prompts" / "v2" / "extraction.md"
     try:
-        template = template_path.read_text()
-    except FileNotFoundError:
+        return load_prompt("extraction", "v2").render(
+            fields_block=fields_block,
+            text=document_text,
+        )
+    except Exception:
         template = (
             "You are a document data extraction assistant with strict "
             "evidence requirements. For every value, cite evidence "
