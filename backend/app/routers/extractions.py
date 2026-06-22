@@ -53,7 +53,15 @@ logger = logging.getLogger(__name__)
 
 # Maximum wall-clock time for a single extraction job (seconds).
 _JOB_TIMEOUT = JOB_TIMEOUT_S
-_PIPELINE_STEPS = ("parse", "extract", "validate", "reflect", "await_review", "finalize")
+_PIPELINE_STEPS = (
+    "triage",
+    "parse",
+    "extract",
+    "validate",
+    "reflect",
+    "await_review",
+    "finalize",
+)
 
 
 def _no_store_headers(extra_headers: dict[str, str] | None = None) -> dict[str, str]:
@@ -300,15 +308,17 @@ async def _run_extraction_pipeline(extraction_id: str) -> None:
         step_start = _dt.datetime.now(_dt.UTC)
         pipeline_error: str | None = None
 
-        # Create first step as "running" so SSE/polls see it immediately
+        # Create first step as "running" so SSE/polls see it immediately.
+        # Use the first entry of _PIPELINE_STEPS so a new pipeline step
+        # only needs to be added to the tuple.
         current_step = ExtractionStep(
             extraction_id=extraction_id,
-            name="parse",
+            name=_PIPELINE_STEPS[0],
             status="running",
             started_at=step_start,
         )
         db.add(current_step)
-        created_steps["parse"] = current_step
+        created_steps[_PIPELINE_STEPS[0]] = current_step
         await db.commit()
 
         try:
