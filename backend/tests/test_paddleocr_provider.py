@@ -33,7 +33,9 @@ def test_paddleocr_version_when_uninstalled(monkeypatch: pytest.MonkeyPatch) -> 
     This test is skipped when paddleocr is actually installed (e.g. in CI),
     since the mock cannot override an already-imported module.
     """
-    pytest.importorskip("paddleocr", reason="paddleocr is installed, cannot test uninstalled version")
+    pytest.importorskip(
+        "paddleocr", reason="paddleocr is installed, cannot test uninstalled version"
+    )
 
     monkeypatch.setattr(
         provider_mod,
