@@ -36,9 +36,10 @@ def test_paddleocr_version_when_uninstalled(monkeypatch: pytest.MonkeyPatch) -> 
     # Skip if paddleocr is already importable (e.g. in CI)
     try:
         import paddleocr  # noqa: F401
-        pytest.skip("paddleocr is installed, cannot test uninstalled version")
     except ImportError:
         pass
+    else:
+        pytest.skip("paddleocr is installed, cannot test uninstalled version")
 
     monkeypatch.setattr(
         provider_mod,

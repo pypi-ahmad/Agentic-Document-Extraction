@@ -253,9 +253,10 @@ def test_paddleocr_availability_probe_treats_native_import_failure_as_unavailabl
     # Skip if paddleocr is already importable (e.g. in CI)
     try:
         import paddleocr  # noqa: F401
-        pytest.skip("paddleocr is installed, cannot test import failure")
     except ImportError:
         pass
+    else:
+        pytest.skip("paddleocr is installed, cannot test import failure")
 
     from app.services.ocr.paddleocr_provider import PaddleOCRProvider
 
