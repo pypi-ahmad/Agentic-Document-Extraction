@@ -101,6 +101,12 @@ class Extraction(Base):
         lazy="selectin",
         order_by="ExtractionReview.id",
     )
+    judgments: Mapped[list["ExtractionJudgment"]] = relationship(
+        back_populates="extraction",
+        cascade="all, delete-orphan",
+        lazy="selectin",
+        order_by="ExtractionJudgment.id",
+    )
 
 
 class ExtractionStep(Base):
@@ -143,6 +149,37 @@ class ExtractionReview(Base):
     )
 
     extraction: Mapped["Extraction"] = relationship(back_populates="reviews")
+
+
+class ExtractionJudgment(Base):
+    """LLM-as-judge (G-Eval) score for one extraction.
+
+    Written by ``app.services.eval.judge.GEvalJudge`` for a sample of
+    completed extractions (controlled by ``Settings.judge_sample_rate``).
+    Used to surface quality regressions that the deterministic metrics
+    miss (e.g. plausible-but-wrong values).
+    """
+
+    __tablename__ = "extraction_judgments"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    extraction_id: Mapped[str] = mapped_column(
+        String(32), ForeignKey("extractions.id", ondelete="CASCADE"), nullable=False
+    )
+    judge_model: Mapped[str] = mapped_column(String(100), nullable=False)
+    judge_version: Mapped[str] = mapped_column(String(20), nullable=False, default="geval-1")
+    scores: Mapped[dict] = mapped_column(JSON, nullable=False, default=dict)
+    """Per-criterion scores: {criterion: {score: 1-5, reason: str}}"""
+    overall_score: Mapped[float] = mapped_column(nullable=False)
+    """Mean of the per-criterion scores, in [1, 5]."""
+    reasoning: Mapped[str | None] = mapped_column(Text, nullable=True)
+    """Chain-of-thought reasoning from the judge model (truncated to 4 KB)."""
+    latency_ms: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    created_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+
+    extraction: Mapped["Extraction"] = relationship(back_populates="judgments")
 
 
 class ExtractionAuditLog(Base):
