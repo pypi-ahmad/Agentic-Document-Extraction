@@ -7,6 +7,30 @@ and this project aims to follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- **Trusted Publishing workflows for package releases.** Added
+  `.github/workflows/publish-testpypi.yml` and
+  `.github/workflows/publish-pypi.yml` to publish built distributions
+  through OIDC (no API tokens) to TestPyPI and PyPI.
+- **Package-install docs for PyPI/TestPyPI users.** README and
+  release docs now include package install commands, extras usage, and
+  Trusted Publishing setup notes.
+
+### Changed
+
+- **Prompt assets packaged with wheels/sdists.** Build configuration now
+  force-includes `prompts/**` into the wheel under `app/prompts` and
+  includes prompts in source distributions.
+- **Prompt loader path resolution hardened.** Prompt loading now supports
+  repository installs, packaged installs, and an override via
+  `ADE_PROMPTS_DIR`.
+- **MCP prompt resolution aligned with prompt loader.**
+  `app.mcp_server` now loads `v2` extraction prompts through
+  `load_prompt(...)`, with fallback template behavior preserved.
+- **CI validates build artifacts.** Main CI now runs `uv build` and
+  `twine check dist/*` after tests.
+
 ## [0.6.0] - 2026-06-22
 
 ### Added

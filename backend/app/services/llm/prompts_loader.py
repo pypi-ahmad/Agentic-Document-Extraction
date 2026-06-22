@@ -34,6 +34,7 @@ Public API
 from __future__ import annotations
 
 import logging
+import os
 import re
 from collections.abc import Mapping
 from dataclasses import dataclass
@@ -43,9 +44,31 @@ import yaml
 
 logger = logging.getLogger(__name__)
 
-# Repository root: four levels up from this file
-# (backend/app/services/llm/prompts_loader.py -> ... -> repo root).
-_PROMPTS_DIR = Path(__file__).resolve().parents[4] / "prompts"
+_PACKAGE_PROMPTS_DIR = Path(__file__).resolve().parents[2] / "prompts"
+_REPO_PROMPTS_DIR = Path(__file__).resolve().parents[4] / "prompts"
+
+
+def _resolve_prompts_dir() -> Path:
+    """Resolve the default prompts directory.
+
+    Resolution order:
+    1) ``ADE_PROMPTS_DIR`` environment override.
+    2) Repository root prompts (editable/dev installs).
+    3) Packaged prompts under ``app/prompts`` (wheel installs).
+    4) Repo-root fallback path for error messaging consistency.
+    """
+
+    override = os.environ.get("ADE_PROMPTS_DIR")
+    if override:
+        return Path(override).expanduser()
+    if _REPO_PROMPTS_DIR.exists():
+        return _REPO_PROMPTS_DIR
+    if _PACKAGE_PROMPTS_DIR.exists():
+        return _PACKAGE_PROMPTS_DIR
+    return _REPO_PROMPTS_DIR
+
+
+_PROMPTS_DIR = _resolve_prompts_dir()
 
 # Regex for the YAML front-matter block. Non-greedy on the body.
 _FRONTMATTER_RE = re.compile(

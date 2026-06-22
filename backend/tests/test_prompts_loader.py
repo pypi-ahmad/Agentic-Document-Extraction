@@ -7,6 +7,7 @@ from pathlib import Path
 import pytest
 
 from app.services.llm import prompts as prompts_module
+from app.services.llm import prompts_loader as loader_module
 from app.services.llm.prompts_loader import (
     Prompt,
     PromptNotFoundError,
@@ -113,3 +114,25 @@ def test_load_rejects_file_without_front_matter(tmp_path: Path) -> None:
     (p / "broken.md").write_text("no front matter here\njust body\n")
     with pytest.raises(ValueError, match="front-matter"):
         load_prompt("broken", "v9", prompts_dir=tmp_path)
+
+
+def test_resolve_prompts_dir_honors_env_override(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    custom = tmp_path / "custom-prompts"
+    monkeypatch.setenv("ADE_PROMPTS_DIR", str(custom))
+    assert loader_module._resolve_prompts_dir() == custom
+
+
+def test_resolve_prompts_dir_falls_back_to_package_path(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    repo_prompts = tmp_path / "repo-prompts"
+    package_prompts = tmp_path / "package-prompts"
+    package_prompts.mkdir()
+    monkeypatch.delenv("ADE_PROMPTS_DIR", raising=False)
+    monkeypatch.setattr(loader_module, "_REPO_PROMPTS_DIR", repo_prompts)
+    monkeypatch.setattr(loader_module, "_PACKAGE_PROMPTS_DIR", package_prompts)
+    assert loader_module._resolve_prompts_dir() == package_prompts

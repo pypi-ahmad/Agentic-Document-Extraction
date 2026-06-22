@@ -18,6 +18,7 @@ Built with **FastAPI**, **LangGraph**, **SQLAlchemy (async)**, **Next.js
 
 - [Why this project](#why-this-project)
 - [What it does](#what-it-does)
+- [Python package](#python-package)
 - [Quick start](#quick-start)
 - [Supported file types and parsers](#supported-file-types-and-parsers)
 - [Configuration](#configuration)
@@ -89,6 +90,43 @@ in the UI.
 pending → queued → processing → ocr_complete → extracted → completed
                                                          ↘ needs_review
                                                          ↘ failed
+```
+
+---
+
+## Python package
+
+You can install the backend as a normal Python package.
+
+```bash
+pip install agentic-document-extraction
+```
+
+Useful extras:
+
+```bash
+# MCP server support
+pip install "agentic-document-extraction[mcp]"
+
+# OCR and local-ollama integrations
+pip install "agentic-document-extraction[paddleocr,ollama]"
+
+# test and lint tooling
+pip install "agentic-document-extraction[test,lint]"
+```
+
+After install, the MCP entry point is available as:
+
+```bash
+ade-mcp
+```
+
+For staging publish checks, TestPyPI install pattern is:
+
+```bash
+pip install --index-url https://test.pypi.org/simple/ \
+  --extra-index-url https://pypi.org/simple \
+  agentic-document-extraction
 ```
 
 ---
@@ -305,6 +343,8 @@ The project ships with a zero-to-hero docs set:
   inside this project.
 - [`docs/MCP.md`](docs/MCP.md) — full MCP setup guide, client
   configuration examples, tool I/O contracts, and troubleshooting.
+- [`RELEASE.md`](RELEASE.md) — release + package publish workflow,
+  including TestPyPI/PyPI trusted publishing.
 - [`docs/LIMITATIONS.md`](docs/LIMITATIONS.md) — what this stack
   explicitly does **not** do (scanned-PDF OCR, multi-worker
   queueing, etc.) and why.
