@@ -86,6 +86,12 @@ eval manifest="eval/golden_set/v1/manifest.json":
 eval-diff:
     .venv/bin/python -c "from scripts.eval_diff import main; main()"
 
+# Fetch the v0.5.0 multi-dataset golden set (DocVQA + InfographicVQA).
+# Requires --enable-multi-dataset because these are research-only datasets.
+# Run with: just fetch-multi-dataset
+fetch-multi-dataset:
+    .venv/bin/python scripts/fetch_docvqa.py --enable-multi-dataset
+
 # ── Running the app ──────────────────────────────────────────────────
 
 # Run the backend on port 8000 with hot reload.
