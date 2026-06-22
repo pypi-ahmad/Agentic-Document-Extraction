@@ -159,9 +159,7 @@ class _MockTransport(httpx.AsyncBaseTransport):
 
 
 @pytest.mark.asyncio
-async def test_extract_with_vlm_ollama(
-    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
-) -> None:
+async def test_extract_with_vlm_ollama(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     monkeypatch.setattr("app.config.settings.enable_vlm_extract", True)
     monkeypatch.setattr("app.config.settings.vlm_default_model", "ollama")
     monkeypatch.setattr("app.config.settings.ollama_base_url", "http://mock:11434")

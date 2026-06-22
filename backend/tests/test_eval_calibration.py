@@ -142,9 +142,7 @@ def test_fit_calibrator_drops_under_sampled_fields() -> None:
 
 def test_fit_calibrator_underconfident_pushed_up() -> None:
     """Conf=0.5 but always correct → calibration should map 0.5 to 1.0."""
-    samples = [
-        _make_sample({"x": 0.5}, {"x": True}) for _ in range(20)
-    ]
+    samples = [_make_sample({"x": 0.5}, {"x": True}) for _ in range(20)]
     c = fit_calibrator(samples)
     out = apply_calibration(c, {"x": 0.5})
     assert out["x"] > 0.9
@@ -152,9 +150,7 @@ def test_fit_calibrator_underconfident_pushed_up() -> None:
 
 def test_fit_calibrator_overconfident_pushed_down() -> None:
     """Conf=0.9 but always wrong → calibration should map 0.9 to 0.0."""
-    samples = [
-        _make_sample({"x": 0.9}, {"x": False}) for _ in range(20)
-    ]
+    samples = [_make_sample({"x": 0.9}, {"x": False}) for _ in range(20)]
     c = fit_calibrator(samples)
     out = apply_calibration(c, {"x": 0.9})
     assert out["x"] < 0.1
@@ -201,9 +197,7 @@ def test_field_calibrator_unknown_field_no_default() -> None:
 
 
 def test_calibrator_save_load_roundtrip(tmp_path: Path) -> None:
-    samples = [
-        _make_sample({"a": 0.5}, {"a": True}) for _ in range(10)
-    ] + [
+    samples = [_make_sample({"a": 0.5}, {"a": True}) for _ in range(10)] + [
         _make_sample({"a": 0.9}, {"a": False}) for _ in range(10)
     ]
     c = fit_calibrator(samples)

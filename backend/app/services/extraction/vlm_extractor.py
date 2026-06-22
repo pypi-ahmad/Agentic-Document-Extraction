@@ -297,9 +297,7 @@ async def extract_with_vlm(
             file_path=file_path, schema_fields=schema_fields, client=client
         )
     # Custom: try the Ollama path with the configured model name.
-    return await _call_ollama_vlm(
-        file_path=file_path, schema_fields=schema_fields, client=client
-    )
+    return await _call_ollama_vlm(file_path=file_path, schema_fields=schema_fields, client=client)
 
 
 __all__ = [

@@ -116,14 +116,18 @@ def test_parse_judge_response_clamps_to_1_5() -> None:
 
 
 def test_parse_judge_response_strips_code_fence() -> None:
-    raw = "```json\n" + json.dumps(
-        {
-            "correctness": {"score": 4, "reason": "ok"},
-            "completeness": {"score": 4, "reason": "ok"},
-            "schema_conformance": {"score": 4, "reason": "ok"},
-            "fluency": {"score": 4, "reason": "ok"},
-        }
-    ) + "\n```"
+    raw = (
+        "```json\n"
+        + json.dumps(
+            {
+                "correctness": {"score": 4, "reason": "ok"},
+                "completeness": {"score": 4, "reason": "ok"},
+                "schema_conformance": {"score": 4, "reason": "ok"},
+                "fluency": {"score": 4, "reason": "ok"},
+            }
+        )
+        + "\n```"
+    )
     scores, _ = parse_judge_response(raw)
     assert scores["correctness"].score == 4
 
@@ -233,8 +237,12 @@ async def test_judge_extraction_handles_unparseable_response(
 
 def test_is_below_threshold_uses_default(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr("app.config.settings.judge_min_overall_score", 3.5)
-    assert is_below_threshold(Judgment(extraction_id="x", judge_model="m", judge_version="geval-1", overall_score=3.0))
-    assert not is_below_threshold(Judgment(extraction_id="x", judge_model="m", judge_version="geval-1", overall_score=4.0))
+    assert is_below_threshold(
+        Judgment(extraction_id="x", judge_model="m", judge_version="geval-1", overall_score=3.0)
+    )
+    assert not is_below_threshold(
+        Judgment(extraction_id="x", judge_model="m", judge_version="geval-1", overall_score=4.0)
+    )
 
 
 def test_is_below_threshold_zero_is_never_flagged() -> None:

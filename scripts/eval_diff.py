@@ -83,7 +83,9 @@ def main(runs_dir: str = "eval/runs") -> int:
         d = _delta(c, p)
         direction = DIRECTION.get(k, "up")
         is_regression = False
-        if (direction == "up" and d < 0 and abs(d) > REGRESSION_DELTA.get(k, 0.05)) or (direction == "down" and d > 0 and abs(d) > REGRESSION_DELTA.get(k, 0.05)):
+        if (direction == "up" and d < 0 and abs(d) > REGRESSION_DELTA.get(k, 0.05)) or (
+            direction == "down" and d > 0 and abs(d) > REGRESSION_DELTA.get(k, 0.05)
+        ):
             is_regression = True
         marker = "  ⚠️" if is_regression else ""
         if is_regression:

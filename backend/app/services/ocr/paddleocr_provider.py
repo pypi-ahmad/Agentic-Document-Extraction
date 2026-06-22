@@ -150,9 +150,7 @@ class PaddleOCRProvider(BaseOCRProvider):
                         bbox = (min(xs), min(ys), max(xs), max(ys))
                     except (TypeError, IndexError, ValueError):
                         bbox = None
-                blocks.append(
-                    OCRBlock(text=str(text), bbox=bbox, confidence=conf)
-                )
+                blocks.append(OCRBlock(text=str(text), bbox=bbox, confidence=conf))
                 lines.append(str(text))
                 all_confidences.append(conf)
 
@@ -173,9 +171,7 @@ class PaddleOCRProvider(BaseOCRProvider):
                 )
             )
 
-        doc_confidence = (
-            sum(all_confidences) / len(all_confidences) if all_confidences else None
-        )
+        doc_confidence = sum(all_confidences) / len(all_confidences) if all_confidences else None
         return OCRResult(
             text="\n\n".join(pages),
             pages=pages,
@@ -228,9 +224,7 @@ class PaddleOCRProvider(BaseOCRProvider):
                     )
                 except (TypeError, IndexError, ValueError):
                     bbox = None
-                blocks.append(
-                    OCRBlock(text=str(text), bbox=bbox, confidence=conf)
-                )
+                blocks.append(OCRBlock(text=str(text), bbox=bbox, confidence=conf))
                 lines.append(str(text))
                 all_confidences.append(conf)
 
@@ -251,9 +245,7 @@ class PaddleOCRProvider(BaseOCRProvider):
                 )
             )
 
-        doc_confidence = (
-            sum(all_confidences) / len(all_confidences) if all_confidences else None
-        )
+        doc_confidence = sum(all_confidences) / len(all_confidences) if all_confidences else None
         return OCRResult(
             text="\n\n".join(pages),
             pages=pages,

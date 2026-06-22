@@ -163,10 +163,7 @@ class FieldCalibrator:
                 if self.default_isotonic
                 else None
             ),
-            "maps": {
-                k: {"xs": list(m.xs), "ys": list(m.ys)}
-                for k, m in self.maps.items()
-            },
+            "maps": {k: {"xs": list(m.xs), "ys": list(m.ys)} for k, m in self.maps.items()},
         }
 
     @classmethod
@@ -198,7 +195,9 @@ class FieldCalibrator:
         p = Path(path)
         p.parent.mkdir(parents=True, exist_ok=True)
         p.write_text(json.dumps(self.to_dict(), indent=2, sort_keys=True))
-        logger.info("calibrator saved to %s (%d fields, %d samples)", p, len(self.maps), self.n_samples)
+        logger.info(
+            "calibrator saved to %s (%d fields, %d samples)", p, len(self.maps), self.n_samples
+        )
 
     @classmethod
     def load(cls, path: str | Path) -> FieldCalibrator:

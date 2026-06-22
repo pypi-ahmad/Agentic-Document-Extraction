@@ -78,27 +78,13 @@ def field_f1(
     """
     if fields is None:
         fields = sorted(set(expected) | set(predicted))
-    comparisons = [
-        compare_field(f, expected.get(f), predicted.get(f)) for f in fields
-    ]
+    comparisons = [compare_field(f, expected.get(f), predicted.get(f)) for f in fields]
     tp = sum(1 for c in comparisons if c.correct)
-    fp = sum(
-        1
-        for c in comparisons
-        if not c.correct and _normalize(c.predicted) != ""
-    )
-    fn = sum(
-        1
-        for c in comparisons
-        if not c.correct and _normalize(c.expected) != ""
-    )
+    fp = sum(1 for c in comparisons if not c.correct and _normalize(c.predicted) != "")
+    fn = sum(1 for c in comparisons if not c.correct and _normalize(c.expected) != "")
     precision = tp / (tp + fp) if (tp + fp) else 0.0
     recall = tp / (tp + fn) if (tp + fn) else 0.0
-    f1 = (
-        2 * precision * recall / (precision + recall)
-        if (precision + recall)
-        else 0.0
-    )
+    f1 = 2 * precision * recall / (precision + recall) if (precision + recall) else 0.0
     return precision, recall, f1, comparisons
 
 
@@ -119,8 +105,7 @@ def schema_conformance_rate(
     for pred in predicted_list:
         total += 1
         if all(field in pred for field in required) and all(
-            isinstance(v, (str, int, float, bool, list, dict, type(None)))
-            for v in pred.values()
+            isinstance(v, (str, int, float, bool, list, dict, type(None))) for v in pred.values()
         ):
             valid += 1
     return valid / total if total else 0.0
@@ -295,9 +280,7 @@ def reliability_diagram_text(
         avg_acc = sum(pairs[i][1] for i in indices) / len(indices)
         gap = avg_conf - avg_acc
         bar = "#" * max(1, int(avg_acc * 30))
-        lines.append(
-            f"{lo:5.2f}-{hi:4.2f} {len(indices):6d} {avg_acc:6.2f} {gap:+6.2f}  {bar}"
-        )
+        lines.append(f"{lo:5.2f}-{hi:4.2f} {len(indices):6d} {avg_acc:6.2f} {gap:+6.2f}  {bar}")
     return "\n".join(lines)
 
 
@@ -426,27 +409,21 @@ def build_report(
         predicted = pred.get("result", {})
         for field in all_fields:
             score = float(conf.get(field, 0.0))
-            is_correct = compare_field(
-                field, expected.get(field), predicted.get(field)
-            ).correct
+            is_correct = compare_field(field, expected.get(field), predicted.get(field)).correct
             all_confs.append(score)
             all_correct.append(is_correct)
             per_field_scores.setdefault(field, []).append(1.0 if is_correct else 0.0)
 
-    per_field_f1 = {
-        field: sum(s) / len(s) if s else 0.0
-        for field, s in per_field_scores.items()
-    }
+    per_field_f1 = {field: sum(s) / len(s) if s else 0.0 for field, s in per_field_scores.items()}
 
     pred_strs = [p.get("result", {}) for p in predictions]
     schema_rate = schema_conformance_rate(pred_strs, required_fields=required_fields)
     coverage, threshold = coverage_at_target_accuracy(all_confs, all_correct, 0.95)
     if all_confs:
         n_pos_pred = sum(1 for p in all_confs if p > 0)
-        precision = (
-            sum(1 for c, p in zip(all_correct, all_confs, strict=True) if c and p > 0)
-            / max(1, n_pos_pred)
-        )
+        precision = sum(
+            1 for c, p in zip(all_correct, all_confs, strict=True) if c and p > 0
+        ) / max(1, n_pos_pred)
         recall = precision  # Same denominator, same numerator.
         f1_score = sum(all_correct) / len(all_correct)
     else:

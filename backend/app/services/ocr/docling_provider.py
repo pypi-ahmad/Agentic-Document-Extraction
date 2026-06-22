@@ -98,9 +98,7 @@ class DoclingProvider(BaseOCRProvider):
                     OCRPageResult(
                         page_index=idx,
                         text=page_text,
-                        blocks=[
-                            OCRBlock(text=page_text, bbox=None, confidence=None)
-                        ],
+                        blocks=[OCRBlock(text=page_text, bbox=None, confidence=None)],
                     )
                 )
         else:
