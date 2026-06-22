@@ -48,11 +48,11 @@ typecheck:
 
 # Run the full test suite.
 test:
-    .venv/bin/python -m pytest backend/tests/ -q
+    PYTHONPATH=. .venv/bin/python -m pytest backend/tests/ -q
 
 # Run the full test suite with coverage.
 test-cov:
-    .venv/bin/python -m pytest backend/tests/ --cov=app --cov-report=term-missing -q
+    PYTHONPATH=. .venv/bin/python -m pytest backend/tests/ --cov=app --cov-report=term-missing -q
 
 # Run a single test by file (or by node-id substring).
 test-one *args:

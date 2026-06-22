@@ -64,6 +64,11 @@ jobs:
         # router/registry code added in this release lowered the
         # average; v0.4.0 should re-introduce the >=85% gate once
         # the new modules have dedicated unit tests.
+        env:
+          # The v0.5.0 DocVQA fetcher lives in scripts/ at the
+          # repo root; we add the repo root to PYTHONPATH so the
+          # test_fetch_docvqa tests can import it.
+          PYTHONPATH: ${{ github.workspace }}
         run: |
           source .venv/bin/activate
           pytest backend/tests/ --cov=app --cov-report=xml --cov-report=term-missing -q
