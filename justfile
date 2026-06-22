@@ -80,6 +80,12 @@ eval-fit-calibrator manifest="eval/golden_set/v1/manifest.json" out="./calibrati
 eval manifest="eval/golden_set/v1/manifest.json":
     .venv/bin/python -c "from scripts.run_eval import main; main('{{ manifest }}')"
 
+# Compare the latest two eval runs and print the metric deltas.
+# Use this after a prompt change to see if the new prompt moved
+# field-F1 / ECE / AUROC up or down.
+eval-diff:
+    .venv/bin/python -c "from scripts.eval_diff import main; main()"
+
 # ── Running the app ──────────────────────────────────────────────────
 
 # Run the backend on port 8000 with hot reload.

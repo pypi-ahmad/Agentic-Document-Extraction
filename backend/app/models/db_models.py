@@ -73,6 +73,14 @@ class Extraction(Base):
     llm_model_used: Mapped[str | None] = mapped_column(String(100), nullable=True)
     confidence: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     extract_attempts: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    prompt_version: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    """Which prompt version produced this extraction (e.g. ``v1``).
+    NULL for extractions produced before the v0.4.0 prompt-versioning
+    migration ran; treated as ``v1`` for re-runs."""
+    schema_version: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    """Which ExtractionSchema version produced this extraction (e.g.
+    ``1``). NULL for pre-v0.4.0 extractions; treated as ``1`` for
+    re-runs."""
     error_category: Mapped[str | None] = mapped_column(String(30), nullable=True)
     created_at: Mapped[datetime.datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
