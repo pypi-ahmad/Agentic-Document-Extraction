@@ -81,6 +81,20 @@ class Settings(BaseSettings):
     otel_service_version: str = "0.4.0"
     otel_deployment_environment: str = "dev"
 
+    # ── VLM-as-extractor ──
+    enable_vlm_extract: bool = False
+    """Set to True to expose the VLM-as-extractor path. The default
+    route still uses the OCR + LLM pipeline; this flag only opens
+    the VLM endpoint for clients that opt in."""
+    vlm_default_model: str = "ollama"
+    """Which VLM backend to use. ``ollama`` (default; points at the
+    local Ollama endpoint) or ``paddleocr-vl`` (when the
+    ``paddleocr-vl>=1.6`` package is installed)."""
+    vlm_ollama_model: str = "glm-ocr:latest"
+    """Ollama model used as the VLM when ``vlm_default_model == 'ollama'``."""
+    vlm_timeout_seconds: float = 120.0
+    vlm_max_tokens: int = 2048
+
     # ── G-Eval LLM-as-judge ──
     judge_enabled: bool = True
     """Set to False to skip the G-Eval sampling and judge calls entirely."""
