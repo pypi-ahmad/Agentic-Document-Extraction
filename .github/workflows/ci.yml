@@ -41,7 +41,7 @@ jobs:
       - name: Install backend + test + lint extras
         run: |
           source .venv/bin/activate
-          uv pip install -e ".[test,lint,ollama]"
+          uv pip install -e ".[test,lint,ollama,paddleocr]"
 
       - name: Ruff lint
         run: |
