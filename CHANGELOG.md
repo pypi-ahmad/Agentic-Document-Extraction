@@ -7,6 +7,96 @@ and this project aims to follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-06-22
+
+### Added
+
+- **Layout-aware parsing.** A new `BaseLayoutProvider` ABI returns
+  a `LayoutResult` with per-token bbox, region types (paragraph,
+  table, form-field, ...), reading order, and table cells. The
+  Docling engine ships in layout mode as `docling-layout`. The
+  v0.4.0 `OCRResult` is bridged to a layout result via
+  `LayoutResult.from_ocr_result` so downstream stages degrade
+  gracefully when no spatial metadata is available.
+  (`backend/app/services/ocr/layout_base.py`,
+  `docling_layout_provider.py`, `layout_registry.py`).
+- **Evidence-grounded extraction.** Every field the LLM
+  extracts MUST cite the page, bbox, and verbatim text span in
+  the document. `Evidence` / `EvidenceMap` reject fields with
+  missing or empty text_span and clamp bboxes to [0, 1].
+  `prompts/v2/extraction.md` is the new prompt version; v1
+  stays for the regression gate.
+  (`backend/app/services/extraction/evidence.py`).
+- **Independent verifier + conflict resolver.** A small model
+  re-checks each field's evidence against the document. Three
+  implementations: `NoOpVerifier`, `HeuristicVerifier` (default;
+  text_span substring + score threshold), and `LLMVerifier`
+  (Ollama). Disputed fields are routed to human review.
+  (`backend/app/services/extraction/verifier.py`).
+- **Cross-page entity resolver.** Jaccard-similarity-based
+  union-find clustering with abbreviation-aware canonical-form
+  selection. Handles split-across-lines, repeated table
+  headers, "see above" references.
+  (`backend/app/services/extraction/cross_page.py`).
+- **Schema-aware field strategies.** Per-kind validators +
+  post-processors for `string`, `number`, `boolean`, `date`,
+  `currency`, `id`, `address`, `table`, `signature`, `list`,
+  `object`. Each strategy exposes a `prompt_fragment` for the
+  v2 prompt to nudge the LLM toward the right format.
+  (`backend/app/services/extraction/field_strategies.py`).
+- **Double-pass self-correction.** When `enable_double_pass` is
+  True, the reflect node computes a diff between two extraction
+  passes and routes disagreed fields to human review.
+  Local structural-diff explanation; the v2/reflection prompt
+  can replace it with an LLM-generated diff_explanation.
+  (`backend/app/services/extraction/double_pass.py`).
+- **Composite confidence (calibration v2).** Replaces the v0.4.0
+  PAVA-only self-reported confidence with a weighted sum of
+  three independent signals: logprob-derived confidence, verifier
+  agreement, and evidence coverage. Components that cannot be
+  computed are dropped and the remaining weights are
+  re-normalized.
+  (`backend/app/services/eval/calibration_v2.py`).
+- **DocVQA + InfographicVQA golden set.** HuggingFace-backed
+  fetcher behind an explicit `--enable-multi-dataset` flag.
+  Each (question, answers) pair is normalized to our schema.
+  Output: `eval/golden_set/v2/{docvqa,infographicvqa}.jsonl`
+  and a per-dataset manifest with sha256 + license.
+  (`scripts/fetch_docvqa.py`, `eval/golden_set/v2/manifest.json`).
+- **v0.5.0 metric suite.** Replaces and extends the v0.4.0
+  metrics with TEDS, cell P/R/F1, row/column structure
+  accuracy, header match, exact match, token F1, evidence
+  attribution accuracy, bbox IoU, page localization accuracy,
+  and end-to-end task success rate. A `run_v2_suite` helper
+  takes optional inputs and emits a flat dict.
+  (`backend/app/services/eval/metrics_v2.py`).
+- **Three new tables** for the v0.5.0 pipeline
+  (`extraction_evidence`, `extraction_entities`,
+  `extraction_verifier_runs`) and Alembic migration
+  `0004_evidence_entities_verifier`.
+- **Four new settings** on `Settings`: `enable_layout_parsing`,
+  `enable_verifier`, `enable_double_pass`,
+  `enable_cross_page_entities`. All default to `True` in
+  v0.5.0; setting any to `False` falls back to the v0.4.0
+  behaviour for that stage.
+
+### Migration
+
+- New tables on `extractions` and per-field evidence; Alembic
+  migration `0004_evidence_entities_verifier`. Existing
+  v0.4.0 extractions are unaffected; new extractions get
+  rows in the new tables.
+- Prompts: `prompts/v1/*` is unchanged and remains the
+  regression gate. `prompts/v2/*` is the new evidence-grounded
+  prompt set.
+- Calibration: the v0.4.0 `FieldCalibrator` JSON artifact is
+  loaded as v0.5.0 `CompositeCalibrator` falls back to default
+  weights (composite signal) when the schema_version is 1.
+
+### Test count
+
+828 tests passing, 1 skipped (Phoenix health-check in test mode).
+
 ## [0.4.0] - 2026-06-22
 
 ### Added
