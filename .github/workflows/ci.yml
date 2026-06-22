@@ -41,7 +41,7 @@ jobs:
       - name: Install backend + test + lint extras
         run: |
           source .venv/bin/activate
-          uv pip install -e ".[test,lint,ollama,paddleocr]"
+          uv pip install -e ".[test,lint,ollama,paddleocr,mcp]"
 
       - name: Ruff lint
         run: |
@@ -58,6 +58,13 @@ jobs:
           source .venv/bin/activate
           pyright backend/app scripts/release.py || true
         continue-on-error: true
+
+      - name: Pytest MCP server tests
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          source .venv/bin/activate
+          pytest backend/tests/test_mcp_server.py -q
 
       - name: Pytest with coverage report
         # v0.3.0 reports coverage but does not gate on it. The

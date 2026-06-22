@@ -1,6 +1,6 @@
 [project]
 name = "agentic-document-extraction"
-version = "0.5.0"
+version = "0.6.0"
 description = "Extract structured data from documents (PDF + image) using a LangGraph pipeline of pluggable OCR/parser engines and LLM providers, with per-field confidence scoring and human-in-the-loop review."
 authors = [
   { name = "Ahmad" },
@@ -96,6 +96,12 @@ test = [
 lint = [
   "ruff>=0.6.0",
 ]
+# MCP server (v0.6.0). Optional because mcp pulls a non-trivial
+# transitive tree (anyio, pydantic-settings, ...). Users who
+# only want the HTTP API do not need this.
+mcp = [
+  "mcp[cli]>=1.0.0",
+]
 
 [project.urls]
 Homepage = "https://github.com/pypi-ahmad/Agentic-Document-Extraction"
@@ -106,6 +112,9 @@ Changelog = "https://github.com/pypi-ahmad/Agentic-Document-Extraction/blob/main
 [project.scripts]
 # A convenience entry-point. Real serving is done with `uvicorn`.
 ade-info = "app.main:app"
+# MCP server entry-point. Run with: ade-mcp (after pip install
+# agentic-document-extraction[mcp]). Communicates over stdio.
+ade-mcp = "app.mcp_server:main"
 
 # ── Build system ─────────────────────────────────────────────────────
 # We use a flat layout (app package at the repo root) so the existing

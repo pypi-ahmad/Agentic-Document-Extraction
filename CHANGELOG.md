@@ -7,6 +7,29 @@ and this project aims to follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-06-22
+
+### Added
+
+- **MCP server support (stdio).** New `backend/app/mcp_server.py`
+  exposes four MCP tools on top of the v0.5.0 extraction stack:
+  `extract_document`, `verify_extraction`, `resolve_entities`, and
+  `eval_golden_set`.
+- **Optional MCP dependency extra.** `pyproject.toml` now ships
+  `mcp[cli]>=1.0.0` under `[project.optional-dependencies].mcp` and
+  an executable script entry point `ade-mcp`.
+- **MCP test suite.** `backend/tests/test_mcp_server.py` adds 47 tests
+  for tool schemas, tool behavior, eval scoring paths, and server entrypoint.
+- **MCP docs and quick-start paths.** Added `docs/MCP.md` plus README
+  MCP quick-start and client config examples.
+
+### Changed
+
+- **Version bump to 0.6.0.** Package/app runtime version updated from
+  0.5.0 to 0.6.0.
+- **CI now includes MCP coverage.** CI installs the `mcp` extra and
+  runs `backend/tests/test_mcp_server.py` before the full backend suite.
+
 ## [0.5.0] - 2026-06-22
 
 ### Added
