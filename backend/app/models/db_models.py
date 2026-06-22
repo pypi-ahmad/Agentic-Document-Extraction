@@ -2,6 +2,7 @@
 
 import datetime
 import uuid
+from typing import Any
 
 from sqlalchemy import JSON, DateTime, ForeignKey, Integer, String, Text, func
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
@@ -208,6 +209,85 @@ class ExtractionAuditLog(Base):
     event: Mapped[str] = mapped_column(String(64), nullable=False)
     request_id: Mapped[str | None] = mapped_column(String(128), nullable=True)
     payload: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    created_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+
+
+class ExtractionEvidence(Base):
+    """Per-field evidence for a v0.5.0 evidence-grounded extraction.
+
+    One row per field. ``text_span`` is the verbatim document text
+    that backs the value; ``bbox_json`` is ``[x0, y0, x1, y1]`` in
+    normalized 0..1 page coordinates. ``evidence_score`` is the
+    LLM's self-assessed confidence in the evidence (NOT in the
+    value's correctness).
+    """
+
+    __tablename__ = "extraction_evidence"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    extraction_id: Mapped[str] = mapped_column(
+        String(32), ForeignKey("extractions.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    field: Mapped[str] = mapped_column(String(100), nullable=False, index=True)
+    value: Mapped[Any] = mapped_column(JSON, nullable=True)
+    page: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    bbox_json: Mapped[list | None] = mapped_column(JSON, nullable=True)
+    text_span: Mapped[str] = mapped_column(Text, nullable=False, default="")
+    source_region_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    evidence_score: Mapped[float] = mapped_column(nullable=False, default=0.0)
+    prompt_version: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    created_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+
+
+class ExtractionEntity(Base):
+    """A canonical entity linked across pages (v0.5.0 cross-page resolver).
+
+    ``mentions`` is a list of ``{"page": int, "bbox": [..],
+    "text_span": str, "region_id": str}``. ``canonical_form`` is the
+    chosen normalised form of the entity name.
+    """
+
+    __tablename__ = "extraction_entities"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    extraction_id: Mapped[str] = mapped_column(
+        String(32), ForeignKey("extractions.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    entity_type: Mapped[str] = mapped_column(String(40), nullable=False, default="generic")
+    canonical_form: Mapped[str] = mapped_column(String(255), nullable=False)
+    mentions: Mapped[list] = mapped_column(JSON, nullable=False, default=list)
+    confidence: Mapped[float] = mapped_column(nullable=False, default=0.0)
+    created_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+
+
+class ExtractionVerifierRun(Base):
+    """One verifier run for an extraction (v0.5.0 Phase 3).
+
+    The verifier scores each field's evidence; ``disputed_fields``
+    lists the field names where the verifier disagreed with the
+    extraction and the conflict resolver flagged the field for
+    human review.
+    """
+
+    __tablename__ = "extraction_verifier_runs"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    extraction_id: Mapped[str] = mapped_column(
+        String(32), ForeignKey("extractions.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    verifier_model: Mapped[str] = mapped_column(String(100), nullable=False)
+    verifier_version: Mapped[str] = mapped_column(String(20), nullable=False, default="verifier-1")
+    field_verdicts: Mapped[dict] = mapped_column(JSON, nullable=False, default=dict)
+    """Per-field verdicts: {field: {"verdict": "agree"|"disagree"|"unsure", "reason": str}}"""
+    disputed_fields: Mapped[list] = mapped_column(JSON, nullable=False, default=list)
+    overall_agreement: Mapped[float] = mapped_column(nullable=False, default=0.0)
+    latency_ms: Mapped[int | None] = mapped_column(Integer, nullable=True)
     created_at: Mapped[datetime.datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
