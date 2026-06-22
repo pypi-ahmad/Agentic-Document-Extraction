@@ -36,6 +36,12 @@ class Settings(BaseSettings):
     # Each flag enables/disables the corresponding parser in the UI.
     enable_paddleocr: bool = False
     enable_glm_ocr: bool = False
+    enable_docling: bool = False
+    """When true, the Docling parser is registered and shown in the
+    OCR provider list. Docling is heavier than PaddleOCR / GLM-OCR
+    (it ships its own ML models) but produces structured Markdown
+    out of the box, which downstream extractors can parse more
+    reliably than free-form OCR text."""
     # Local Ollama endpoint used by the GLM-OCR provider.
     ollama_base_url: str = "http://localhost:11434"
     ollama_glm_ocr_model: str = "glm-ocr:latest"

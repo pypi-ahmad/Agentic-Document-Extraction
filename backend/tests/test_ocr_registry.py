@@ -113,11 +113,12 @@ def test_list_providers():
 
 
 def test_list_provider_statuses_excludes_internal_fallback_by_default():
-    statuses = list_ocr_provider_statuses()
-    ids = [status.provider_id for status in statuses]
-    assert "pymupdf" not in ids
-    # User-selectable engines (auto never appears in this list).
-    assert ids == ["glmocr", "paddleocr"]
+        statuses = list_ocr_provider_statuses()
+        ids = [status.provider_id for status in statuses]
+        assert "pymupdf" not in ids
+        # User-selectable engines (auto never appears in this list).
+        # Docling joined the list in v0.4.0 (Commit 9).
+        assert ids == ["glmocr", "paddleocr", "docling"]
 
 
 def test_get_pymupdf():
