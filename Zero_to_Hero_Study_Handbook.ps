@@ -1,0 +1,1409 @@
+%!PS-Adobe-3.0
+%%BoundingBox: 0 0 595 842
+/Courier findfont
+9 scalefont setfont
+/x 40 def
+/y 810 def
+/lh 11 def
+/newline { /y y lh sub def y 40 lt { showpage /Courier findfont 9 scalefont setfont /y 810 def } if } def
+x y moveto (# Zero to Hero Study Handbook: agentic-document-extraction) show
+newline
+x y moveto () show
+newline
+x y moveto (## Module 1: Foundations & Architecture) show
+newline
+x y moveto () show
+newline
+x y moveto (### 1.1 What This Project Does) show
+newline
+x y moveto (`agentic-document-extraction` is a full-stack system that:) show
+newline
+x y moveto () show
+newline
+x y moveto (- uploads documents \(`/api/documents/`\)) show
+newline
+x y moveto (- defines extraction schemas \(`/api/schemas/`\)) show
+newline
+x y moveto (- runs an asynchronous LangGraph extraction pipeline \(`/api/extractions/`\)) show
+newline
+x y moveto (- validates output and optionally routes to human review) show
+newline
+x y moveto (- exposes provider readiness/model catalogs \(`/api/providers/*`\)) show
+newline
+x y moveto (- offers an MCP server interface \(`backend/app/mcp_server.py`\) for tool-based LLM clients.) show
+newline
+x y moveto () show
+newline
+x y moveto (Main use cases from code and docs:) show
+newline
+x y moveto () show
+newline
+x y moveto (- extracting structured fields from PDFs and images) show
+newline
+x y moveto (- handling multiple OCR/parser engines \(`auto`, `paddleocr`, `glmocr`, `docling` + internal ) show
+newline
+x y moveto (`pymupdf`\)) show
+newline
+x y moveto (- choosing LLM providers \(`auto`, `openai`, `gemini`, `anthropic`\)) show
+newline
+x y moveto (- supporting review workflows \(`approved`, `corrected`, `rejected`\)) show
+newline
+x y moveto (- recording observability, metrics, and audit events.) show
+newline
+x y moveto () show
+newline
+x y moveto (### 1.2 Core CS Definitions and Patterns Used Here) show
+newline
+x y moveto () show
+newline
+x y moveto (1. `Asynchronous programming`) show
+newline
+x y moveto (- Definition: Concurrency model where I/O waits do not block the whole process.) show
+newline
+x y moveto (- Here: most backend paths are `async def` \(`FastAPI`, `SQLAlchemy AsyncSession`, `LangGraph async ) show
+newline
+x y moveto (stream`, async job queue methods\).) show
+newline
+x y moveto () show
+newline
+x y moveto (2. `Event-driven architecture`) show
+newline
+x y moveto (- Definition: System state advances because events occur \(HTTP requests, pipeline node updates, SSE ) show
+newline
+x y moveto (emissions, review submissions\).) show
+newline
+x y moveto (- Here: extraction node updates are streamed and persisted step-by-step in ) show
+newline
+x y moveto (`backend/app/routers/extractions.py` via `extraction_graph.astream\(..., stream_mode="updates"\)`.) show
+newline
+x y moveto () show
+newline
+x y moveto (3. `Finite-state workflow / state machine`) show
+newline
+x y moveto (- Definition: Computation is represented by states and transitions.) show
+newline
+x y moveto (- Here: extraction lifecycle statuses in `ExtractionStatus` \(`pending`, `queued`, `processing`, ) show
+newline
+x y moveto (`ocr_complete`, `extracted`, `completed`, `needs_review`, `failed`\) and LangGraph node transitions ) show
+newline
+x y moveto (in `backend/app/services/extraction/graph.py`.) show
+newline
+x y moveto () show
+newline
+x y moveto (4. `Typed contract-driven design`) show
+newline
+x y moveto (- Definition: explicit schemas for input/output and invariants.) show
+newline
+x y moveto (- Here: Pydantic models in `backend/app/models/schemas.py` plus `field_validator`, ) show
+newline
+x y moveto (`model_validator`, `computed_field`.) show
+newline
+x y moveto () show
+newline
+x y moveto (5. `Strategy pattern`) show
+newline
+x y moveto (- Definition: interchangeable implementations behind a shared interface.) show
+newline
+x y moveto (- Here:) show
+newline
+x y moveto (  - OCR strategies implement `BaseOCRProvider` \(`pymupdf`, `paddleocr`, `glmocr`, `docling`\)) show
+newline
+x y moveto (  - LLM strategies implement `BaseLLMProvider` \(`openai`, `gemini`, `anthropic`\)) show
+newline
+x y moveto (  - registries choose concrete strategy by policy \(`backend/app/services/ocr/registry.py`, ) show
+newline
+x y moveto (  `backend/app/services/llm/registry.py`\).) show
+newline
+x y moveto () show
+newline
+x y moveto (6. `Human-in-the-loop pattern`) show
+newline
+x y moveto (- Definition: automation defers uncertain/invalid outputs to human decision.) show
+newline
+x y moveto (- Here: `review_verdict == "needs_review"` plus review endpoints `POST ) show
+newline
+x y moveto (/api/extractions/{id}/reviews`.) show
+newline
+x y moveto () show
+newline
+x y moveto (7. `Checkpoint/resume workflow`) show
+newline
+x y moveto (- Definition: save intermediate state and resume later.) show
+newline
+x y moveto (- Here: LangGraph supports `interrupt\(\)` in `await_review_node`; optional SQLite checkpoint path via) show
+newline
+x y moveto ( `Settings.checkpoint_db_path`.) show
+newline
+x y moveto () show
+newline
+x y moveto (### 1.3 Architecture and Interactions) show
+newline
+x y moveto () show
+newline
+x y moveto (#### Main runtime topology) show
+newline
+x y moveto () show
+newline
+x y moveto (```text) show
+newline
+x y moveto ([Next.js Frontend]) show
+newline
+x y moveto (  |) show
+newline
+x y moveto (  | HTTP /api/* \(rewritten by frontend/next.config.js\)) show
+newline
+x y moveto (  v) show
+newline
+x y moveto ([FastAPI app.main]) show
+newline
+x y moveto (  |-- routers/documents.py --> save_upload + MIME validation --> documents table) show
+newline
+x y moveto (  |-- routers/schemas.py   --> schema CRUD/presets            --> extraction_schemas table) show
+newline
+x y moveto (  |-- routers/providers.py --> parser/provider/model metadata) show
+newline
+x y moveto (  |-- routers/extractions.py) show
+newline
+x y moveto (       |) show
+newline
+x y moveto (       | create_extraction\(\) -> queue.submit\(\)) show
+newline
+x y moveto (       v) show
+newline
+x y moveto (     [Job Queue]) show
+newline
+x y moveto (       |-- InProcessJobQueue \(default\)) show
+newline
+x y moveto (       |-- ArqJobQueue \(if REDIS_URL set\)) show
+newline
+x y moveto (       v) show
+newline
+x y moveto (     _run_extraction_job\(\)) show
+newline
+x y moveto (       v) show
+newline
+x y moveto (     LangGraph extraction_graph) show
+newline
+x y moveto (       triage -> parse -> extract -> validate -> reflect -> await_review -> finalize) show
+newline
+x y moveto (       |) show
+newline
+x y moveto (       v) show
+newline
+x y moveto (     Persist to DB:) show
+newline
+x y moveto (       extractions, extraction_steps, extraction_reviews,) show
+newline
+x y moveto (       extraction_judgments, extraction_audit_log, v0.5 tables) show
+newline
+x y moveto (       |) show
+newline
+x y moveto (       +--> SSE stream /api/extractions/{id}/stream) show
+newline
+x y moveto (       +--> REST status/result/validation endpoints) show
+newline
+x y moveto (```) show
+newline
+x y moveto () show
+newline
+x y moveto (### 1.4 Technology Stack with Real Config Values) show
+newline
+x y moveto () show
+newline
+x y moveto (Backend core:) show
+newline
+x y moveto () show
+newline
+x y moveto (- `FastAPI` app version `"0.6.0"` \(`backend/app/main.py`\)) show
+newline
+x y moveto (- `SQLAlchemy[asyncio]` + `aiosqlite` default DB URL:) show
+newline
+x y moveto (  - `database_url = "sqlite+aiosqlite:///./extraction.db"` \(`backend/app/config.py`\)) show
+newline
+x y moveto (- `LangGraph` pipeline in `backend/app/services/extraction/graph.py`) show
+newline
+x y moveto (- `SlowAPI` limiter default: `RATE_LIMIT_DEFAULT = "60/minute"` \(`backend/app/constants.py`\)) show
+newline
+x y moveto (- `Prometheus` metrics endpoint `/metrics` with metric names like `ade_extractions_total`, ) show
+newline
+x y moveto (`ade_llm_call_duration_seconds`.) show
+newline
+x y moveto () show
+newline
+x y moveto (Job execution:) show
+newline
+x y moveto () show
+newline
+x y moveto (- `job_max_concurrent = 8` default \(`Settings.job_max_concurrent`\)) show
+newline
+x y moveto (- queue factory in `get_job_queue\(\)`:) show
+newline
+x y moveto (  - `InProcessJobQueue` when `REDIS_URL` empty) show
+newline
+x y moveto (  - `ArqJobQueue` when `REDIS_URL` is set) show
+newline
+x y moveto (- Redis queue key for arq path: `"ade:extractions:queue"` \(`backend/app/services/jobs.py`\)) show
+newline
+x y moveto () show
+newline
+x y moveto (Pipeline tuning:) show
+newline
+x y moveto () show
+newline
+x y moveto (- `confidence_threshold = 0.6`) show
+newline
+x y moveto (- `llm_max_retries = 2`) show
+newline
+x y moveto (- `llm_retry_base_delay = 1.0`) show
+newline
+x y moveto (- `max_reflection_attempts = 2`) show
+newline
+x y moveto (- `job_timeout_s = 300` via `JOB_TIMEOUT_S`) show
+newline
+x y moveto (- SSE constants:) show
+newline
+x y moveto (  - `SSE_KEEPALIVE_S = 15.0`) show
+newline
+x y moveto (  - `SSE_MAX_ITERATIONS = 600`) show
+newline
+x y moveto (  - terminal statuses: `{"completed","needs_review","failed"}`.) show
+newline
+x y moveto () show
+newline
+x y moveto (Provider defaults:) show
+newline
+x y moveto () show
+newline
+x y moveto (- LLM auto priority order: `openai -> gemini -> anthropic` \(`AUTO_PRIORITY` in LLM registry\)) show
+newline
+x y moveto (- LLM default model IDs:) show
+newline
+x y moveto (  - OpenAI: `gpt-4o-mini`) show
+newline
+x y moveto (  - Gemini: `gemini-2.0-flash`) show
+newline
+x y moveto (  - Anthropic: `claude-3-5-haiku-20241022`) show
+newline
+x y moveto (- LLM extraction temperature: `0` in all three provider classes.) show
+newline
+x y moveto () show
+newline
+x y moveto (OCR routing:) show
+newline
+x y moveto () show
+newline
+x y moveto (- OCR auto priority in `backend/app/services/ocr/registry.py`:) show
+newline
+x y moveto (  - `glmocr -> paddleocr -> docling -> pymupdf`) show
+newline
+x y moveto (- Feature flags:) show
+newline
+x y moveto (  - `enable_paddleocr = False`) show
+newline
+x y moveto (  - `enable_glm_ocr = False`) show
+newline
+x y moveto (  - `enable_docling = False`) show
+newline
+x y moveto (- internal parser:) show
+newline
+x y moveto (  - `pymupdf` is `is_user_selectable = False`, PDF-only fallback.) show
+newline
+x y moveto () show
+newline
+x y moveto (Frontend:) show
+newline
+x y moveto () show
+newline
+x y moveto (- Next.js 14 \(`frontend/package.json`\)) show
+newline
+x y moveto (- API rewrite:) show
+newline
+x y moveto (  - `/api/:path* -> http://localhost:8000/api/:path*` \(`frontend/next.config.js`\)) show
+newline
+x y moveto () show
+newline
+x y moveto (Security and network guard:) show
+newline
+x y moveto () show
+newline
+x y moveto (- security headers from `SECURITY_HEADERS`) show
+newline
+x y moveto (- local-only OLLAMA guard at startup via `validate_ollama_base_url\(\)`) show
+newline
+x y moveto (- opt-out env var for remote host: `OLLAMA_ALLOW_PRIVATE_HOSTS=true`.) show
+newline
+x y moveto () show
+newline
+x y moveto (## Module 2: Repository Map) show
+newline
+x y moveto () show
+newline
+x y moveto (Focus: files new contributors should learn first.) show
+newline
+x y moveto () show
+newline
+x y moveto (| File/Directory Path | Primary Responsibility | Key Classes/Functions | Important Configs/Variables) show
+newline
+x y moveto ( |) show
+newline
+x y moveto (|---|---|---|---|) show
+newline
+x y moveto (| `pyproject.toml` | Python package/deps/tooling metadata | `[project]`, `[tool.pytest]`, ) show
+newline
+x y moveto (`[tool.ruff]` | `name="agentic-document-extraction"`, `version="0.6.0"`, `requires-) show
+newline
+x y moveto (python=">=3.12,<3.13"` |) show
+newline
+x y moveto (| `justfile` | task runner recipes for install/dev/test/migrate | `install`, `sync`, `dev`, ) show
+newline
+x y moveto (`migrate`, `mcp` | `uv venv --python 3.12.10`, `uv sync --frozen --extra test --extra lint --extra ) show
+newline
+x y moveto (ollama` |) show
+newline
+x y moveto (| `backend/.env.example` | environment template | key list only | `OPENAI_API_KEY`, ) show
+newline
+x y moveto (`GEMINI_API_KEY`, `ANTHROPIC_API_KEY`, `DEFAULT_LLM_PROVIDER`, `DATABASE_URL`, `ENABLE_*`, ) show
+newline
+x y moveto (`OLLAMA_*` |) show
+newline
+x y moveto (| `backend/app/main.py` | FastAPI app boot, middleware, health/info routes | `lifespan`, ) show
+newline
+x y moveto (`readiness`, `health_check`, `app_info` | app `version="0.6.0"`, startup recovery, router ) show
+newline
+x y moveto (registration |) show
+newline
+x y moveto (| `backend/app/config.py` | Pydantic settings object | `class Settings` | `job_max_concurrent=8`, ) show
+newline
+x y moveto (`llm_max_retries=2`, `confidence_threshold=0.6`, `redis_url=""` |) show
+newline
+x y moveto (| `backend/app/constants.py` | cross-cutting constants | module constants | ) show
+newline
+x y moveto (`RATE_LIMIT_DEFAULT="60/minute"`, `JOB_TIMEOUT_S=300`, `SSE_KEEPALIVE_S=15.0` |) show
+newline
+x y moveto (| `backend/app/database.py` | async DB engine/session/init lifecycle | `get_db`, `init_db`, ) show
+newline
+x y moveto (`close_db` | startup Alembic attempt + fallback `create_all`, `PRAGMA journal_mode=WAL` |) show
+newline
+x y moveto (| `backend/app/models/enums.py` | wire-format enums for API/DB | `ParserEngine`, `LLMProviderID`, ) show
+newline
+x y moveto (`ExtractionStatus`, etc. | stable values used by backend + frontend |) show
+newline
+x y moveto (| `backend/app/models/schemas.py` | API request/response contracts | `ExtractionCreate`, ) show
+newline
+x y moveto (`ExtractionResponse`, `ReviewCreate`, `AppInfoResponse` | validators, computed fields ) show
+newline
+x y moveto (`duration_total_ms`, `validation_summary` |) show
+newline
+x y moveto (| `backend/app/models/db_models.py` | ORM entities/tables | `Document`, `Extraction`, ) show
+newline
+x y moveto (`ExtractionStep`, `ExtractionReview`, etc. | table names, column types/defaults, relationships |) show
+newline
+x y moveto (| `backend/app/routers/documents.py` | upload/list/get/delete docs | `upload_document`, ) show
+newline
+x y moveto (`list_documents` | MIME sniff + extension match verification |) show
+newline
+x y moveto (| `backend/app/routers/schemas.py` | extraction schema CRUD + presets | `create_schema`, ) show
+newline
+x y moveto (`create_schema_from_preset`, `update_schema` | uniqueness checks, preset materialization |) show
+newline
+x y moveto (| `backend/app/routers/extractions.py` | extraction job API, retry, SSE, review | ) show
+newline
+x y moveto (`create_extraction`, `_run_extraction_pipeline`, `stream_extraction_progress`, `submit_review` | ) show
+newline
+x y moveto (`_PIPELINE_STEPS`, `_JOB_TIMEOUT`, status/error transitions |) show
+newline
+x y moveto (| `backend/app/routers/providers.py` | parser/LLM/model/config metadata endpoints | ) show
+newline
+x y moveto (`get_parser_options`, `get_llm_providers`, `get_llm_models`, `get_app_config` | cache TTLs ) show
+newline
+x y moveto (`CACHE_MAX_AGE_*`, parser/provider serialization |) show
+newline
+x y moveto (| `backend/app/services/extraction/graph.py` | LangGraph pipeline nodes and routing | `triage_node`,) show
+newline
+x y moveto ( `parse_node`, `extract_node`, `validate_node`, `reflect_node`, `await_review_node`, `finalize_node`) show
+newline
+x y moveto ( | `_MAX_LLM_RETRIES`, `_RETRY_BASE_DELAY`, `max_reflection_attempts` |) show
+newline
+x y moveto (| `backend/app/services/extraction/validation.py` | field-level extraction validation | ) show
+newline
+x y moveto (`validate_extraction`, `compute_review_verdict` | confidence-aware review routing |) show
+newline
+x y moveto (| `backend/app/services/extraction/business_rules.py` | built-in deterministic rules loaded at ) show
+newline
+x y moveto (startup | module import side-effects | startup import in lifespan |) show
+newline
+x y moveto (| `backend/app/services/jobs.py` | queue abstraction and implementations | `InProcessJobQueue`, ) show
+newline
+x y moveto (`ArqJobQueue`, `get_job_queue` | `settings.redis_url`, Redis list key `ade:extractions:queue` |) show
+newline
+x y moveto (| `backend/app/services/ocr/registry.py` | OCR provider registration + auto policy | ) show
+newline
+x y moveto (`get_ocr_provider`, `list_ocr_provider_statuses` | ) show
+newline
+x y moveto (`AUTO_PRIORITY=\("glmocr","paddleocr","docling","pymupdf"\)` |) show
+newline
+x y moveto (| `backend/app/services/ocr/pymupdf_provider.py` | internal PDF parser | ) show
+newline
+x y moveto (`PyMuPDFProvider.extract_text` | `is_user_selectable=False`, `supported_file_types={"pdf"}` |) show
+newline
+x y moveto (| `backend/app/services/ocr/paddleocr_provider.py` | local image OCR adapter | ) show
+newline
+x y moveto (`PaddleOCRProvider.extract_text` | supports PaddleOCR 2.x and 3.x paths |) show
+newline
+x y moveto (| `backend/app/services/ocr/glm_ocr_provider.py` | Ollama GLM-OCR adapter | ) show
+newline
+x y moveto (`GLMOCRProvider.extract_text` | `OLLAMA_BASE_URL`, `OLLAMA_GLM_OCR_MODEL`, timeout settings |) show
+newline
+x y moveto (| `backend/app/services/ocr/docling_provider.py` | Docling structured parser adapter | ) show
+newline
+x y moveto (`DoclingProvider.extract_text` | `feature_flag_name="enable_docling"` |) show
+newline
+x y moveto (| `backend/app/services/llm/registry.py` | LLM provider registration + auto policy | ) show
+newline
+x y moveto (`get_llm_provider`, `list_models_for_provider` | auto priority + default provider fallback logic |) show
+newline
+x y moveto (| `backend/app/services/llm/openai_provider.py` | OpenAI extraction/model listing | ) show
+newline
+x y moveto (`OpenAIProvider.extract` | default model `gpt-4o-mini`, `temperature=0` |) show
+newline
+x y moveto (| `backend/app/services/llm/gemini_provider.py` | Gemini extraction/model listing | ) show
+newline
+x y moveto (`GeminiProvider.extract` | default model `gemini-2.0-flash`, `temperature=0` |) show
+newline
+x y moveto (| `backend/app/services/llm/claude_provider.py` | Anthropic extraction/model listing | ) show
+newline
+x y moveto (`ClaudeProvider.extract` | default model `claude-3-5-haiku-20241022`, `temperature=0` |) show
+newline
+x y moveto (| `backend/app/services/llm/prompts_loader.py` | versioned prompt loading | `load_prompt`, ) show
+newline
+x y moveto (`list_prompts`, `index` | prompt dirs `prompts/v1`, `prompts/v2`, env override `ADE_PROMPTS_DIR` |) show
+newline
+x y moveto (| `prompts/v1/*.md`, `prompts/v2/*.md` | prompt templates + metadata | front-matter + body | ) show
+newline
+x y moveto (`extraction.md`, `reflection.md` |) show
+newline
+x y moveto (| `backend/app/metrics.py` | Prometheus metrics registry | `class Metrics`, `render` | metric names ) show
+newline
+x y moveto (prefixed `ade_*` |) show
+newline
+x y moveto (| `backend/app/security_middleware.py` | response security headers | `SecurityHeadersMiddleware` | ) show
+newline
+x y moveto (headers from `SECURITY_HEADERS` |) show
+newline
+x y moveto (| `backend/app/mcp_server.py` | MCP stdio server and tool handlers | tools: `extract_document`, ) show
+newline
+x y moveto (`verify_extraction`, `resolve_entities`, `eval_golden_set` | `SERVER_NAME="agentic-document-) show
+newline
+x y moveto (extraction"` |) show
+newline
+x y moveto (| `backend/alembic/env.py` | Alembic migration runner | `run_migrations_online/offline` | uses ) show
+newline
+x y moveto (`settings.database_url`, `render_as_batch=True` |) show
+newline
+x y moveto (| `backend/alembic/versions/0001_initial_schema.py` | initial schema migration | Alembic revision | ) show
+newline
+x y moveto (creates core tables |) show
+newline
+x y moveto (| `backend/alembic/versions/0002_judgments.py` | judgments migration | Alembic revision | adds ) show
+newline
+x y moveto (`extraction_judgments` |) show
+newline
+x y moveto (| `backend/alembic/versions/0003_prompt_schema_version.py` | metadata columns migration | Alembic ) show
+newline
+x y moveto (revision | adds `prompt_version`, `schema_version` |) show
+newline
+x y moveto (| `backend/alembic/versions/0004_evidence_entities_verifier.py` | v0.5 evidence tables | Alembic ) show
+newline
+x y moveto (revision | adds evidence/entity/verifier tables |) show
+newline
+x y moveto (| `frontend/src/lib/api.ts` | frontend API client + TS contracts | `request<T>\(\)`, API methods, ) show
+newline
+x y moveto (enums/interfaces | mirrors backend enums, error normalization |) show
+newline
+x y moveto (| `frontend/src/app/page.tsx` | main UX page flow | `HomePage` | 3-stage flow: upload -> configure ) show
+newline
+x y moveto (-> review |) show
+newline
+x y moveto (| `frontend/src/components/ExtractionResult.tsx` | live job status/results UI | `ExtractionResult` |) show
+newline
+x y moveto ( SSE stream + polling fallback, retry support |) show
+newline
+x y moveto (| `frontend/src/components/ReviewPanel.tsx` | human review submission UI | component + handlers | ) show
+newline
+x y moveto (decisions `approved/corrected/rejected` |) show
+newline
+x y moveto (| `frontend/next.config.js` | API routing between FE and BE | `rewrites\(\)` | `/api/*` proxy ) show
+newline
+x y moveto (destination |) show
+newline
+x y moveto (| `docker-compose.yml` | local multi-service stack | services `app`, `phoenix`, `ollama` | ) show
+newline
+x y moveto (healthcheck path `/health/ready`, OTEL/Ollama env wiring |) show
+newline
+x y moveto (| `docs/ARCHITECTURE_V2.md` | architecture deep dive | narrative docs | pipeline reasoning and ) show
+newline
+x y moveto (design |) show
+newline
+x y moveto (| `docs/DEVELOPMENT.md` | contributor setup workflow | commands/instructions | `backend/.env` ) show
+newline
+x y moveto (workflow, uv usage |) show
+newline
+x y moveto (| `docs/MCP.md` | MCP setup and client integration | run/config examples | stdio launch patterns |) show
+newline
+x y moveto () show
+newline
+x y moveto (## Module 3: Core Execution Flows) show
+newline
+x y moveto () show
+newline
+x y moveto (### 3.1 Boot Sequence \(Backend\)) show
+newline
+x y moveto () show
+newline
+x y moveto (Start point: `backend/app/main.py` \(`lifespan`\).) show
+newline
+x y moveto () show
+newline
+x y moveto (Step-by-step:) show
+newline
+x y moveto () show
+newline
+x y moveto (1. `configure_logging\(\)`) show
+newline
+x y moveto (2. `validate_ollama_base_url\(settings.ollama_base_url\)` rejects non-local hosts unless ) show
+newline
+x y moveto (`OLLAMA_ALLOW_PRIVATE_HOSTS=true`.) show
+newline
+x y moveto (3. `await init_db\(\)`:) show
+newline
+x y moveto (- tries `alembic upgrade head`) show
+newline
+x y moveto (- falls back to `Base.metadata.create_all`) show
+newline
+x y moveto (- applies SQLite `PRAGMA journal_mode=WAL` and `PRAGMA optimize`.) show
+newline
+x y moveto (4. ensures directories by touching `settings.upload_path`, `settings.artifacts_path`.) show
+newline
+x y moveto (5. best-effort telemetry setup \(`app.telemetry.setup_telemetry`\).) show
+newline
+x y moveto (6. imports `app.services.extraction.business_rules` at startup.) show
+newline
+x y moveto (7. logs provider readiness via `list_llm_provider_statuses\(\)` and `list_ocr_provider_statuses\(\)`.) show
+newline
+x y moveto (8. calls `_recover_orphaned_jobs\(\)`:) show
+newline
+x y moveto (- statuses `queued/processing/ocr_complete/extracted` are failed on restart) show
+newline
+x y moveto (- stuck running `ExtractionStep` rows are finalized as failed.) show
+newline
+x y moveto () show
+newline
+x y moveto (### 3.2 Document Upload Flow) show
+newline
+x y moveto () show
+newline
+x y moveto (Endpoint: `POST /api/documents/` \(`upload_document`\).) show
+newline
+x y moveto () show
+newline
+x y moveto (Execution path:) show
+newline
+x y moveto () show
+newline
+x y moveto (1. `save_upload\(file\)` writes file to `UPLOAD_DIR`.) show
+newline
+x y moveto (2. verifies magic bytes with `sniff_mime\(Path\(file_path\)\)`.) show
+newline
+x y moveto (3. checks extension/type agreement via `mime_matches_extension\(...\)`.) show
+newline
+x y moveto (4. creates `Document` ORM row:) show
+newline
+x y moveto (- `id`, `filename`, `original_filename`, `file_path`, `file_type`, `file_size`, `status`.) show
+newline
+x y moveto (5. returns `DocumentResponse`.) show
+newline
+x y moveto () show
+newline
+x y moveto (`DocumentResponse` shape:) show
+newline
+x y moveto () show
+newline
+x y moveto (```json) show
+newline
+x y moveto ({) show
+newline
+x y moveto (  "id": "string",) show
+newline
+x y moveto (  "filename": "string",) show
+newline
+x y moveto (  "original_filename": "string",) show
+newline
+x y moveto (  "file_type": "string",) show
+newline
+x y moveto (  "file_size": 12345,) show
+newline
+x y moveto (  "page_count": null,) show
+newline
+x y moveto (  "status": "uploaded",) show
+newline
+x y moveto (  "created_at": "ISO datetime") show
+newline
+x y moveto (}) show
+newline
+x y moveto (```) show
+newline
+x y moveto () show
+newline
+x y moveto (### 3.3 Extraction Start + Background Job Flow) show
+newline
+x y moveto () show
+newline
+x y moveto (Endpoint: `POST /api/extractions/` \(`create_extraction`\).) show
+newline
+x y moveto () show
+newline
+x y moveto (Request model `ExtractionCreate`:) show
+newline
+x y moveto () show
+newline
+x y moveto (```json) show
+newline
+x y moveto ({) show
+newline
+x y moveto (  "document_id": "32-char id",) show
+newline
+x y moveto (  "schema_id": "32-char id",) show
+newline
+x y moveto (  "ocr_provider": "auto|paddleocr|glmocr|docling",) show
+newline
+x y moveto (  "llm_provider": "auto|openai|gemini|anthropic",) show
+newline
+x y moveto (  "llm_model": "auto or model id") show
+newline
+x y moveto (}) show
+newline
+x y moveto (```) show
+newline
+x y moveto () show
+newline
+x y moveto (Flow:) show
+newline
+x y moveto () show
+newline
+x y moveto (1. validate `Document` and `ExtractionSchema` existence.) show
+newline
+x y moveto (2. insert `Extraction` with `status="queued"`.) show
+newline
+x y moveto (3. increment metrics \(`ade_in_flight_jobs`, `ade_extractions_total{status="queued"}`\).) show
+newline
+x y moveto (4. enqueue worker callback using `queue.submit\(extraction.id, lambda: _run_extraction_job\(...\)\)`.) show
+newline
+x y moveto (5. audit event `extraction.started`.) show
+newline
+x y moveto () show
+newline
+x y moveto (### 3.4 LangGraph Pipeline Flow \(Core Logic\)) show
+newline
+x y moveto () show
+newline
+x y moveto (Orchestrator: `_run_extraction_pipeline\(extraction_id\)` + `extraction_graph.astream`.) show
+newline
+x y moveto () show
+newline
+x y moveto (Node order \(from code\):) show
+newline
+x y moveto () show
+newline
+x y moveto (```text) show
+newline
+x y moveto (triage -> parse -> extract -> validate -> reflect -> await_review -> finalize) show
+newline
+x y moveto (```) show
+newline
+x y moveto () show
+newline
+x y moveto (State object: `PipelineState` \(`TypedDict`\) with key fields:) show
+newline
+x y moveto () show
+newline
+x y moveto (- inputs: `file_path`, `schema_fields`, `ocr_provider_id`, `llm_provider_id`, `llm_model_id`) show
+newline
+x y moveto (- parse output: `ocr_text`, `ocr_provider_used`) show
+newline
+x y moveto (- extract output: `extracted_data`, `llm_provider_used`, `llm_model_used`, `confidence`, ) show
+newline
+x y moveto (`extract_attempts`) show
+newline
+x y moveto (- validate output: `validation_errors`, `validation_results`, `review_verdict`) show
+newline
+x y moveto (- finalize output: `status`, `completed_at`, `error`.) show
+newline
+x y moveto () show
+newline
+x y moveto (Important node behavior:) show
+newline
+x y moveto () show
+newline
+x y moveto (1. `triage_node`) show
+newline
+x y moveto (- chooses recommendation based on file suffix \(pdf/image/office/html\), respects explicit provider ) show
+newline
+x y moveto (selection.) show
+newline
+x y moveto () show
+newline
+x y moveto (2. `parse_node`) show
+newline
+x y moveto (- gets OCR provider via `get_ocr_provider\(...\)`) show
+newline
+x y moveto (- returns `{"status":"ocr_complete", "ocr_text":..., "ocr_provider_used":...}` or ) show
+newline
+x y moveto (`{"status":"failed","error":...}`.) show
+newline
+x y moveto () show
+newline
+x y moveto (3. `extract_node`) show
+newline
+x y moveto (- resolves provider via `get_llm_provider\(...\)`) show
+newline
+x y moveto (- retries retryable provider errors up to `settings.llm_max_retries`) show
+newline
+x y moveto (- exponential backoff base `settings.llm_retry_base_delay`) show
+newline
+x y moveto (- returns `status="extracted"` with extracted dict + confidence.) show
+newline
+x y moveto () show
+newline
+x y moveto (4. `validate_node`) show
+newline
+x y moveto (- runs `validate_extraction\(...\)`) show
+newline
+x y moveto (- computes verdict via `compute_review_verdict\(...\)`) show
+newline
+x y moveto (- populates both structured `validation_results` and plain `validation_errors`.) show
+newline
+x y moveto () show
+newline
+x y moveto (5. `reflect_node`) show
+newline
+x y moveto (- if verdict not valid and attempts remain, rebuilds prompt with `build_reflection_prompt\(...\)` and ) show
+newline
+x y moveto (re-extracts.) show
+newline
+x y moveto () show
+newline
+x y moveto (6. `await_review_node`) show
+newline
+x y moveto (- when checkpointer exists, uses LangGraph `interrupt\(payload\)` and resumes with:) show
+newline
+x y moveto (  - `{"decision":"approved|corrected|rejected","corrected_fields":{...},"notes":"..."}`) show
+newline
+x y moveto (- merges corrections into `extracted_data` for `corrected`.) show
+newline
+x y moveto () show
+newline
+x y moveto (7. `finalize_node`) show
+newline
+x y moveto (- sets terminal `status`:) show
+newline
+x y moveto (  - `completed` when `review_verdict == "valid"`) show
+newline
+x y moveto (  - `needs_review` when still unresolved.) show
+newline
+x y moveto () show
+newline
+x y moveto (### 3.5 Persisted Step Records and SSE) show
+newline
+x y moveto () show
+newline
+x y moveto (`_PIPELINE_STEPS` in router:) show
+newline
+x y moveto () show
+newline
+x y moveto (```python) show
+newline
+x y moveto (\("triage", "parse", "extract", "validate", "reflect", "await_review", "finalize"\)) show
+newline
+x y moveto (```) show
+newline
+x y moveto () show
+newline
+x y moveto (Each streamed node update:) show
+newline
+x y moveto () show
+newline
+x y moveto (- completes current `ExtractionStep` with `status`, `duration_ms`, `error`) show
+newline
+x y moveto (- creates next step row as `running`) show
+newline
+x y moveto (- updates `Extraction.status` progressively.) show
+newline
+x y moveto () show
+newline
+x y moveto (Live stream endpoint: `GET /api/extractions/{extraction_id}/stream`) show
+newline
+x y moveto () show
+newline
+x y moveto (- implementation uses `StreamingResponse` with `text/event-stream`) show
+newline
+x y moveto (- emits only on status/step changes using `_sse_step_signature\(...\)`) show
+newline
+x y moveto (- frame format from `_sse_event`:) show
+newline
+x y moveto () show
+newline
+x y moveto (```text) show
+newline
+x y moveto (data: {"id":"...","status":"processing", ...}) show
+newline
+x y moveto () show
+newline
+x y moveto (```) show
+newline
+x y moveto () show
+newline
+x y moveto (### 3.6 Review Flow) show
+newline
+x y moveto () show
+newline
+x y moveto (Endpoint: `POST /api/extractions/{id}/reviews` with `ReviewCreate`.) show
+newline
+x y moveto () show
+newline
+x y moveto (Rules in code:) show
+newline
+x y moveto () show
+newline
+x y moveto (- only when extraction status is `needs_review`) show
+newline
+x y moveto (- `decision="corrected"` requires non-empty `corrected_fields`) show
+newline
+x y moveto (- `corrected_fields` is forbidden for `approved`/`rejected`.) show
+newline
+x y moveto () show
+newline
+x y moveto (Outcome mapping:) show
+newline
+x y moveto () show
+newline
+x y moveto (- `approved` -> extraction `status="completed"`) show
+newline
+x y moveto (- `corrected` -> merge `corrected_fields` into result then complete) show
+newline
+x y moveto (- `rejected` -> extraction `status="failed"`.) show
+newline
+x y moveto () show
+newline
+x y moveto (### 3.7 Provider Metadata Flow) show
+newline
+x y moveto () show
+newline
+x y moveto (Endpoints:) show
+newline
+x y moveto () show
+newline
+x y moveto (- `GET /api/providers/parsers`) show
+newline
+x y moveto (- `GET /api/providers/llm`) show
+newline
+x y moveto (- `GET /api/providers/llm/{provider_id}/models`) show
+newline
+x y moveto (- `GET /api/providers/config`) show
+newline
+x y moveto () show
+newline
+x y moveto (`/providers/config` real payload fields:) show
+newline
+x y moveto () show
+newline
+x y moveto (- `parser_engines`) show
+newline
+x y moveto (- `llm_providers`) show
+newline
+x y moveto (- `default_llm_provider`) show
+newline
+x y moveto (- `model_selection_modes`) show
+newline
+x y moveto (- `ocr_engine_flags` \(`paddleocr`, `glm_ocr`\)) show
+newline
+x y moveto (- `max_upload_size_mb`) show
+newline
+x y moveto (- `supported_file_types`) show
+newline
+x y moveto (- `confidence_threshold`.) show
+newline
+x y moveto () show
+newline
+x y moveto (## Module 4: Setup & Run Guide) show
+newline
+x y moveto () show
+newline
+x y moveto (This section is a static setup guide derived from repo files \(`README.md`, `docs/DEVELOPMENT.md`, ) show
+newline
+x y moveto (`justfile`, `backend/.env.example`\).) show
+newline
+x y moveto () show
+newline
+x y moveto (### 4.1 Clean-Machine Install Steps) show
+newline
+x y moveto () show
+newline
+x y moveto (1. Create and activate environment \(Python 3.12.10 pinned in docs/justfile\):) show
+newline
+x y moveto () show
+newline
+x y moveto (```bash) show
+newline
+x y moveto (uv venv --python 3.12.10 .venv) show
+newline
+x y moveto (source .venv/bin/activate) show
+newline
+x y moveto (```) show
+newline
+x y moveto () show
+newline
+x y moveto (2. Install dependencies \(backend + extras\):) show
+newline
+x y moveto () show
+newline
+x y moveto (```bash) show
+newline
+x y moveto (uv pip install -e ".[test,lint,ollama]") show
+newline
+x y moveto (```) show
+newline
+x y moveto () show
+newline
+x y moveto (3. Frontend install:) show
+newline
+x y moveto () show
+newline
+x y moveto (```bash) show
+newline
+x y moveto (cd frontend) show
+newline
+x y moveto (npm install) show
+newline
+x y moveto (```) show
+newline
+x y moveto () show
+newline
+x y moveto (### 4.2 Environment Configuration) show
+newline
+x y moveto () show
+newline
+x y moveto (Template source: `backend/.env.example`.) show
+newline
+x y moveto () show
+newline
+x y moveto (Minimum required keys for extraction:) show
+newline
+x y moveto () show
+newline
+x y moveto (- one LLM API key:) show
+newline
+x y moveto (  - `OPENAI_API_KEY` or `GEMINI_API_KEY` or `ANTHROPIC_API_KEY`) show
+newline
+x y moveto () show
+newline
+x y moveto (Important core keys:) show
+newline
+x y moveto () show
+newline
+x y moveto (- `DEFAULT_LLM_PROVIDER=auto`) show
+newline
+x y moveto (- `DATABASE_URL=sqlite+aiosqlite:///./extraction.db`) show
+newline
+x y moveto (- `UPLOAD_DIR=./uploads`) show
+newline
+x y moveto (- `ARTIFACTS_DIR=./artifacts`) show
+newline
+x y moveto (- `MAX_UPLOAD_SIZE_MB=50`) show
+newline
+x y moveto (- `ENABLE_PADDLEOCR=false`) show
+newline
+x y moveto (- `ENABLE_GLM_OCR=false`) show
+newline
+x y moveto (- `OLLAMA_BASE_URL=http://localhost:11434`) show
+newline
+x y moveto (- `OLLAMA_GLM_OCR_MODEL=glm-ocr:latest`) show
+newline
+x y moveto (- `GLM_OCR_TIMEOUT_SECONDS=120`) show
+newline
+x y moveto (- `HOST=0.0.0.0`) show
+newline
+x y moveto (- `PORT=8000`) show
+newline
+x y moveto (- `DEBUG=true`) show
+newline
+x y moveto (- `CORS_ORIGINS=http://localhost:3000,http://127.0.0.1:3000`) show
+newline
+x y moveto () show
+newline
+x y moveto (Additional settings present in `backend/app/config.py` \(not all in example file\):) show
+newline
+x y moveto () show
+newline
+x y moveto (- `ENABLE_DOCLING`) show
+newline
+x y moveto (- `ENABLE_LAYOUT_PARSING`) show
+newline
+x y moveto (- `ENABLE_VERIFIER`) show
+newline
+x y moveto (- `ENABLE_DOUBLE_PASS`) show
+newline
+x y moveto (- `ENABLE_CROSS_PAGE_ENTITIES`) show
+newline
+x y moveto (- `REDIS_URL`) show
+newline
+x y moveto (- `CONFIDENCE_CALIBRATION_PATH`) show
+newline
+x y moveto (- `CHECKPOINT_DB_PATH`) show
+newline
+x y moveto (- `OTEL_*`) show
+newline
+x y moveto (- `VLM_*`) show
+newline
+x y moveto (- `JUDGE_*`.) show
+newline
+x y moveto () show
+newline
+x y moveto (### 4.3 Typical Command Sequences) show
+newline
+x y moveto () show
+newline
+x y moveto (Backend dev server:) show
+newline
+x y moveto () show
+newline
+x y moveto (```bash) show
+newline
+x y moveto (uvicorn app.main:app --reload --port 8000 --app-dir backend) show
+newline
+x y moveto (```) show
+newline
+x y moveto () show
+newline
+x y moveto (Frontend dev server:) show
+newline
+x y moveto () show
+newline
+x y moveto (```bash) show
+newline
+x y moveto (cd frontend) show
+newline
+x y moveto (npm run dev) show
+newline
+x y moveto (```) show
+newline
+x y moveto () show
+newline
+x y moveto (Justfile equivalents:) show
+newline
+x y moveto () show
+newline
+x y moveto (- backend dev: `just dev`) show
+newline
+x y moveto (- DB migration: `just migrate`) show
+newline
+x y moveto (- stack up: `just up`) show
+newline
+x y moveto (- MCP server: `just mcp`.) show
+newline
+x y moveto () show
+newline
+x y moveto (### 4.4 Database Migration and Seeding Notes) show
+newline
+x y moveto () show
+newline
+x y moveto (Migration system:) show
+newline
+x y moveto () show
+newline
+x y moveto (- Alembic config: `alembic.ini`) show
+newline
+x y moveto (- migration env: `backend/alembic/env.py`) show
+newline
+x y moveto (- versions:) show
+newline
+x y moveto (  - `0001_initial_schema.py`) show
+newline
+x y moveto (  - `0002_judgments.py`) show
+newline
+x y moveto (  - `0003_prompt_schema_version.py`) show
+newline
+x y moveto (  - `0004_evidence_entities_verifier.py`.) show
+newline
+x y moveto () show
+newline
+x y moveto (Migration command:) show
+newline
+x y moveto () show
+newline
+x y moveto (```bash) show
+newline
+x y moveto (alembic upgrade head) show
+newline
+x y moveto (```) show
+newline
+x y moveto () show
+newline
+x y moveto (Seeding:) show
+newline
+x y moveto () show
+newline
+x y moveto (- no dedicated DB seed script is defined in repo root.) show
+newline
+x y moveto (- schema presets are code-defined and materialized through API \(`/api/schemas/presets` then `POST ) show
+newline
+x y moveto (/api/schemas/presets/{preset_id}`\).) show
+newline
+x y moveto () show
+newline
+x y moveto (## Module 5: Study Plan & Practice Exercises) show
+newline
+x y moveto () show
+newline
+x y moveto (### 5.1 Ordered Self-Study Plan) show
+newline
+x y moveto () show
+newline
+x y moveto (Recommended read order:) show
+newline
+x y moveto () show
+newline
+x y moveto (1. `README.md` and `docs/ARCHITECTURE_V2.md` for context.) show
+newline
+x y moveto (2. `backend/app/models/enums.py`, `backend/app/models/schemas.py`, `backend/app/models/db_models.py`) show
+newline
+x y moveto ( to internalize contracts.) show
+newline
+x y moveto (3. `backend/app/main.py`, `backend/app/config.py`, `backend/app/constants.py` for runtime ) show
+newline
+x y moveto (boot/config.) show
+newline
+x y moveto (4. Routers in this order:) show
+newline
+x y moveto (   - `documents.py`) show
+newline
+x y moveto (   - `schemas.py`) show
+newline
+x y moveto (   - `providers.py`) show
+newline
+x y moveto (   - `extractions.py`) show
+newline
+x y moveto (5. Pipeline internals:) show
+newline
+x y moveto (   - `services/extraction/graph.py`) show
+newline
+x y moveto (   - `services/extraction/validation.py`) show
+newline
+x y moveto (   - `services/extraction/business_rules.py`) show
+newline
+x y moveto (6. Providers:) show
+newline
+x y moveto (   - `services/ocr/registry.py` + OCR providers) show
+newline
+x y moveto (   - `services/llm/registry.py` + LLM providers) show
+newline
+x y moveto (7. Infra and ops:) show
+newline
+x y moveto (   - `services/jobs.py`) show
+newline
+x y moveto (   - `database.py`) show
+newline
+x y moveto (   - `metrics.py`) show
+newline
+x y moveto (   - `security_middleware.py`) show
+newline
+x y moveto (8. Frontend integration:) show
+newline
+x y moveto (   - `frontend/src/lib/api.ts`) show
+newline
+x y moveto (   - `frontend/src/app/page.tsx`) show
+newline
+x y moveto (   - `frontend/src/components/ExtractionResult.tsx`) show
+newline
+x y moveto (   - `frontend/src/components/ReviewPanel.tsx`) show
+newline
+x y moveto (9. Migrations and MCP:) show
+newline
+x y moveto (   - `backend/alembic/*`) show
+newline
+x y moveto (   - `backend/app/mcp_server.py`.) show
+newline
+x y moveto () show
+newline
+x y moveto (### 5.2 Practice Exercises \(with answer outlines\)) show
+newline
+x y moveto () show
+newline
+x y moveto (1. Explain full flow of `POST /api/extractions/` from request body to DB persistence and queue ) show
+newline
+x y moveto (submission.) show
+newline
+x y moveto () show
+newline
+x y moveto (2. List every terminal extraction status and identify which functions assign them.) show
+newline
+x y moveto () show
+newline
+x y moveto (3. Compare OCR auto-routing vs explicit OCR selection behavior and error conditions.) show
+newline
+x y moveto () show
+newline
+x y moveto (4. Trace how `review_verdict` moves from validation node to final API response fields.) show
+newline
+x y moveto () show
+newline
+x y moveto (5. Document the exact SSE stop condition and bounded-loop behavior.) show
+newline
+x y moveto () show
+newline
+x y moveto (6. Identify where and how model retries are implemented for LLM calls.) show
+newline
+x y moveto () show
+newline
+x y moveto (7. Map all places that can mark a job as failed outside normal graph node failure.) show
+newline
+x y moveto () show
+newline
+x y moveto (8. Find a backend/frontend contract mismatch and explain impact.) show
+newline
+x y moveto () show
+newline
+x y moveto (9. Describe how startup protects against unsafe remote Ollama endpoints.) show
+newline
+x y moveto () show
+newline
+x y moveto (10. Show which tables were added after the initial migration and why they matter.) show
+newline
+x y moveto () show
+newline
+x y moveto (### 5.3 Model Answer Outlines) show
+newline
+x y moveto () show
+newline
+x y moveto (1. `create_extraction` validates `document_id` + `schema_id`, inserts extraction row ) show
+newline
+x y moveto (\(`status="queued"`\), increments metrics, submits queue callback, writes audit event ) show
+newline
+x y moveto (`extraction.started`, returns `ExtractionResponse`.) show
+newline
+x y moveto () show
+newline
+x y moveto (2. Terminal statuses are `completed`, `needs_review`, `failed`. Assigned in:) show
+newline
+x y moveto (- `finalize_node` \(`completed` or `needs_review`\)) show
+newline
+x y moveto (- `_apply_failure_state` and `_mark_job_failed` \(`failed`\)) show
+newline
+x y moveto (- review submission path maps rejected review to `failed`.) show
+newline
+x y moveto () show
+newline
+x y moveto (3. Auto OCR calls `_resolve_auto\(file_path\)` and walks priority `glmocr -> paddleocr -> docling -> ) show
+newline
+x y moveto (pymupdf` with checks: enabled, available, file-type compatibility. Explicit selection bypasses auto ) show
+newline
+x y moveto (and errors if disabled/unavailable/incompatible.) show
+newline
+x y moveto () show
+newline
+x y moveto (4. `validate_node` computes `review_verdict`; `reflect_node` may improve extraction and loop back; ) show
+newline
+x y moveto (`await_review_node` can convert to valid via approve/correct; persisted by router into ) show
+newline
+x y moveto (`extraction.review_verdict`; returned in `ExtractionResponse.review_verdict` and ) show
+newline
+x y moveto (`ExtractionValidationResponse.review_verdict`.) show
+newline
+x y moveto () show
+newline
+x y moveto (5. SSE endpoint loops up to `SSE_MAX_ITERATIONS` \(`600`\), sleeps `SSE_KEEPALIVE_S` \(`15.0`\), emits ) show
+newline
+x y moveto (only when status or step signature changes, exits early on terminal statuses set in ) show
+newline
+x y moveto (`SSE_TERMINAL_STATUSES`.) show
+newline
+x y moveto () show
+newline
+x y moveto (6. `extract_node` catches `LLMProviderError`, retries only when `exc.retryable` and attempt < max; ) show
+newline
+x y moveto (delay is `llm_retry_base_delay * \(2**attempt\)`; cap is `settings.llm_max_retries`.) show
+newline
+x y moveto () show
+newline
+x y moveto (7. Failures also occur in:) show
+newline
+x y moveto (- `_run_extraction_job` timeout wrapper \(`JOB_TIMEOUT_S=300`\)) show
+newline
+x y moveto (- `_mark_job_failed` on crash) show
+newline
+x y moveto (- startup `_recover_orphaned_jobs` for stuck statuses after restart) show
+newline
+x y moveto (- parse/extract node exception paths.) show
+newline
+x y moveto () show
+newline
+x y moveto (8. One real mismatch: backend enum includes `docling` \(`ParserEngine.DOCLING`\), but frontend ) show
+newline
+x y moveto (`ParserEngine` union in `frontend/src/lib/api.ts` omits `DOCLING`; this can break strong typing for ) show
+newline
+x y moveto (parser option handling.) show
+newline
+x y moveto () show
+newline
+x y moveto (9. `main.lifespan` calls `validate_ollama_base_url`; non-loopback host is rejected unless ) show
+newline
+x y moveto (`OLLAMA_ALLOW_PRIVATE_HOSTS` is true.) show
+newline
+x y moveto () show
+newline
+x y moveto (10. Post-initial migration tables include:) show
+newline
+x y moveto (- `extraction_judgments` \(`0002`\)) show
+newline
+x y moveto (- `prompt_version` and `schema_version` columns \(`0003`\)) show
+newline
+x y moveto (- `extraction_evidence`, `extraction_entities`, `extraction_verifier_runs` \(`0004`\) for evidence-) show
+newline
+x y moveto (grounded/verifier pipeline capabilities.) show
+newline
+x y moveto () show
+newline
+x y moveto (## Learner Verification Checklist) show
+newline
+x y moveto () show
+newline
+x y moveto (Use this checklist after reading:) show
+newline
+x y moveto () show
+newline
+x y moveto (- Can you explain how an extraction transitions from `queued` to terminal status, including queue + ) show
+newline
+x y moveto (graph + DB persistence?) show
+newline
+x y moveto (- Can you name each LangGraph node and describe exactly what state keys it writes?) show
+newline
+x y moveto (- Can you explain OCR auto-selection policy and why `pymupdf` is internal-only?) show
+newline
+x y moveto (- Can you describe how `ReviewCreate` validation rules enforce corrected vs non-corrected decisions?) show
+newline
+x y moveto (- Can you trace where retries/backoff happen and what config keys control them?) show
+newline
+x y moveto (- Can you list the major DB tables and which API endpoints read/write them?) show
+newline
+x y moveto (- Can you explain how SSE progress events are generated and terminated?) show
+newline
+x y moveto (- Can you describe startup safety checks \(DB init, provider readiness, OLLAMA URL policy, orphaned-) show
+newline
+x y moveto (job recovery\)?) show
+newline
+x y moveto (- Can you point to at least one contract drift between backend and frontend and explain remediation?) show
+newline
+x y moveto (- Can you set up a clean machine using `uv`, env keys, migrations, backend serve, and frontend dev ) show
+newline
+x y moveto (commands without guessing?) show
+newline
+showpage

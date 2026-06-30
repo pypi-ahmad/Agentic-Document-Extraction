@@ -1,0 +1,958 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Zero to Hero Study Handbook</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 18mm 16mm 18mm 16mm;
+      @bottom-right {
+        content: "Page " counter(page) " of " counter(pages);
+        font-size: 9pt;
+        color: #666;
+      }
+    }
+
+    :root {
+      --text: #111827;
+      --muted: #4b5563;
+      --line: #d1d5db;
+      --soft: #f3f4f6;
+      --code-bg: #f8fafc;
+      --accent: #0f766e;
+    }
+
+    body {
+      font-family: "DejaVu Serif", "Noto Serif", Georgia, serif;
+      color: var(--text);
+      line-height: 1.5;
+      font-size: 11pt;
+      margin: 0;
+    }
+
+    h1, h2, h3 {
+      color: #0b1324;
+      page-break-after: avoid;
+      break-after: avoid;
+      margin-top: 1.1em;
+      margin-bottom: 0.45em;
+      line-height: 1.25;
+    }
+
+    h1 {
+      font-size: 22pt;
+      border-bottom: 2px solid var(--line);
+      padding-bottom: 8px;
+      margin-top: 0;
+    }
+
+    h2 {
+      font-size: 15pt;
+      border-left: 4px solid var(--accent);
+      padding-left: 10px;
+    }
+
+    h3 { font-size: 12.5pt; }
+
+    p { margin: 0.35em 0 0.55em 0; }
+
+    ul, ol { margin: 0.35em 0 0.7em 1.2em; padding: 0; }
+    li { margin: 0.18em 0; }
+
+    a { color: #0b5ed7; text-decoration: none; }
+
+    blockquote {
+      margin: 0.8em 0;
+      padding: 0.55em 0.8em;
+      border-left: 3px solid var(--accent);
+      background: #f8fffe;
+      color: var(--muted);
+    }
+
+    code {
+      font-family: "DejaVu Sans Mono", "Noto Sans Mono", Consolas, monospace;
+      font-size: 0.92em;
+      background: #eef2ff;
+      padding: 1px 4px;
+      border-radius: 3px;
+    }
+
+    pre {
+      page-break-inside: avoid;
+      break-inside: avoid;
+      background: var(--code-bg);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 10px 11px;
+      overflow: hidden;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    pre code {
+      background: transparent;
+      padding: 0;
+      border-radius: 0;
+      font-size: 0.9em;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0.8em 0 1em 0;
+      font-size: 9.6pt;
+      table-layout: fixed;
+      page-break-inside: auto;
+    }
+
+    thead { display: table-header-group; }
+    tr { page-break-inside: avoid; break-inside: avoid; }
+
+    th, td {
+      border: 1px solid var(--line);
+      padding: 6px 7px;
+      vertical-align: top;
+      word-wrap: break-word;
+      overflow-wrap: anywhere;
+    }
+
+    th {
+      background: var(--soft);
+      text-align: left;
+      font-weight: 700;
+    }
+
+    hr { border: none; border-top: 1px solid var(--line); margin: 1em 0; }
+  </style>
+</head>
+<body>
+<h1 id="zero-to-hero-study-handbook-agentic-document-extraction">Zero to Hero Study Handbook: agentic-document-extraction</h1>
+<h2 id="module-1-foundations-architecture">Module 1: Foundations &amp; Architecture</h2>
+<h3 id="11-what-this-project-does">1.1 What This Project Does</h3>
+<p><code>agentic-document-extraction</code> is a full-stack system that:</p>
+<ul>
+<li>uploads documents (<code>/api/documents/</code>)</li>
+<li>defines extraction schemas (<code>/api/schemas/</code>)</li>
+<li>runs an asynchronous LangGraph extraction pipeline (<code>/api/extractions/</code>)</li>
+<li>validates output and optionally routes to human review</li>
+<li>exposes provider readiness/model catalogs (<code>/api/providers/*</code>)</li>
+<li>offers an MCP server interface (<code>backend/app/mcp_server.py</code>) for tool-based LLM clients.</li>
+</ul>
+<p>Main use cases from code and docs:</p>
+<ul>
+<li>extracting structured fields from PDFs and images</li>
+<li>handling multiple OCR/parser engines (<code>auto</code>, <code>paddleocr</code>, <code>glmocr</code>, <code>docling</code> + internal <code>pymupdf</code>)</li>
+<li>choosing LLM providers (<code>auto</code>, <code>openai</code>, <code>gemini</code>, <code>anthropic</code>)</li>
+<li>supporting review workflows (<code>approved</code>, <code>corrected</code>, <code>rejected</code>)</li>
+<li>recording observability, metrics, and audit events.</li>
+</ul>
+<h3 id="12-core-cs-definitions-and-patterns-used-here">1.2 Core CS Definitions and Patterns Used Here</h3>
+<ol>
+<li>
+<p><code>Asynchronous programming</code>
+- Definition: Concurrency model where I/O waits do not block the whole process.
+- Here: most backend paths are <code>async def</code> (<code>FastAPI</code>, <code>SQLAlchemy AsyncSession</code>, <code>LangGraph async stream</code>, async job queue methods).</p>
+</li>
+<li>
+<p><code>Event-driven architecture</code>
+- Definition: System state advances because events occur (HTTP requests, pipeline node updates, SSE emissions, review submissions).
+- Here: extraction node updates are streamed and persisted step-by-step in <code>backend/app/routers/extractions.py</code> via <code>extraction_graph.astream(..., stream_mode="updates")</code>.</p>
+</li>
+<li>
+<p><code>Finite-state workflow / state machine</code>
+- Definition: Computation is represented by states and transitions.
+- Here: extraction lifecycle statuses in <code>ExtractionStatus</code> (<code>pending</code>, <code>queued</code>, <code>processing</code>, <code>ocr_complete</code>, <code>extracted</code>, <code>completed</code>, <code>needs_review</code>, <code>failed</code>) and LangGraph node transitions in <code>backend/app/services/extraction/graph.py</code>.</p>
+</li>
+<li>
+<p><code>Typed contract-driven design</code>
+- Definition: explicit schemas for input/output and invariants.
+- Here: Pydantic models in <code>backend/app/models/schemas.py</code> plus <code>field_validator</code>, <code>model_validator</code>, <code>computed_field</code>.</p>
+</li>
+<li>
+<p><code>Strategy pattern</code>
+- Definition: interchangeable implementations behind a shared interface.
+- Here:
+  - OCR strategies implement <code>BaseOCRProvider</code> (<code>pymupdf</code>, <code>paddleocr</code>, <code>glmocr</code>, <code>docling</code>)
+  - LLM strategies implement <code>BaseLLMProvider</code> (<code>openai</code>, <code>gemini</code>, <code>anthropic</code>)
+  - registries choose concrete strategy by policy (<code>backend/app/services/ocr/registry.py</code>, <code>backend/app/services/llm/registry.py</code>).</p>
+</li>
+<li>
+<p><code>Human-in-the-loop pattern</code>
+- Definition: automation defers uncertain/invalid outputs to human decision.
+- Here: <code>review_verdict == "needs_review"</code> plus review endpoints <code>POST /api/extractions/{id}/reviews</code>.</p>
+</li>
+<li>
+<p><code>Checkpoint/resume workflow</code>
+- Definition: save intermediate state and resume later.
+- Here: LangGraph supports <code>interrupt()</code> in <code>await_review_node</code>; optional SQLite checkpoint path via <code>Settings.checkpoint_db_path</code>.</p>
+</li>
+</ol>
+<h3 id="13-architecture-and-interactions">1.3 Architecture and Interactions</h3>
+<h4 id="main-runtime-topology">Main runtime topology</h4>
+<pre><code class="language-text">[Next.js Frontend]
+  |
+  | HTTP /api/* (rewritten by frontend/next.config.js)
+  v
+[FastAPI app.main]
+  |-- routers/documents.py --&gt; save_upload + MIME validation --&gt; documents table
+  |-- routers/schemas.py   --&gt; schema CRUD/presets            --&gt; extraction_schemas table
+  |-- routers/providers.py --&gt; parser/provider/model metadata
+  |-- routers/extractions.py
+       |
+       | create_extraction() -&gt; queue.submit()
+       v
+     [Job Queue]
+       |-- InProcessJobQueue (default)
+       |-- ArqJobQueue (if REDIS_URL set)
+       v
+     _run_extraction_job()
+       v
+     LangGraph extraction_graph
+       triage -&gt; parse -&gt; extract -&gt; validate -&gt; reflect -&gt; await_review -&gt; finalize
+       |
+       v
+     Persist to DB:
+       extractions, extraction_steps, extraction_reviews,
+       extraction_judgments, extraction_audit_log, v0.5 tables
+       |
+       +--&gt; SSE stream /api/extractions/{id}/stream
+       +--&gt; REST status/result/validation endpoints
+</code></pre>
+<h3 id="14-technology-stack-with-real-config-values">1.4 Technology Stack with Real Config Values</h3>
+<p>Backend core:</p>
+<ul>
+<li><code>FastAPI</code> app version <code>"0.6.0"</code> (<code>backend/app/main.py</code>)</li>
+<li><code>SQLAlchemy[asyncio]</code> + <code>aiosqlite</code> default DB URL:</li>
+<li><code>database_url = "sqlite+aiosqlite:///./extraction.db"</code> (<code>backend/app/config.py</code>)</li>
+<li><code>LangGraph</code> pipeline in <code>backend/app/services/extraction/graph.py</code></li>
+<li><code>SlowAPI</code> limiter default: <code>RATE_LIMIT_DEFAULT = "60/minute"</code> (<code>backend/app/constants.py</code>)</li>
+<li><code>Prometheus</code> metrics endpoint <code>/metrics</code> with metric names like <code>ade_extractions_total</code>, <code>ade_llm_call_duration_seconds</code>.</li>
+</ul>
+<p>Job execution:</p>
+<ul>
+<li><code>job_max_concurrent = 8</code> default (<code>Settings.job_max_concurrent</code>)</li>
+<li>queue factory in <code>get_job_queue()</code>:</li>
+<li><code>InProcessJobQueue</code> when <code>REDIS_URL</code> empty</li>
+<li><code>ArqJobQueue</code> when <code>REDIS_URL</code> is set</li>
+<li>Redis queue key for arq path: <code>"ade:extractions:queue"</code> (<code>backend/app/services/jobs.py</code>)</li>
+</ul>
+<p>Pipeline tuning:</p>
+<ul>
+<li><code>confidence_threshold = 0.6</code></li>
+<li><code>llm_max_retries = 2</code></li>
+<li><code>llm_retry_base_delay = 1.0</code></li>
+<li><code>max_reflection_attempts = 2</code></li>
+<li><code>job_timeout_s = 300</code> via <code>JOB_TIMEOUT_S</code></li>
+<li>SSE constants:</li>
+<li><code>SSE_KEEPALIVE_S = 15.0</code></li>
+<li><code>SSE_MAX_ITERATIONS = 600</code></li>
+<li>terminal statuses: <code>{"completed","needs_review","failed"}</code>.</li>
+</ul>
+<p>Provider defaults:</p>
+<ul>
+<li>LLM auto priority order: <code>openai -&gt; gemini -&gt; anthropic</code> (<code>AUTO_PRIORITY</code> in LLM registry)</li>
+<li>LLM default model IDs:</li>
+<li>OpenAI: <code>gpt-4o-mini</code></li>
+<li>Gemini: <code>gemini-2.0-flash</code></li>
+<li>Anthropic: <code>claude-3-5-haiku-20241022</code></li>
+<li>LLM extraction temperature: <code>0</code> in all three provider classes.</li>
+</ul>
+<p>OCR routing:</p>
+<ul>
+<li>OCR auto priority in <code>backend/app/services/ocr/registry.py</code>:</li>
+<li><code>glmocr -&gt; paddleocr -&gt; docling -&gt; pymupdf</code></li>
+<li>Feature flags:</li>
+<li><code>enable_paddleocr = False</code></li>
+<li><code>enable_glm_ocr = False</code></li>
+<li><code>enable_docling = False</code></li>
+<li>internal parser:</li>
+<li><code>pymupdf</code> is <code>is_user_selectable = False</code>, PDF-only fallback.</li>
+</ul>
+<p>Frontend:</p>
+<ul>
+<li>Next.js 14 (<code>frontend/package.json</code>)</li>
+<li>API rewrite:</li>
+<li><code>/api/:path* -&gt; http://localhost:8000/api/:path*</code> (<code>frontend/next.config.js</code>)</li>
+</ul>
+<p>Security and network guard:</p>
+<ul>
+<li>security headers from <code>SECURITY_HEADERS</code></li>
+<li>local-only OLLAMA guard at startup via <code>validate_ollama_base_url()</code></li>
+<li>opt-out env var for remote host: <code>OLLAMA_ALLOW_PRIVATE_HOSTS=true</code>.</li>
+</ul>
+<h2 id="module-2-repository-map">Module 2: Repository Map</h2>
+<p>Focus: files new contributors should learn first.</p>
+<table>
+<thead>
+<tr>
+<th>File/Directory Path</th>
+<th>Primary Responsibility</th>
+<th>Key Classes/Functions</th>
+<th>Important Configs/Variables</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pyproject.toml</code></td>
+<td>Python package/deps/tooling metadata</td>
+<td><code>[project]</code>, <code>[tool.pytest]</code>, <code>[tool.ruff]</code></td>
+<td><code>name="agentic-document-extraction"</code>, <code>version="0.6.0"</code>, <code>requires-python="&gt;=3.12,&lt;3.13"</code></td>
+</tr>
+<tr>
+<td><code>justfile</code></td>
+<td>task runner recipes for install/dev/test/migrate</td>
+<td><code>install</code>, <code>sync</code>, <code>dev</code>, <code>migrate</code>, <code>mcp</code></td>
+<td><code>uv venv --python 3.12.10</code>, <code>uv sync --frozen --extra test --extra lint --extra ollama</code></td>
+</tr>
+<tr>
+<td><code>backend/.env.example</code></td>
+<td>environment template</td>
+<td>key list only</td>
+<td><code>OPENAI_API_KEY</code>, <code>GEMINI_API_KEY</code>, <code>ANTHROPIC_API_KEY</code>, <code>DEFAULT_LLM_PROVIDER</code>, <code>DATABASE_URL</code>, <code>ENABLE_*</code>, <code>OLLAMA_*</code></td>
+</tr>
+<tr>
+<td><code>backend/app/main.py</code></td>
+<td>FastAPI app boot, middleware, health/info routes</td>
+<td><code>lifespan</code>, <code>readiness</code>, <code>health_check</code>, <code>app_info</code></td>
+<td>app <code>version="0.6.0"</code>, startup recovery, router registration</td>
+</tr>
+<tr>
+<td><code>backend/app/config.py</code></td>
+<td>Pydantic settings object</td>
+<td><code>class Settings</code></td>
+<td><code>job_max_concurrent=8</code>, <code>llm_max_retries=2</code>, <code>confidence_threshold=0.6</code>, <code>redis_url=""</code></td>
+</tr>
+<tr>
+<td><code>backend/app/constants.py</code></td>
+<td>cross-cutting constants</td>
+<td>module constants</td>
+<td><code>RATE_LIMIT_DEFAULT="60/minute"</code>, <code>JOB_TIMEOUT_S=300</code>, <code>SSE_KEEPALIVE_S=15.0</code></td>
+</tr>
+<tr>
+<td><code>backend/app/database.py</code></td>
+<td>async DB engine/session/init lifecycle</td>
+<td><code>get_db</code>, <code>init_db</code>, <code>close_db</code></td>
+<td>startup Alembic attempt + fallback <code>create_all</code>, <code>PRAGMA journal_mode=WAL</code></td>
+</tr>
+<tr>
+<td><code>backend/app/models/enums.py</code></td>
+<td>wire-format enums for API/DB</td>
+<td><code>ParserEngine</code>, <code>LLMProviderID</code>, <code>ExtractionStatus</code>, etc.</td>
+<td>stable values used by backend + frontend</td>
+</tr>
+<tr>
+<td><code>backend/app/models/schemas.py</code></td>
+<td>API request/response contracts</td>
+<td><code>ExtractionCreate</code>, <code>ExtractionResponse</code>, <code>ReviewCreate</code>, <code>AppInfoResponse</code></td>
+<td>validators, computed fields <code>duration_total_ms</code>, <code>validation_summary</code></td>
+</tr>
+<tr>
+<td><code>backend/app/models/db_models.py</code></td>
+<td>ORM entities/tables</td>
+<td><code>Document</code>, <code>Extraction</code>, <code>ExtractionStep</code>, <code>ExtractionReview</code>, etc.</td>
+<td>table names, column types/defaults, relationships</td>
+</tr>
+<tr>
+<td><code>backend/app/routers/documents.py</code></td>
+<td>upload/list/get/delete docs</td>
+<td><code>upload_document</code>, <code>list_documents</code></td>
+<td>MIME sniff + extension match verification</td>
+</tr>
+<tr>
+<td><code>backend/app/routers/schemas.py</code></td>
+<td>extraction schema CRUD + presets</td>
+<td><code>create_schema</code>, <code>create_schema_from_preset</code>, <code>update_schema</code></td>
+<td>uniqueness checks, preset materialization</td>
+</tr>
+<tr>
+<td><code>backend/app/routers/extractions.py</code></td>
+<td>extraction job API, retry, SSE, review</td>
+<td><code>create_extraction</code>, <code>_run_extraction_pipeline</code>, <code>stream_extraction_progress</code>, <code>submit_review</code></td>
+<td><code>_PIPELINE_STEPS</code>, <code>_JOB_TIMEOUT</code>, status/error transitions</td>
+</tr>
+<tr>
+<td><code>backend/app/routers/providers.py</code></td>
+<td>parser/LLM/model/config metadata endpoints</td>
+<td><code>get_parser_options</code>, <code>get_llm_providers</code>, <code>get_llm_models</code>, <code>get_app_config</code></td>
+<td>cache TTLs <code>CACHE_MAX_AGE_*</code>, parser/provider serialization</td>
+</tr>
+<tr>
+<td><code>backend/app/services/extraction/graph.py</code></td>
+<td>LangGraph pipeline nodes and routing</td>
+<td><code>triage_node</code>, <code>parse_node</code>, <code>extract_node</code>, <code>validate_node</code>, <code>reflect_node</code>, <code>await_review_node</code>, <code>finalize_node</code></td>
+<td><code>_MAX_LLM_RETRIES</code>, <code>_RETRY_BASE_DELAY</code>, <code>max_reflection_attempts</code></td>
+</tr>
+<tr>
+<td><code>backend/app/services/extraction/validation.py</code></td>
+<td>field-level extraction validation</td>
+<td><code>validate_extraction</code>, <code>compute_review_verdict</code></td>
+<td>confidence-aware review routing</td>
+</tr>
+<tr>
+<td><code>backend/app/services/extraction/business_rules.py</code></td>
+<td>built-in deterministic rules loaded at startup</td>
+<td>module import side-effects</td>
+<td>startup import in lifespan</td>
+</tr>
+<tr>
+<td><code>backend/app/services/jobs.py</code></td>
+<td>queue abstraction and implementations</td>
+<td><code>InProcessJobQueue</code>, <code>ArqJobQueue</code>, <code>get_job_queue</code></td>
+<td><code>settings.redis_url</code>, Redis list key <code>ade:extractions:queue</code></td>
+</tr>
+<tr>
+<td><code>backend/app/services/ocr/registry.py</code></td>
+<td>OCR provider registration + auto policy</td>
+<td><code>get_ocr_provider</code>, <code>list_ocr_provider_statuses</code></td>
+<td><code>AUTO_PRIORITY=("glmocr","paddleocr","docling","pymupdf")</code></td>
+</tr>
+<tr>
+<td><code>backend/app/services/ocr/pymupdf_provider.py</code></td>
+<td>internal PDF parser</td>
+<td><code>PyMuPDFProvider.extract_text</code></td>
+<td><code>is_user_selectable=False</code>, <code>supported_file_types={"pdf"}</code></td>
+</tr>
+<tr>
+<td><code>backend/app/services/ocr/paddleocr_provider.py</code></td>
+<td>local image OCR adapter</td>
+<td><code>PaddleOCRProvider.extract_text</code></td>
+<td>supports PaddleOCR 2.x and 3.x paths</td>
+</tr>
+<tr>
+<td><code>backend/app/services/ocr/glm_ocr_provider.py</code></td>
+<td>Ollama GLM-OCR adapter</td>
+<td><code>GLMOCRProvider.extract_text</code></td>
+<td><code>OLLAMA_BASE_URL</code>, <code>OLLAMA_GLM_OCR_MODEL</code>, timeout settings</td>
+</tr>
+<tr>
+<td><code>backend/app/services/ocr/docling_provider.py</code></td>
+<td>Docling structured parser adapter</td>
+<td><code>DoclingProvider.extract_text</code></td>
+<td><code>feature_flag_name="enable_docling"</code></td>
+</tr>
+<tr>
+<td><code>backend/app/services/llm/registry.py</code></td>
+<td>LLM provider registration + auto policy</td>
+<td><code>get_llm_provider</code>, <code>list_models_for_provider</code></td>
+<td>auto priority + default provider fallback logic</td>
+</tr>
+<tr>
+<td><code>backend/app/services/llm/openai_provider.py</code></td>
+<td>OpenAI extraction/model listing</td>
+<td><code>OpenAIProvider.extract</code></td>
+<td>default model <code>gpt-4o-mini</code>, <code>temperature=0</code></td>
+</tr>
+<tr>
+<td><code>backend/app/services/llm/gemini_provider.py</code></td>
+<td>Gemini extraction/model listing</td>
+<td><code>GeminiProvider.extract</code></td>
+<td>default model <code>gemini-2.0-flash</code>, <code>temperature=0</code></td>
+</tr>
+<tr>
+<td><code>backend/app/services/llm/claude_provider.py</code></td>
+<td>Anthropic extraction/model listing</td>
+<td><code>ClaudeProvider.extract</code></td>
+<td>default model <code>claude-3-5-haiku-20241022</code>, <code>temperature=0</code></td>
+</tr>
+<tr>
+<td><code>backend/app/services/llm/prompts_loader.py</code></td>
+<td>versioned prompt loading</td>
+<td><code>load_prompt</code>, <code>list_prompts</code>, <code>index</code></td>
+<td>prompt dirs <code>prompts/v1</code>, <code>prompts/v2</code>, env override <code>ADE_PROMPTS_DIR</code></td>
+</tr>
+<tr>
+<td><code>prompts/v1/*.md</code>, <code>prompts/v2/*.md</code></td>
+<td>prompt templates + metadata</td>
+<td>front-matter + body</td>
+<td><code>extraction.md</code>, <code>reflection.md</code></td>
+</tr>
+<tr>
+<td><code>backend/app/metrics.py</code></td>
+<td>Prometheus metrics registry</td>
+<td><code>class Metrics</code>, <code>render</code></td>
+<td>metric names prefixed <code>ade_*</code></td>
+</tr>
+<tr>
+<td><code>backend/app/security_middleware.py</code></td>
+<td>response security headers</td>
+<td><code>SecurityHeadersMiddleware</code></td>
+<td>headers from <code>SECURITY_HEADERS</code></td>
+</tr>
+<tr>
+<td><code>backend/app/mcp_server.py</code></td>
+<td>MCP stdio server and tool handlers</td>
+<td>tools: <code>extract_document</code>, <code>verify_extraction</code>, <code>resolve_entities</code>, <code>eval_golden_set</code></td>
+<td><code>SERVER_NAME="agentic-document-extraction"</code></td>
+</tr>
+<tr>
+<td><code>backend/alembic/env.py</code></td>
+<td>Alembic migration runner</td>
+<td><code>run_migrations_online/offline</code></td>
+<td>uses <code>settings.database_url</code>, <code>render_as_batch=True</code></td>
+</tr>
+<tr>
+<td><code>backend/alembic/versions/0001_initial_schema.py</code></td>
+<td>initial schema migration</td>
+<td>Alembic revision</td>
+<td>creates core tables</td>
+</tr>
+<tr>
+<td><code>backend/alembic/versions/0002_judgments.py</code></td>
+<td>judgments migration</td>
+<td>Alembic revision</td>
+<td>adds <code>extraction_judgments</code></td>
+</tr>
+<tr>
+<td><code>backend/alembic/versions/0003_prompt_schema_version.py</code></td>
+<td>metadata columns migration</td>
+<td>Alembic revision</td>
+<td>adds <code>prompt_version</code>, <code>schema_version</code></td>
+</tr>
+<tr>
+<td><code>backend/alembic/versions/0004_evidence_entities_verifier.py</code></td>
+<td>v0.5 evidence tables</td>
+<td>Alembic revision</td>
+<td>adds evidence/entity/verifier tables</td>
+</tr>
+<tr>
+<td><code>frontend/src/lib/api.ts</code></td>
+<td>frontend API client + TS contracts</td>
+<td><code>request&lt;T&gt;()</code>, API methods, enums/interfaces</td>
+<td>mirrors backend enums, error normalization</td>
+</tr>
+<tr>
+<td><code>frontend/src/app/page.tsx</code></td>
+<td>main UX page flow</td>
+<td><code>HomePage</code></td>
+<td>3-stage flow: upload -&gt; configure -&gt; review</td>
+</tr>
+<tr>
+<td><code>frontend/src/components/ExtractionResult.tsx</code></td>
+<td>live job status/results UI</td>
+<td><code>ExtractionResult</code></td>
+<td>SSE stream + polling fallback, retry support</td>
+</tr>
+<tr>
+<td><code>frontend/src/components/ReviewPanel.tsx</code></td>
+<td>human review submission UI</td>
+<td>component + handlers</td>
+<td>decisions <code>approved/corrected/rejected</code></td>
+</tr>
+<tr>
+<td><code>frontend/next.config.js</code></td>
+<td>API routing between FE and BE</td>
+<td><code>rewrites()</code></td>
+<td><code>/api/*</code> proxy destination</td>
+</tr>
+<tr>
+<td><code>docker-compose.yml</code></td>
+<td>local multi-service stack</td>
+<td>services <code>app</code>, <code>phoenix</code>, <code>ollama</code></td>
+<td>healthcheck path <code>/health/ready</code>, OTEL/Ollama env wiring</td>
+</tr>
+<tr>
+<td><code>docs/ARCHITECTURE_V2.md</code></td>
+<td>architecture deep dive</td>
+<td>narrative docs</td>
+<td>pipeline reasoning and design</td>
+</tr>
+<tr>
+<td><code>docs/DEVELOPMENT.md</code></td>
+<td>contributor setup workflow</td>
+<td>commands/instructions</td>
+<td><code>backend/.env</code> workflow, uv usage</td>
+</tr>
+<tr>
+<td><code>docs/MCP.md</code></td>
+<td>MCP setup and client integration</td>
+<td>run/config examples</td>
+<td>stdio launch patterns</td>
+</tr>
+</tbody>
+</table>
+<h2 id="module-3-core-execution-flows">Module 3: Core Execution Flows</h2>
+<h3 id="31-boot-sequence-backend">3.1 Boot Sequence (Backend)</h3>
+<p>Start point: <code>backend/app/main.py</code> (<code>lifespan</code>).</p>
+<p>Step-by-step:</p>
+<ol>
+<li><code>configure_logging()</code></li>
+<li><code>validate_ollama_base_url(settings.ollama_base_url)</code> rejects non-local hosts unless <code>OLLAMA_ALLOW_PRIVATE_HOSTS=true</code>.</li>
+<li><code>await init_db()</code>:
+- tries <code>alembic upgrade head</code>
+- falls back to <code>Base.metadata.create_all</code>
+- applies SQLite <code>PRAGMA journal_mode=WAL</code> and <code>PRAGMA optimize</code>.</li>
+<li>ensures directories by touching <code>settings.upload_path</code>, <code>settings.artifacts_path</code>.</li>
+<li>best-effort telemetry setup (<code>app.telemetry.setup_telemetry</code>).</li>
+<li>imports <code>app.services.extraction.business_rules</code> at startup.</li>
+<li>logs provider readiness via <code>list_llm_provider_statuses()</code> and <code>list_ocr_provider_statuses()</code>.</li>
+<li>calls <code>_recover_orphaned_jobs()</code>:
+- statuses <code>queued/processing/ocr_complete/extracted</code> are failed on restart
+- stuck running <code>ExtractionStep</code> rows are finalized as failed.</li>
+</ol>
+<h3 id="32-document-upload-flow">3.2 Document Upload Flow</h3>
+<p>Endpoint: <code>POST /api/documents/</code> (<code>upload_document</code>).</p>
+<p>Execution path:</p>
+<ol>
+<li><code>save_upload(file)</code> writes file to <code>UPLOAD_DIR</code>.</li>
+<li>verifies magic bytes with <code>sniff_mime(Path(file_path))</code>.</li>
+<li>checks extension/type agreement via <code>mime_matches_extension(...)</code>.</li>
+<li>creates <code>Document</code> ORM row:
+- <code>id</code>, <code>filename</code>, <code>original_filename</code>, <code>file_path</code>, <code>file_type</code>, <code>file_size</code>, <code>status</code>.</li>
+<li>returns <code>DocumentResponse</code>.</li>
+</ol>
+<p><code>DocumentResponse</code> shape:</p>
+<pre><code class="language-json">{
+  &quot;id&quot;: &quot;string&quot;,
+  &quot;filename&quot;: &quot;string&quot;,
+  &quot;original_filename&quot;: &quot;string&quot;,
+  &quot;file_type&quot;: &quot;string&quot;,
+  &quot;file_size&quot;: 12345,
+  &quot;page_count&quot;: null,
+  &quot;status&quot;: &quot;uploaded&quot;,
+  &quot;created_at&quot;: &quot;ISO datetime&quot;
+}
+</code></pre>
+<h3 id="33-extraction-start-background-job-flow">3.3 Extraction Start + Background Job Flow</h3>
+<p>Endpoint: <code>POST /api/extractions/</code> (<code>create_extraction</code>).</p>
+<p>Request model <code>ExtractionCreate</code>:</p>
+<pre><code class="language-json">{
+  &quot;document_id&quot;: &quot;32-char id&quot;,
+  &quot;schema_id&quot;: &quot;32-char id&quot;,
+  &quot;ocr_provider&quot;: &quot;auto|paddleocr|glmocr|docling&quot;,
+  &quot;llm_provider&quot;: &quot;auto|openai|gemini|anthropic&quot;,
+  &quot;llm_model&quot;: &quot;auto or model id&quot;
+}
+</code></pre>
+<p>Flow:</p>
+<ol>
+<li>validate <code>Document</code> and <code>ExtractionSchema</code> existence.</li>
+<li>insert <code>Extraction</code> with <code>status="queued"</code>.</li>
+<li>increment metrics (<code>ade_in_flight_jobs</code>, <code>ade_extractions_total{status="queued"}</code>).</li>
+<li>enqueue worker callback using <code>queue.submit(extraction.id, lambda: _run_extraction_job(...))</code>.</li>
+<li>audit event <code>extraction.started</code>.</li>
+</ol>
+<h3 id="34-langgraph-pipeline-flow-core-logic">3.4 LangGraph Pipeline Flow (Core Logic)</h3>
+<p>Orchestrator: <code>_run_extraction_pipeline(extraction_id)</code> + <code>extraction_graph.astream</code>.</p>
+<p>Node order (from code):</p>
+<pre><code class="language-text">triage -&gt; parse -&gt; extract -&gt; validate -&gt; reflect -&gt; await_review -&gt; finalize
+</code></pre>
+<p>State object: <code>PipelineState</code> (<code>TypedDict</code>) with key fields:</p>
+<ul>
+<li>inputs: <code>file_path</code>, <code>schema_fields</code>, <code>ocr_provider_id</code>, <code>llm_provider_id</code>, <code>llm_model_id</code></li>
+<li>parse output: <code>ocr_text</code>, <code>ocr_provider_used</code></li>
+<li>extract output: <code>extracted_data</code>, <code>llm_provider_used</code>, <code>llm_model_used</code>, <code>confidence</code>, <code>extract_attempts</code></li>
+<li>validate output: <code>validation_errors</code>, <code>validation_results</code>, <code>review_verdict</code></li>
+<li>finalize output: <code>status</code>, <code>completed_at</code>, <code>error</code>.</li>
+</ul>
+<p>Important node behavior:</p>
+<ol>
+<li>
+<p><code>triage_node</code>
+- chooses recommendation based on file suffix (pdf/image/office/html), respects explicit provider selection.</p>
+</li>
+<li>
+<p><code>parse_node</code>
+- gets OCR provider via <code>get_ocr_provider(...)</code>
+- returns <code>{"status":"ocr_complete", "ocr_text":..., "ocr_provider_used":...}</code> or <code>{"status":"failed","error":...}</code>.</p>
+</li>
+<li>
+<p><code>extract_node</code>
+- resolves provider via <code>get_llm_provider(...)</code>
+- retries retryable provider errors up to <code>settings.llm_max_retries</code>
+- exponential backoff base <code>settings.llm_retry_base_delay</code>
+- returns <code>status="extracted"</code> with extracted dict + confidence.</p>
+</li>
+<li>
+<p><code>validate_node</code>
+- runs <code>validate_extraction(...)</code>
+- computes verdict via <code>compute_review_verdict(...)</code>
+- populates both structured <code>validation_results</code> and plain <code>validation_errors</code>.</p>
+</li>
+<li>
+<p><code>reflect_node</code>
+- if verdict not valid and attempts remain, rebuilds prompt with <code>build_reflection_prompt(...)</code> and re-extracts.</p>
+</li>
+<li>
+<p><code>await_review_node</code>
+- when checkpointer exists, uses LangGraph <code>interrupt(payload)</code> and resumes with:
+  - <code>{"decision":"approved|corrected|rejected","corrected_fields":{...},"notes":"..."}</code>
+- merges corrections into <code>extracted_data</code> for <code>corrected</code>.</p>
+</li>
+<li>
+<p><code>finalize_node</code>
+- sets terminal <code>status</code>:
+  - <code>completed</code> when <code>review_verdict == "valid"</code>
+  - <code>needs_review</code> when still unresolved.</p>
+</li>
+</ol>
+<h3 id="35-persisted-step-records-and-sse">3.5 Persisted Step Records and SSE</h3>
+<p><code>_PIPELINE_STEPS</code> in router:</p>
+<pre><code class="language-python">(&quot;triage&quot;, &quot;parse&quot;, &quot;extract&quot;, &quot;validate&quot;, &quot;reflect&quot;, &quot;await_review&quot;, &quot;finalize&quot;)
+</code></pre>
+<p>Each streamed node update:</p>
+<ul>
+<li>completes current <code>ExtractionStep</code> with <code>status</code>, <code>duration_ms</code>, <code>error</code></li>
+<li>creates next step row as <code>running</code></li>
+<li>updates <code>Extraction.status</code> progressively.</li>
+</ul>
+<p>Live stream endpoint: <code>GET /api/extractions/{extraction_id}/stream</code></p>
+<ul>
+<li>implementation uses <code>StreamingResponse</code> with <code>text/event-stream</code></li>
+<li>emits only on status/step changes using <code>_sse_step_signature(...)</code></li>
+<li>frame format from <code>_sse_event</code>:</li>
+</ul>
+<pre><code class="language-text">data: {&quot;id&quot;:&quot;...&quot;,&quot;status&quot;:&quot;processing&quot;, ...}
+
+</code></pre>
+<h3 id="36-review-flow">3.6 Review Flow</h3>
+<p>Endpoint: <code>POST /api/extractions/{id}/reviews</code> with <code>ReviewCreate</code>.</p>
+<p>Rules in code:</p>
+<ul>
+<li>only when extraction status is <code>needs_review</code></li>
+<li><code>decision="corrected"</code> requires non-empty <code>corrected_fields</code></li>
+<li><code>corrected_fields</code> is forbidden for <code>approved</code>/<code>rejected</code>.</li>
+</ul>
+<p>Outcome mapping:</p>
+<ul>
+<li><code>approved</code> -&gt; extraction <code>status="completed"</code></li>
+<li><code>corrected</code> -&gt; merge <code>corrected_fields</code> into result then complete</li>
+<li><code>rejected</code> -&gt; extraction <code>status="failed"</code>.</li>
+</ul>
+<h3 id="37-provider-metadata-flow">3.7 Provider Metadata Flow</h3>
+<p>Endpoints:</p>
+<ul>
+<li><code>GET /api/providers/parsers</code></li>
+<li><code>GET /api/providers/llm</code></li>
+<li><code>GET /api/providers/llm/{provider_id}/models</code></li>
+<li><code>GET /api/providers/config</code></li>
+</ul>
+<p><code>/providers/config</code> real payload fields:</p>
+<ul>
+<li><code>parser_engines</code></li>
+<li><code>llm_providers</code></li>
+<li><code>default_llm_provider</code></li>
+<li><code>model_selection_modes</code></li>
+<li><code>ocr_engine_flags</code> (<code>paddleocr</code>, <code>glm_ocr</code>)</li>
+<li><code>max_upload_size_mb</code></li>
+<li><code>supported_file_types</code></li>
+<li><code>confidence_threshold</code>.</li>
+</ul>
+<h2 id="module-4-setup-run-guide">Module 4: Setup &amp; Run Guide</h2>
+<p>This section is a static setup guide derived from repo files (<code>README.md</code>, <code>docs/DEVELOPMENT.md</code>, <code>justfile</code>, <code>backend/.env.example</code>).</p>
+<h3 id="41-clean-machine-install-steps">4.1 Clean-Machine Install Steps</h3>
+<ol>
+<li>Create and activate environment (Python 3.12.10 pinned in docs/justfile):</li>
+</ol>
+<pre><code class="language-bash">uv venv --python 3.12.10 .venv
+source .venv/bin/activate
+</code></pre>
+<ol start="2">
+<li>Install dependencies (backend + extras):</li>
+</ol>
+<pre><code class="language-bash">uv pip install -e &quot;.[test,lint,ollama]&quot;
+</code></pre>
+<ol start="3">
+<li>Frontend install:</li>
+</ol>
+<pre><code class="language-bash">cd frontend
+npm install
+</code></pre>
+<h3 id="42-environment-configuration">4.2 Environment Configuration</h3>
+<p>Template source: <code>backend/.env.example</code>.</p>
+<p>Minimum required keys for extraction:</p>
+<ul>
+<li>one LLM API key:</li>
+<li><code>OPENAI_API_KEY</code> or <code>GEMINI_API_KEY</code> or <code>ANTHROPIC_API_KEY</code></li>
+</ul>
+<p>Important core keys:</p>
+<ul>
+<li><code>DEFAULT_LLM_PROVIDER=auto</code></li>
+<li><code>DATABASE_URL=sqlite+aiosqlite:///./extraction.db</code></li>
+<li><code>UPLOAD_DIR=./uploads</code></li>
+<li><code>ARTIFACTS_DIR=./artifacts</code></li>
+<li><code>MAX_UPLOAD_SIZE_MB=50</code></li>
+<li><code>ENABLE_PADDLEOCR=false</code></li>
+<li><code>ENABLE_GLM_OCR=false</code></li>
+<li><code>OLLAMA_BASE_URL=http://localhost:11434</code></li>
+<li><code>OLLAMA_GLM_OCR_MODEL=glm-ocr:latest</code></li>
+<li><code>GLM_OCR_TIMEOUT_SECONDS=120</code></li>
+<li><code>HOST=0.0.0.0</code></li>
+<li><code>PORT=8000</code></li>
+<li><code>DEBUG=true</code></li>
+<li><code>CORS_ORIGINS=http://localhost:3000,http://127.0.0.1:3000</code></li>
+</ul>
+<p>Additional settings present in <code>backend/app/config.py</code> (not all in example file):</p>
+<ul>
+<li><code>ENABLE_DOCLING</code></li>
+<li><code>ENABLE_LAYOUT_PARSING</code></li>
+<li><code>ENABLE_VERIFIER</code></li>
+<li><code>ENABLE_DOUBLE_PASS</code></li>
+<li><code>ENABLE_CROSS_PAGE_ENTITIES</code></li>
+<li><code>REDIS_URL</code></li>
+<li><code>CONFIDENCE_CALIBRATION_PATH</code></li>
+<li><code>CHECKPOINT_DB_PATH</code></li>
+<li><code>OTEL_*</code></li>
+<li><code>VLM_*</code></li>
+<li><code>JUDGE_*</code>.</li>
+</ul>
+<h3 id="43-typical-command-sequences">4.3 Typical Command Sequences</h3>
+<p>Backend dev server:</p>
+<pre><code class="language-bash">uvicorn app.main:app --reload --port 8000 --app-dir backend
+</code></pre>
+<p>Frontend dev server:</p>
+<pre><code class="language-bash">cd frontend
+npm run dev
+</code></pre>
+<p>Justfile equivalents:</p>
+<ul>
+<li>backend dev: <code>just dev</code></li>
+<li>DB migration: <code>just migrate</code></li>
+<li>stack up: <code>just up</code></li>
+<li>MCP server: <code>just mcp</code>.</li>
+</ul>
+<h3 id="44-database-migration-and-seeding-notes">4.4 Database Migration and Seeding Notes</h3>
+<p>Migration system:</p>
+<ul>
+<li>Alembic config: <code>alembic.ini</code></li>
+<li>migration env: <code>backend/alembic/env.py</code></li>
+<li>versions:</li>
+<li><code>0001_initial_schema.py</code></li>
+<li><code>0002_judgments.py</code></li>
+<li><code>0003_prompt_schema_version.py</code></li>
+<li><code>0004_evidence_entities_verifier.py</code>.</li>
+</ul>
+<p>Migration command:</p>
+<pre><code class="language-bash">alembic upgrade head
+</code></pre>
+<p>Seeding:</p>
+<ul>
+<li>no dedicated DB seed script is defined in repo root.</li>
+<li>schema presets are code-defined and materialized through API (<code>/api/schemas/presets</code> then <code>POST /api/schemas/presets/{preset_id}</code>).</li>
+</ul>
+<h2 id="module-5-study-plan-practice-exercises">Module 5: Study Plan &amp; Practice Exercises</h2>
+<h3 id="51-ordered-self-study-plan">5.1 Ordered Self-Study Plan</h3>
+<p>Recommended read order:</p>
+<ol>
+<li><code>README.md</code> and <code>docs/ARCHITECTURE_V2.md</code> for context.</li>
+<li><code>backend/app/models/enums.py</code>, <code>backend/app/models/schemas.py</code>, <code>backend/app/models/db_models.py</code> to internalize contracts.</li>
+<li><code>backend/app/main.py</code>, <code>backend/app/config.py</code>, <code>backend/app/constants.py</code> for runtime boot/config.</li>
+<li>Routers in this order:
+   - <code>documents.py</code>
+   - <code>schemas.py</code>
+   - <code>providers.py</code>
+   - <code>extractions.py</code></li>
+<li>Pipeline internals:
+   - <code>services/extraction/graph.py</code>
+   - <code>services/extraction/validation.py</code>
+   - <code>services/extraction/business_rules.py</code></li>
+<li>Providers:
+   - <code>services/ocr/registry.py</code> + OCR providers
+   - <code>services/llm/registry.py</code> + LLM providers</li>
+<li>Infra and ops:
+   - <code>services/jobs.py</code>
+   - <code>database.py</code>
+   - <code>metrics.py</code>
+   - <code>security_middleware.py</code></li>
+<li>Frontend integration:
+   - <code>frontend/src/lib/api.ts</code>
+   - <code>frontend/src/app/page.tsx</code>
+   - <code>frontend/src/components/ExtractionResult.tsx</code>
+   - <code>frontend/src/components/ReviewPanel.tsx</code></li>
+<li>Migrations and MCP:
+   - <code>backend/alembic/*</code>
+   - <code>backend/app/mcp_server.py</code>.</li>
+</ol>
+<h3 id="52-practice-exercises-with-answer-outlines">5.2 Practice Exercises (with answer outlines)</h3>
+<ol>
+<li>
+<p>Explain full flow of <code>POST /api/extractions/</code> from request body to DB persistence and queue submission.</p>
+</li>
+<li>
+<p>List every terminal extraction status and identify which functions assign them.</p>
+</li>
+<li>
+<p>Compare OCR auto-routing vs explicit OCR selection behavior and error conditions.</p>
+</li>
+<li>
+<p>Trace how <code>review_verdict</code> moves from validation node to final API response fields.</p>
+</li>
+<li>
+<p>Document the exact SSE stop condition and bounded-loop behavior.</p>
+</li>
+<li>
+<p>Identify where and how model retries are implemented for LLM calls.</p>
+</li>
+<li>
+<p>Map all places that can mark a job as failed outside normal graph node failure.</p>
+</li>
+<li>
+<p>Find a backend/frontend contract mismatch and explain impact.</p>
+</li>
+<li>
+<p>Describe how startup protects against unsafe remote Ollama endpoints.</p>
+</li>
+<li>
+<p>Show which tables were added after the initial migration and why they matter.</p>
+</li>
+</ol>
+<h3 id="53-model-answer-outlines">5.3 Model Answer Outlines</h3>
+<ol>
+<li>
+<p><code>create_extraction</code> validates <code>document_id</code> + <code>schema_id</code>, inserts extraction row (<code>status="queued"</code>), increments metrics, submits queue callback, writes audit event <code>extraction.started</code>, returns <code>ExtractionResponse</code>.</p>
+</li>
+<li>
+<p>Terminal statuses are <code>completed</code>, <code>needs_review</code>, <code>failed</code>. Assigned in:
+- <code>finalize_node</code> (<code>completed</code> or <code>needs_review</code>)
+- <code>_apply_failure_state</code> and <code>_mark_job_failed</code> (<code>failed</code>)
+- review submission path maps rejected review to <code>failed</code>.</p>
+</li>
+<li>
+<p>Auto OCR calls <code>_resolve_auto(file_path)</code> and walks priority <code>glmocr -&gt; paddleocr -&gt; docling -&gt; pymupdf</code> with checks: enabled, available, file-type compatibility. Explicit selection bypasses auto and errors if disabled/unavailable/incompatible.</p>
+</li>
+<li>
+<p><code>validate_node</code> computes <code>review_verdict</code>; <code>reflect_node</code> may improve extraction and loop back; <code>await_review_node</code> can convert to valid via approve/correct; persisted by router into <code>extraction.review_verdict</code>; returned in <code>ExtractionResponse.review_verdict</code> and <code>ExtractionValidationResponse.review_verdict</code>.</p>
+</li>
+<li>
+<p>SSE endpoint loops up to <code>SSE_MAX_ITERATIONS</code> (<code>600</code>), sleeps <code>SSE_KEEPALIVE_S</code> (<code>15.0</code>), emits only when status or step signature changes, exits early on terminal statuses set in <code>SSE_TERMINAL_STATUSES</code>.</p>
+</li>
+<li>
+<p><code>extract_node</code> catches <code>LLMProviderError</code>, retries only when <code>exc.retryable</code> and attempt &lt; max; delay is <code>llm_retry_base_delay * (2**attempt)</code>; cap is <code>settings.llm_max_retries</code>.</p>
+</li>
+<li>
+<p>Failures also occur in:
+- <code>_run_extraction_job</code> timeout wrapper (<code>JOB_TIMEOUT_S=300</code>)
+- <code>_mark_job_failed</code> on crash
+- startup <code>_recover_orphaned_jobs</code> for stuck statuses after restart
+- parse/extract node exception paths.</p>
+</li>
+<li>
+<p>One real mismatch: backend enum includes <code>docling</code> (<code>ParserEngine.DOCLING</code>), but frontend <code>ParserEngine</code> union in <code>frontend/src/lib/api.ts</code> omits <code>DOCLING</code>; this can break strong typing for parser option handling.</p>
+</li>
+<li>
+<p><code>main.lifespan</code> calls <code>validate_ollama_base_url</code>; non-loopback host is rejected unless <code>OLLAMA_ALLOW_PRIVATE_HOSTS</code> is true.</p>
+</li>
+<li>
+<p>Post-initial migration tables include:
+- <code>extraction_judgments</code> (<code>0002</code>)
+- <code>prompt_version</code> and <code>schema_version</code> columns (<code>0003</code>)
+- <code>extraction_evidence</code>, <code>extraction_entities</code>, <code>extraction_verifier_runs</code> (<code>0004</code>) for evidence-grounded/verifier pipeline capabilities.</p>
+</li>
+</ol>
+<h2 id="learner-verification-checklist">Learner Verification Checklist</h2>
+<p>Use this checklist after reading:</p>
+<ul>
+<li>Can you explain how an extraction transitions from <code>queued</code> to terminal status, including queue + graph + DB persistence?</li>
+<li>Can you name each LangGraph node and describe exactly what state keys it writes?</li>
+<li>Can you explain OCR auto-selection policy and why <code>pymupdf</code> is internal-only?</li>
+<li>Can you describe how <code>ReviewCreate</code> validation rules enforce corrected vs non-corrected decisions?</li>
+<li>Can you trace where retries/backoff happen and what config keys control them?</li>
+<li>Can you list the major DB tables and which API endpoints read/write them?</li>
+<li>Can you explain how SSE progress events are generated and terminated?</li>
+<li>Can you describe startup safety checks (DB init, provider readiness, OLLAMA URL policy, orphaned-job recovery)?</li>
+<li>Can you point to at least one contract drift between backend and frontend and explain remediation?</li>
+<li>Can you set up a clean machine using <code>uv</code>, env keys, migrations, backend serve, and frontend dev commands without guessing?</li>
+</ul>
+</body>
+</html>
