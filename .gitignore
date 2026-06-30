@@ -69,3 +69,51 @@ coverage.xml
 
 # Ruff
 .ruff_cache/
+
+# >>> Codex Local Ignore (env/venv/cache/artifacts) >>>
+.env*
+.venv/
+venv/
+**/.venv/
+**/venv/
+
+__pycache__/
+**/__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+.uv-cache/
+.uv_cache/
+**/.uv-cache/
+**/.uv_cache/
+
+.hf_cache/
+hf_cache/
+**/.hf_cache/
+**/hf_cache/
+
+chroma_db/
+**/chroma_db/
+
+artifacts/
+**/artifacts/
+outputs/
+**/outputs/
+logs/
+**/logs/
+mlruns/
+**/mlruns/
+dist/
+build/
+
+*.egg-info/
+**/*.egg-info/
+
+vectordb/
+**/vectordb/
+_embed_cache/
+**/_embed_cache/
+# <<< Codex Local Ignore (env/venv/cache/artifacts) <<<
