@@ -40,21 +40,17 @@ Requirements: Python 3.12, `uv`, Node.js 20+, npm, and an OpenAI API key.
 
 ```powershell
 cd D:\AI\Github\Agentic-Document-Extraction
-uv sync --locked --extra test --extra lint
-Copy-Item backend\.env.example .env
-$env:OPENAI_API_KEY = "your-key"
-uv run uvicorn app.main:app --app-dir backend --reload --reload-dir backend --host 127.0.0.1 --port 8000
+
+# Persistent Windows user variables are inherited by newly opened terminals.
+if ([string]::IsNullOrWhiteSpace($env:OPENAI_API_KEY)) { throw "OPENAI_API_KEY is not set" }
+if ([string]::IsNullOrWhiteSpace($env:OPENAI_BASE_URL)) { throw "OPENAI_BASE_URL is not set" }
+
+.\scripts\dev.ps1
 ```
 
-In a second terminal:
-
-```powershell
-cd D:\AI\Github\Agentic-Document-Extraction\frontend
-npm ci
-npm run dev
-```
-
-Open <http://localhost:3000>. The API is at <http://localhost:8000/docs>.
+The launcher installs locked dependencies when needed, selects available localhost ports,
+verifies the V2 API and frontend proxy, and prints both URLs. Press Ctrl+C once to stop
+both servers. To request specific ports, pass `-BackendPort 8010 -FrontendPort 3000`.
 
 No Docker, GPU, PaddleOCR, Ollama, or local model weights are required. Docker Compose
 is optional and starts PostgreSQL for multi-worker deployments:
@@ -81,10 +77,15 @@ S3-compatible storage without changing extraction contracts.
 
 ## Configuration
 
-Copy `backend/.env.example` to `.env`. `OPENAI_API_KEY` is required. Pricing is not
-hardcoded because model rates change; supply the six per-million-token rate variables to
-enable USD estimates. Keys remain backend-only. Set `API_KEY` and place the service
-behind TLS and authentication before exposing it beyond localhost.
+`OPENAI_API_KEY` and `OPENAI_BASE_URL` are read automatically from the process
+environment. On Windows, persistent user variables are available after opening a new
+terminal. Process environment values take precedence over `.env`; copying
+`backend/.env.example` to `.env` remains an optional fallback. The base URL may be the
+service root or end in `/v1`.
+
+Pricing is not hardcoded because model rates change; supply the six per-million-token
+rate variables to enable USD estimates. Keys remain backend-only. Set `API_KEY` and place
+the service behind TLS and authentication before exposing it beyond localhost.
 
 Supported inputs are PDF, PNG, JPEG, WebP, and TIFF. Defaults limit documents to 200 MB
 and 500 pages. Large documents are processed as independently leased page tasks, so

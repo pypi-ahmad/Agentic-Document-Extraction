@@ -32,6 +32,24 @@ def test_ollama_endpoint_is_env_configurable(monkeypatch: pytest.MonkeyPatch) ->
     assert settings.ollama_base_url == "http://127.0.0.1:11435"
 
 
+def test_openai_process_environment_overrides_dotenv(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    env_file = tmp_path / ".env"
+    env_file.write_text(
+        "OPENAI_API_KEY=dotenv-key\nOPENAI_BASE_URL=https://dotenv.example/v1\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setenv("OPENAI_API_KEY", "user-environment-key")
+    monkeypatch.setenv("OPENAI_BASE_URL", "https://user-environment.example/v1")
+
+    settings = Settings(_env_file=env_file)
+
+    assert settings.openai_api_key == "user-environment-key"
+    assert settings.openai_base_url == "https://user-environment.example/v1"
+
+
 @pytest.mark.parametrize(
     ("field", "value"),
     [
