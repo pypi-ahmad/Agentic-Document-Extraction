@@ -190,4 +190,3 @@ git rev-parse origin/main
 ```
 
 Expected: the two SHAs match and the worktree is clean.
-
