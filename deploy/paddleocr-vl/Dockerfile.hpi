@@ -1,0 +1,10 @@
+FROM ccr-2vdh3abv-pub.cnc.bj.baidubce.com/paddlepaddle/paddleocr-vl:latest-nvidia-gpu@sha256:ad0b1f056a76967f9191cd06398e8babb21b49a4673a28c3de5fd31f481884db
+
+RUN paddleocr install_hpi_deps gpu
+
+WORKDIR /opt/ade
+COPY service.py /opt/ade/service.py
+
+EXPOSE 8118
+
+CMD ["uvicorn", "service:app", "--host", "0.0.0.0", "--port", "8118"]
