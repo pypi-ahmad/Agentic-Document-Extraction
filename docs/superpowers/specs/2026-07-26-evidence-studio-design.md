@@ -55,4 +55,3 @@ Native buttons, tabs, inputs, and links retain keyboard interaction. Tabs expose
 - TypeScript, ESLint, Vitest, and the Next.js production build pass.
 - The existing backend and launcher tests pass unchanged.
 - Playwright CLI checks dark and light desktop layouts plus the collapsed mobile layout using empty, processing, completed, and failed states.
-
