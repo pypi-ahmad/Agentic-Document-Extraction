@@ -30,6 +30,7 @@ def test_reset_schema_contains_only_parse_domain_tables() -> None:
         "curated_documents",
         "curated_exports",
         "reprocess_runs",
+        "v2_page_tasks",
     }
 
 

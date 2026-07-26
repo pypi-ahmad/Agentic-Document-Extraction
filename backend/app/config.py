@@ -49,6 +49,15 @@ class Settings(BaseSettings):
     gemini_api_key: str = ""
     xai_api_key: str = ""
     openai_base_url: str = "https://api.openai.com"
+    openai_timeout_seconds: float = Field(default=180.0, gt=0)
+    v2_worker_count: int = Field(default=4, ge=1, le=32)
+    openai_pricing_version: str = "operator-configured"
+    luna_input_per_million: float = Field(default=0, ge=0)
+    luna_cached_input_per_million: float = Field(default=0, ge=0)
+    luna_output_per_million: float = Field(default=0, ge=0)
+    terra_input_per_million: float = Field(default=0, ge=0)
+    terra_cached_input_per_million: float = Field(default=0, ge=0)
+    terra_output_per_million: float = Field(default=0, ge=0)
     anthropic_base_url: str = "https://api.anthropic.com"
     gemini_base_url: str = "https://generativelanguage.googleapis.com"
     xai_base_url: str = "https://api.x.ai"

@@ -20,6 +20,7 @@ to recreate any tables. New deployments go through the normal
 
 from __future__ import annotations
 
+import asyncio
 import logging
 import os
 from pathlib import Path
@@ -30,10 +31,19 @@ from app.config import settings
 
 logger = logging.getLogger(__name__)
 
+
+def _is_sqlite_url(database_url: str) -> bool:
+    return database_url.startswith("sqlite")
+
+
+def _engine_connect_args(database_url: str) -> dict[str, bool]:
+    return {"check_same_thread": False} if _is_sqlite_url(database_url) else {}
+
+
 engine = create_async_engine(
     settings.database_url,
     echo=settings.debug,
-    connect_args={"check_same_thread": False},
+    connect_args=_engine_connect_args(settings.database_url),
 )
 
 async_session = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
@@ -93,15 +103,12 @@ async def init_db() -> None:
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
 
-    async with engine.begin() as conn:
-        await conn.execute(text("PRAGMA journal_mode=WAL"))
-        await conn.execute(text("PRAGMA optimize"))
+    if _is_sqlite_url(settings.database_url):
+        async with engine.begin() as conn:
+            await conn.execute(text("PRAGMA journal_mode=WAL"))
+            await conn.execute(text("PRAGMA optimize"))
 
 
 async def close_db() -> None:
     """Dispose engine on shutdown."""
     await engine.dispose()
-
-
-# Late import for asyncio.to_thread; the module is hot-loaded.
-import asyncio  # noqa: E402

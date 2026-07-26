@@ -12,7 +12,7 @@ from PIL import Image, UnidentifiedImageError
 from app.services.parsing.contracts import BoundingBox, NativeWord
 
 PDF_EXTENSIONS = {".pdf"}
-IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".tif", ".tiff"}
+IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".webp", ".tif", ".tiff"}
 
 
 class DocumentInputError(ValueError):
@@ -57,7 +57,9 @@ def inspect_document(
             raise DocumentInputError("too_many_pages", f"Document exceeds {max_pages} pages")
         return InspectedDocument(mime_type="application/pdf", page_count=page_count)
     if suffix not in IMAGE_EXTENSIONS:
-        raise DocumentInputError("unsupported_type", "Supported types are PDF, PNG, JPEG, and TIFF")
+        raise DocumentInputError(
+            "unsupported_type", "Supported types are PDF, PNG, JPEG, WebP, and TIFF"
+        )
     try:
         with Image.open(BytesIO(data)) as image:
             page_count = int(getattr(image, "n_frames", 1))
