@@ -67,3 +67,13 @@ def test_render_image_behaves_as_one_page_document() -> None:
     assert rendered.width == 100
     assert rendered.height == 60
     assert rendered.native_words == []
+
+
+def test_inspect_and_render_webp() -> None:
+    data = _image_bytes("WEBP")
+
+    inspected = inspect_document(data, "scan.webp", 1_000_000, 10)
+    rendered = render_page(data, "scan.webp", page_number=1, dpi=200)
+
+    assert inspected.mime_type == "image/webp"
+    assert rendered.image_png.startswith(b"\x89PNG")

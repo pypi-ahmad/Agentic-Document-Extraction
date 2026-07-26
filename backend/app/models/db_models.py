@@ -183,6 +183,33 @@ class PageCheckpoint(Base):
     job: Mapped[ParseJob] = relationship(back_populates="pages")
 
 
+class V2PageTask(Base):
+    """Durable, lease-based unit of page processing for stateless V2 workers."""
+
+    __tablename__ = "v2_page_tasks"
+    __table_args__ = (UniqueConstraint("job_id", "page_number", name="uq_v2_job_page_task"),)
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=_uuid)
+    job_id: Mapped[str] = mapped_column(
+        String(32), ForeignKey("parse_jobs.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    page_number: Mapped[int] = mapped_column(Integer, nullable=False)
+    status: Mapped[str] = mapped_column(String(20), nullable=False, default="queued", index=True)
+    attempts: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    lease_owner: Mapped[str | None] = mapped_column(String(120), index=True)
+    lease_expires_at: Mapped[dt.datetime | None] = mapped_column(
+        DateTime(timezone=True), index=True
+    )
+    result_path: Mapped[str | None] = mapped_column(String(1024))
+    error_message: Mapped[str | None] = mapped_column(Text)
+    created_at: Mapped[dt.datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+    updated_at: Mapped[dt.datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
+
+
 class ReprocessRun(Base):
     __tablename__ = "reprocess_runs"
 

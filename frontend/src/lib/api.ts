@@ -419,3 +419,73 @@ export const getMarkdown = async (artifact: Pick<Artifact, "download_url">, sign
   if (!response.ok) throw new Error("Markdown is not available yet");
   return response.text();
 };
+
+export type V2Mode = "economy" | "balanced" | "audit";
+
+export interface V2Settings {
+  mode: V2Mode;
+  segment_documents: boolean;
+  extraction_schema_id: string | null;
+}
+
+export interface V2Artifact {
+  id: string;
+  type: string;
+  mime_type: string;
+  size: number;
+  sha256: string;
+  download_url: string;
+}
+
+export interface V2Job {
+  id: string;
+  original_filename: string;
+  source_mime: string;
+  source_size: number;
+  source_sha256: string;
+  page_count: number;
+  status: string;
+  settings: V2Settings;
+  models: { draft: string; verification: string };
+  completed_pages: number;
+  failed_pages: number;
+  error_code: string | null;
+  error_message: string | null;
+  usage: Record<string, number> | null;
+  artifacts: V2Artifact[];
+}
+
+export interface V2EvaluationReport {
+  schema_version: string;
+  metrics: Record<string, number>;
+  matched_chunks: number;
+  predicted_chunks: number;
+  labeled_chunks: number;
+  unmatched_predicted: string[];
+  unmatched_labels: string[];
+}
+
+export const listV2Jobs = async () =>
+  (await request<{ items: V2Job[] }>("/v2/jobs")).items;
+
+export const getV2Job = (id: string, signal?: AbortSignal) =>
+  request<V2Job>(`/v2/jobs/${encodeURIComponent(id)}`, { signal });
+
+export const cancelV2Job = (id: string) =>
+  request<V2Job>(`/v2/jobs/${encodeURIComponent(id)}/cancel`, { method: "POST" });
+
+export async function createV2Job(file: File, settings: V2Settings): Promise<V2Job> {
+  const body = new FormData();
+  body.append("file", file);
+  body.append("settings", JSON.stringify(settings));
+  return request<V2Job>("/v2/jobs", { method: "POST", body });
+}
+
+export async function evaluateV2Job(jobId: string, labels: File): Promise<V2EvaluationReport> {
+  const body = new FormData();
+  body.append("labels", labels);
+  return request<V2EvaluationReport>(`/v2/jobs/${encodeURIComponent(jobId)}/evaluate`, {
+    method: "POST",
+    body,
+  });
+}

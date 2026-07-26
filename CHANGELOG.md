@@ -7,6 +7,32 @@ and this project aims to follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- OpenAI-only V2 pipeline pairing `gpt-5.6-luna` page drafts with bounded
+  `gpt-5.6-terra` crop verification.
+- Strict grounded document contracts for hierarchy, checkboxes, tables, citations,
+  bounding boxes, document splits, schema fields, and explicit abstention.
+- Content-addressed page caching, OpenAI prompt-cache accounting, configurable cost
+  reporting, PostgreSQL-compatible page-task leases, retries, and idempotent assembly.
+- Auditable Markdown, JSON, schema extraction, usage report, and annotated PDF artifacts.
+- Economy, Balanced, and Audit modes in a new production extraction workspace.
+- WebP ingestion and PostgreSQL/`asyncpg` deployment support.
+
+### Changed
+
+- Replaced the active PaddleOCR/Ollama/provider runtime and legacy parse API with
+  `/api/v2/jobs` and server-side OpenAI configuration.
+- Reworked setup documentation and Docker Compose around an optional PostgreSQL service;
+  local model weights, GPU containers, and Ollama are no longer required.
+
+### Fixed
+
+- Prevented SQLite-only connection options and PRAGMA statements from reaching
+  PostgreSQL deployments.
+- Prevented failed page tasks from leaving jobs permanently active by retrying three
+  times before atomically recording page and job failure.
+
 ## [1.0.0] - 2026-07-23
 
 ### Added
