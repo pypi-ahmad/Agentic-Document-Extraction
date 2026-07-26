@@ -1,14 +1,13 @@
-name: Provider (OCR or LLM) request
-description: Request a new parser/OCR or LLM provider.
-title: "[provider] "
-labels: ["enhancement", "provider", "triage"]
+name: Recognition or review integration request
+description: Request a local or cloud recognition/review integration.
+title: "[integration] "
+labels: ["enhancement", "triage"]
 body:
   - type: markdown
     attributes:
       value: |
-        Use this template for adding a new OCR/parser engine
-        (`BaseOCRProvider`) or a new LLM provider
-        (`BaseLLMProvider`).
+        Use this template for a local recognition, cloud review, or
+        schema-extraction integration.
 
   - type: input
     id: name
@@ -23,8 +22,9 @@ body:
     attributes:
       label: Provider kind
       options:
-        - OCR / parser
-        - LLM
+        - Local recognition
+        - Cloud review
+        - Schema extraction
     validations:
       required: true
 

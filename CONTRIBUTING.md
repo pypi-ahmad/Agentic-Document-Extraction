@@ -4,10 +4,10 @@
 
 ## Where to start
 
-1. Skim [`README.md`](README.md) for the user-facing overview.
-2. Skim [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the system shape.
-3. Skim [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md) for the dev workflow.
-4. Skim [`RELEASE.md`](RELEASE.md) for the release process (only relevant if you have write access).
+1. Read [`README.md`](README.md) for the product and runtime prerequisites.
+2. Read [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the pipeline boundary.
+3. Follow [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md) for setup, tests, and local runs.
+4. Read [`RELEASE.md`](RELEASE.md) only when preparing a release.
 
 ## Ground rules
 
@@ -16,42 +16,41 @@
 - **Tests are required.** No PR is merged without a green test run.
 - **Conventional Commits** for every commit (`feat:`, `refactor:`, `perf:`, `test:`, `docs:`, `chore:`, `fix:`).
 - **No force-pushes.** Add fixup commits instead.
-- **No direct pushes to `main`.** Open a PR, wait for CI, then merge.
+- **No direct pushes to `main`.** Open a PR, wait for CI, then merge. Release maintainers
+  may create the final tagged release commit after merge.
 - **Backward compatibility by default.** Breaking changes need an ADR in [`docs/adr/`](docs/adr/) and a Migration section in the release notes.
 
 ## Local setup
 
-```bash
-uv venv --python 3.12.10 .venv
-source .venv/bin/activate
-uv pip install -e ".[test,lint,ollama]"
-
-# Optional: image OCR engine
-uv pip install -e ".[paddleocr]"
-
-# Optional: Redis-backed job queue
-uv pip install -e ".[queue]"
-
-# Optional: OpenTelemetry exporter
-uv pip install -e ".[otel]"
+```powershell
+uv python install 3.12.10
+uv sync --locked
+Set-Location frontend
+npm ci
 ```
+
+The official PaddleOCR-VL parser runs inside its pinned GPU Docker image. Do not add
+PaddlePaddle to the host environment. See `docs/RUN_APP.md` for Docker, GPU, Ollama,
+and persistent model-cache setup.
 
 ## Before opening a PR
 
 Run the full local check:
 
 ```bash
-ruff check backend/app backend/tests scripts
-ruff format --check backend/app backend/tests scripts
-pyright backend/app scripts/release.py
-pytest backend/tests/ -q
+uv run ruff check backend/app backend/tests scripts
+uv run ruff format --check backend/app backend/tests scripts
+uv run pytest backend/tests/unit -q
+cd frontend && npm run lint && npm test && npm run build
 ```
 
 CI runs the same matrix on Node 22 and Python 3.12.10. A red CI means the PR is not mergeable.
 
-## Adding a new provider
+## Changing parsing behavior
 
-See [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md) §6 (OCR) and §7 (LLM) for the step-by-step pattern. The summary is: subclass the base, register in the registry, add an enum value, add a feature flag, add tests, add a doc row.
+Keep the Docker worker contract, parse-job API, and persisted job artifacts compatible
+unless the change explicitly includes a migration. Add a focused unit or API test for
+each behavior change and update the relevant architecture or runtime document.
 
 ## Security
 

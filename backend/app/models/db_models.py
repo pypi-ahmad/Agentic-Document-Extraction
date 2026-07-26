@@ -1,293 +1,394 @@
-"""SQLAlchemy ORM models."""
+"""SQLAlchemy models for durable document parse jobs."""
 
-import datetime
+from __future__ import annotations
+
+import datetime as dt
 import uuid
 from typing import Any
 
-from sqlalchemy import JSON, DateTime, ForeignKey, Integer, String, Text, func
+from sqlalchemy import (
+    JSON,
+    Boolean,
+    DateTime,
+    Float,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+    UniqueConstraint,
+    func,
+)
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
-
-class Base(DeclarativeBase):
-    pass
+from app.models.enums import ArtifactType, JobStatus, PageStatus
 
 
 def _uuid() -> str:
     return uuid.uuid4().hex
 
 
-class Document(Base):
-    __tablename__ = "documents"
-
-    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=_uuid)
-    filename: Mapped[str] = mapped_column(String(255), nullable=False)
-    original_filename: Mapped[str] = mapped_column(String(255), nullable=False)
-    file_path: Mapped[str] = mapped_column(String(512), nullable=False)
-    file_type: Mapped[str] = mapped_column(String(20), nullable=False)
-    file_size: Mapped[int] = mapped_column(Integer, nullable=False)
-    page_count: Mapped[int | None] = mapped_column(Integer, nullable=True)
-    status: Mapped[str] = mapped_column(String(20), default="uploaded")
-    created_at: Mapped[datetime.datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now()
-    )
-
-    extractions: Mapped[list["Extraction"]] = relationship(back_populates="document")
+class Base(DeclarativeBase):
+    pass
 
 
 class ExtractionSchema(Base):
     __tablename__ = "extraction_schemas"
 
     id: Mapped[str] = mapped_column(String(32), primary_key=True, default=_uuid)
-    name: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
-    description: Mapped[str | None] = mapped_column(Text, nullable=True)
-    fields: Mapped[dict] = mapped_column(JSON, nullable=False, default=dict)
-    created_at: Mapped[datetime.datetime] = mapped_column(
+    name: Mapped[str] = mapped_column(String(255), nullable=False)
+    name_key: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
+    description: Mapped[str | None] = mapped_column(Text)
+    version: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
+    schema_json: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False)
+    schema_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
+    created_at: Mapped[dt.datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
-    updated_at: Mapped[datetime.datetime] = mapped_column(
+    updated_at: Mapped[dt.datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
 
-    extractions: Mapped[list["Extraction"]] = relationship(back_populates="schema")
 
-
-class Extraction(Base):
-    __tablename__ = "extractions"
+class ParseBatch(Base):
+    __tablename__ = "parse_batches"
 
     id: Mapped[str] = mapped_column(String(32), primary_key=True, default=_uuid)
-    document_id: Mapped[str] = mapped_column(String(32), ForeignKey("documents.id"), nullable=False)
-    schema_id: Mapped[str] = mapped_column(
-        String(32), ForeignKey("extraction_schemas.id"), nullable=False
-    )
-    ocr_provider: Mapped[str] = mapped_column(String(50), default="auto")
-    llm_provider: Mapped[str] = mapped_column(String(50), default="auto")
-    llm_model: Mapped[str] = mapped_column(String(100), default="auto")
-    status: Mapped[str] = mapped_column(String(30), default="pending")
-    ocr_text: Mapped[str | None] = mapped_column(Text, nullable=True)
-    result: Mapped[dict | None] = mapped_column(JSON, nullable=True)
-    validation_errors: Mapped[list | None] = mapped_column(JSON, nullable=True)
-    validation_results: Mapped[list | None] = mapped_column(JSON, nullable=True)
-    review_verdict: Mapped[str | None] = mapped_column(String(20), nullable=True)
-    error: Mapped[str | None] = mapped_column(Text, nullable=True)
-    ocr_provider_used: Mapped[str | None] = mapped_column(String(50), nullable=True)
-    llm_provider_used: Mapped[str | None] = mapped_column(String(50), nullable=True)
-    llm_model_used: Mapped[str | None] = mapped_column(String(100), nullable=True)
-    confidence: Mapped[dict | None] = mapped_column(JSON, nullable=True)
-    extract_attempts: Mapped[int | None] = mapped_column(Integer, nullable=True)
-    prompt_version: Mapped[str | None] = mapped_column(String(20), nullable=True)
-    """Which prompt version produced this extraction (e.g. ``v1``).
-    NULL for extractions produced before the v0.4.0 prompt-versioning
-    migration ran; treated as ``v1`` for re-runs."""
-    schema_version: Mapped[str | None] = mapped_column(String(20), nullable=True)
-    """Which ExtractionSchema version produced this extraction (e.g.
-    ``1``). NULL for pre-v0.4.0 extractions; treated as ``1`` for
-    re-runs."""
-    error_category: Mapped[str | None] = mapped_column(String(30), nullable=True)
-    created_at: Mapped[datetime.datetime] = mapped_column(
+    status: Mapped[str] = mapped_column(String(30), nullable=False, default="queued", index=True)
+    settings: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False)
+    bundle_path: Mapped[str | None] = mapped_column(String(1024))
+    bundle_sha256: Mapped[str | None] = mapped_column(String(64))
+    created_at: Mapped[dt.datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
-    started_at: Mapped[datetime.datetime | None] = mapped_column(
-        DateTime(timezone=True), nullable=True
-    )
-    completed_at: Mapped[datetime.datetime | None] = mapped_column(
-        DateTime(timezone=True), nullable=True
-    )
-    reviewed_at: Mapped[datetime.datetime | None] = mapped_column(
-        DateTime(timezone=True), nullable=True
-    )
+    completed_at: Mapped[dt.datetime | None] = mapped_column(DateTime(timezone=True))
 
-    document: Mapped["Document"] = relationship(back_populates="extractions")
-    schema: Mapped["ExtractionSchema"] = relationship(back_populates="extractions")
-    steps: Mapped[list["ExtractionStep"]] = relationship(
-        back_populates="extraction",
-        cascade="all, delete-orphan",
+    jobs: Mapped[list[ParseJob]] = relationship(
+        back_populates="batch",
+        order_by="ParseJob.batch_ordinal",
         lazy="selectin",
-        order_by="ExtractionStep.id",
     )
-    reviews: Mapped[list["ExtractionReview"]] = relationship(
-        back_populates="extraction",
+
+
+class ParseJob(Base):
+    __tablename__ = "parse_jobs"
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=_uuid)
+    batch_id: Mapped[str | None] = mapped_column(
+        String(32), ForeignKey("parse_batches.id", ondelete="SET NULL"), index=True
+    )
+    batch_ordinal: Mapped[int | None] = mapped_column(Integer)
+    original_filename: Mapped[str] = mapped_column(String(255), nullable=False)
+    source_path: Mapped[str] = mapped_column(String(1024), nullable=False)
+    source_mime: Mapped[str] = mapped_column(String(100), nullable=False)
+    source_size: Mapped[int] = mapped_column(Integer, nullable=False)
+    source_sha256: Mapped[str] = mapped_column(String(64), nullable=False, index=True)
+    page_count: Mapped[int] = mapped_column(Integer, nullable=False)
+    status: Mapped[str] = mapped_column(String(40), default=JobStatus.QUEUED, index=True)
+    settings: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False)
+    quality_policy_snapshot: Mapped[dict[str, Any] | None] = mapped_column(JSON)
+    output_revision: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
+    current_page: Mapped[int | None] = mapped_column(Integer)
+    completed_pages: Mapped[int] = mapped_column(Integer, default=0)
+    failed_pages: Mapped[int] = mapped_column(Integer, default=0)
+    warning_count: Mapped[int] = mapped_column(Integer, default=0)
+    cancel_requested: Mapped[bool] = mapped_column(Boolean, default=False)
+    error_code: Mapped[str | None] = mapped_column(String(80))
+    error_message: Mapped[str | None] = mapped_column(Text)
+    model_name: Mapped[str | None] = mapped_column(String(120))
+    model_digest: Mapped[str | None] = mapped_column(String(128))
+    review_model_name: Mapped[str | None] = mapped_column(String(120))
+    review_model_digest: Mapped[str | None] = mapped_column(String(128))
+    extraction_schema_id: Mapped[str | None] = mapped_column(
+        String(32), ForeignKey("extraction_schemas.id", ondelete="SET NULL"), index=True
+    )
+    extraction_schema_snapshot: Mapped[dict[str, Any] | None] = mapped_column(JSON)
+    extraction_model_name: Mapped[str | None] = mapped_column(String(120))
+    extraction_model_digest: Mapped[str | None] = mapped_column(String(128))
+    detected_profile: Mapped[str | None] = mapped_column(String(40))
+    profile_confidence: Mapped[float | None] = mapped_column(Float)
+    segmentation_status: Mapped[str] = mapped_column(String(30), default="pending")
+    created_at: Mapped[dt.datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+    started_at: Mapped[dt.datetime | None] = mapped_column(DateTime(timezone=True))
+    completed_at: Mapped[dt.datetime | None] = mapped_column(DateTime(timezone=True))
+    updated_at: Mapped[dt.datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
+
+    pages: Mapped[list[PageCheckpoint]] = relationship(
+        back_populates="job",
         cascade="all, delete-orphan",
+        order_by="PageCheckpoint.page_number",
         lazy="selectin",
-        order_by="ExtractionReview.id",
     )
-    judgments: Mapped[list["ExtractionJudgment"]] = relationship(
-        back_populates="extraction",
+    artifacts: Mapped[list[Artifact]] = relationship(
+        back_populates="job",
         cascade="all, delete-orphan",
+        order_by="Artifact.created_at",
         lazy="selectin",
-        order_by="ExtractionJudgment.id",
     )
+    subdocuments: Mapped[list[SubDocument]] = relationship(
+        back_populates="job",
+        cascade="all, delete-orphan",
+        order_by="SubDocument.ordinal",
+        lazy="selectin",
+    )
+    review_cases: Mapped[list[ReviewCase]] = relationship(
+        cascade="all, delete-orphan", lazy="selectin"
+    )
+    reprocess_runs: Mapped[list[ReprocessRun]] = relationship(
+        back_populates="job",
+        cascade="all, delete-orphan",
+        order_by="ReprocessRun.created_at",
+        lazy="selectin",
+    )
+    batch: Mapped[ParseBatch | None] = relationship(back_populates="jobs")
 
 
-class ExtractionStep(Base):
-    """Individual pipeline step recorded during extraction execution."""
-
-    __tablename__ = "extraction_steps"
+class PageCheckpoint(Base):
+    __tablename__ = "page_checkpoints"
+    __table_args__ = (UniqueConstraint("job_id", "page_number", name="uq_job_page"),)
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    extraction_id: Mapped[str] = mapped_column(
-        String(32), ForeignKey("extractions.id", ondelete="CASCADE"), nullable=False
+    job_id: Mapped[str] = mapped_column(
+        String(32), ForeignKey("parse_jobs.id", ondelete="CASCADE"), nullable=False, index=True
     )
-    name: Mapped[str] = mapped_column(String(30), nullable=False)
-    status: Mapped[str] = mapped_column(String(20), nullable=False)
-    started_at: Mapped[datetime.datetime | None] = mapped_column(
-        DateTime(timezone=True), nullable=True
+    page_number: Mapped[int] = mapped_column(Integer, nullable=False)
+    status: Mapped[str] = mapped_column(String(30), default=PageStatus.PENDING, index=True)
+    routing: Mapped[str | None] = mapped_column(String(40))
+    layout_path: Mapped[str | None] = mapped_column(String(1024))
+    layout_sha256: Mapped[str | None] = mapped_column(String(64))
+    stage: Mapped[str | None] = mapped_column(String(30))
+    observation_path: Mapped[str | None] = mapped_column(String(1024))
+    plan_path: Mapped[str | None] = mapped_column(String(1024))
+    diagnostics_path: Mapped[str | None] = mapped_column(String(1024))
+    state_path: Mapped[str | None] = mapped_column(String(1024))
+    fingerprint: Mapped[str | None] = mapped_column(String(64))
+    quality_status: Mapped[str | None] = mapped_column(String(20))
+    quality_score: Mapped[float | None] = mapped_column(Float)
+    repair_count: Mapped[int] = mapped_column(Integer, default=0)
+    warnings: Mapped[list[str]] = mapped_column(JSON, default=list)
+    error_code: Mapped[str | None] = mapped_column(String(80))
+    error_message: Mapped[str | None] = mapped_column(Text)
+    attempts: Mapped[int] = mapped_column(Integer, default=0)
+    duration_ms: Mapped[float | None] = mapped_column(Float)
+    created_at: Mapped[dt.datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
     )
-    completed_at: Mapped[datetime.datetime | None] = mapped_column(
-        DateTime(timezone=True), nullable=True
+    updated_at: Mapped[dt.datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
-    duration_ms: Mapped[int | None] = mapped_column(Integer, nullable=True)
-    error: Mapped[str | None] = mapped_column(Text, nullable=True)
 
-    extraction: Mapped["Extraction"] = relationship(back_populates="steps")
+    job: Mapped[ParseJob] = relationship(back_populates="pages")
 
 
-class ExtractionReview(Base):
-    """Persisted human review decision for an extraction job."""
+class ReprocessRun(Base):
+    __tablename__ = "reprocess_runs"
 
-    __tablename__ = "extraction_reviews"
-
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    extraction_id: Mapped[str] = mapped_column(
-        String(32), ForeignKey("extractions.id", ondelete="CASCADE"), nullable=False
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=_uuid)
+    job_id: Mapped[str] = mapped_column(
+        String(32), ForeignKey("parse_jobs.id", ondelete="CASCADE"), nullable=False, index=True
     )
-    decision: Mapped[str] = mapped_column(String(20), nullable=False)
-    corrected_fields: Mapped[dict | None] = mapped_column(JSON, nullable=True)
-    notes: Mapped[str | None] = mapped_column(Text, nullable=True)
-    created_at: Mapped[datetime.datetime] = mapped_column(
+    target_kind: Mapped[str] = mapped_column(String(20), nullable=False)
+    page_number: Mapped[int] = mapped_column(Integer, nullable=False)
+    region_id: Mapped[str | None] = mapped_column(String(40))
+    dpi: Mapped[int] = mapped_column(Integer, nullable=False)
+    crop_padding: Mapped[float] = mapped_column(Float, nullable=False, default=0)
+    status: Mapped[str] = mapped_column(String(20), nullable=False, default="queued", index=True)
+    previous_fingerprint: Mapped[str | None] = mapped_column(String(64))
+    result_fingerprint: Mapped[str | None] = mapped_column(String(64))
+    decision: Mapped[dict[str, Any] | None] = mapped_column(JSON)
+    error_message: Mapped[str | None] = mapped_column(Text)
+    created_at: Mapped[dt.datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+    completed_at: Mapped[dt.datetime | None] = mapped_column(DateTime(timezone=True))
+
+    job: Mapped[ParseJob] = relationship(back_populates="reprocess_runs")
+
+
+class Artifact(Base):
+    __tablename__ = "artifacts"
+    __table_args__ = (UniqueConstraint("job_id", "type", "region_id", name="uq_job_artifact"),)
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=_uuid)
+    job_id: Mapped[str] = mapped_column(
+        String(32), ForeignKey("parse_jobs.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    subdocument_id: Mapped[str | None] = mapped_column(
+        String(32), ForeignKey("subdocuments.id", ondelete="CASCADE"), index=True
+    )
+    type: Mapped[str] = mapped_column(String(40), default=ArtifactType.CLEAN_MARKDOWN)
+    region_id: Mapped[str | None] = mapped_column(String(40))
+    relative_path: Mapped[str] = mapped_column(String(1024), nullable=False)
+    mime_type: Mapped[str] = mapped_column(String(120), nullable=False)
+    size: Mapped[int] = mapped_column(Integer, nullable=False)
+    sha256: Mapped[str] = mapped_column(String(64), nullable=False)
+    created_at: Mapped[dt.datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
 
-    extraction: Mapped["Extraction"] = relationship(back_populates="reviews")
+    job: Mapped[ParseJob] = relationship(back_populates="artifacts")
+    subdocument: Mapped[SubDocument | None] = relationship(back_populates="artifacts")
 
 
-class ExtractionJudgment(Base):
-    """LLM-as-judge (G-Eval) score for one extraction.
+class SubDocument(Base):
+    __tablename__ = "subdocuments"
+    __table_args__ = (UniqueConstraint("job_id", "ordinal", name="uq_job_subdocument_ordinal"),)
 
-    Written by ``app.services.eval.judge.GEvalJudge`` for a sample of
-    completed extractions (controlled by ``Settings.judge_sample_rate``).
-    Used to surface quality regressions that the deterministic metrics
-    miss (e.g. plausible-but-wrong values).
-    """
-
-    __tablename__ = "extraction_judgments"
-
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    extraction_id: Mapped[str] = mapped_column(
-        String(32), ForeignKey("extractions.id", ondelete="CASCADE"), nullable=False
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=_uuid)
+    job_id: Mapped[str] = mapped_column(
+        String(32), ForeignKey("parse_jobs.id", ondelete="CASCADE"), nullable=False, index=True
     )
-    judge_model: Mapped[str] = mapped_column(String(100), nullable=False)
-    judge_version: Mapped[str] = mapped_column(String(20), nullable=False, default="geval-1")
-    scores: Mapped[dict] = mapped_column(JSON, nullable=False, default=dict)
-    """Per-criterion scores: {criterion: {score: 1-5, reason: str}}"""
-    overall_score: Mapped[float] = mapped_column(nullable=False)
-    """Mean of the per-criterion scores, in [1, 5]."""
-    reasoning: Mapped[str | None] = mapped_column(Text, nullable=True)
-    """Chain-of-thought reasoning from the judge model (truncated to 4 KB)."""
-    latency_ms: Mapped[int | None] = mapped_column(Integer, nullable=True)
-    created_at: Mapped[datetime.datetime] = mapped_column(
+    ordinal: Mapped[int] = mapped_column(Integer, nullable=False)
+    start_page: Mapped[int] = mapped_column(Integer, nullable=False)
+    end_page: Mapped[int] = mapped_column(Integer, nullable=False)
+    profile: Mapped[str] = mapped_column(String(40), nullable=False)
+    confidence: Mapped[float] = mapped_column(Float, nullable=False)
+    identifiers: Mapped[list[dict[str, Any]]] = mapped_column(JSON, default=list)
+    boundary_confidence: Mapped[float] = mapped_column(Float, nullable=False)
+    boundary_reasons: Mapped[list[str]] = mapped_column(JSON, default=list)
+    complete: Mapped[bool] = mapped_column(Boolean, default=True)
+    missing_pages: Mapped[list[int]] = mapped_column(JSON, default=list)
+    warnings: Mapped[list[str]] = mapped_column(JSON, default=list)
+    created_at: Mapped[dt.datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
 
-    extraction: Mapped["Extraction"] = relationship(back_populates="judgments")
-
-
-class ExtractionAuditLog(Base):
-    """Append-only audit trail for extraction lifecycle events.
-
-    One row per meaningful state transition. Used for compliance, ops
-    debugging, and "what happened to job X" investigation. The
-    application writes through app.services.audit.record_audit_event
-    and never updates or deletes rows.
-    """
-
-    __tablename__ = "extraction_audit_log"
-
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    extraction_id: Mapped[str] = mapped_column(
-        String(32), ForeignKey("extractions.id", ondelete="CASCADE"), nullable=False
-    )
-    event: Mapped[str] = mapped_column(String(64), nullable=False)
-    request_id: Mapped[str | None] = mapped_column(String(128), nullable=True)
-    payload: Mapped[dict | None] = mapped_column(JSON, nullable=True)
-    created_at: Mapped[datetime.datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
+    job: Mapped[ParseJob] = relationship(back_populates="subdocuments")
+    artifacts: Mapped[list[Artifact]] = relationship(
+        back_populates="subdocument", cascade="all, delete-orphan", lazy="selectin"
     )
 
 
-class ExtractionEvidence(Base):
-    """Per-field evidence for a v0.5.0 evidence-grounded extraction.
+class EvaluationRun(Base):
+    __tablename__ = "evaluation_runs"
 
-    One row per field. ``text_span`` is the verbatim document text
-    that backs the value; ``bbox_json`` is ``[x0, y0, x1, y1]`` in
-    normalized 0..1 page coordinates. ``evidence_score`` is the
-    LLM's self-assessed confidence in the evidence (NOT in the
-    value's correctness).
-    """
-
-    __tablename__ = "extraction_evidence"
-
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    extraction_id: Mapped[str] = mapped_column(
-        String(32), ForeignKey("extractions.id", ondelete="CASCADE"), nullable=False, index=True
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=_uuid)
+    kind: Mapped[str] = mapped_column(String(20), nullable=False)
+    status: Mapped[str] = mapped_column(String(30), nullable=False, default="pending", index=True)
+    settings: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict)
+    metrics: Mapped[dict[str, Any] | None] = mapped_column(JSON)
+    report_path: Mapped[str | None] = mapped_column(String(1024))
+    total_cases: Mapped[int] = mapped_column(Integer, default=0)
+    completed_cases: Mapped[int] = mapped_column(Integer, default=0)
+    failed_cases: Mapped[int] = mapped_column(Integer, default=0)
+    error_message: Mapped[str | None] = mapped_column(Text)
+    created_at: Mapped[dt.datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
     )
-    field: Mapped[str] = mapped_column(String(100), nullable=False, index=True)
-    value: Mapped[Any] = mapped_column(JSON, nullable=True)
-    page: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
-    bbox_json: Mapped[list | None] = mapped_column(JSON, nullable=True)
-    text_span: Mapped[str] = mapped_column(Text, nullable=False, default="")
-    source_region_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
-    evidence_score: Mapped[float] = mapped_column(nullable=False, default=0.0)
-    prompt_version: Mapped[str | None] = mapped_column(String(20), nullable=True)
-    created_at: Mapped[datetime.datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
+    completed_at: Mapped[dt.datetime | None] = mapped_column(DateTime(timezone=True))
+
+    cases: Mapped[list[EvaluationCase]] = relationship(
+        back_populates="run", cascade="all, delete-orphan", order_by="EvaluationCase.created_at"
     )
 
 
-class ExtractionEntity(Base):
-    """A canonical entity linked across pages (v0.5.0 cross-page resolver).
-
-    ``mentions`` is a list of ``{"page": int, "bbox": [..],
-    "text_span": str, "region_id": str}``. ``canonical_form`` is the
-    chosen normalised form of the entity name.
-    """
-
-    __tablename__ = "extraction_entities"
-
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    extraction_id: Mapped[str] = mapped_column(
-        String(32), ForeignKey("extractions.id", ondelete="CASCADE"), nullable=False, index=True
-    )
-    entity_type: Mapped[str] = mapped_column(String(40), nullable=False, default="generic")
-    canonical_form: Mapped[str] = mapped_column(String(255), nullable=False)
-    mentions: Mapped[list] = mapped_column(JSON, nullable=False, default=list)
-    confidence: Mapped[float] = mapped_column(nullable=False, default=0.0)
-    created_at: Mapped[datetime.datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
+class EvaluationCase(Base):
+    __tablename__ = "evaluation_cases"
+    __table_args__ = (
+        UniqueConstraint("run_id", "external_id", name="uq_evaluation_case_external"),
     )
 
-
-class ExtractionVerifierRun(Base):
-    """One verifier run for an extraction (v0.5.0 Phase 3).
-
-    The verifier scores each field's evidence; ``disputed_fields``
-    lists the field names where the verifier disagreed with the
-    extraction and the conflict resolver flagged the field for
-    human review.
-    """
-
-    __tablename__ = "extraction_verifier_runs"
-
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    extraction_id: Mapped[str] = mapped_column(
-        String(32), ForeignKey("extractions.id", ondelete="CASCADE"), nullable=False, index=True
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=_uuid)
+    run_id: Mapped[str] = mapped_column(
+        String(32), ForeignKey("evaluation_runs.id", ondelete="CASCADE"), nullable=False, index=True
     )
-    verifier_model: Mapped[str] = mapped_column(String(100), nullable=False)
-    verifier_version: Mapped[str] = mapped_column(String(20), nullable=False, default="verifier-1")
-    field_verdicts: Mapped[dict] = mapped_column(JSON, nullable=False, default=dict)
-    """Per-field verdicts: {field: {"verdict": "agree"|"disagree"|"unsure", "reason": str}}"""
-    disputed_fields: Mapped[list] = mapped_column(JSON, nullable=False, default=list)
-    overall_agreement: Mapped[float] = mapped_column(nullable=False, default=0.0)
-    latency_ms: Mapped[int | None] = mapped_column(Integer, nullable=True)
-    created_at: Mapped[datetime.datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
+    external_id: Mapped[str] = mapped_column(String(200), nullable=False)
+    parse_job_id: Mapped[str] = mapped_column(
+        String(32), ForeignKey("parse_jobs.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    source_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
+    gold_path: Mapped[str] = mapped_column(String(1024), nullable=False)
+    status: Mapped[str] = mapped_column(String(30), nullable=False, default="pending", index=True)
+    metrics: Mapped[dict[str, Any] | None] = mapped_column(JSON)
+    report_path: Mapped[str | None] = mapped_column(String(1024))
+    error_message: Mapped[str | None] = mapped_column(Text)
+    created_at: Mapped[dt.datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+    completed_at: Mapped[dt.datetime | None] = mapped_column(DateTime(timezone=True))
+
+    run: Mapped[EvaluationRun] = relationship(back_populates="cases")
+    parse_job: Mapped[ParseJob] = relationship()
+
+
+class ReviewCase(Base):
+    __tablename__ = "review_cases"
+    __table_args__ = (UniqueConstraint("fingerprint", name="uq_review_case_fingerprint"),)
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=_uuid)
+    job_id: Mapped[str] = mapped_column(
+        String(32), ForeignKey("parse_jobs.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    item_kind: Mapped[str] = mapped_column(String(40), nullable=False)
+    item_key: Mapped[str] = mapped_column(String(255), nullable=False)
+    page_number: Mapped[int | None] = mapped_column(Integer)
+    severity: Mapped[str] = mapped_column(String(10), nullable=False)
+    status: Mapped[str] = mapped_column(String(20), nullable=False, default="open", index=True)
+    failure_codes: Mapped[list[str]] = mapped_column(JSON, default=list)
+    original: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False)
+    current: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False)
+    provenance: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict)
+    fingerprint: Mapped[str] = mapped_column(String(64), nullable=False, unique=True)
+    revision: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    created_at: Mapped[dt.datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+    resolved_at: Mapped[dt.datetime | None] = mapped_column(DateTime(timezone=True))
+
+    decisions: Mapped[list[ReviewDecision]] = relationship(
+        back_populates="case", cascade="all, delete-orphan", order_by="ReviewDecision.revision"
+    )
+
+
+class ReviewDecision(Base):
+    __tablename__ = "review_decisions"
+    __table_args__ = (UniqueConstraint("case_id", "revision", name="uq_review_decision_revision"),)
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=_uuid)
+    case_id: Mapped[str] = mapped_column(
+        String(32), ForeignKey("review_cases.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    revision: Mapped[int] = mapped_column(Integer, nullable=False)
+    action: Mapped[str] = mapped_column(String(20), nullable=False)
+    corrected: Mapped[dict[str, Any] | None] = mapped_column(JSON)
+    note: Mapped[str | None] = mapped_column(Text)
+    reviewer: Mapped[str] = mapped_column(String(100), nullable=False, default="local_user")
+    created_at: Mapped[dt.datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+
+    case: Mapped[ReviewCase] = relationship(back_populates="decisions")
+
+
+class CuratedDocument(Base):
+    __tablename__ = "curated_documents"
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=_uuid)
+    job_id: Mapped[str] = mapped_column(
+        String(32), ForeignKey("parse_jobs.id", ondelete="CASCADE"), nullable=False, unique=True
+    )
+    revision: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
+    status: Mapped[str] = mapped_column(String(20), nullable=False, default="approved")
+    label_path: Mapped[str] = mapped_column(String(1024), nullable=False)
+    label_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
+    approved_at: Mapped[dt.datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+
+
+class CuratedExport(Base):
+    __tablename__ = "curated_exports"
+    __table_args__ = (UniqueConstraint("name", "version", name="uq_curated_export_version"),)
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=_uuid)
+    name: Mapped[str] = mapped_column(String(255), nullable=False)
+    version: Mapped[int] = mapped_column(Integer, nullable=False)
+    document_ids: Mapped[list[str]] = mapped_column(JSON, default=list)
+    archive_path: Mapped[str] = mapped_column(String(1024), nullable=False)
+    sha256: Mapped[str] = mapped_column(String(64), nullable=False)
+    created_at: Mapped[dt.datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
     )

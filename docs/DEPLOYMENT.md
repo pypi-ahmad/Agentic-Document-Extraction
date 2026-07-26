@@ -1,5 +1,11 @@
 # Deployment
 
+> **Current v1 runtime:** Paperplane is a single-workstation, single-GPU service. It processes
+> one document at a time in durable batches of at most 10 pages (verified target: 100+ page
+> PDFs; configured limit: 500 pages). PostgreSQL, Redis, multiple API workers, Kubernetes,
+> and million-page distributed scaling are not implemented. The older sections below are
+> retained as historical deployment notes and must not be interpreted as the current contract.
+
 > Production deployment guide for Agentic Document Extraction v0.3.0.
 
 The project ships three production paths: **Docker** (recommended for
@@ -16,7 +22,6 @@ file plus optional sidecars (Ollama, Redis, Prometheus).
 - **Liveness** is `GET /health` (always 200 if the process is up).
 - **Readiness** is `GET /health/ready` (200 once the database, the LLM
   registry, and the OCR registry are reachable; 503 otherwise).
-- **Metrics** is `GET /metrics` (Prometheus text format).
 - **Persistence** is one SQLite file (`extraction.db`) plus two
   directories (`uploads/`, `artifacts/`).
 - **Migrations** are managed by Alembic. The Docker image runs
@@ -60,7 +65,6 @@ Set `OLLAMA_BASE_URL=http://ollama.internal:11434` and
 ```bash
 curl -s localhost:8000/health      # always 200 if the process is up
 curl -s localhost:8000/health/ready # 200 once dependencies are reachable
-curl -s localhost:8000/metrics     # Prometheus
 ```
 
 ### 2.4 Data volumes
@@ -195,35 +199,14 @@ server {
 
 ## 5. Observability
 
-### 5.1 Prometheus scrape
-
-```yaml
-scrape_configs:
-  - job_name: ade
-    static_configs:
-      - targets: ["ade.example.com"]
-    metrics_path: /metrics
-    scrape_interval: 30s
-```
-
-Key series:
-
-- `ade_extractions_total{status}` — counter, label by terminal status.
-- `ade_in_flight_jobs` — gauge.
-- `ade_extraction_duration_seconds_*` — histogram, end-to-end.
-- `ade_llm_call_duration_seconds_*` and `ade_ocr_call_duration_seconds_*`
-  — histograms for per-call latency.
-- `ade_reviews_total{decision}` — counter, label by approve / correct / reject.
-- `ade_provider_errors_total{provider,category}` — counter.
-
-### 5.2 Logs
+### 5.1 Logs
 
 Logs are JSON when `LOG_JSON=1` (the default in Docker). Pipe to your
 log shipper of choice; each line is one record with at minimum
 `event`, `timestamp`, `service`, `level`, and (when in a request
 context) `request_id`.
 
-### 5.3 Audit
+### 5.2 Audit
 
 `SELECT * FROM extraction_audit_log WHERE extraction_id = ?` gives
 the full lifecycle of a job, including the request id that triggered

@@ -1,454 +1,249 @@
-"""Pydantic v2 request/response schemas."""
+"""Public request and response schemas for document parse jobs."""
 
 from __future__ import annotations
 
-import datetime
-from typing import Any
+from typing import Any, Literal
 
-from pydantic import (
-    BaseModel,
-    ConfigDict,
-    Field,
-    ValidationInfo,
-    computed_field,
-    field_validator,
-    model_validator,
-)
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from app.models.enums import (
-    ExtractionStatus,
-    FieldType,
-    LLMProviderID,
-    ModelCatalogSource,
-    ModelSelectionMode,
-    ParserEngine,
-    ProviderAvailabilityState,
-    ReviewDecision,
-    ReviewVerdict,
-)
-from app.models.extraction._base import ValidationResult
-
-# ── Schema Field definition ──────────────────────────────────────────
+from app.services.parsing.quality_policy import QualityOverrides
 
 
-class SchemaFieldDef(BaseModel):
-    """A single field in a user-defined extraction schema."""
-
+class ExtractionSchemaWrite(BaseModel):
     model_config = ConfigDict(str_strip_whitespace=True)
 
-    name: str = Field(..., min_length=1, max_length=100, description="Field name / key")
-    description: str = Field(default="", max_length=500, description="What this field represents")
-    field_type: FieldType = Field(
-        default=FieldType.STRING,
-        description="Expected data type",
-    )
-    required: bool = Field(default=True, description="Whether the field is required")
+    name: str = Field(min_length=1, max_length=255)
+    description: str | None = Field(default=None, max_length=2000)
+    json_schema: dict[str, Any]
 
 
-def _validate_unique_schema_fields(fields: list[SchemaFieldDef]) -> list[SchemaFieldDef]:
-    seen: dict[str, str] = {}
-    duplicates: list[str] = []
-    for field in fields:
-        normalized = field.name.casefold()
-        original = seen.get(normalized)
-        if original is not None:
-            duplicates.append(field.name)
-            continue
-        seen[normalized] = field.name
-
-    if duplicates:
-        joined = ", ".join(sorted(set(duplicates), key=str.casefold))
-        raise ValueError(f"Field names must be unique. Duplicate names: {joined}")
-    return fields
+class ExtractionSchemaValidateRequest(BaseModel):
+    json_schema: dict[str, Any]
 
 
-# ── Extraction Schema ────────────────────────────────────────────────
+class ExtractionSchemaValidationError(BaseModel):
+    path: str
+    code: str
+    message: str
 
 
-class ExtractionSchemaCreate(BaseModel):
-    model_config = ConfigDict(str_strip_whitespace=True)
-
-    name: str = Field(..., min_length=1, max_length=255)
-    description: str | None = None
-    fields: list[SchemaFieldDef] = Field(..., min_length=1)
-
-    @model_validator(mode="after")
-    def validate_fields(self) -> ExtractionSchemaCreate:
-        _validate_unique_schema_fields(self.fields)
-        return self
-
-
-class ExtractionSchemaUpdate(BaseModel):
-    model_config = ConfigDict(str_strip_whitespace=True)
-
-    name: str | None = Field(default=None, min_length=1, max_length=255)
-    description: str | None = None
-    fields: list[SchemaFieldDef] | None = Field(default=None, min_length=1)
-
-    @model_validator(mode="after")
-    def validate_fields(self) -> ExtractionSchemaUpdate:
-        if self.fields is not None:
-            _validate_unique_schema_fields(self.fields)
-        return self
+class ExtractionSchemaValidationResponse(BaseModel):
+    valid: bool
+    normalized_schema: dict[str, Any] | None = None
+    errors: list[ExtractionSchemaValidationError] = Field(default_factory=list)
 
 
 class ExtractionSchemaResponse(BaseModel):
     id: str
     name: str
-    description: str | None
-    fields: list[SchemaFieldDef]
-    created_at: datetime.datetime
-    updated_at: datetime.datetime
-
-    model_config = {"from_attributes": True}
-
-
-class SchemaPresetResponse(BaseModel):
-    model_config = ConfigDict(str_strip_whitespace=True)
-
-    id: str
-    name: str
-    description: str
-    doc_type: str
-    fields: list[SchemaFieldDef]
+    description: str | None = None
+    version: int
+    json_schema: dict[str, Any]
+    schema_sha256: str
+    created_at: str | None = None
+    updated_at: str | None = None
 
 
-class CreateSchemaFromPresetRequest(BaseModel):
-    """Instantiate a new schema from a built-in preset."""
+class ExtractionSchemaListResponse(BaseModel):
+    items: list[ExtractionSchemaResponse]
 
-    model_config = ConfigDict(str_strip_whitespace=True)
 
-    name: str | None = Field(
-        default=None,
-        min_length=1,
-        max_length=255,
-        description="Override the preset name. Defaults to the preset name.",
+class ParseSettings(BaseModel):
+    segment_documents: bool = True
+    document_profile: Literal[
+        "auto",
+        "technical_document",
+        "scientific_paper",
+        "invoice",
+        "insurance_claim",
+        "healthcare_form",
+        "general_scanned",
+    ] = "auto"
+    structured_extraction: bool = True
+    extraction_schema_id: str | None = Field(default=None, min_length=1, max_length=32)
+    extraction_provider: Literal["ollama", "openai", "anthropic", "gemini", "xai"] = "ollama"
+    extraction_model: str | None = Field(default=None, min_length=1, max_length=120)
+    allow_sensitive_cloud: bool = False
+    processing_mode: Literal["local_only", "hybrid", "maximum_accuracy"] = "local_only"
+    quality_overrides: QualityOverrides = Field(default_factory=QualityOverrides)
+    ocr_provider: Literal["ollama", "openai", "anthropic", "gemini", "xai"] = "ollama"
+    ocr_model: str | None = Field(default=None, min_length=1, max_length=120)
+    review_provider: Literal["ollama", "openai", "anthropic", "gemini", "xai"] = "ollama"
+    review_model: str | None = Field(default=None, min_length=1, max_length=120)
+    cloud_mode: Literal["off", "adaptive", "all_pages"] = "off"
+    blind_local_retry: bool = False
+    start_page: int = Field(default=1, ge=1)
+    end_page: int | None = Field(default=None, ge=1)
+    input_mode: Literal["scanned", "native", "mixed"] = "mixed"
+    dpi: Literal[150, 200, 300] = 200
+    layout_device: Literal["auto", "cpu", "cuda"] = "auto"
+    region_concurrency: int = Field(default=2, ge=1, le=8)
+    marginalia_policy: Literal["remove_repeated", "keep_all"] = "remove_repeated"
+    describe_figures: bool = True
+    grounding_pdf: bool = Field(
+        default=True,
+        description="Deprecated compatibility flag; annotated PDF generation is always enabled.",
+        json_schema_extra={"deprecated": True},
     )
+    searchable_pdf: bool = True
+    bundle: bool = True
 
-
-class LegacyCreateFromPresetRequest(CreateSchemaFromPresetRequest):
-    """Deprecated compatibility payload for POST /schemas/from-preset."""
-
-    preset_id: str = Field(..., min_length=1)
-
-
-# ── Document ─────────────────────────────────────────────────────────
-
-
-class DocumentResponse(BaseModel):
-    model_config = {"from_attributes": True}
-
-    id: str
-    filename: str
-    original_filename: str
-    file_type: str
-    file_size: int
-    page_count: int | None
-    status: str
-    created_at: datetime.datetime
-
-
-# ── Extraction ───────────────────────────────────────────────────────
-
-
-class ExtractionCreate(BaseModel):
-    model_config = ConfigDict(str_strip_whitespace=True)
-
-    document_id: str = Field(..., min_length=1, max_length=32)
-    schema_id: str = Field(..., min_length=1, max_length=32)
-    ocr_provider: ParserEngine = Field(
-        default=ParserEngine.AUTO,
-        description=(
-            "User-selectable parser/OCR engine to use. Accepted values are "
-            "'auto' and 'paddleocr'; internal helpers such as the built-in "
-            "PyMuPDF PDF reader are not valid request values."
-        ),
-    )
-    llm_provider: LLMProviderID = Field(
-        default=LLMProviderID.AUTO,
-        description=(
-            "LLM provider to use. 'auto' first tries DEFAULT_LLM_PROVIDER "
-            "when it is set to a concrete provider and that provider is "
-            "ready, then falls back to the built-in priority order."
-        ),
-    )
-    llm_model: str = Field(
-        default="auto",
-        min_length=1,
-        max_length=100,
-        description="LLM model id, or 'auto' to use the selected provider's default model.",
-    )
-
-
-class ExtractionStepResponse(BaseModel):
-    """Individual pipeline step with timing."""
-
-    name: str
-    status: str
-    started_at: datetime.datetime | None = None
-    completed_at: datetime.datetime | None = None
-    duration_ms: int | None = None
-    error: str | None = None
-
-    model_config = {"from_attributes": True}
-
-
-class ExtractionResponse(BaseModel):
-    id: str
-    document_id: str
-    schema_id: str
-    ocr_provider: ParserEngine
-    llm_provider: LLMProviderID
-    llm_model: str
-    status: ExtractionStatus
-    ocr_text: str | None
-    result: dict[str, Any] | None
-    validation_errors: list[str] | None = None
-    validation_results: list[ValidationResult] | None = None
-    review_verdict: ReviewVerdict | None = None
-    error: str | None
-    ocr_provider_used: str | None = None
-    llm_provider_used: str | None = None
-    llm_model_used: str | None = None
-    confidence: dict[str, float] | None = None
-    extract_attempts: int | None = None
-    error_category: str | None = None
-    steps: list[ExtractionStepResponse] = Field(default_factory=list)
-    reviews: list[ReviewResponse] = Field(default_factory=list)
-    created_at: datetime.datetime
-    started_at: datetime.datetime | None = None
-    completed_at: datetime.datetime | None
-    reviewed_at: datetime.datetime | None = None
-
-    model_config = {"from_attributes": True}
-
-    @field_validator("ocr_provider", mode="before")
+    @model_validator(mode="before")
     @classmethod
-    def normalize_internal_ocr_provider(cls, value: ParserEngine | str) -> ParserEngine | str:
-        """Map legacy/internal parser ids back onto the public API enum."""
-        if value == "pymupdf":
-            return ParserEngine.AUTO
-        return value
-
-    @computed_field  # type: ignore[prop-decorator]
-    @property
-    def duration_total_ms(self) -> int | None:
-        """Wall-clock milliseconds from pipeline start to completion."""
-        if self.started_at and self.completed_at:
-            return int((self.completed_at - self.started_at).total_seconds() * 1000)
-        return None
-
-    @computed_field  # type: ignore[prop-decorator]
-    @property
-    def validation_summary(self) -> str | None:
-        """Human-friendly one-liner summarising validation state."""
-        if self.review_verdict in {"approved", "corrected", "rejected"}:
-            return None
-        if self.validation_results is None:
-            return None
-        total = len(self.validation_results)
-        if total == 0:
-            return None
-        passed = sum(1 for validation_result in self.validation_results if validation_result.valid)
-        failed = total - passed
-        if failed == 0:
-            return f"All {total} checks passed"
-        return f"{failed} of {total} checks need attention"
-
-
-class ExtractionResultResponse(BaseModel):
-    """Dedicated view of the extraction result (data only)."""
-
-    extraction_id: str
-    status: ExtractionStatus
-    result: dict[str, Any] | None = None
-    ocr_provider_used: str | None = None
-    llm_provider_used: str | None = None
-    llm_model_used: str | None = None
-    completed_at: datetime.datetime | None = None
-
-
-class ExtractionValidationResponse(BaseModel):
-    """Dedicated view of the validation / review state."""
-
-    extraction_id: str
-    status: ExtractionStatus
-    validation_errors: list[str]
-    validation_results: list[ValidationResult] | None = None
-    review_verdict: ReviewVerdict | None = None
-    completed_at: datetime.datetime | None = None
-
-
-# ── Review ───────────────────────────────────────────────────────────
-
-
-class ReviewCreate(BaseModel):
-    """Human review submission for an extraction needing review."""
-
-    model_config = ConfigDict(str_strip_whitespace=True)
-
-    decision: ReviewDecision = Field(..., description="approved | corrected | rejected")
-    corrected_fields: dict[str, Any] | None = Field(
-        default=None,
-        description="New field values overriding the AI-extracted result (required when decision is corrected).",
-    )
-    notes: str | None = Field(default=None, max_length=2000, description="Optional reviewer notes")
-
-    @field_validator("corrected_fields")
-    @classmethod
-    def validate_corrected_fields_allowed(
-        cls,
-        value: dict[str, Any] | None,
-        info: ValidationInfo,
-    ) -> dict[str, Any] | None:
-        decision = info.data.get("decision")
-        if value is not None and decision != ReviewDecision.CORRECTED:
-            raise ValueError("corrected_fields is only allowed when decision is 'corrected'")
-        return value
+    def infer_legacy_cloud_mode(cls, data: Any) -> Any:
+        if isinstance(data, dict):
+            normalized: dict[str, Any] = {str(key): value for key, value in data.items()}
+            if "cloud_mode" not in normalized and normalized.get("review_model"):
+                normalized["cloud_mode"] = "adaptive"
+            if "processing_mode" not in normalized:
+                cloud_mode = normalized.get("cloud_mode")
+                normalized["processing_mode"] = {
+                    "adaptive": "hybrid",
+                    "all_pages": "maximum_accuracy",
+                }.get(cloud_mode if isinstance(cloud_mode, str) else "", "local_only")
+            return normalized
+        return data
 
     @model_validator(mode="after")
-    def validate_corrected_fields_required(self) -> ReviewCreate:
-        if self.decision == ReviewDecision.CORRECTED and not self.corrected_fields:
-            raise ValueError("corrected_fields is required when decision is 'corrected'")
+    def validate_page_range(self) -> ParseSettings:
+        if self.end_page is not None and self.end_page < self.start_page:
+            raise ValueError("end_page must be greater than or equal to start_page")
+        self.grounding_pdf = True
+        if self.processing_mode == "local_only":
+            self.cloud_mode = "off"
+            self.blind_local_retry = False
+        elif self.processing_mode == "hybrid":
+            self.cloud_mode = "adaptive"
+        else:
+            self.cloud_mode = "all_pages"
+        if self.ocr_provider != "ollama" and not self.ocr_model:
+            raise ValueError("ocr_model is required for a cloud repair provider")
+        if self.review_provider != "ollama" and not self.review_model:
+            raise ValueError("review_model is required for a cloud review provider")
+        if self.cloud_mode != "off" and not self.review_model:
+            raise ValueError("review_model is required when cloud context is enabled")
+        if self.extraction_schema_id and not self.extraction_model:
+            raise ValueError("extraction_model is required when an extraction schema is selected")
+        if (
+            self.extraction_schema_id
+            and self.processing_mode == "local_only"
+            and self.extraction_provider != "ollama"
+        ):
+            raise ValueError("local_only schema extraction requires an Ollama model")
+        if (
+            self.document_profile in {"insurance_claim", "healthcare_form"}
+            and (
+                self.cloud_mode != "off"
+                or (self.extraction_schema_id and self.extraction_provider != "ollama")
+            )
+            and not self.allow_sensitive_cloud
+        ):
+            raise ValueError(
+                "allow_sensitive_cloud must be enabled before a sensitive document can use cloud models"
+            )
         return self
 
 
-class ReviewResponse(BaseModel):
-    """Persisted review record."""
-
-    id: int
-    extraction_id: str
-    decision: ReviewDecision
-    corrected_fields: dict[str, Any] | None = None
-    notes: str | None = None
-    created_at: datetime.datetime
-
-    model_config = {"from_attributes": True}
-
-
-# ── App info ─────────────────────────────────────────────────────────
-
-
-class AppInfoResponse(BaseModel):
-    """Runtime capabilities and version info for the frontend."""
-
-    app_name: str
-    version: str
-    python_version: str
-    langgraph_version: str | None = None
-    pipeline_nodes: list[str]
-    # Total available OCR/parsing runtimes, including internal helpers.
-    ocr_providers_available: int
-    # Available parser/OCR options that a user can explicitly choose.
-    user_selectable_parsers_available: int
-    # Available internal parser helpers excluded from /api/providers/parsers.
-    internal_parsers_available: int
-    llm_providers_available: int
-    supported_file_types: list[str] = Field(
-        description="Accepted upload file extensions. Upload support does not mean every file type has an OCR runtime ready: PDFs use the built-in PyMuPDF text reader, while PNG/JPG/JPEG/TIFF/TIF image OCR requires PaddleOCR to be installed and enabled.",
-    )
-    max_upload_size_mb: int
-    confidence_threshold: float
+class PageCheckpointResponse(BaseModel):
+    page_number: int
+    status: str
+    routing: str | None = None
+    warnings: list[str] = Field(default_factory=list)
+    error_code: str | None = None
+    error_message: str | None = None
+    attempts: int
+    duration_ms: float | None = None
+    stage: str | None = None
+    quality_status: str | None = None
+    quality_score: float | None = None
+    repair_count: int = 0
+    diagnostics_url: str | None = None
 
 
-class ParserOptionInfo(BaseModel):
-    """User-facing parser/OCR option with availability.
+class ArtifactResponse(BaseModel):
+    id: str
+    type: str
+    region_id: str | None = None
+    mime_type: str
+    size: int
+    sha256: str
+    filename: str
+    download_url: str
+    preview_url: str | None = None
 
-    Only user-selectable engines appear here.  Internal helpers
-    (e.g. PyMuPDF) are never returned by the ``/parsers`` endpoint.
-    """
 
-    id: ParserEngine
-    name: str
-    enabled: bool
-    available: bool
+class SubDocumentSummary(BaseModel):
+    id: str
+    ordinal: int
+    start_page: int
+    end_page: int
+    profile: str
+    confidence: float
+    identifiers: list[dict[str, Any]] = Field(default_factory=list)
+    boundary_confidence: float
+    boundary_reasons: list[str] = Field(default_factory=list)
+    complete: bool
+    missing_pages: list[int] = Field(default_factory=list)
+    warnings: list[str] = Field(default_factory=list)
+    artifacts: list[ArtifactResponse] = Field(default_factory=list)
 
 
-class ProviderInfo(BaseModel):
-    """Deprecated legacy OCR provider shape kept for compatibility."""
+class SubDocumentListResponse(BaseModel):
+    items: list[SubDocumentSummary]
 
+
+class ExtractionSchemaSnapshotSummary(BaseModel):
     id: str
     name: str
-    available: bool
+    version: int
+    schema_sha256: str
 
 
-class ProviderErrorState(BaseModel):
-    code: str
-    message: str
-    retryable: bool = False
-
-
-class ProviderAvailabilityStatus(BaseModel):
-    state: ProviderAvailabilityState
-    configured: bool
-    available: bool
-    can_extract: bool
-    can_list_models: bool
-    auto_eligible: bool
-
-
-class LLMProviderInfo(BaseModel):
-    id: LLMProviderID
-    name: str
-    available: bool
-    availability: ProviderAvailabilityStatus
-    error: ProviderErrorState | None = None
-    is_default: bool = False
-
-
-class ModelInfo(BaseModel):
+class ParseJobResponse(BaseModel):
     id: str
-    name: str
-    provider: LLMProviderID
-    is_default: bool = False
+    batch_id: str | None = None
+    batch_ordinal: int | None = None
+    original_filename: str
+    source_mime: str
+    source_size: int
+    source_sha256: str
+    page_count: int
+    status: str
+    settings: ParseSettings
+    quality_policy: dict[str, Any] | None = None
+    current_page: int | None = None
+    current_batch: int | None = None
+    total_batches: int = 1
+    detected_profile: str | None = None
+    profile_confidence: float | None = None
+    segmentation_status: str = "not_run"
+    subdocument_count: int = 0
+    is_partial: bool = False
+    completed_pages: int
+    failed_pages: int
+    warning_count: int
+    review_required_count: int = 0
+    source_preview_url: str
+    output_revision: int = 1
+    verified_export_ready: bool = False
+    error_code: str | None = None
+    error_message: str | None = None
+    model_name: str | None = None
+    model_digest: str | None = None
+    review_model_name: str | None = None
+    review_model_digest: str | None = None
+    extraction_schema: ExtractionSchemaSnapshotSummary | None = None
+    extraction_model_name: str | None = None
+    extraction_model_digest: str | None = None
+    created_at: str | None = None
+    started_at: str | None = None
+    completed_at: str | None = None
+    pages: list[PageCheckpointResponse] = Field(default_factory=list)
+    artifacts: list[ArtifactResponse] = Field(default_factory=list)
 
 
-class LLMModelListResponse(BaseModel):
-    provider_id: LLMProviderID
-    provider_name: str
-    available: bool
-    source: ModelCatalogSource
-    availability: ProviderAvailabilityStatus
-    models: list[ModelInfo]
-    error: ProviderErrorState | None = None
-    resolved_provider_id: LLMProviderID | None = None
-
-
-# ── App config (safe metadata for UI) ────────────────────────────────
-
-
-class OCREngineFlags(BaseModel):
-    """Feature flags indicating which local OCR engines are enabled."""
-
-    paddleocr: bool = Field(
-        description="Whether the optional PaddleOCR image OCR integration is enabled. This is standard image OCR, not a vision-language engine. PDFs are still handled by the built-in PyMuPDF text reader.",
-    )
-    glm_ocr: bool = Field(
-        description="Whether the optional GLM-OCR vision-language OCR integration is enabled. GLM-OCR runs against a local Ollama server (default http://localhost:11434) and supports PNG, JPEG, and TIFF inputs.",
-    )
-
-
-class AppConfigResponse(BaseModel):
-    """Non-secret application configuration exposed to the frontend.
-
-    This is the single source-of-truth settings schema the UI consumes
-    to build dropdowns, disable unavailable options, and show limits.
-    Secret keys are never included.
-    """
-
-    parser_engines: list[ParserEngine] = Field(
-        description="Ordered list of user-selectable parser engine identifiers (always includes 'auto'). Internal helpers such as the built-in PDF reader are intentionally omitted.",
-    )
-    llm_providers: list[LLMProviderID] = Field(
-        description="Ordered list of LLM provider identifiers (always includes 'auto')",
-    )
-    default_llm_provider: LLMProviderID = Field(
-        description="Preferred concrete provider that LLM Auto tries first when it is ready. 'auto' disables that preference and uses the built-in fallback order only.",
-    )
-    model_selection_modes: list[ModelSelectionMode]
-    ocr_engine_flags: OCREngineFlags
-    max_upload_size_mb: int
-    supported_file_types: list[str] = Field(
-        description="Accepted upload file extensions. Runtime parsing still depends on installed/configured parsers: PDFs use the built-in PyMuPDF reader, while PNG/JPG/JPEG/TIFF/TIF image OCR requires PaddleOCR.",
-    )
-    confidence_threshold: float
+class ParseJobListResponse(BaseModel):
+    items: list[ParseJobResponse]
+    total: int
+    offset: int
+    limit: int

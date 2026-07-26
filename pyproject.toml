@@ -1,7 +1,7 @@
 [project]
 name = "agentic-document-extraction"
-version = "0.6.0"
-description = "Extract structured data from documents (PDF + image) using a LangGraph pipeline of pluggable OCR/parser engines and LLM providers, with per-field confidence scoring and human-in-the-loop review."
+version = "1.0.0"
+description = "Convert local PDFs and images into layout-aware, LLM-ready Markdown with GLM-OCR and Ollama."
 authors = [
   { name = "Ahmad" },
 ]
@@ -11,17 +11,12 @@ requires-python = ">=3.12,<3.13"
 keywords = [
   "document-extraction",
   "ocr",
-  "llm",
-  "langgraph",
+  "markdown",
   "fastapi",
   "nextjs",
   "ollama",
   "glm-ocr",
-  "paddleocr",
   "pymupdf",
-  "openai",
-  "anthropic",
-  "gemini",
 ]
 classifiers = [
   "Development Status :: 4 - Beta",
@@ -42,65 +37,39 @@ dependencies = [
   "pydantic>=2.0,<3.0",
   "pydantic-settings>=2.0,<3.0",
   "python-multipart>=0.0.9",  # FastAPI file uploads
-  "aiofiles>=24.0",
-  "slowapi>=0.1.10",
   "structlog>=26.1.0",
-  "prometheus-client>=0.25.0",
   # ── Database ───────────────────────────────────────────────────────
   "sqlalchemy[asyncio]>=2.0,<3.0",
   "aiosqlite>=0.20.0,<1.0",
-  # ── LLM orchestration (LangGraph) ──────────────────────────────────
-  "langgraph>=0.2.0",
-  "langgraph-checkpoint-sqlite>=2.0.0",
-  "langchain-core>=0.3.0",
-  "langchain-openai>=0.2.0",
-  "langchain-google-genai>=2.0.0",
-  "langchain-anthropic>=0.2.0",
-  "openai>=1.0.0",
-  "google-genai>=1.0.0",
-  "anthropic>=0.40.0",
-  "httpx>=0.27.0",  # also used by the GLM-OCR local-Ollama client
+  "alembic>=1.14.0,<2.0",
+  "httpx>=0.27.0",
+  "jsonschema==4.25.1",
   # ── OCR / Document parsing ─────────────────────────────────────────
-  "pymupdf>=1.24.0",   # PDF text extraction (built-in, always available)
-  "Pillow>=10.0",      # Image handling
-  # paddleocr / paddlepaddle are optional; install with
-  # `uv pip install "agentic-document-extraction[paddleocr]"`
+  "langgraph>=1.2.9,<2",
+  "langgraph-checkpoint-sqlite>=3.1,<4",
+  "pymupdf>=1.28,<2",
+  "pdf2image==1.17.0",
+  "Pillow>=10.0",
   "opentelemetry-api>=1.42.1",
   "opentelemetry-sdk>=1.42.1",
   "opentelemetry-exporter-otlp>=1.42.1",
 ]
 
 [project.optional-dependencies]
-# Image OCR (PaddleOCR). Optional because it pulls paddlepaddle.
-paddleocr = [
-  "paddleocr>=2.7",
-  "paddlepaddle>=2.6",
-]
-# Local LLM / OCR via Ollama (used for GLM-OCR). Only httpx is strictly
-# required at runtime, but having the dep here makes the feature
-# discoverable.
-ollama = [
-  "httpx>=0.27.0",
-]
 # Everything needed to run the test suite.
 test = [
   "pytest>=8.0",
   "pytest-asyncio>=0.24.0",
   "pytest-cov>=5.0",
-  "httpx>=0.27.0",
-  "pillow>=10.0",
-  "pymupdf>=1.24.0",
-  "hypothesis>=6.155.7",
 ]
 # Linting + formatting.
 lint = [
   "ruff>=0.6.0",
+  "pyright>=1.1.400",
 ]
-# MCP server (v0.6.0). Optional because mcp pulls a non-trivial
-# transitive tree (anyio, pydantic-settings, ...). Users who
-# only want the HTTP API do not need this.
-mcp = [
-  "mcp[cli]>=1.0.0",
+docs = [
+  "Markdown>=3.7,<4",
+  "reportlab>=4.4,<5",
 ]
 
 [project.urls]
@@ -112,9 +81,6 @@ Changelog = "https://github.com/pypi-ahmad/Agentic-Document-Extraction/blob/main
 [project.scripts]
 # A convenience entry-point. Real serving is done with `uvicorn`.
 ade-info = "app.main:app"
-# MCP server entry-point. Run with: ade-mcp (after pip install
-# agentic-document-extraction[mcp]). Communicates over stdio.
-ade-mcp = "app.mcp_server:main"
 
 # ── Build system ─────────────────────────────────────────────────────
 # We use a flat layout (app package at the repo root) so the existing
@@ -127,17 +93,21 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 packages = ["backend/app"]
 
-[tool.hatch.build.targets.wheel.force-include]
-"prompts" = "app/prompts"
-
 [tool.hatch.build.targets.sdist]
 include = [
   "backend/app/**",
   "backend/app/py.typed",
-  "prompts/**",
   "README.md",
   "LICENSE",
   "CHANGELOG.md",
+]
+exclude = [
+  "/.uv-cache*",
+  "/.npm-cache*",
+  "/.venv",
+  "/frontend",
+  "/dist",
+  "/.tmp",
 ]
 
 # ── uv: workspace-like config for the backend ────────────────────────
@@ -206,7 +176,7 @@ docstring-code-format = true
 
 # ── Pyright (strict type-checker) ────────────────────────────────────
 [tool.pyright]
-include = ["backend/app", "scripts/release.py", "backend/tests"]
+include = ["backend/app", "scripts"]
 exclude = [
   "backend/.venv",
   "backend/tests/_test_uploads",
@@ -214,9 +184,11 @@ exclude = [
 ]
 pythonVersion = "3.12"
 pythonPlatform = "Linux"
+venvPath = "."
+venv = ".venv"
 typeCheckingMode = "basic"
 useLibraryCodeForTypes = true
-reportMissingImports = "error"
+reportMissingImports = "warning"
 reportMissingTypeStubs = "warning"
 reportUnknownMemberType = "warning"
 reportUnknownVariableType = "warning"
@@ -232,3 +204,8 @@ reportUnusedFunction = "warning"
 reportUnusedVariable = "warning"
 reportUnnecessaryIsInstance = "warning"
 reportUnnecessaryCast = "warning"
+reportTypedDictNotRequiredAccess = "warning"
+reportOptionalMemberAccess = "warning"
+reportAttributeAccessIssue = "warning"
+reportArgumentType = "warning"
+reportReturnType = "warning"

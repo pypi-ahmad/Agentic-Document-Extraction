@@ -26,7 +26,6 @@ updates:
           - "aiofiles"
           - "httpx"
           - "structlog"
-          - "prometheus-client"
           - "slowapi"
           - "arq"
           - "redis"

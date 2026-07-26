@@ -13,8 +13,8 @@ body:
     id: version
     attributes:
       label: Affected version
-      description: "Run `curl -s localhost:8000/info` and paste the `version` field."
-      placeholder: "0.2.0"
+      description: "Run `curl.exe http://127.0.0.1:8000/info` and paste the `version` field."
+      placeholder: "1.0.0"
     validations:
       required: true
 
@@ -32,9 +32,8 @@ body:
       label: Steps to reproduce
       description: |
         Minimal steps that trigger the bug. Include the document
-        type (PDF/PNG/JPEG/TIFF), the parser engine (auto / paddleocr
-        / glmocr / pymupdf), the LLM provider, and the schema fields
-        if relevant.
+        type (PDF/PNG/JPEG/TIFF), processing mode, PaddleOCR-VL runtime
+        status, selected local/cloud reviewer, and schema fields if relevant.
       placeholder: |
         1. Upload `invoice.png` (1.2 MB, 1 page).
         2. Pick the Invoice preset, click Extract.

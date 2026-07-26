@@ -1,4 +1,4 @@
-# Multi-stage Dockerfile for agentic-document-extraction v0.3.0.
+# Multi-stage Dockerfile for Paperplane v1.0.0.
 #
 # Stage 1 (builder): uses uv to resolve and sync the project deps from
 # the locked pyproject.toml + uv.lock. uv runs in a non-slim image so
@@ -46,6 +46,7 @@ RUN apt-get update \
  && apt-get install -y --no-install-recommends \
         tini \
         curl \
+        poppler-utils \
         libstdc++6 \
  && rm -rf /var/lib/apt/lists/*
 

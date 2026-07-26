@@ -6,6 +6,9 @@ __pycache__/
 *.egg-info/
 dist/
 build/
+output/
+.tmp/
+*.tsbuildinfo
 .eggs/
 *.egg
 
@@ -17,6 +20,8 @@ env/
 # uv
 .venv/
 .uv-cache/
+.uv-cache-*/
+.npm-cache-*/
 
 # IDE
 .vscode/
@@ -39,6 +44,10 @@ env/
 # Uploads
 /backend/uploads/
 /backend/artifacts/
+
+# Downloaded PaddleOCR-VL model weights (host-only cache)
+/.cache/
+*.sqlite-*
 
 # Test artifacts
 _test_uploads/
@@ -69,6 +78,10 @@ coverage.xml
 
 # Ruff
 .ruff_cache/
+.npm-cache-local/
+graphify-out/
+pytest-cache-files-*/
+backend/pytest-cache-files-*/
 
 # >>> Codex Local Ignore (env/venv/cache/artifacts) >>>
 .env*
@@ -117,3 +130,5 @@ vectordb/
 _embed_cache/
 **/_embed_cache/
 # <<< Codex Local Ignore (env/venv/cache/artifacts) <<<
+# Added by code-review-graph
+.code-review-graph/

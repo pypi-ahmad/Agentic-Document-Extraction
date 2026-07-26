@@ -5,8 +5,8 @@ This is a small, well-tested wrapper around the release workflow
 described in RELEASE.md. It enforces two things the manual flow is
 prone to forget:
 
-1. **All three version strings stay in sync** (pyproject.toml,
-   backend/app/main.py, CHANGELOG.md).
+1. **All runtime version strings stay in sync** across Python, FastAPI,
+   telemetry, frontend metadata, Docker Compose, and the changelog.
 2. **The tag is created from the release commit, not from a
    dirty working tree** (so the published source matches the tag).
 
@@ -50,6 +50,10 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 PYPROJECT = REPO_ROOT / "pyproject.toml"
 MAIN_PY = REPO_ROOT / "backend" / "app" / "main.py"
 CHANGELOG = REPO_ROOT / "CHANGELOG.md"
+CONFIG_PY = REPO_ROOT / "backend" / "app" / "config.py"
+FRONTEND_PACKAGE = REPO_ROOT / "frontend" / "package.json"
+FRONTEND_LOCK = REPO_ROOT / "frontend" / "package-lock.json"
+COMPOSE = REPO_ROOT / "docker-compose.yml"
 SEMVER_RE = re.compile(r"^(\d+)\.(\d+)\.(\d+)$")
 
 
@@ -125,6 +129,44 @@ def update_main_py(new_version: str, dry: bool) -> None:
         print(f"  would set backend/app/main.py version -> {new_version}")
     else:
         MAIN_PY.write_text(new_text)
+
+
+def update_runtime_versions(new_version: str, dry: bool) -> None:
+    replacements = (
+        (
+            CONFIG_PY,
+            r'(otel_service_version:\s*str\s*=\s*")\d+\.\d+\.\d+(")',
+            rf"\g<1>{new_version}\g<2>",
+            1,
+        ),
+        (
+            FRONTEND_PACKAGE,
+            r'("version"\s*:\s*")\d+\.\d+\.\d+(")',
+            rf"\g<1>{new_version}\g<2>",
+            1,
+        ),
+        (
+            FRONTEND_LOCK,
+            r'("version"\s*:\s*")\d+\.\d+\.\d+(")',
+            rf"\g<1>{new_version}\g<2>",
+            2,
+        ),
+        (
+            COMPOSE,
+            r"(image:\s*local-document-markdown:)\d+\.\d+\.\d+",
+            rf"\g<1>{new_version}",
+            1,
+        ),
+    )
+    for path, pattern, replacement, count in replacements:
+        text = path.read_text()
+        new_text, changed = re.subn(pattern, replacement, text, count=count)
+        if changed != count:
+            sys.exit(f"Could not update {path.relative_to(REPO_ROOT)} version")
+        if dry:
+            print(f"  would set {path.relative_to(REPO_ROOT)} version -> {new_version}")
+        else:
+            path.write_text(new_text)
 
 
 def update_changelog(new_version: str, notes: str, dry: bool) -> None:
@@ -283,6 +325,10 @@ def main() -> int:
     print("---------------")
     print(f"  - {PYPROJECT.relative_to(REPO_ROOT)}")
     print(f"  - {MAIN_PY.relative_to(REPO_ROOT)}")
+    print(f"  - {CONFIG_PY.relative_to(REPO_ROOT)}")
+    print(f"  - {FRONTEND_PACKAGE.relative_to(REPO_ROOT)}")
+    print(f"  - {FRONTEND_LOCK.relative_to(REPO_ROOT)}")
+    print(f"  - {COMPOSE.relative_to(REPO_ROOT)}")
     print(f"  - {CHANGELOG.relative_to(REPO_ROOT)}")
     print()
     print("Notes (first 400 chars)")
@@ -303,11 +349,21 @@ def main() -> int:
 
     update_pyproject(new_version, dry=False)
     update_main_py(new_version, dry=False)
+    update_runtime_versions(new_version, dry=False)
     update_changelog(new_version, notes, dry=False)
 
     if args.push:
         # Commit, tag, push.
-        git("add", "pyproject.toml", "backend/app/main.py", "CHANGELOG.md")
+        git(
+            "add",
+            "pyproject.toml",
+            "backend/app/main.py",
+            "backend/app/config.py",
+            "frontend/package.json",
+            "frontend/package-lock.json",
+            "docker-compose.yml",
+            "CHANGELOG.md",
+        )
         commit_msg = f"chore(release): {new_version}"
         git("commit", "-m", commit_msg)
         tag = f"v{new_version}"

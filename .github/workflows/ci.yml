@@ -35,50 +35,32 @@ jobs:
       - name: Set up Python ${{ matrix.python-version }}
         run: uv python install ${{ matrix.python-version }}
 
-      - name: Create venv
-        run: uv venv --python ${{ matrix.python-version }} .venv
-
-      - name: Install backend + test + lint extras
-        run: |
-          source .venv/bin/activate
-          uv pip install -e ".[test,lint,ollama,paddleocr,mcp]"
+      - name: Install locked backend + tooling
+        run: uv sync --locked --extra test --extra lint --extra docs
 
       - name: Ruff lint
         run: |
-          source .venv/bin/activate
-          ruff check backend/app backend/tests scripts/release.py
+          uv run --no-sync ruff check backend/app backend/tests scripts
 
       - name: Ruff format check
         run: |
-          source .venv/bin/activate
-          ruff format --check backend/app backend/tests scripts/release.py
+          uv run --no-sync ruff format --check backend/app backend/tests scripts
 
       - name: Pyright (basic)
         run: |
-          source .venv/bin/activate
-          pyright backend/app scripts/release.py || true
-        continue-on-error: true
-
-      - name: Pytest MCP server tests
-        env:
-          PYTHONPATH: ${{ github.workspace }}
-        run: |
-          source .venv/bin/activate
-          pytest backend/tests/test_mcp_server.py -q
+          uv run --no-sync pyright
 
       - name: Pytest with coverage report
-        # v0.3.0 reports coverage but does not gate on it. The
-        # router/registry code added in this release lowered the
-        # average; v0.4.0 should re-introduce the >=85% gate once
-        # the new modules have dedicated unit tests.
         env:
-          # The v0.5.0 DocVQA fetcher lives in scripts/ at the
-          # repo root; we add the repo root to PYTHONPATH so the
-          # test_fetch_docvqa tests can import it.
           PYTHONPATH: ${{ github.workspace }}
         run: |
-          source .venv/bin/activate
-          pytest backend/tests/ --cov=app --cov-report=xml --cov-report=term-missing -q
+          uv run --no-sync pytest backend/tests/unit --cov=app --cov-report=xml --cov-report=term-missing -q -p no:cacheprovider
+
+      - name: Rebuild handbook
+        run: |
+          uv run --no-sync python scripts/build_handbook.py
+          uv run --no-sync python scripts/build_app_guide.py
+          git diff --exit-code -- docs/APP_CAPABILITIES.html
 
       - name: Upload coverage artifact
         if: matrix.python-version == '3.12.10'
@@ -90,12 +72,10 @@ jobs:
 
       - name: Build package distributions
         run: |
-          source .venv/bin/activate
           uv build
 
       - name: Validate package metadata
         run: |
-          source .venv/bin/activate
           uvx twine check dist/*
 
   frontend:
@@ -123,6 +103,9 @@ jobs:
 
       - name: Lint
         run: npm run lint
+
+      - name: Test
+        run: npm test
 
       - name: Build
         run: npm run build

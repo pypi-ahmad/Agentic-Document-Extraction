@@ -1,402 +1,316 @@
-# Architecture
+# Paperplane architecture
 
-> A reference for engineers reading or extending the codebase.
+This document is the canonical technical design for Paperplane v1.0. It describes the
+current implementation and its invariants. For a conceptual walkthrough, read
+[How Paperplane works](how-it-works.md).
 
-This document is a zero-to-hero walkthrough: it explains **what** the
-project is, **why** it is built the way it is, **how** the code
-implements it, and **where** the real outputs prove it works.
+## Design goals
 
----
+Paperplane converts visually complex documents into auditable Markdown and structured
+evidence. The design optimizes for:
 
-## 1. Definition
+- layout and reading order before plain text;
+- page- and region-level provenance for every accepted block;
+- bounded, observable model decisions rather than an open-ended agent loop;
+- durable recovery across long GPU jobs;
+- local-first processing with explicit cloud escalation;
+- useful partial results when individual pages or optional artifacts fail.
 
-**Agentic Document Extraction** is a local-first service that turns
-unstructured documents (PDF, PNG, JPEG, TIFF) into structured JSON
-that conforms to a user-defined schema. It is *agentic* in the sense
-that the work is broken into a state machine of cooperating steps,
-each of which can fail, retry, or hand off to a human — rather than
-being a single opaque model call.
+It is deliberately a single-workstation system. The in-process queue admits one document
+at a time, the default document limit is 500 pages, and SQLite is the authoritative
+metadata store. Authentication and multi-tenant isolation are outside the current design.
 
-The user-facing workflow is:
+## Runtime topology
 
-1. Upload a document.
-2. Pick or define a schema (set of named fields with types).
-3. Run extraction; the system parses the file, calls an LLM,
-   validates the output, and assigns a confidence score to every
-   field.
-4. Review low-confidence fields inline; approve, correct, or reject.
-
-The whole thing runs against a local SQLite file. No cloud, no
-account, no telemetry.
-
----
-
-## 2. Why this shape
-
-### 2.1 The pipeline is the product
-
-Most "extract structured data from a PDF" tools are a single prompt
-to a single model. That breaks down the moment:
-
-- the file is multi-page and the LLM has a context-window cap;
-- the layout changes (different vendors, different templates);
-- you need an audit trail (which step failed, how long it took, did
-  the LLM actually see the text?);
-- you want to swap a model without rewriting your app.
-
-So the work is partitioned into four explicit nodes — `parse`,
-`extract`, `validate`, `finalize` — coordinated by a LangGraph
-`StateGraph`. Each node returns a typed dict; the graph carries
-state between them; the runtime persists a per-node row in
-`extraction_steps` so the UI can show live progress and a
-post-mortem timeline.
-
-### 2.2 Confidence is a first-class output
-
-Every LLM extraction is asked to return, alongside the structured
-data, a `_confidence` map: field name → 0.0–1.0 score. The
-`validate` node uses that map plus a configurable threshold
-(`CONFIDENCE_THRESHOLD`, default 0.6) to decide whether the
-extraction auto-completes or is routed to `needs_review`.
-
-This means the LLM is not the source of truth for "is this
-extraction good enough?" — it is one signal among several. The
-final say belongs to the reviewer.
-
-### 2.3 Pluggable engines beat monolithic models
-
-Three LLM providers (OpenAI, Gemini, Claude) and three OCR engines
-(PyMuPDF, PaddleOCR, GLM-OCR) ship in the box. They all conform to
-small abstract bases, so adding a fourth is local:
-
-- `app/services/llm/base.py::BaseLLMProvider` — 1 abstract method
-  for extraction, 1 for dynamic model listing.
-- `app/services/ocr/base.py::BaseOCRProvider` — 1 abstract method
-  for `extract_text`. The rest are derived from class attributes
-  (`provider_id`, `display_name`, `supported_file_types`,
-  `feature_flag_name`).
-
-The registry (`app/services/llm/registry.py`,
-`app/services/ocr/registry.py`) is the single point of contact for
-the rest of the code. It handles:
-
-- feature flags (`ENABLE_PADDLEOCR`, `ENABLE_GLM_OCR`)
-- dependency presence (`paddleocr` installed or not, `ollama`
-  reachable or not)
-- file-type compatibility (PyMuPDF refuses to OCR an image; the
-  Auto router refuses to fall back from image OCR to PyMuPDF)
-- deterministic `auto` resolution
-
-### 2.4 Local-first by design
-
-Everything you upload, every schema you create, every extraction and
-review you run lives in one SQLite file. That makes it trivial to
-back up, fork, throw away, or hand to a colleague. It also makes the
-state machine honest: there is no in-memory "current job" that
-disappears when the process restarts.
-
----
-
-## 3. How the code implements it
-
-### 3.1 Process topology
-
-```
-backend/app/
-├── main.py                 # FastAPI app, lifespan, startup recovery
-├── config.py               # Pydantic Settings (env + .env)
-├── database.py             # Async SQLAlchemy engine + session
-├── models/                 # ORM + Pydantic schemas + enums
-│   ├── db_models.py        # Document, Extraction, ExtractionStep, …
-│   ├── enums.py            # StrEnum: ParserEngine, LLMProviderID, …
-│   ├── schemas.py          # Request/response Pydantic v2 models
-│   └── extraction/_base.py  # ValidationResult
-├── routers/                # FastAPI routers (one per resource)
-│   ├── documents.py
-│   ├── schemas.py
-│   ├── extractions.py      # includes SSE streaming + review
-│   └── providers.py
-├── services/
-│   ├── extraction/
-│   │   ├── graph.py        # The LangGraph state machine
-│   │   ├── validation.py   # Field-level validators + business rules
-│   │   ├── business_rules.py
-│   │   ├── error_classify.py
-│   │   └── presets.py      # Built-in schemas
-│   ├── llm/
-│   │   ├── base.py         # BaseLLMProvider + LLMProviderError
-│   │   ├── openai_provider.py
-│   │   ├── gemini_provider.py
-│   │   ├── claude_provider.py
-│   │   ├── output_parser.py
-│   │   ├── prompts.py
-│   │   └── registry.py
-│   └── ocr/
-│       ├── base.py         # BaseOCRProvider + OCRResult
-│       ├── pymupdf_provider.py
-│       ├── paddleocr_provider.py
-│       ├── glm_ocr_provider.py
-│       └── registry.py
-└── utils/file_handler.py
-
-frontend/src/
-├── app/                    # Next.js app router pages
-├── components/             # React components
-└── lib/api.ts              # Typed API client + enums
+```mermaid
+flowchart TB
+    Browser[Browser] -->|HTTP, SSE| Next[Next.js frontend]
+    Next -->|/api proxy| API[FastAPI application]
+    API --> Queue[Single-worker parse queue]
+    Queue --> Graph[LangGraph page pipeline]
+    Graph --> Paddle[Ephemeral PaddleOCR-VL GPU container]
+    Graph --> Ollama[Optional Ollama models]
+    Graph --> Cloud[Optional cloud vision provider]
+    API --> AppDB[(Application SQLite)]
+    Graph --> Checkpoints[(LangGraph SQLite)]
+    Queue --> Store[(Upload and artifact store)]
+    Paddle --> Store
 ```
 
-### 3.2 The extraction state machine
+### Frontend
 
-```python
-# backend/app/services/extraction/graph.py
+`frontend/src/app/page.tsx` owns upload, settings, job selection, progress, and artifact
+presentation. `DocumentInspector` synchronizes the document tree, page image, region
+overlay, Markdown, recognition candidates, and quality report. The browser calls relative
+`/api/*` URLs; `frontend/next.config.js` proxies them to `PAPERPLANE_BACKEND_ORIGIN`.
 
-class PipelineState(TypedDict, total=False):
-    # inputs
-    file_path: str
-    schema_fields: list[dict]
-    ocr_provider_id: str
-    llm_provider_id: str
-    llm_model_id: str
-    # outputs from each node
-    ocr_text: str
-    ocr_provider_used: str
-    extracted_data: dict[str, Any]
-    llm_provider_used: str
-    llm_model_used: str
-    confidence: dict[str, float]
-    extract_attempts: int
-    validation_errors: list[str]
-    validation_results: list[dict]
-    review_verdict: str            # "valid" | "needs_review"
-    status: str                    # "queued" | "processing" | "ocr_complete" | …
-    error: str
-    completed_at: str
+API keys are never collected by or returned to the browser. The runtime-capability API
+returns provider readiness and allowed model names only.
+
+### FastAPI application
+
+`backend/app/main.py` creates application-scoped resources during its lifespan:
+
+1. configure structured logging and optional telemetry;
+2. validate the Ollama URL and run database migrations;
+3. create storage directories;
+4. start `ParserRuntime`, including HTTP clients and the LangGraph checkpointer;
+5. start and recover the parse queue;
+6. drain or pause work during shutdown.
+
+Routers cover parse jobs, batches, inspection, reprocessing, review cases, curation,
+evaluation runs, extraction schemas, Ollama discovery, and runtime capabilities. Setting
+`API_KEY` applies `X-API-Key` authentication to protected `/api/*` routes.
+
+### Parser runtime
+
+`ParserRuntime` owns one shared `httpx` client for Ollama, one cloud client, the dynamic
+Ollama catalog, the cloud provider registry, the layout parser, the Paddle Docker runner,
+and the compiled LangGraph. Expensive resources therefore live for one FastAPI lifespan,
+not one request.
+
+### PaddleOCR-VL boundary
+
+`PaddleOCRVLDockerRunner` launches the pinned official PaddleOCR-VL 1.6 image for each
+document batch. Its security and reproducibility boundary is explicit:
+
+- GPU device 0, an 8 GB shared-memory allocation, and a PID limit;
+- all Linux capabilities dropped and `no-new-privileges` enabled;
+- rendered pages mounted read-only;
+- result, model-cache, and read-only worker-script mounts kept separate;
+- job labels validated before cancellation;
+- NDJSON progress validated before it reaches the application;
+- result size, page coverage, dimensions, and block structure validated before import.
+
+The container exits after its batch and releases VRAM before subsequent local or cloud
+review. The backend never pulls an image implicitly. Readiness reports the exact pinned
+pull command when the image is absent.
+
+## End-to-end execution
+
+### 1. Admission and durable job creation
+
+`POST /api/parse-jobs` validates settings, provider/model compatibility, input type,
+upload size, page count, and page range before persisting anything. It writes the source
+file, creates one pending `PageCheckpoint` per selected page, commits the job, then submits
+its ID to the queue. Batch admission performs the same validation atomically for all files.
+
+### 2. Worker batching
+
+The worker selects incomplete pages in consecutive groups of at most
+`PARSE_BATCH_PAGES` (10 by default). A page checkpoint is the restart boundary. Completed
+and fingerprint-valid pages are not reprocessed on resume or failed-page retry.
+
+### 3. LangGraph batch pipeline
+
+The worker invokes one graph run for the current page batch; nodes operate on every page in
+that batch. The graph in `backend/app/services/extraction/graph.py` is the agentic core:
+
+```mermaid
+stateDiagram-v2
+    [*] --> ingest_and_render
+    ingest_and_render --> visual_segmentation
+    visual_segmentation --> agent_planning
+    agent_planning --> local_recognition
+    local_recognition --> layout_stitching
+    layout_stitching --> cloud_context_review
+    cloud_context_review --> local_recognition: repair needed and budget remains
+    cloud_context_review --> finalize: pass or repair budget exhausted
+    finalize --> [*]
 ```
 
-The four nodes:
+| Node | Contract |
+|---|---|
+| `ingest_and_render` | Render only the current pages and capture native PDF words with coordinates |
+| `visual_segmentation` | Run PaddleOCR-VL and normalize its block types, order, content, and geometry |
+| `agent_planning` | Resolve the quality policy and create a page-specific processing plan |
+| `local_recognition` | Run configured recognition only for scanned, targeted, or blind-retry regions |
+| `layout_stitching` | Build hierarchy, relationships, crops, Markdown, chunks, and coordinate verification |
+| `cloud_context_review` | Review flagged or all pages according to mode and produce bounded repair issues |
+| `finalize` | End the page graph with explicit warnings if unresolved issues remain |
 
-| Node        | Reads                                  | Writes                                                                                  | Failure mode                                    |
-| ----------- | -------------------------------------- | --------------------------------------------------------------------------------------- | ----------------------------------------------- |
-| `parse`     | `file_path`                            | `ocr_text`, `ocr_provider_used`, `status="ocr_complete"`                                | returns `{"status": "failed", "error": ...}`    |
-| `extract`   | `ocr_text`, `schema_fields`            | `extracted_data`, `confidence`, `llm_provider_used`, `llm_model_used`, `extract_attempts` | retries on retryable errors, then fails         |
-| `validate`  | `extracted_data`, `schema_fields`, `confidence` | `validation_results`, `validation_errors`, `review_verdict`                  | never fails the pipeline; flags fields          |
-| `finalize`  | `review_verdict`                       | `status` (`completed` or `needs_review`), `completed_at`                                | raises if `review_verdict` is missing/wrong    |
+`reflection_router` is the only cycle. It returns to local recognition only when repair is
+needed and `repair_count < max_repairs`. `max_repairs` is a finite validated setting, and
+every traversal caused by incoming repair issues increments `repair_count` before returning
+to review. Therefore the cycle can run at most `max_repairs` times. The initial scanned-page
+recognition pass is not a repair traversal and does not consume that budget.
 
-The graph itself:
+### 4. Commit and document assembly
 
-```python
-graph = StateGraph(PipelineState)
-graph.add_node("parse", parse_node)
-graph.add_node("extract", extract_node)
-graph.add_node("validate", validate_node)
-graph.add_node("finalize", finalize_node)
-graph.add_edge(START, "parse")
-graph.add_conditional_edges("parse",    _after_parse,    {"extract": "extract", "end": END})
-graph.add_conditional_edges("extract",  _after_extract,  {"validate": "validate", "end": END})
-graph.add_edge("validate", "finalize")
-graph.add_edge("finalize", END)
-extraction_graph = graph.compile()
+After each successful page, the worker writes page layout and diagnostics, updates its
+fingerprint, and commits its database checkpoint before starting the next batch. Once no
+more pages can run, document-wide assembly reconstructs hierarchy across page boundaries,
+removes repeated marginalia according to policy, segments mixed files, performs requested
+schema extraction, and materializes artifacts.
+
+Failures in optional artifacts become warnings. A page failure remains visible in job
+state and in partial Markdown/JSON. The annotated PDF is always attempted and is required
+for `verified_export_ready`, but its failure is not a terminal job failure: the job completes
+with warnings so other usable output remains accessible.
+
+## Model responsibilities
+
+### PaddleOCR-VL 1.6
+
+PaddleOCR-VL is the primary document parser. It supplies structured regions for text,
+headings, tables, formulas, figures, charts, seals, and other page elements, including
+reading order and geometry. Native PDF words may enrich recognized text, but Paddle's
+visual geometry remains authoritative for mixed layouts.
+
+### Recognition stage
+
+The selected OCR provider/model is a second recognition stage, not the layout engine.
+The graph node is named `local_recognition` for historical reasons, but the selected OCR
+provider may be Ollama or a configured cloud provider. For scanned pages, local GLM-OCR can
+run across Paddle regions even when the initial parse did not raise an error. Later passes
+are targeted to failed or disputed regions. Candidate outputs retain source, model, attempt,
+verdict, confidence, latency, and warnings.
+
+### Context review
+
+The graph node is named `cloud_context_review`, but its reviewer can be a distinct Ollama
+model or a configured OpenAI, Anthropic, Gemini, or xAI model. Setting `cloud_mode=off`
+disables the node's model call. Adaptive review checks flagged pages; all-page review checks
+every selected page. Processing-mode presets populate these settings in the UI. A remote
+provider failure is a warning when local output is still usable.
+
+When cloud review disagrees and blind retry is enabled, the graph sends the original crop
+to local recognition again. It does not include the cloud answer, preventing the second
+local observation from merely echoing the reviewer.
+
+Recognition-provider choice is independent of review mode: choosing a cloud OCR provider
+can send targeted crops remotely even when the context reviewer is off. `local_only` keeps
+both roles on local infrastructure; hybrid and maximum-accuracy presets enable cloud review
+according to their policies.
+
+### Candidate selection
+
+Paddle or native content begins as the current region value. When the recognition stage
+runs, `VisionZoneEngine` retains that value as an unselected candidate, appends the new
+model output, and deterministically marks the newest attempt selected. Text similarity
+below 0.6 adds a `recognition_disagreement` warning; it does not silently choose the older
+text. Review may trigger another attempt, which becomes the newest candidate. Explicit page
+or region reprocessing adds a separate quality gate that can restore the backed-up result
+when the new page does not meet or improve the stored score and status.
+
+## Core data contracts
+
+### Regions and coordinates
+
+A `Region` carries a stable page-scoped ID, semantic type, content, source, confidence,
+reading order, normalized bounding box, optional parent and related IDs, table cells,
+recognition candidates, and warnings. Coordinates are normalized during parsing and are
+converted to image pixels or PDF points only at rendering/export boundaries.
+
+Stable IDs connect every representation:
+
+```text
+source page -> region -> candidate -> Markdown block -> context chunk
+            -> schema value citation -> overlay box -> review case
 ```
 
-The `parse` and `extract` nodes short-circuit straight to `END` on
-failure so the terminal status is whatever they wrote.
+Grounded Markdown uses readable HTML comments such as
+`<!-- region: p0001-r0002 type=text bbox=... source=... -->`. LLM Markdown uses a JSON
+`paperplane-citation` comment per block and a `paperplane-table-citations` manifest for
+cells. Clean Markdown intentionally omits these comments. Schema values may cite multiple
+regions or cells; their grounding value is therefore a list, not a single pointer.
 
-### 3.3 Pipeline driver
+### Layout and Markdown
 
-`backend/app/routers/extractions.py::_run_extraction_pipeline` is the
-outer driver. It opens its own DB session (not the request session,
-because the job runs after the HTTP response), sets the row to
-`processing`, and consumes `extraction_graph.astream(stream_mode="updates")`.
-For every node it receives, it:
+`DocumentLayout` contains ordered `PageLayout` objects. Stitching preserves Paddle order
+when supplied, infers lightweight columns and spanning blocks, associates nearby captions,
+tracks a heading stack, and emits:
 
-1. Marks the *previous* step row `completed` (or `failed` if the
-   node set `status="failed"`), records `duration_ms`.
-2. Inserts the *next* step row as `running` with the current UTC
-   timestamp.
-3. Persists the cumulative state on the `extraction` row so the SSE
-   stream and the history page see intermediate progress.
+- clean hierarchical Markdown;
+- grounded Markdown with page, region, and bounding-box anchors;
+- LLM Markdown with explicit citations;
+- ordered context chunks with heading paths and parent relationships;
+- canonical structured blocks and table cells.
 
-The whole thing is wrapped in `asyncio.wait_for(timeout=_JOB_TIMEOUT)`
-(default 300 s). A timeout or unexpected exception marks the
-extraction `failed` and finalizes any `running` steps.
+### Quality evidence
 
-### 3.4 SSE streaming
+Deterministic checks cover empty regions, malformed tables, low confidence, excessive
+overlap, coordinate validity, OCR coverage, candidate disagreements, citation coverage,
+and table integrity. A reviewer can add visual verdicts and page-level scores. The quality
+report distinguishes measured integrity from labeled evaluation accuracy; it does not
+invent an accuracy percentage when no ground truth exists.
 
-`/api/extractions/{id}/stream` polls the DB every 1 s, emits a
-`data:` frame only when the `status` or the set of `(name, status,
-error, duration_ms, completed_at)` tuples actually changes, and
-closes the stream when the status is terminal. The frontend's
-detail view uses this; the history list uses plain polling.
+## Persistence model
 
-### 3.5 LLM provider contract
+Paperplane intentionally separates four kinds of state:
 
-```python
-# backend/app/services/llm/base.py
-class BaseLLMProvider(ABC):
-    @property
-    @abstractmethod
-    def provider_id(self) -> str: ...
+| Store | Authority |
+|---|---|
+| Application SQLite | Jobs, pages, artifacts, batches, schemas, evaluation, review cases, and reprocessing runs |
+| LangGraph SQLite | Node-level execution checkpoints for resumable graph execution |
+| Upload directory | Original source bytes and per-job work files |
+| Artifact directory | Durable Markdown, JSON, PDFs, crops, manifests, and ZIP bundles |
 
-    @property
-    @abstractmethod
-    def display_name(self) -> str: ...
+`ParserState` contains serializable paths and typed JSON, not image bytes. This keeps
+checkpoints smaller and lets artifact retention be managed independently.
 
-    @abstractmethod
-    def get_api_key(self) -> str: ...
+Canonical page layout JSON is written under
+`jobs/{job_id}/checkpoints/p{page_number}/layout.json`; diagnostics live beside it. The
+database checkpoint stores those paths, the layout SHA-256, and the diagnostic fingerprint.
+The worker writes files first and commits their paths and completed status together. A crash
+before the database commit can leave orphan files, but they are ignored because the page is
+not durably completed. Startup changes formerly active jobs to `paused` with a restart
+reason, requeues jobs that were already `queued`, and requires the operator to resume paused
+jobs. Resume reuses only completed checkpoints whose referenced layout still validates;
+otherwise the page is processed again. LangGraph checkpoints help resume node execution but
+never override the application page checkpoint.
 
-    @abstractmethod
-    def is_extraction_client_available(self) -> bool: ...
+## Inspection and reprocessing
 
-    @abstractmethod
-    async def _list_models_dynamic(self) -> list[LLMModel]: ...
+Inspection endpoints read durable page layouts rather than transient process memory. The
+UI can therefore reopen historical jobs, search the document tree, display precise boxes,
+and inspect which candidate the agent selected.
 
-    @abstractmethod
-    async def extract(
-        self, text: str, schema_fields: list[dict], model_id: str = "auto",
-    ) -> ExtractionResult: ...
-```
+Page reprocessing marks only the selected checkpoint pending and reruns it at the requested
+DPI. Region reprocessing crops the existing region with bounded padding. Before either
+operation, the service stores the prior layout and diagnostics. The automatic decision
+gate applies a new candidate when it meets or improves the stored quality score and does
+not reduce the stored quality-status rank; there is no manual
+candidate override.
 
-`ExtractionResult` carries `data` (the parsed dict), `raw_response`
-(unparsed LLM text — useful for debugging), `model_used`,
-`provider`, `usage` (token counts if available), and `confidence`
-(the `_confidence` map stripped out of `data`).
+## Schema extraction and evaluation
 
-The base class implements `list_models()` and `get_status()` so
-concrete providers only need to implement extraction, the dynamic
-listing, and a few identity properties.
+Reusable extraction schemas support a restricted JSON Schema Draft 2020-12 object subset.
+The selected schema and hash are snapshotted onto the job so later schema edits cannot
+change historical meaning. Deterministic block and table matching runs first; configured
+models resolve only missing or conflicting fields. Accepted non-empty values cite canonical
+region or table-cell IDs.
 
-Auto resolution prefers the configured `DEFAULT_LLM_PROVIDER` when
-ready, otherwise walks `AUTO_PRIORITY = (openai, gemini, anthropic)`
-and returns the first ready provider. If nothing is ready, the
-extraction fails fast with a clear "no provider ready" error.
+Evaluation runs compare completed output with grounded labels. Metrics cover Markdown,
+regions, text, hierarchy, reading order, citations, bounding boxes, and tables. Evaluation
+does not alter production output; review and curation records capture failure cases for
+later analysis.
 
-### 3.6 OCR provider contract
+## Failure and shutdown semantics
 
-```python
-# backend/app/services/ocr/base.py
-class BaseOCRProvider(ABC):
-    feature_flag_name: str | None = None    # attribute, not @property
-    is_user_selectable: bool = True
-    supported_file_types: frozenset[str] | None = None
+- Admission failure creates no partial job.
+- A failed GPU batch is retried up to `PARSE_BATCH_MAX_ATTEMPTS`.
+- Successful pages survive later page or batch failure.
+- Cancellation stops only a container whose job label matches the requested job.
+- Shutdown allows the active job a grace period, then leaves it recoverable.
+- Provider errors never expose credentials or raw authorization headers.
+- Optional artifact failures become warnings and remain visible in the bundle manifest.
 
-    @property
-    @abstractmethod
-    def provider_id(self) -> str: ...
+## Extension rules
 
-    @property
-    @abstractmethod
-    def display_name(self) -> str: ...
+- Add a vision provider behind `VisionProviderRegistry`; keep credentials server-side and
+  return only catalog metadata to the UI.
+- Add graph behavior as a typed node with explicit state inputs and outputs. Any loop must
+  have a persisted counter and a hard limit.
+- Add artifact types through the existing artifact service so hashes, MIME types, preview
+  policy, and bundle inclusion stay consistent.
+- Add extraction behavior against canonical block IDs rather than reparsing raw Markdown.
+- Preserve page checkpoints and stable region IDs across compatible changes.
 
-    @abstractmethod
-    async def extract_text(self, file_path: Path) -> OCRResult: ...
+## Architectural limits
 
-    def is_available(self) -> bool: ...        # default True
-    def supports_file_type(self, file_type: str | None) -> bool: ...
-```
-
-`OCRResult` is normalised in `__post_init__`: if you only set `text`
-or only set `page_results`, the other is filled in automatically;
-`raw` and `metadata` are kept in sync; the per-page `blocks`/`tables`
-flatten into the top-level `blocks`/`tables` for convenience.
-
-Auto resolution in `app/services/ocr/registry.py` walks
-`AUTO_PRIORITY = (glmocr, paddleocr, pymupdf)` and for each candidate
-checks: (1) the feature flag is on, (2) the runtime is available, (3)
-the file type is supported. PDF goes to PyMuPDF (which is
-PDF-only); images try GLM-OCR → PaddleOCR. The router **never** falls
-back from an image OCR engine to PyMuPDF — that would be unsafe.
-
-### 3.7 Persistence model
-
-```sql
--- Five tables, simple relationships.
-documents
-  id, filename, original_filename, file_path, file_type,
-  file_size, page_count, status, created_at
-
-extraction_schemas
-  id, name (UNIQUE), description, fields (JSON), created_at, updated_at
-
-extractions
-  id, document_id → documents.id, schema_id → extraction_schemas.id,
-  ocr_provider, llm_provider, llm_model, status,
-  ocr_text, result (JSON), validation_errors (JSON),
-  validation_results (JSON), review_verdict, error,
-  ocr_provider_used, llm_provider_used, llm_model_used,
-  confidence (JSON), extract_attempts, error_category,
-  created_at, started_at, completed_at, reviewed_at
-
-extraction_steps
-  id, extraction_id → extractions.id (CASCADE),
-  name, status, started_at, completed_at, duration_ms, error
-
-extraction_reviews
-  id, extraction_id → extractions.id (CASCADE),
-  decision, corrected_fields (JSON), notes, created_at
-```
-
-`init_db()` enables WAL mode and runs `PRAGMA optimize` on startup.
-WAL is what makes the SSE poller and the background pipeline safe
-to read and write the DB concurrently.
-
-### 3.8 Startup recovery
-
-`main.py::_recover_orphaned_jobs` runs once at startup. It looks
-for any `extraction` whose status is in
-`("queued", "processing", "ocr_complete", "extracted")` and marks
-them `failed` with `error="Server restarted while this job was
-running. Please retry."`. The same sweep finalises any
-`extraction_steps` rows that are still `running`. The user sees
-these jobs in the history list and can retry them.
-
-### 3.9 Error classification
-
-`app/services/extraction/error_classify.py` tags errors as one of
-`auth | rate_limit | timeout | parse_error | provider_error |
-file_error | validation | unknown`. The router stores the tag on
-`extractions.error_category` so the UI can group failures and
-distinguish "fix the document" from "retry later" cases.
-
-### 3.10 Frontend
-
-The Next.js app is a thin client over the FastAPI API. The
-`/api/providers/config` endpoint is the single source of truth for
-the parser dropdown, the LLM dropdown, the file types, and the
-upload size limit — the UI never hard-codes those. The extraction
-detail page subscribes to the SSE stream and falls back to polling
-on disconnect; the history page uses polling only.
-
----
-
-## 4. How the real outputs prove it
-
-End-to-end tests and live provider validations live under
-`backend/tests/`. Notable coverage:
-
-| File                                | Asserts                                                                                       |
-| ----------------------------------- | --------------------------------------------------------------------------------------------- |
-| `test_extraction_graph.py`          | The four nodes produce the expected state transitions; the Auto router works for each provider. |
-| `test_ocr_registry.py`              | The registry returns the right engine for each file type and respects every feature flag.      |
-| `test_llm_registry.py`              | Auto resolution prefers the configured default, falls back to the priority order, fails fast. |
-| `test_durability.py`                | Crashed jobs are recovered on startup; partial step rows are finalised.                       |
-| `test_sse_and_cache.py`             | The SSE stream emits one frame per real change; live endpoints set `Cache-Control: no-store`. |
-| `test_validation.py`                | Required-field, type, and confidence rules all flag correctly.                                |
-| `test_business_rules.py`            | The pluggable rule registry (e.g. financial-totals check) runs.                                |
-| `test_output_parser.py`             | Markdown-fenced JSON, trailing commas, and nested objects all parse.                           |
-| `test_providers.py`                 | All three LLM providers and their model-listing behaviour match the documented contract.       |
-| `test_glm_ocr_provider.py`          | The local GLM-OCR provider cleans layout noise, probes Ollama, and routes correctly.           |
-
-Run them all with:
-
-```bash
-source .venv/bin/activate
-pytest backend/tests/ -q
-```
-
-Expected: **359 passed** at the time of writing.
-
-The `scripts/validate_llm_providers.py` and
-`scripts/e2e_validation.py` scripts are the *live* counterparts: they
-spin up real provider clients and a running backend, and confirm
-that the production flow (upload → schema → extract → review) works
-end-to-end against the configured keys.
+Paperplane does not provide distributed scheduling, horizontal workers, object-store
+leases, user accounts, tenant isolation, or transactional multi-host coordination. Scaling
+to millions of pages would require replacing the in-process queue and local filesystem,
+introducing external coordination and object storage, and revisiting model-capacity and
+security boundaries.

@@ -10,7 +10,6 @@
 | --- | --- | --- |
 | Liveness | `GET /health` | Process is hung or OOM. Restart. |
 | Readiness | `GET /health/ready` | Database, LLM registry, or OCR registry unreachable. Inspect logs and provider keys. |
-| Metrics | `GET /metrics` | Prometheus scrape failure. Verify the path is reachable. |
 
 A liveness-restart should only trigger when the readiness check
 also fails, otherwise a noisy network blip will cost you uptime.
