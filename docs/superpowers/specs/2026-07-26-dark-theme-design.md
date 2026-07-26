@@ -32,4 +32,3 @@ If browser storage is unavailable, theme switching still works for the current p
 - Component tests verify the default dark state, switching to light, switching back, the accessible label, and persistence.
 - TypeScript, ESLint, Vitest, and the production Next.js build must pass.
 - A manual browser check confirms the masthead, forms, job list, status panels, artifact links, errors, and responsive layout remain legible in both themes.
-
