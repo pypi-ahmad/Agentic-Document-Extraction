@@ -1,7 +1,7 @@
 .secondary {
   padding: 8px 11px;
   border: 1px solid var(--line);
-  background: white;
+  background: var(--control);
   color: var(--ink);
   font-size: 10px;
   font-weight: 700;
@@ -10,7 +10,7 @@
 
 .secondary:disabled { opacity: 0.45; }
 .audit-tools, .evaluation { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line); }
-.audit-tools iframe { width: 100%; height: 520px; margin-top: 10px; border: 1px solid var(--line); background: #eee; }
+.audit-tools iframe { width: 100%; height: 520px; margin-top: 10px; border: 1px solid var(--line); background: var(--preview-bg); }
 .evaluation { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 10px; }
 .evaluation > strong { font: 600 13px Georgia, serif; }
 .evaluation p { width: 100%; margin: 0; color: var(--muted); }
