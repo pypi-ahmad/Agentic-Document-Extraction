@@ -15,6 +15,13 @@ const api = vi.hoisted(() => ({
   listV2Jobs: vi.fn(),
 }));
 
+const createObjectURL = vi.fn();
+const revokeObjectURL = vi.fn();
+const fetchMock = vi.fn();
+
+Object.defineProperty(URL, "createObjectURL", { configurable: true, value: createObjectURL });
+Object.defineProperty(URL, "revokeObjectURL", { configurable: true, value: revokeObjectURL });
+
 vi.mock("@/lib/api", () => ({
   artifactUrl: ({ download_url }: { download_url: string }) => download_url,
   cancelV2Job: api.cancelV2Job,
@@ -43,6 +50,7 @@ function job(overrides: Partial<V2Job> = {}): V2Job {
     usage: { input_tokens: 1200, cached_input_tokens: 800, output_tokens: 250, estimated_cost_usd: 0.04 },
     artifacts: [
       { id: "md", type: "markdown", mime_type: "text/markdown", size: 900, sha256: "md", download_url: "/api/v2/jobs/job-1/artifacts/md" },
+      { id: "json", type: "document_json", mime_type: "application/json", size: 1200, sha256: "json", download_url: "/api/v2/jobs/job-1/artifacts/json" },
       { id: "pdf", type: "annotated_pdf", mime_type: "application/pdf", size: 3000, sha256: "pdf", download_url: "/api/v2/jobs/job-1/artifacts/pdf" },
     ],
     ...overrides,
@@ -51,15 +59,31 @@ function job(overrides: Partial<V2Job> = {}): V2Job {
 
 beforeEach(() => {
   vi.resetAllMocks();
+  fetchMock.mockResolvedValue(new Response("not found", { status: 404 }));
+  createObjectURL.mockReturnValue("blob:paperplane-preview");
+  vi.stubGlobal("fetch", fetchMock);
   document.documentElement.dataset.theme = "dark";
   localStorage.clear();
   api.listV2Jobs.mockResolvedValue([]);
   api.listExtractionSchemas.mockResolvedValue([]);
 });
 
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  vi.unstubAllGlobals();
+});
 
 describe("OpenAI document workspace", () => {
+  it("opens as an Evidence Studio configuration workspace", async () => {
+    render(<HomePage />);
+
+    expect(await screen.findByRole("navigation", { name: "Extraction runs" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "Configure" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByRole("tab", { name: "Results" })).toHaveAttribute("aria-selected", "false");
+    expect(screen.getByRole("tab", { name: "Evaluate" })).toHaveAttribute("aria-selected", "false");
+    expect(screen.getByText("No extraction runs yet")).toBeInTheDocument();
+  });
+
   it("switches themes and persists the explicit preference", () => {
     render(<HomePage />);
 
@@ -104,6 +128,11 @@ describe("OpenAI document workspace", () => {
     const file = new File(["pdf"], "invoice.pdf", { type: "application/pdf" });
 
     fireEvent.change(screen.getByLabelText("Choose document"), { target: { files: [file] } });
+
+    expect(createObjectURL).toHaveBeenCalledWith(file);
+    expect(screen.getByTitle("invoice.pdf document preview")).toHaveAttribute("src", "blob:paperplane-preview");
+    expect(screen.getByTitle("invoice.pdf document preview")).toHaveAttribute("sandbox", "");
+
     fireEvent.change(screen.getByLabelText("Processing mode"), { target: { value: "audit" } });
     fireEvent.click(screen.getByRole("button", { name: "Start extraction" }));
 
@@ -112,16 +141,72 @@ describe("OpenAI document workspace", () => {
       segment_documents: true,
       extraction_schema_id: null,
     }));
+    expect(screen.getByRole("tab", { name: "Results" })).toHaveAttribute("aria-selected", "true");
   });
 
   it("renders cache usage, cost, and audit artifacts for a completed job", async () => {
+    fetchMock.mockImplementation(async (input: RequestInfo | URL) => {
+      if (String(input).endsWith("/pdf")) {
+        return new Response(new Blob(["pdf"], { type: "application/pdf" }), { status: 200 });
+      }
+      return new Response("not found", { status: 404 });
+    });
     api.listV2Jobs.mockResolvedValue([job()]);
     render(<HomePage />);
 
     expect(await screen.findByText("67% cache hit")).toBeInTheDocument();
     expect(screen.getByText("$0.0400")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /Markdown/ })).toHaveAttribute("href", "/api/v2/jobs/job-1/artifacts/md");
-    expect(screen.getByRole("link", { name: /Annotated PDF/ })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Download Markdown" })).toHaveAttribute("href", "/api/v2/jobs/job-1/artifacts/md");
+    expect(screen.getByRole("link", { name: "Download Annotated PDF" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "Results" })).toHaveAttribute("aria-selected", "true");
+    expect(await screen.findByTitle("invoice.pdf document preview")).toHaveAttribute("src", "blob:paperplane-preview");
+  });
+
+  it("clears staged input when starting a new extraction", () => {
+    render(<HomePage />);
+    const file = new File(["pdf"], "stale.pdf", { type: "application/pdf" });
+
+    fireEvent.change(screen.getByLabelText("Choose document"), { target: { files: [file] } });
+    expect(screen.getByRole("button", { name: "Start extraction" })).toBeEnabled();
+
+    fireEvent.click(screen.getByRole("button", { name: "New extraction" }));
+
+    expect(screen.getByRole("button", { name: "Start extraction" })).toBeDisabled();
+    expect(revokeObjectURL).toHaveBeenCalledWith("blob:paperplane-preview");
+  });
+
+  it("previews formatted grounded JSON", async () => {
+    fetchMock.mockImplementation(async (input: RequestInfo | URL) => {
+      if (String(input).endsWith("/pdf")) {
+        return new Response(new Blob(["pdf"], { type: "application/pdf" }), { status: 200 });
+      }
+      if (String(input).endsWith("/json")) {
+        return new Response('{"answer":42}', { status: 200 });
+      }
+      return new Response("not found", { status: 404 });
+    });
+    api.listV2Jobs.mockResolvedValue([job()]);
+    render(<HomePage />);
+
+    fireEvent.click(await screen.findByRole("button", { name: "Preview Grounded JSON" }));
+
+    expect(await screen.findByText(/"answer": 42/)).toBeInTheDocument();
+  });
+
+  it("keeps artifact downloads available when preview loading fails", async () => {
+    fetchMock.mockImplementation(async (input: RequestInfo | URL) => {
+      if (String(input).endsWith("/pdf")) {
+        return new Response(new Blob(["pdf"], { type: "application/pdf" }), { status: 200 });
+      }
+      return new Response("unavailable", { status: 503 });
+    });
+    api.listV2Jobs.mockResolvedValue([job()]);
+    render(<HomePage />);
+
+    fireEvent.click(await screen.findByRole("button", { name: "Preview Markdown" }));
+
+    expect(await screen.findByText("Preview unavailable. Download the artifact to inspect it.")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Download Markdown" })).toHaveAttribute("href", "/api/v2/jobs/job-1/artifacts/md");
   });
 
   it("cancels an active job", async () => {
@@ -137,6 +222,12 @@ describe("OpenAI document workspace", () => {
   });
 
   it("previews annotations and evaluates grounded labels", async () => {
+    fetchMock.mockImplementation(async (input: RequestInfo | URL) => {
+      if (String(input).endsWith("/pdf")) {
+        return new Response(new Blob(["pdf"], { type: "application/pdf" }), { status: 200 });
+      }
+      return new Response("not found", { status: 404 });
+    });
     api.listV2Jobs.mockResolvedValue([job()]);
     api.evaluateV2Job.mockResolvedValue({
       schema_version: "paperplane-evaluation/v2",
@@ -149,8 +240,8 @@ describe("OpenAI document workspace", () => {
     });
     render(<HomePage />);
 
-    fireEvent.click(await screen.findByRole("button", { name: "Preview annotated PDF" }));
-    expect(screen.getByTitle("Annotated PDF preview")).toHaveAttribute("src", "/api/v2/jobs/job-1/artifacts/pdf");
+    expect(await screen.findByTitle("invoice.pdf document preview")).toHaveAttribute("src", "blob:paperplane-preview");
+    fireEvent.click(screen.getByRole("tab", { name: "Evaluate" }));
 
     const labels = new File(["{}"], "labels.json", { type: "application/json" });
     fireEvent.change(screen.getByLabelText("Ground-truth labels"), { target: { files: [labels] } });
