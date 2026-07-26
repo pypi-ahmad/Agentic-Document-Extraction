@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Annotated, Any
 
 from fastapi import Depends, FastAPI, Header, HTTPException, Query, Request, status
-from PIL import Image, UnidentifiedImageError
+from PIL import Image
 
 MAX_IMAGE_BYTES = 32 * 1024 * 1024
 
@@ -97,9 +97,9 @@ def _refine_tables(
                 suffix=".png", delete=False, dir=temp_dir
             ) as temporary:
                 crop_path = Path(temporary.name)
-            crop_path.chmod(0o600)
-            crop.save(crop_path)
             try:
+                crop_path.chmod(0o600)
+                crop.save(crop_path)
                 result = next(iter(table_pipeline.predict(input=str(crop_path))))
                 values = _result_json(result).get("table_res_list")
                 if isinstance(values, list) and values:
@@ -228,14 +228,14 @@ def create_app(
         ) as temporary:
             temporary.write(payload)
             image_path = Path(temporary.name)
-        image_path.chmod(0o600)
         try:
+            image_path.chmod(0o600)
             with Image.open(image_path) as image:
                 if image.format not in {"PNG", "JPEG"}:
                     raise ValueError("Unsupported image format")
                 width, height = image.size
                 image.verify()
-        except (OSError, UnidentifiedImageError, ValueError):
+        except Exception:
             image_path.unlink(missing_ok=True)
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
