@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Box, CheckCircle2, Download, FileSearch, LoaderCircle, ShieldCheck, Square, Upload } from "lucide-react";
+import { Box, CheckCircle2, Download, FileSearch, LoaderCircle, Moon, ShieldCheck, Square, Sun, Upload } from "lucide-react";
 
 import {
   artifactUrl,
@@ -21,6 +21,9 @@ import {
 
 const TERMINAL = new Set(["completed", "completed_with_warnings", "failed", "cancelled"]);
 const CANCELLABLE = new Set(["queued", "inspecting", "processing", "assembling"]);
+const THEME_STORAGE_KEY = "paperplane:theme:v1";
+
+type Theme = "light" | "dark";
 
 const MODE_COPY: Record<V2Mode, string> = {
   economy: "Fast draft with deterministic grounding",
@@ -73,6 +76,7 @@ export default function HomePage() {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [labels, setLabels] = useState<File | null>(null);
   const [evaluation, setEvaluation] = useState<V2EvaluationReport | null>(null);
+  const [theme, setTheme] = useState<Theme>("dark");
 
   const active = jobs.find((item) => item.id === activeId) ?? jobs[0] ?? null;
 
@@ -87,6 +91,11 @@ export default function HomePage() {
       setError(reason instanceof Error ? reason.message : "Backend is unavailable");
     });
   }, [refresh]);
+
+  useEffect(() => {
+    const initial = document.documentElement.dataset.theme;
+    setTheme(initial === "light" ? "light" : "dark");
+  }, []);
 
   useEffect(() => {
     if (!active || TERMINAL.has(active.status)) return;
@@ -145,11 +154,27 @@ export default function HomePage() {
     }
   }
 
+  function toggleTheme() {
+    const next: Theme = theme === "dark" ? "light" : "dark";
+    document.documentElement.dataset.theme = next;
+    setTheme(next);
+    try {
+      localStorage.setItem(THEME_STORAGE_KEY, next);
+    } catch {
+      // The selected theme still applies for this page when storage is blocked.
+    }
+  }
+
   return (
     <main>
       <header className="masthead">
         <div className="brand"><Box size={21} /><strong>Paperplane</strong><span>Grounded document extraction</span></div>
-        <div className="model-chain"><span>Draft <b>gpt-5.6-luna</b></span><i>→</i><span>Verify <b>gpt-5.6-terra</b></span></div>
+        <div className="masthead-actions">
+          <div className="model-chain"><span>Draft <b>gpt-5.6-luna</b></span><i>→</i><span>Verify <b>gpt-5.6-terra</b></span></div>
+          <button className="theme-toggle" type="button" aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`} onClick={toggleTheme}>
+            {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+          </button>
+        </div>
       </header>
 
       <section className="hero">

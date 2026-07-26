@@ -51,6 +51,8 @@ function job(overrides: Partial<V2Job> = {}): V2Job {
 
 beforeEach(() => {
   vi.resetAllMocks();
+  document.documentElement.dataset.theme = "dark";
+  localStorage.clear();
   api.listV2Jobs.mockResolvedValue([]);
   api.listExtractionSchemas.mockResolvedValue([]);
 });
@@ -58,6 +60,32 @@ beforeEach(() => {
 afterEach(cleanup);
 
 describe("OpenAI document workspace", () => {
+  it("switches themes and persists the explicit preference", () => {
+    render(<HomePage />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Switch to light theme" }));
+
+    expect(document.documentElement).toHaveAttribute("data-theme", "light");
+    expect(localStorage.getItem("paperplane:theme:v1")).toBe("light");
+
+    fireEvent.click(screen.getByRole("button", { name: "Switch to dark theme" }));
+
+    expect(document.documentElement).toHaveAttribute("data-theme", "dark");
+    expect(localStorage.getItem("paperplane:theme:v1")).toBe("dark");
+  });
+
+  it("still switches theme when preference storage is unavailable", () => {
+    vi.spyOn(Storage.prototype, "setItem").mockImplementationOnce(() => {
+      throw new DOMException("Storage unavailable");
+    });
+    render(<HomePage />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Switch to light theme" }));
+
+    expect(document.documentElement).toHaveAttribute("data-theme", "light");
+    expect(screen.getByRole("button", { name: "Switch to dark theme" })).toBeInTheDocument();
+  });
+
   it("shows only the OpenAI V2 pipeline and its three processing modes", async () => {
     render(<HomePage />);
 
