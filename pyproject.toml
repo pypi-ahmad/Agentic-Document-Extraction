@@ -1,6 +1,6 @@
 [project]
 name = "agentic-document-extraction"
-version = "1.0.0"
+version = "2.0.0"
 description = "Convert documents into grounded Markdown and JSON with OpenAI vision models."
 authors = [
   { name = "Ahmad" },
