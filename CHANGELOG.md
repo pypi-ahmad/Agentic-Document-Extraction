@@ -7,29 +7,44 @@ and this project aims to follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-07-23
+
 ### Added
 
-- **Trusted Publishing workflows for package releases.** Added
-  `.github/workflows/publish-testpypi.yml` and
-  `.github/workflows/publish-pypi.yml` to publish built distributions
-  through OIDC (no API tokens) to TestPyPI and PyPI.
-- **Package-install docs for PyPI/TestPyPI users.** README and
-  release docs now include package install commands, extras usage, and
-  Trusted Publishing setup notes.
+- Local PDF and scanned-document ingestion with GLM-OCR through Ollama.
+- Layout-aware, LLM-ready clean Markdown and grounded Markdown artifacts.
+- Durable parse jobs with page checkpoints, progress events, retries, warnings,
+  searchable PDFs, grounding PDFs, and downloadable bundles.
+- Structured Qwen3.5 vision review with bounded, region-targeted repair.
+- Page and region diagnostics, stable bounding-box IDs, context JSON, and figure crops.
+- A focused UI for upload, page progress, source/Markdown preview, diagnostics,
+  and `.md` download.
+- Required annotated PDF output with type-colored region boxes, IDs, and region labels.
+- Responsive output gallery for previewing and downloading every public job artifact.
 
 ### Changed
 
-- **Prompt assets packaged with wheels/sdists.** Build configuration now
-  force-includes `prompts/**` into the wheel under `app/prompts` and
-  includes prompts in source distributions.
-- **Prompt loader path resolution hardened.** Prompt loading now supports
-  repository installs, packaged installs, and an override via
-  `ADE_PROMPTS_DIR`.
-- **MCP prompt resolution aligned with prompt loader.**
-  `app.mcp_server` now loads `v2` extraction prompts through
-  `load_prompt(...)`, with fallback template behavior preserved.
-- **CI validates build artifacts.** Main CI now runs `uv build` and
-  `twine check dist/*` after tests.
+- Replaced the legacy hosted-LLM extraction workflow with a local document-
+  to-Markdown pipeline.
+- Simplified deployment to the FastAPI parser, Next.js UI, SQLite, and Ollama.
+- Rebuilt the README and Zero-to-Hero handbook around the v1 architecture.
+- Made package publishing an explicit manual action; GitHub releases do not publish to PyPI.
+- Artifact responses expose filenames and inline preview URLs while preserving existing
+  download URLs and `grounding_pdf` compatibility.
+
+### Fixed
+
+- Resolved the PaddleOCR-VL worker from the repository root and mounted the persistent
+  host cache at the image's `/home/paddleocr/.paddlex` model location.
+
+### Removed
+
+- Legacy extraction, schema, review, provider, and MCP product surfaces.
+
+### Migration
+
+- Alembic revision `0005_markdown_parser_reset` drops all legacy extraction tables.
+  Back up existing data or start v1 with a new database.
 
 ## [0.6.0] - 2026-06-22
 

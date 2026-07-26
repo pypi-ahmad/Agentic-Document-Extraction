@@ -25,9 +25,8 @@ body:
     attributes:
       label: Proposed solution
       description: |
-        Describe the change in concrete terms. If it touches the
-        engine registry, name the new module and the
-        `BaseOCRProvider` / `BaseLLMProvider` subclass.
+        Describe the user-visible behavior, pipeline stage, API surface,
+        or artifact that would change.
     validations:
       required: true
 

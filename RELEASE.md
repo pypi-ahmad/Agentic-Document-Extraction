@@ -17,11 +17,14 @@ The project follows [Semantic Versioning](https://semver.org/):
 | `minor` | New feature, additive change, new engine, new endpoint.           | `0.2.0 → 0.3.0`                  |
 | `patch` | Bug fix, doc fix, internal refactor with no behaviour change.     | `0.2.0 → 0.2.1`                  |
 
-The version lives in three places and the release script keeps them
+The version lives in the runtime metadata below and the release script keeps them
 in sync:
 
 - `pyproject.toml` — `[project] version`
 - `backend/app/main.py` — `app = FastAPI(..., version=...)`
+- `backend/app/config.py` — OpenTelemetry service version
+- `frontend/package.json` and `frontend/package-lock.json`
+- `docker-compose.yml` — application image tag
 - `CHANGELOG.md` — `## [X.Y.Z] - YYYY-MM-DD`
 
 The Python `__version__` constant is intentionally not used; the
@@ -90,10 +93,8 @@ Workflows:
 - `.github/workflows/publish-testpypi.yml`
 - `.github/workflows/publish-pypi.yml`
 
-Trigger behavior:
-
-- TestPyPI: manual `workflow_dispatch` or prerelease publish.
-- PyPI: release `published` (non-prerelease) or manual `workflow_dispatch`.
+Both package-index workflows are manual-only. Publishing a GitHub release never
+publishes a Python package automatically.
 
 Both workflows build with `uv build`, validate with `twine check`, then publish
 with `pypa/gh-action-pypi-publish`.

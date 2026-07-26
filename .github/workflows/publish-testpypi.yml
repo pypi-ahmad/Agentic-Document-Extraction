@@ -2,15 +2,12 @@ name: publish-testpypi
 
 on:
   workflow_dispatch:
-  release:
-    types: [prereleased]
 
 permissions:
   contents: read
 
 jobs:
   publish:
-    if: github.event_name == 'workflow_dispatch' || github.event.release.prerelease == true
     runs-on: ubuntu-latest
     environment:
       name: testpypi

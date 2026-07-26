@@ -17,13 +17,9 @@ from __future__ import annotations
 API_V1_PREFIX: str = "/api"
 DEFAULT_REQUEST_TIMEOUT_S: float = 30.0
 LONG_POLL_INTERVAL_S: float = 1.0
-MAX_CONCURRENT_JOBS: int = 8
-JOB_TIMEOUT_S: int = 300
 
 # ── Streaming ────────────────────────────────────────────────────────
-SSE_TERMINAL_STATUSES: frozenset[str] = frozenset({"completed", "needs_review", "failed"})
 SSE_MAX_ITERATIONS: int = 600  # 10 minutes at 1 s/poll
-SSE_KEEPALIVE_S: float = 15.0
 
 # ── Cache control ────────────────────────────────────────────────────
 NO_STORE_HEADERS: dict[str, str] = {

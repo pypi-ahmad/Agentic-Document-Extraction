@@ -1,535 +1,421 @@
-/** API client for backend communication. */
-
 const API_BASE = "/api";
 
-// ── Enums (mirrors backend app.models.enums) ────────────────────────
+export type JobStatus =
+  | "queued" | "inspecting" | "processing" | "assembling" | "cancelling"
+  | "cancelled" | "paused" | "completed" | "completed_with_warnings" | "failed";
 
-/** Local OCR/parser engine identifiers. */
-export const ParserEngine = {
-  AUTO: "auto",
-  PADDLEOCR: "paddleocr",
-  GLMOCR: "glmocr",
-} as const;
-export type ParserEngine = (typeof ParserEngine)[keyof typeof ParserEngine];
-
-/** LLM provider identifiers. */
-export const LLMProviderID = {
-  AUTO: "auto",
-  OPENAI: "openai",
-  GEMINI: "gemini",
-  ANTHROPIC: "anthropic",
-} as const;
-export type LLMProviderID = (typeof LLMProviderID)[keyof typeof LLMProviderID];
-
-export const ProviderAvailabilityState = {
-  READY: "ready",
-  MISSING_API_KEY: "missing_api_key",
-  CLIENT_NOT_INSTALLED: "client_not_installed",
-  INVALID_API_KEY: "invalid_api_key",
-  LISTING_UNSUPPORTED: "listing_unsupported",
-  ERROR: "error",
-} as const;
-export type ProviderAvailabilityState =
-  (typeof ProviderAvailabilityState)[keyof typeof ProviderAvailabilityState];
-
-export const ModelCatalogSource = {
-  DYNAMIC: "dynamic",
-  PLACEHOLDER: "placeholder",
-} as const;
-export type ModelCatalogSource =
-  (typeof ModelCatalogSource)[keyof typeof ModelCatalogSource];
-
-/** Model selection mode identifiers. */
-export const ModelSelectionMode = {
-  AUTO: "auto",
-  EXPLICIT_MODEL_ID: "explicit_model_id",
-} as const;
-export type ModelSelectionMode =
-  (typeof ModelSelectionMode)[keyof typeof ModelSelectionMode];
-
-/** Extraction job lifecycle statuses. */
-export const ExtractionStatus = {
-  PENDING: "pending",
-  QUEUED: "queued",
-  PROCESSING: "processing",
-  OCR_COMPLETE: "ocr_complete",
-  EXTRACTED: "extracted",
-  COMPLETED: "completed",
-  NEEDS_REVIEW: "needs_review",
-  FAILED: "failed",
-} as const;
-export type ExtractionStatus =
-  (typeof ExtractionStatus)[keyof typeof ExtractionStatus];
-
-/** Extraction field data types. */
-export const FieldType = {
-  STRING: "string",
-  NUMBER: "number",
-  BOOLEAN: "boolean",
-  DATE: "date",
-  LIST: "list",
-  OBJECT: "object",
-} as const;
-export type FieldType = (typeof FieldType)[keyof typeof FieldType];
-
-/** Review decision identifiers. */
-export const ReviewDecision = {
-  APPROVED: "approved",
-  CORRECTED: "corrected",
-  REJECTED: "rejected",
-} as const;
-export type ReviewDecision =
-  (typeof ReviewDecision)[keyof typeof ReviewDecision];
-
-export const ReviewVerdict = {
-  VALID: "valid",
-  NEEDS_REVIEW: "needs_review",
-  APPROVED: "approved",
-  CORRECTED: "corrected",
-  REJECTED: "rejected",
-} as const;
-export type ReviewVerdict =
-  (typeof ReviewVerdict)[keyof typeof ReviewVerdict];
-
-// ── Interfaces ──────────────────────────────────────────────────────
-
-export interface DocumentResponse {
-  id: string;
-  filename: string;
-  original_filename: string;
-  file_type: string;
-  file_size: number;
-  page_count: number | null;
-  status: string;
-  created_at: string;
+export interface ParseSettings {
+  segment_documents: boolean;
+  document_profile: "auto" | "technical_document" | "scientific_paper" | "invoice" | "insurance_claim" | "healthcare_form" | "general_scanned";
+  structured_extraction: boolean;
+  allow_sensitive_cloud: boolean;
+  processing_mode: "local_only" | "hybrid" | "maximum_accuracy";
+  quality_overrides: Partial<Record<"min_region_confidence" | "min_overall" | "min_extraction_accuracy" | "min_structural_fidelity" | "min_completeness" | "min_markdown_consistency" | "min_table_integrity" | "min_citation_coverage" | "max_repairs", number>>;
+  ocr_provider: "ollama" | "openai" | "anthropic" | "gemini" | "xai";
+  ocr_model: string | null;
+  review_provider: "ollama" | "openai" | "anthropic" | "gemini" | "xai";
+  review_model: string | null;
+  extraction_schema_id: string | null;
+  extraction_provider: "ollama" | "openai" | "anthropic" | "gemini" | "xai";
+  extraction_model: string | null;
+  cloud_mode: "off" | "adaptive" | "all_pages";
+  blind_local_retry: boolean;
+  start_page: number;
+  end_page: number | null;
+  input_mode: "scanned" | "native" | "mixed";
+  dpi: 150 | 200 | 300;
+  marginalia_policy: "remove_repeated" | "keep_all";
+  describe_figures: boolean;
+  grounding_pdf: boolean;
+  searchable_pdf: boolean;
+  bundle: boolean;
 }
 
-export interface SchemaFieldDef {
-  name: string;
-  description: string;
-  field_type: FieldType;
-  required: boolean;
-}
-
-export interface ExtractionSchemaResponse {
+export interface ExtractionSchema {
   id: string;
   name: string;
   description: string | null;
-  fields: SchemaFieldDef[];
-  created_at: string;
-  updated_at: string;
+  version: number;
+  json_schema: Record<string, unknown>;
+  schema_sha256: string;
+  created_at: string | null;
+  updated_at: string | null;
 }
 
-export interface ValidationResultInfo {
-  field_name: string | null;
+export interface ExtractionSchemaValidation {
   valid: boolean;
-  message: string;
+  normalized_schema: Record<string, unknown> | null;
+  errors: Array<{ path: string; code: string; message: string }>;
 }
 
-export interface ExtractionStepInfo {
+export interface RuntimeCapabilities {
+  paddleocr_vl_available: boolean;
+  parser_model: string;
+  pipeline_version: string;
+  paddleocr_vl: {
+    available: boolean;
+    docker_available: boolean;
+    gpu_available: boolean;
+    image_present: boolean;
+    cache_ready: boolean;
+    image: string;
+    error: string | null;
+    pull_command: string | null;
+  };
+  providers: VisionProvider[];
+}
+
+export interface VisionModel { id: string; name: string }
+export interface VisionProvider {
+  id: ParseSettings["ocr_provider"];
   name: string;
+  state: "ready" | "not_configured" | "unavailable";
+  models: VisionModel[];
+}
+
+export interface PageCheckpoint {
+  page_number: number;
   status: string;
-  started_at: string | null;
-  completed_at: string | null;
+  routing: string | null;
+  warnings: string[];
+  error_code: string | null;
+  error_message: string | null;
+  attempts: number;
   duration_ms: number | null;
-  error: string | null;
+  stage: ProcessingStage | null;
+  quality_status: QualityStatus | null;
+  quality_score: number | null;
+  repair_count: number;
+  diagnostics_url: string | null;
 }
 
-export interface ReviewInfo {
-  id: number;
-  extraction_id: string;
-  decision: ReviewDecision;
-  corrected_fields: Record<string, unknown> | null;
-  notes: string | null;
-  created_at: string;
+export type PlanningMode = "page_centric" | "two_pass_document";
+export type ProcessingStrategy = "native" | "ocr" | "specialist" | "fallback";
+export type ExpertKind = "text" | "table" | "chart" | "figure" | "formula" | "fallback";
+export type QualityStatus = "pass" | "warn" | "fail";
+export type ProcessingStage = "inspecting" | "planning" | "processing" | "scoring" | "verifying" | "repairing" | "completed";
+export type RegionType = "title" | "heading" | "text" | "list" | "table" | "chart" | "formula" | "figure" | "header" | "footer" | "page_number" | "code" | "quote" | "form_field" | "checkbox" | "signature" | "seal";
+
+export interface QualityScore {
+  extraction_accuracy: number;
+  structural_fidelity: number;
+  completeness: number;
+  markdown_consistency: number;
+  overall: number;
+  reasons: string[];
 }
 
-export interface ReviewCreate {
-  decision: ReviewDecision;
-  corrected_fields?: Record<string, unknown> | null;
-  notes?: string | null;
+export interface RegionObservation {
+  region_id: string;
+  region_type: RegionType;
+  bbox: { left: number; top: number; right: number; bottom: number };
+  native_healthy: boolean;
+  confidence: number | null;
+  risk_flags: string[];
 }
 
-export interface ExtractionResponse {
+export interface RegionPlan {
+  region_id: string;
+  strategy: ProcessingStrategy;
+  expert: ExpertKind;
+  difficulty: number;
+  risk_flags: string[];
+  prompt_variant: string;
+}
+
+export interface PagePlan {
+  page_number: number;
+  source: "model" | "deterministic";
+  regions: RegionPlan[];
+  warnings: string[];
+}
+
+export interface AttemptRecord {
+  attempt: number;
+  strategy: ProcessingStrategy;
+  expert: ExpertKind;
+  prompt_id: string;
+  prompt_version: string;
+  prompt_variant: string;
+  source: string;
+  model: string | null;
+  score: QualityScore;
+  verdict: QualityStatus;
+  reason: string;
+  repair_hint: string | null;
+  warnings: string[];
+  latency_ms: number;
+  eval_count: number | null;
+  prompt_eval_count: number | null;
+}
+
+export interface RegionDecision {
+  observation: RegionObservation;
+  plan: RegionPlan;
+  attempts: AttemptRecord[];
+  selected_attempt_index: number;
+  final_status: QualityStatus;
+  visual_verification: VisualVerification | null;
+}
+
+export interface VisualVerification {
+  region_id: string;
+  bbox: { left: number; top: number; right: number; bottom: number };
+  status: QualityStatus;
+  methods: Array<"local_coordinate" | "cloud_visual">;
+  reasons: string[];
+}
+
+export interface PageDiagnostics {
+  schema_version: "1";
+  planning_mode: PlanningMode;
+  stage: ProcessingStage;
+  page_number: number;
+  plan: PagePlan | null;
+  region_decisions: RegionDecision[];
+  quality_score: QualityScore | null;
+  quality_status: QualityStatus;
+  repair_count: number;
+  warnings: string[];
+  fingerprint: string;
+}
+
+export interface Artifact {
   id: string;
-  document_id: string;
-  schema_id: string;
-  ocr_provider: ParserEngine;
-  llm_provider: LLMProviderID;
-  llm_model: string;
-  status: ExtractionStatus;
-  ocr_text: string | null;
-  result: Record<string, unknown> | null;
-  validation_errors: string[] | null;
-  validation_results: ValidationResultInfo[] | null;
-  review_verdict: ReviewVerdict | null;
-  error: string | null;
-  ocr_provider_used: string | null;
-  llm_provider_used: string | null;
-  llm_model_used: string | null;
-  confidence: Record<string, number> | null;
-  extract_attempts: number | null;
-  error_category: string | null;
-  steps: ExtractionStepInfo[];
-  reviews: ReviewInfo[];
-  created_at: string;
+  type: string;
+  region_id: string | null;
+  mime_type: string;
+  size: number;
+  sha256: string;
+  filename: string;
+  download_url: string;
+  preview_url: string | null;
+}
+
+export interface ParseJob {
+  id: string;
+  original_filename: string;
+  source_size: number;
+  page_count: number;
+  status: JobStatus;
+  settings: ParseSettings;
+  current_page: number | null;
+  current_batch: number | null;
+  total_batches: number;
+  detected_profile: string | null;
+  profile_confidence: number | null;
+  segmentation_status: string;
+  subdocument_count: number;
+  is_partial: boolean;
+  completed_pages: number;
+  failed_pages: number;
+  warning_count: number;
+  review_required_count: number;
+  quality_policy: Record<string, unknown> | null;
+  error_message: string | null;
+  model_name: string | null;
+  model_digest: string | null;
+  review_model_name: string | null;
+  review_model_digest: string | null;
+  extraction_schema: { id: string; name: string; version: number; schema_sha256: string } | null;
+  extraction_model_name: string | null;
+  extraction_model_digest: string | null;
+  created_at: string | null;
   started_at: string | null;
   completed_at: string | null;
-  reviewed_at: string | null;
-  duration_total_ms: number | null;
-  validation_summary: string | null;
+  pages: PageCheckpoint[];
+  artifacts: Artifact[];
+  source_preview_url: string;
+  output_revision: number;
+  verified_export_ready: boolean;
+  batch_id: string | null;
+  batch_ordinal: number | null;
 }
 
-export interface ParserOptionInfo {
-  id: ParserEngine;
-  name: string;
-  enabled: boolean;
-  available: boolean;
-}
+export interface InspectionCandidate { id: string; attempt: number; source: string; model: string | null; output: string; selected: boolean; verdict: string; reason: string; confidence: number | null; latency_ms: number | null; warnings: string[]; }
+export interface InspectionRegion { id: string; type: string; bbox: { x0: number; y0: number; x1: number; y1: number }; order: number; confidence: number | null; source: string; source_label: string | null; content: string; markdown: string; parent_id: string | null; warnings: string[]; quality_status: string | null; candidates: InspectionCandidate[]; }
+export interface PageInspection { page_number: number; width: number; height: number; coordinate_unit: string; image_url: string; quality_status: string | null; quality_score: Record<string, number> | null; reviewer: { provider: string | null; model: string | null; enabled: boolean }; warnings: string[]; regions: InspectionRegion[]; }
+export interface DocumentTreeItem { id: string; page: number; order: number; type: string; content: string; summary: string; parent_id: string | null; heading_path: string[]; bbox: InspectionRegion["bbox"]; source: string; confidence: number | null; warnings: string[]; }
+export interface QualityReport { processed_pages: number; ocr_coverage: { covered_regions: number; total_regions: number; ratio: number }; disagreements: Array<{ page: number; region_id: string; candidate_count: number }>; unresolved_regions: Array<{ page: number; region_id: string; status: string; type: string }>; source_counts: Record<string, number>; table_integrity: { passing_tables: number; total_tables: number; ratio: number; evaluated_accuracy: number | null }; warnings: string[]; verified_export_ready: boolean; }
+export interface ReprocessRun { id: string; job_id: string; target_kind: "page" | "region"; page_number: number; region_id: string | null; dpi: number; crop_padding: number; status: string; decision: Record<string, unknown> | null; error_message: string | null; }
+export interface ParseBatch { id: string; status: string; total_jobs: number; completed_jobs: number; failed_jobs: number; cancelled_jobs: number; bundle_ready: boolean; bundle_url: string | null; created_at: string | null; completed_at: string | null; jobs: ParseJob[]; }
 
-export interface ExtractionResultResponse {
-  extraction_id: string;
-  status: ExtractionStatus;
-  result: Record<string, unknown> | null;
-  ocr_provider_used: string | null;
-  llm_provider_used: string | null;
-  llm_model_used: string | null;
-  completed_at: string | null;
-}
-
-export interface ExtractionValidationResponse {
-  extraction_id: string;
-  status: ExtractionStatus;
-  validation_errors: string[];
-  validation_results: ValidationResultInfo[] | null;
-  review_verdict: ReviewVerdict | null;
-  completed_at: string | null;
-}
-
-export interface ProviderErrorState {
-  code: string;
-  message: string;
-  retryable: boolean;
-}
-
-export interface ProviderAvailabilityStatus {
-  state: ProviderAvailabilityState;
-  configured: boolean;
-  available: boolean;
-  can_extract: boolean;
-  can_list_models: boolean;
-  auto_eligible: boolean;
-}
-
-export interface LLMProviderInfo {
-  id: LLMProviderID;
-  name: string;
-  available: boolean;
-  availability: ProviderAvailabilityStatus;
-  error: ProviderErrorState | null;
-  is_default: boolean;
-}
-
-export interface ModelInfo {
+export interface SubDocument {
   id: string;
-  name: string;
-  provider: LLMProviderID;
-  is_default: boolean;
+  ordinal: number;
+  start_page: number;
+  end_page: number;
+  profile: string;
+  confidence: number;
+  identifiers: Array<{ kind: string; value?: string; normalized_value: string; page?: number }>;
+  boundary_confidence: number;
+  boundary_reasons: string[];
+  complete: boolean;
+  missing_pages: number[];
+  warnings: string[];
+  artifacts: Artifact[];
 }
 
-export interface LLMModelListResponse {
-  provider_id: LLMProviderID;
-  provider_name: string;
-  available: boolean;
-  source: ModelCatalogSource;
-  availability: ProviderAvailabilityStatus;
-  models: ModelInfo[];
-  error: ProviderErrorState | null;
-  resolved_provider_id: LLMProviderID | null;
+export interface ReviewCase {
+  id: string; job_id: string; item_kind: string; item_key: string;
+  page_number: number | null; severity: string; status: string;
+  failure_codes: string[]; original: Record<string, unknown>;
+  current: Record<string, unknown>; provenance: Record<string, unknown>; revision: number;
 }
 
-export interface OCREngineFlags {
-  paddleocr: boolean;
-  glm_ocr: boolean;
+export interface EvaluationCase {
+  id: string;
+  external_id: string;
+  parse_job_id: string;
+  status: string;
+  metrics: Record<string, number> | null;
+  error_message: string | null;
+  report_url: string | null;
 }
 
-export interface AppConfigResponse {
-  parser_engines: ParserEngine[];
-  llm_providers: LLMProviderID[];
-  default_llm_provider: LLMProviderID;
-  model_selection_modes: ModelSelectionMode[];
-  ocr_engine_flags: OCREngineFlags;
-  max_upload_size_mb: number;
-  supported_file_types: string[];
-  confidence_threshold: number;
-}
-
-export interface CreateSchemaRequest {
-  name: string;
-  description?: string;
-  fields: SchemaFieldDef[];
-}
-
-export interface CreateSchemaFromPresetRequest {
-  name?: string | null;
-}
-
-export interface StartExtractionRequest {
-  document_id: string;
-  schema_id: string;
-  ocr_provider?: ParserEngine;
-  llm_provider?: LLMProviderID;
-  llm_model?: string;
+export interface EvaluationRun {
+  id: string;
+  kind: "single" | "batch";
+  status: string;
+  settings: Record<string, unknown>;
+  metrics: Record<string, number> | null;
+  total_cases: number;
+  completed_cases: number;
+  failed_cases: number;
+  error_message: string | null;
+  report_url: string | null;
+  cases: EvaluationCase[];
 }
 
 export class ApiError extends Error {
-  status: number;
-  detail: unknown;
-
-  constructor(status: number, message: string, detail: unknown) {
+  constructor(public status: number, message: string) {
     super(message);
     this.name = "ApiError";
-    this.status = status;
-    this.detail = detail;
   }
-}
-
-function formatErrorDetail(detail: unknown): string {
-  if (typeof detail === "string" && detail.trim()) {
-    return detail;
-  }
-  if (Array.isArray(detail) && detail.length > 0) {
-    const validationLines = detail
-      .map((entry) => {
-        if (!entry || typeof entry !== "object") return null;
-        const maybeLoc = "loc" in entry ? (entry as { loc?: unknown }).loc : undefined;
-        const maybeMsg = "msg" in entry ? (entry as { msg?: unknown }).msg : undefined;
-        if (typeof maybeMsg !== "string") return null;
-        const location = Array.isArray(maybeLoc)
-          ? maybeLoc.filter((part) => typeof part === "string" || typeof part === "number").join(".")
-          : null;
-        return location ? `${location}: ${maybeMsg}` : maybeMsg;
-      })
-      .filter((line): line is string => Boolean(line));
-    if (validationLines.length > 0) {
-      return validationLines.join("; ");
-    }
-  }
-  return "Request failed";
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const { headers, cache, ...rest } = init ?? {};
-  const res = await fetch(`${API_BASE}${path}`, {
-    ...rest,
-    cache: cache ?? "no-store",
-    headers: {
-      ...(headers ?? {}),
-      ...(rest.body instanceof FormData
-        ? {}
-        : { "Content-Type": "application/json" }),
-    },
-  });
-  if (!res.ok) {
-    const body = await res.json().catch(() => ({}));
-    const detail = body.detail;
+  let response: Response;
+  try {
+    response = await fetch(`${API_BASE}${path}`, { cache: "no-store", ...init });
+  } catch {
     throw new ApiError(
-      res.status,
-      formatErrorDetail(detail) || `HTTP ${res.status}`,
-      detail,
+      0,
+      "Paperplane backend is unavailable. Start FastAPI and confirm the frontend backend URL and port.",
     );
   }
-  if (res.status === 204) return undefined as T;
-  return res.json();
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({}));
+    const detail = body?.detail;
+    const message = typeof detail === "string"
+      ? detail
+      : typeof detail?.message === "string"
+        ? detail.message
+        : response.status >= 500
+          ? "Paperplane backend is unavailable. Start FastAPI and confirm the frontend backend URL and port."
+          : `Request failed (${response.status})`;
+    throw new ApiError(response.status, message);
+  }
+  return response.status === 204 ? undefined as T : response.json();
 }
 
-// Documents
-export const uploadDocument = (file: File) => {
+export const listJobs = async () => (await request<{ items: ParseJob[] }>("/parse-jobs")).items;
+export const listParseBatches = async () => (await request<{ items: ParseBatch[] }>("/parse-batches")).items;
+export const getParseBatch = (id: string) => request<ParseBatch>(`/parse-batches/${encodeURIComponent(id)}`);
+export const getPageInspection = (jobId: string, page: number, signal?: AbortSignal) => request<PageInspection>(`/parse-jobs/${encodeURIComponent(jobId)}/pages/${page}/inspection`, { signal });
+export const getDocumentTree = async (jobId: string, query = "", signal?: AbortSignal) => (await request<{ items: DocumentTreeItem[] }>(`/parse-jobs/${encodeURIComponent(jobId)}/document-tree?q=${encodeURIComponent(query)}`, { signal })).items;
+export const getQualityReport = (jobId: string, signal?: AbortSignal) => request<QualityReport>(`/parse-jobs/${encodeURIComponent(jobId)}/quality-report`, { signal });
+export const requestReprocess = (jobId: string, body: { target_kind: "page" | "region"; page_number: number; region_id?: string; dpi: 150 | 200 | 300; crop_padding: 0 | 0.05 | 0.1 | 0.2 }) => request<ReprocessRun>(`/parse-jobs/${encodeURIComponent(jobId)}/reprocess`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+export const listExtractionSchemas = async () =>
+  (await request<{ items: ExtractionSchema[] }>("/extraction-schemas")).items;
+export const validateExtractionSchema = (json_schema: Record<string, unknown>) =>
+  request<ExtractionSchemaValidation>("/extraction-schemas/validate", {
+    method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ json_schema }),
+  });
+export const createExtractionSchema = (body: { name: string; description: string | null; json_schema: Record<string, unknown> }) =>
+  request<ExtractionSchema>("/extraction-schemas", {
+    method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body),
+  });
+export const updateExtractionSchema = (id: string, body: { name: string; description: string | null; json_schema: Record<string, unknown> }) =>
+  request<ExtractionSchema>(`/extraction-schemas/${encodeURIComponent(id)}`, {
+    method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body),
+  });
+export const deleteExtractionSchema = (id: string) =>
+  request<void>(`/extraction-schemas/${encodeURIComponent(id)}`, { method: "DELETE" });
+export interface OllamaModel {
+  name: string;
+  digest: string | null;
+  size: number | null;
+  modified_at: string | null;
+  capabilities: string[];
+  compatible: boolean;
+  inspection_error: string | null;
+}
+export const listOllamaModels = async (refresh = false) =>
+  (await request<{ models: OllamaModel[] }>(`/ollama/models${refresh ? "?refresh=true" : ""}`)).models;
+export const getJob = (id: string, signal?: AbortSignal) => request<ParseJob>(`/parse-jobs/${id}`, { signal });
+export const getRuntimeCapabilities = () =>
+  request<RuntimeCapabilities>("/runtime/capabilities");
+export const cancelJob = (id: string) =>
+  request<ParseJob>(`/parse-jobs/${encodeURIComponent(id)}/cancel`, { method: "POST" });
+export const getPageDiagnostics = (jobId: string, pageNumber: number, signal?: AbortSignal) =>
+  request<PageDiagnostics>(`/parse-jobs/${encodeURIComponent(jobId)}/pages/${pageNumber}/diagnostics`, { signal });
+export const listSubdocuments = async (jobId: string, signal?: AbortSignal) =>
+  (await request<{ items: SubDocument[] }>(`/parse-jobs/${encodeURIComponent(jobId)}/sub-documents`, { signal })).items;
+
+export async function createJob(file: File, settings: ParseSettings): Promise<ParseJob> {
   const form = new FormData();
   form.append("file", file);
-  return request<DocumentResponse>("/documents/", { method: "POST", body: form });
-};
-export const listDocuments = () =>
-  request<DocumentResponse[]>("/documents/");
-export const getDocument = (id: string) =>
-  request<DocumentResponse>(`/documents/${encodeURIComponent(id)}`);
-
-// Schemas
-export const createSchema = (data: {
-  name: string;
-  description?: string;
-  fields: SchemaFieldDef[];
-}) => request<ExtractionSchemaResponse>("/schemas/", { method: "POST", body: JSON.stringify(data) });
-export const listSchemas = () =>
-  request<ExtractionSchemaResponse[]>("/schemas/");
-
-const _schemaCache = new Map<string, ExtractionSchemaResponse>();
-
-export const getSchema = async (id: string): Promise<ExtractionSchemaResponse> => {
-  const cached = _schemaCache.get(id);
-  if (cached) return cached;
-  const schema = await request<ExtractionSchemaResponse>(
-    `/schemas/${encodeURIComponent(id)}`,
-  );
-  _schemaCache.set(id, schema);
-  return schema;
-};
-
-export interface SchemaPreset {
-  id: string;
-  name: string;
-  description: string;
-  doc_type: string;
-  fields: SchemaFieldDef[];
+  form.append("settings", JSON.stringify(settings));
+  return request<ParseJob>("/parse-jobs", { method: "POST", body: form });
 }
-export const getSchemaPresets = () =>
-  request<SchemaPreset[]>("/schemas/presets", { cache: "force-cache" });
-export const createSchemaFromPreset = (presetId: string, name?: string) =>
-  request<ExtractionSchemaResponse>(`/schemas/presets/${encodeURIComponent(presetId)}`, {
+
+export async function createParseBatch(files: File[], settings: ParseSettings): Promise<ParseBatch> {
+  const form = new FormData();
+  files.forEach((file) => form.append("files", file));
+  form.append("settings", JSON.stringify(settings));
+  return request<ParseBatch>("/parse-batches", { method: "POST", body: form });
+}
+
+export async function evaluateJob(jobId: string, gold: File): Promise<EvaluationRun> {
+  const form = new FormData();
+  form.append("gold", gold);
+  return request<EvaluationRun>(`/evaluation-runs/from-job/${encodeURIComponent(jobId)}`, {
     method: "POST",
-    body: JSON.stringify({ name: name || undefined }),
+    body: form,
+  });
+}
+
+export async function createEvaluationRun(dataset: File, settings: ParseSettings): Promise<EvaluationRun> {
+  const form = new FormData();
+  form.append("dataset", dataset);
+  form.append("settings", JSON.stringify(settings));
+  return request<EvaluationRun>("/evaluation-runs", { method: "POST", body: form });
+}
+
+export const listEvaluationRuns = async () => {
+  const response = await request<{ items: EvaluationRun[] }>("/evaluation-runs");
+  return response.items;
+};
+
+export const getEvaluationRun = (runId: string, signal?: AbortSignal) =>
+  request<EvaluationRun>(`/evaluation-runs/${encodeURIComponent(runId)}`, { signal });
+
+export const listReviewCases = async (status = "open") =>
+  (await request<{ items: ReviewCase[] }>(`/review-cases?status=${encodeURIComponent(status)}`)).items;
+export const decideReviewCase = (id: string, body: Record<string, unknown>) =>
+  request<ReviewCase>(`/review-cases/${encodeURIComponent(id)}/decisions`, {
+    method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body),
+  });
+export const approveCuratedDocument = (jobId: string) =>
+  request<Record<string, unknown>>(`/curation/documents/${encodeURIComponent(jobId)}/approve`, {
+    method: "POST", headers: { "Content-Type": "application/json" }, body: "{}",
   });
 
-// Extractions
-export const startExtraction = (data: StartExtractionRequest) =>
-  request<ExtractionResponse>("/extractions/", {
-    method: "POST",
-    body: JSON.stringify(data),
-  });
-export const listExtractions = (documentId?: string) => {
-  const qs = documentId ? `?document_id=${encodeURIComponent(documentId)}` : "";
-  return request<ExtractionResponse[]>(`/extractions/${qs}`);
+export const apiResourceUrl = (path: string) => `${API_BASE.replace(/\/$/, "")}${path.replace(/^\/api/, "")}`;
+export const artifactUrl = (artifact: Pick<Artifact, "download_url">) => apiResourceUrl(artifact.download_url);
+export const getMarkdown = async (artifact: Pick<Artifact, "download_url">, signal?: AbortSignal) => {
+  const response = await fetch(artifactUrl(artifact), { cache: "no-store", signal });
+  if (!response.ok) throw new Error("Markdown is not available yet");
+  return response.text();
 };
-export const getExtraction = (id: string) =>
-  request<ExtractionResponse>(`/extractions/${encodeURIComponent(id)}`);
-export const retryExtraction = (id: string) =>
-  request<ExtractionResponse>(`/extractions/${encodeURIComponent(id)}/retry`, {
-    method: "POST",
-  });
-
-// Providers
-export const getParsers = () =>
-  request<ParserOptionInfo[]>("/providers/parsers");
-export const getLLMProviders = () =>
-  request<LLMProviderInfo[]>('/providers/llm');
-export const getLLMModels = (providerId: string) =>
-  request<LLMModelListResponse>(`/providers/llm/${encodeURIComponent(providerId)}/models`);
-
-// App config (non-secret settings for UI)
-export const getAppConfig = () =>
-  request<AppConfigResponse>("/providers/config", { cache: "force-cache" });
-
-// Extraction sub-endpoints
-export const getExtractionResult = (id: string) =>
-  request<ExtractionResultResponse>(`/extractions/${encodeURIComponent(id)}/result`);
-export const getExtractionValidation = (id: string) =>
-  request<ExtractionValidationResponse>(`/extractions/${encodeURIComponent(id)}/validation`);
-
-// Reviews
-export const submitReview = (id: string, data: ReviewCreate) =>
-  request<ReviewInfo>(`/extractions/${encodeURIComponent(id)}/reviews`, {
-    method: "POST",
-    body: JSON.stringify(data),
-  });
-export const listReviews = (id: string) =>
-  request<ReviewInfo[]>(`/extractions/${encodeURIComponent(id)}/reviews`);
-
-// ── Display names (shared across UI) ────────────────────────────────
-
-/** Human-friendly labels for provider/parser IDs shown in the UI. */
-export const PROVIDER_DISPLAY_NAMES: Record<string, string> = {
-  auto: "Auto",
-  pymupdf: "Built-in PDF reader (PyMuPDF)",
-  paddleocr: "PaddleOCR (local image OCR)",
-  glmocr: "GLM-OCR (local Ollama)",
-  openai: "OpenAI",
-  gemini: "Gemini",
-  anthropic: "Anthropic Claude",
-};
-
-/** Resolve a provider/parser ID to its display name. */
-export function displayName(id: string): string {
-  return PROVIDER_DISPLAY_NAMES[id] ?? id;
-}
-
-function normalizeSelection(value: string | null | undefined): string | null {
-  if (!value) return null;
-  const normalized = value.trim();
-  return normalized ? normalized : null;
-}
-
-/**
- * Build a display string for a provider field that was potentially auto-resolved.
- *
- * - User chose Auto and it resolved → "Auto → OpenAI"
- * - User chose Auto but job hasn't resolved yet → "Auto"
- * - User explicitly chose a provider → "OpenAI"
- */
-export function resolvedDisplayName(
-  requested: string,
-  actual: string | null,
-): string {
-  const requestedValue = normalizeSelection(requested);
-  const actualValue = normalizeSelection(actual);
-
-  if (!requestedValue && !actualValue) return "\u2014";
-  if (!actualValue) return displayName(requestedValue ?? "auto");
-  if (!requestedValue || actualValue === requestedValue) {
-    return displayName(actualValue);
-  }
-  return `${displayName(requestedValue)} \u2192 ${displayName(actualValue)}`;
-}
-
-export function displayModelName(modelId: string | null | undefined): string {
-  const normalized = normalizeSelection(modelId);
-  if (!normalized) return "\u2014";
-  if (normalized === "auto") return "Auto";
-  return normalized;
-}
-
-export function resolvedModelDisplayName(
-  requested: string | null | undefined,
-  actual: string | null,
-): string {
-  const requestedValue = normalizeSelection(requested);
-  const actualValue = normalizeSelection(actual);
-
-  if (!requestedValue && !actualValue) return "\u2014";
-  if (!actualValue) return displayModelName(requestedValue);
-  if (!requestedValue || actualValue === requestedValue) {
-    return displayModelName(actualValue);
-  }
-  return `${displayModelName(requestedValue)} \u2192 ${displayModelName(actualValue)}`;
-}
-
-// ── Error category labels ───────────────────────────────────────────
-
-const ERROR_CATEGORY_LABELS: Record<string, { label: string; hint: string }> = {
-  auth: { label: "Authentication", hint: "API key is missing or invalid" },
-  rate_limit: { label: "Rate limited", hint: "Provider quota exceeded — try again later" },
-  timeout: { label: "Timed out", hint: "The operation took too long" },
-  parse_error: { label: "Parse error", hint: "AI returned malformed output" },
-  provider_error: { label: "Provider error", hint: "The AI provider returned an error" },
-  file_error: { label: "File error", hint: "The input file could not be read" },
-  validation: { label: "Validation", hint: "Validation or reviewer feedback blocked this extraction" },
-  unknown: { label: "Error", hint: "An unexpected error occurred" },
-};
-
-export function errorCategoryLabel(category: string | null): { label: string; hint: string } | null {
-  if (!category) return null;
-  return ERROR_CATEGORY_LABELS[category] ?? { label: category, hint: "" };
-}
-
-// ── Relative time ───────────────────────────────────────────────────
-
-export function timeAgo(iso: string): string {
-  const seconds = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
-  if (seconds < 5) return "just now";
-  if (seconds < 60) return `${seconds}s ago`;
-  const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes}m ago`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  return `${days}d ago`;
-}
