@@ -58,6 +58,7 @@ node_modules/
 out/
 frontend/.next/
 frontend/node_modules/
+.playwright-cli/
 
 # OS
 .DS_Store
