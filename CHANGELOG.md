@@ -9,6 +9,14 @@ and this project aims to follow [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+### Changed
+
+### Fixed
+
+## [2.0.0] - 2026-07-26
+
+### Added
+
 - OpenAI-only V2 pipeline pairing `gpt-5.6-luna` page drafts with bounded
   `gpt-5.6-terra` crop verification.
 - Strict grounded document contracts for hierarchy, checkboxes, tables, citations,

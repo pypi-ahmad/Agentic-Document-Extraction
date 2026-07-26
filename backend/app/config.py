@@ -65,7 +65,7 @@ class Settings(BaseSettings):
     otel_exporter_otlp_endpoint: str = ""
     otel_exporter_insecure: bool = True
     otel_service_name: str = "local-document-markdown"
-    otel_service_version: str = "1.0.0"
+    otel_service_version: str = "2.0.0"
     otel_deployment_environment: str = "local"
 
     @property
