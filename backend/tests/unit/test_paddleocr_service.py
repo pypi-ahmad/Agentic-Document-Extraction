@@ -13,7 +13,7 @@ from typing import Any
 
 import pytest
 from httpx import ASGITransport, AsyncClient
-from PIL import Image
+from PIL import Image, PngImagePlugin
 
 SERVICE_PATH = Path(__file__).resolve().parents[3] / "deploy" / "paddleocr-vl" / "service.py"
 
@@ -471,4 +471,74 @@ async def test_parse_page_cleans_temporary_files_on_success_and_failure(
 
     assert failure.status_code == 500
     assert "top-secret" not in failure.text
+    assert list(tmp_path.iterdir()) == []
+
+
+@pytest.mark.asyncio
+async def test_parse_page_cleans_table_crop_when_crop_save_fails(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    service = _load_service(monkeypatch)
+    image = _png_bytes()
+    page = {
+        "parsing_res_list": [
+            {
+                "block_id": 4,
+                "block_label": "table",
+                "block_bbox": [0, 0, 3, 2],
+                "block_content": "| A |",
+            }
+        ]
+    }
+
+    def fail_save(*_: Any, **__: Any) -> None:
+        raise RuntimeError("crop save failed")
+
+    monkeypatch.setattr(service.Image.Image, "save", fail_save)
+    app = service.create_app(
+        environ={"ADE_WORKER_TOKEN": "secret", "ADE_WORKER_PROFILE": "accurate"},
+        pipeline_factory=lambda **_: _Pipeline(page),
+        table_pipeline_factory=lambda **_: _TablePipeline(),
+        temp_dir=tmp_path,
+    )
+    async with _client(app, raise_app_exceptions=False) as client:
+        response = await client.post(
+            "/v1/parse-page?job_id=deadbeef&page_number=1",
+            content=image,
+            headers={"X-ADE-Worker-Token": "secret", "Content-Type": "image/png"},
+        )
+
+    assert response.status_code == 200
+    assert response.json()["page"]["parsing_res_list"][0]["warnings"] == [
+        "table_refinement_failed:RuntimeError"
+    ]
+    assert list(tmp_path.iterdir()) == []
+
+
+@pytest.mark.asyncio
+async def test_parse_page_rejects_pillow_validation_error_and_cleans_file(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    service = _load_service(monkeypatch)
+    image = _png_bytes()
+
+    def fail_verify(*_: Any, **__: Any) -> None:
+        raise RuntimeError("decoder failed")
+
+    monkeypatch.setattr(PngImagePlugin.PngImageFile, "verify", fail_verify)
+    app = service.create_app(
+        environ={"ADE_WORKER_TOKEN": "secret", "ADE_WORKER_PROFILE": "fast"},
+        pipeline_factory=lambda **_: _Pipeline(),
+        temp_dir=tmp_path,
+    )
+    async with _client(app, raise_app_exceptions=False) as client:
+        response = await client.post(
+            "/v1/parse-page?job_id=deadbeef&page_number=1",
+            content=image,
+            headers={"X-ADE-Worker-Token": "secret", "Content-Type": "image/png"},
+        )
+
+    assert response.status_code == 400
     assert list(tmp_path.iterdir()) == []
