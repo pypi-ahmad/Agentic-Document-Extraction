@@ -66,7 +66,7 @@ def build_document_splits(
             classification=classification,
             identifier=identifier or "full",
             pages=list(range(start_page, end_page + 1)),
-            chunk_ids=[chunk.id for chunk in chunks if start_page <= chunk.page <= end_page],
+            item_ids=[chunk.id for chunk in chunks if start_page <= chunk.page <= end_page],
             boundary_reasons=boundary_reasons,
         )
         for index, (

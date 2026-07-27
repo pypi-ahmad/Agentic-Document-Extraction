@@ -169,6 +169,7 @@ button { color: inherit; }
 .artifact-tabs a { display: grid; place-items: center; width: 27px; color: var(--faint); }
 .artifact-tabs button:hover, .artifact-tabs a:hover, .artifact-tabs > div.selected button { color: var(--text); }
 .artifact-content { min-height: 230px; max-height: 430px; overflow: auto; background: var(--surface-deep); }
+.artifact-content iframe { display: block; width: 100%; height: 430px; border: 0; background: white; }
 .artifact-content pre { min-width: max-content; margin: 0; padding: 16px; color: var(--text); font: 10px/1.65 "SFMono-Regular", Consolas, "Liberation Mono", monospace; white-space: pre-wrap; }
 .artifact-message, .artifact-preview-empty { min-height: 230px; gap: 7px; padding: 18px; font-size: 10px; line-height: 1.5; }
 .artifact-preview-empty { margin-top: 18px; border: 1px dashed var(--line); }

@@ -34,9 +34,8 @@ def build_annotated_pdf(source: bytes, filename: str, chunks: list[GroundedChunk
             if not chunk.grounding or chunk.page < 1 or chunk.page > document.page_count:
                 continue
             page = document[chunk.page - 1]
-            grounding = chunk.grounding[0]
-            box = grounding.box
-            rect = fitz.Rect(
+            box = chunk.grounding[0].box
+            rectangle = fitz.Rect(
                 box.left * page.rect.width,
                 box.top * page.rect.height,
                 box.right * page.rect.width,
@@ -47,10 +46,9 @@ def build_annotated_pdf(source: bytes, filename: str, chunks: list[GroundedChunk
                 if chunk.verification_status == VerificationStatus.VERIFIED
                 else (0.9, 0.2, 0.15)
             )
-            page.draw_rect(rect, color=color, width=1.2, overlay=True)
-            label_y = max(8.0, rect.y0 - 2.0)
+            page.draw_rect(rectangle, color=color, width=1.2, overlay=True)
             page.insert_text(
-                (rect.x0, label_y),
+                (rectangle.x0, max(8.0, rectangle.y0 - 2.0)),
                 f"{chunk.order}. {chunk.id}",
                 fontsize=6,
                 color=color,

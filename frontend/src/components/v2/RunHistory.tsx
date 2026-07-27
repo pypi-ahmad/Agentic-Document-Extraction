@@ -2,7 +2,7 @@
 
 import { FileSearch } from "lucide-react";
 
-import type { V2Job } from "@/lib/api";
+import type { AgenticParseJob } from "@/lib/api";
 
 function title(value: string) {
   return value.replaceAll("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
@@ -13,7 +13,7 @@ export function RunHistory({
   activeId,
   onSelect,
 }: {
-  jobs: V2Job[];
+  jobs: AgenticParseJob[];
   activeId: string | null;
   onSelect: (jobId: string) => void;
 }) {

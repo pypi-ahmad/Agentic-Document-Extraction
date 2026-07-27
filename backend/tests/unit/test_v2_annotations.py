@@ -44,7 +44,9 @@ def test_annotated_pdf_contains_chunk_label_and_preserves_page_size() -> None:
     output = build_annotated_pdf(_pdf(), "invoice.pdf", [chunk])
 
     document = fitz.open(stream=output, filetype="pdf")
-    assert document.page_count == 1
-    assert document[0].rect == fitz.Rect(0, 0, 200, 300)
-    assert "p0001-c0001" in document[0].get_text()
-    document.close()
+    try:
+        assert document.page_count == 1
+        assert document[0].rect == fitz.Rect(0, 0, 200, 300)
+        assert "p0001-c0001" in document[0].get_text()
+    finally:
+        document.close()

@@ -65,8 +65,9 @@ $env:DATABASE_URL = "postgresql+asyncpg://paperplane:paperplane-dev@127.0.0.1:54
 1. Validate the upload and render each page deterministically.
 2. Luna returns an ordered strict-schema page draft.
 3. Native text is snapped to exact PDF word coordinates where possible.
-4. Uncertain or complex regions are cropped and independently verified by Terra.
-5. Disagreements receive a bounded blind inspection pass; unresolved content abstains.
+4. Deterministic overlap, duplication, layout, list, and uncovered-ink gates flag pages.
+5. Balanced mode asks Terra to reconcile only flagged full pages; remaining disagreements
+   receive targeted crop adjudication. Audit reconciles every page.
 6. Page tasks are leased from the database, retried, checkpointed, and assembled
    idempotently into document artifacts.
 
@@ -74,6 +75,13 @@ SQLite and local filesystem storage are the development defaults. PostgreSQL lea
 supports multiple workers via `FOR UPDATE SKIP LOCKED`. Generated objects are addressed
 through the `ObjectStore` boundary so production deployments can provide managed,
 S3-compatible storage without changing extraction contracts.
+
+Each newly completed V2 job exposes three public artifacts: `document.md`, `document.json`,
+and `annotated.pdf`. The JSON uses `paperplane-document/v3`, stores Markdown per page with
+half-open item spans, and embeds grounding, verification provenance, usage/cost, splits,
+and optional schema extraction. The original upload is previewed through the authenticated
+`GET /api/v2/jobs/{id}/source` endpoint; the annotated PDF supports inline preview and
+download from Results.
 
 ## Configuration
 

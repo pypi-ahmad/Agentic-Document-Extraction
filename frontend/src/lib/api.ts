@@ -420,24 +420,23 @@ export const getMarkdown = async (artifact: Pick<Artifact, "download_url">, sign
   return response.text();
 };
 
-export type V2Mode = "economy" | "balanced" | "audit";
+export type ParseModel = "paperplane-ade-fast-latest" | "paperplane-ade-latest" | "paperplane-ade-audit-latest";
 
-export interface V2Settings {
-  mode: V2Mode;
-  segment_documents: boolean;
-  extraction_schema_id: string | null;
+export interface AgenticParseSettings {
+  model: ParseModel;
 }
 
-export interface V2Artifact {
+export interface AgenticParseArtifact {
   id: string;
   type: string;
   mime_type: string;
   size: number;
   sha256: string;
   download_url: string;
+  preview_url: string | null;
 }
 
-export interface V2Job {
+export interface AgenticParseJob {
   id: string;
   original_filename: string;
   source_mime: string;
@@ -445,47 +444,51 @@ export interface V2Job {
   source_sha256: string;
   page_count: number;
   status: string;
-  settings: V2Settings;
-  models: { draft: string; verification: string };
+  settings: AgenticParseSettings;
+  models: { parser: string; critic: string };
   completed_pages: number;
   failed_pages: number;
   error_code: string | null;
   error_message: string | null;
-  usage: Record<string, number> | null;
-  artifacts: V2Artifact[];
+  usage: Record<string, unknown> | null;
+  artifacts: AgenticParseArtifact[];
+  source_preview_url: string;
 }
 
-export interface V2EvaluationReport {
-  schema_version: string;
-  metrics: Record<string, number>;
-  matched_chunks: number;
-  predicted_chunks: number;
-  labeled_chunks: number;
-  unmatched_predicted: string[];
-  unmatched_labels: string[];
+export interface AgentTraceEvent {
+  agent: string;
+  action: string;
+  summary: string;
+  page_number?: number | null;
+  status?: string | null;
 }
 
-export const listV2Jobs = async () =>
-  (await request<{ items: V2Job[] }>("/v2/jobs")).items;
+export interface ParseReview {
+  id: string;
+  severity: string;
+  status: string;
+  summary: string;
+  page_number?: number | null;
+}
 
-export const getV2Job = (id: string, signal?: AbortSignal) =>
-  request<V2Job>(`/v2/jobs/${encodeURIComponent(id)}`, { signal });
+export const listParseJobs = async () =>
+  (await request<{ items: AgenticParseJob[] }>("/v2/parse/jobs")).items;
 
-export const cancelV2Job = (id: string) =>
-  request<V2Job>(`/v2/jobs/${encodeURIComponent(id)}/cancel`, { method: "POST" });
+export const getParseJob = (id: string, signal?: AbortSignal) =>
+  request<AgenticParseJob>(`/v2/parse/jobs/${encodeURIComponent(id)}`, { signal });
 
-export async function createV2Job(file: File, settings: V2Settings): Promise<V2Job> {
+export const cancelParseJob = (id: string) =>
+  request<AgenticParseJob>(`/v2/parse/jobs/${encodeURIComponent(id)}/cancel`, { method: "POST" });
+
+export const getParseTrace = async (id: string, signal?: AbortSignal) =>
+  (await request<{ items: AgentTraceEvent[] }>(`/v2/parse/jobs/${encodeURIComponent(id)}/trace`, { signal })).items;
+
+export const listParseReviews = async (id: string, signal?: AbortSignal) =>
+  (await request<{ items: ParseReview[] }>(`/v2/parse/jobs/${encodeURIComponent(id)}/reviews`, { signal })).items;
+
+export async function createParseJob(file: File, settings: AgenticParseSettings): Promise<AgenticParseJob> {
   const body = new FormData();
   body.append("file", file);
-  body.append("settings", JSON.stringify(settings));
-  return request<V2Job>("/v2/jobs", { method: "POST", body });
-}
-
-export async function evaluateV2Job(jobId: string, labels: File): Promise<V2EvaluationReport> {
-  const body = new FormData();
-  body.append("labels", labels);
-  return request<V2EvaluationReport>(`/v2/jobs/${encodeURIComponent(jobId)}/evaluate`, {
-    method: "POST",
-    body,
-  });
+  body.append("model", settings.model);
+  return request<AgenticParseJob>("/v2/parse/jobs", { method: "POST", body });
 }

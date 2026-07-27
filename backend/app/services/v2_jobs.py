@@ -8,11 +8,14 @@ import uuid
 from typing import Protocol
 
 import httpx
+from pydantic import ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.config import settings
 from app.database import async_session
+from app.logging_setup import get_logger
 from app.models.db_models import ParseJob, V2PageTask
+from app.services.parsing.ingest import DocumentInputError
 from app.services.parsing.openai_document import OpenAIDocumentAdapter
 from app.services.parsing.storage import FileStore
 from app.services.parsing.v2_pipeline import V2PageProcessor
@@ -20,9 +23,25 @@ from app.services.parsing.v2_schema_extraction import V2SchemaExtractor
 from app.services.v2_tasks import V2TaskLeases
 from app.services.v2_worker import V2PageTaskRunner
 
+logger = get_logger("app.services.v2_jobs")
+
 
 class TaskRunner(Protocol):
     async def run(self, task: V2PageTask, *, owner: str) -> None: ...
+
+
+def _safe_error_detail(exc: Exception) -> str | None:
+    if isinstance(exc, DocumentInputError):
+        return exc.code
+    if isinstance(exc, ValidationError):
+        locations = [
+            ".".join(str(item) for item in error["loc"])
+            for error in exc.errors(include_context=False, include_input=False, include_url=False)[
+                :3
+            ]
+        ]
+        return ",".join(locations)[:240] or "validation_error"
+    return None
 
 
 class V2JobQueue:
@@ -80,8 +99,24 @@ class V2JobQueue:
                 except asyncio.CancelledError:
                     raise
                 except Exception as exc:
+                    max_attempts = (
+                        1 if isinstance(exc, (DocumentInputError, ValidationError)) else 3
+                    )
+                    logger.warning(
+                        "v2_page_task_failed",
+                        job_id=task.job_id,
+                        page_number=task.page_number,
+                        attempt=task.attempts,
+                        error_type=type(exc).__name__,
+                        error_detail=_safe_error_detail(exc),
+                    )
                     with contextlib.suppress(RuntimeError):
-                        await self.leases.fail(task.id, owner, error_message=type(exc).__name__)
+                        await self.leases.fail(
+                            task.id,
+                            owner,
+                            error_message=type(exc).__name__,
+                            max_attempts=max_attempts,
+                        )
             self._wake.clear()
 
     async def shutdown(self) -> None:

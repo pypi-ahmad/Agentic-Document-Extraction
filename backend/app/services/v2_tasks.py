@@ -58,7 +58,14 @@ class V2TaskLeases:
             await session.refresh(task)
             return task
 
-    async def complete(self, task_id: str, owner: str, *, result_path: str) -> None:
+    async def complete(
+        self,
+        task_id: str,
+        owner: str,
+        *,
+        result_path: str,
+        warnings: list[str] | None = None,
+    ) -> None:
         async with self.sessions() as session:
             task = await session.get(V2PageTask, task_id)
             if task is None or task.status != "leased" or task.lease_owner != owner:
@@ -68,6 +75,21 @@ class V2TaskLeases:
             task.lease_owner = None
             task.lease_expires_at = None
             task.error_message = None
+            checkpoint = await session.scalar(
+                select(PageCheckpoint).where(
+                    PageCheckpoint.job_id == task.job_id,
+                    PageCheckpoint.page_number == task.page_number,
+                )
+            )
+            if checkpoint is not None:
+                checkpoint.status = PageStatus.COMPLETED
+                checkpoint.stage = "page_complete"
+                checkpoint.layout_path = result_path
+                checkpoint.attempts = task.attempts
+                checkpoint.warnings = list(warnings or [])
+                checkpoint.error_code = None
+                checkpoint.error_message = None
+            await self._recompute_job_summary(session, task.job_id)
             await session.commit()
 
     async def fail(
@@ -85,17 +107,6 @@ class V2TaskLeases:
             task.lease_owner = None
             task.lease_expires_at = None
             task.error_message = error_message
-            if task.attempts < max_attempts:
-                task.status = "queued"
-                await session.commit()
-                return
-            task.status = "failed"
-            job = await session.get(ParseJob, task.job_id)
-            if job is not None:
-                job.status = JobStatus.FAILED
-                job.failed_pages = max(job.failed_pages, 1)
-                job.error_code = "page_task_failed"
-                job.error_message = f"Page {task.page_number} failed after {task.attempts} attempts"
             checkpoint = await session.scalar(
                 select(PageCheckpoint).where(
                     PageCheckpoint.job_id == task.job_id,
@@ -103,6 +114,40 @@ class V2TaskLeases:
                 )
             )
             if checkpoint is not None:
-                checkpoint.status = PageStatus.FAILED
+                checkpoint.attempts = task.attempts
+                checkpoint.error_code = error_message
                 checkpoint.error_message = error_message
+            if task.attempts < max_attempts:
+                task.status = "queued"
+                if checkpoint is not None:
+                    checkpoint.status = PageStatus.PENDING
+                await session.commit()
+                return
+            task.status = "failed"
+            if checkpoint is not None:
+                checkpoint.status = PageStatus.FAILED
+            await self._recompute_job_summary(session, task.job_id)
             await session.commit()
+
+    async def _recompute_job_summary(self, session: AsyncSession, job_id: str) -> None:
+        job = await session.scalar(select(ParseJob).where(ParseJob.id == job_id).with_for_update())
+        if job is None:
+            return
+        tasks = list(
+            await session.scalars(
+                select(V2PageTask)
+                .where(V2PageTask.job_id == job_id)
+                .order_by(V2PageTask.page_number)
+            )
+        )
+        failed = [task for task in tasks if task.status == "failed"]
+        job.current_page = None
+        job.completed_pages = sum(task.status == "completed" for task in tasks)
+        job.failed_pages = len(failed)
+        if tasks and len(failed) + job.completed_pages == len(tasks) and failed:
+            job.status = JobStatus.FAILED
+            job.error_code = "page_task_failed"
+            job.error_message = (
+                f"{len(failed)} page task{'s' if len(failed) != 1 else ''} failed; "
+                f"first failed page: {failed[0].page_number}"
+            )

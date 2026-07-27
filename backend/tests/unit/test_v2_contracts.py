@@ -3,13 +3,21 @@ from pydantic import ValidationError
 
 from app.services.parsing.v2_contracts import (
     BoundingBox,
+    DocumentItem,
+    DocumentPage,
     DocumentResult,
     DocumentSplit,
     ExtractionField,
     GroundedChunk,
     Grounding,
     GroundingMethod,
+    ItemVerification,
+    MarkdownSpan,
+    PageDimensions,
     ProcessingMode,
+    QualitySummary,
+    SchemaExtraction,
+    SourceDocument,
     VerificationStatus,
     mode_policy,
 )
@@ -41,6 +49,46 @@ def _chunk() -> GroundedChunk:
     )
 
 
+def _item() -> DocumentItem:
+    return DocumentItem(
+        id="p0001-c0001",
+        order=1,
+        type="heading",
+        text="Quarterly Report",
+        markdown_span=MarkdownSpan(start=0, end=18),
+        grounding=[_grounding()],
+        verification=ItemVerification(
+            status=VerificationStatus.VERIFIED,
+            model="gpt-5.6-luna",
+            pass_name="page_draft",
+        ),
+    )
+
+
+def _document(*, extraction: SchemaExtraction | None = None) -> DocumentResult:
+    return DocumentResult(
+        source=SourceDocument(
+            filename="invoice.pdf",
+            sha256="a" * 64,
+            mime_type="application/pdf",
+            page_count=1,
+        ),
+        status="completed",
+        quality_summary=QualitySummary(verified_items=1),
+        pages=[
+            DocumentPage(
+                number=1,
+                dimensions=PageDimensions(width=612, height=792, unit="pdf_points"),
+                verification_status=VerificationStatus.VERIFIED,
+                markdown="# Quarterly Report",
+                items=[_item()],
+            )
+        ],
+        extraction=extraction,
+        processing={"mode": "balanced"},
+    )
+
+
 def test_verified_chunk_requires_visual_or_text_layer_evidence() -> None:
     with pytest.raises(ValidationError, match="verified chunk requires grounding"):
         GroundedChunk(
@@ -60,13 +108,10 @@ def test_grounded_field_requires_citations_to_existing_chunks() -> None:
     field = ExtractionField(value="ACME-42", status="grounded", citations=["missing"])
 
     with pytest.raises(ValidationError, match="unknown citation"):
-        DocumentResult(
-            source_filename="invoice.pdf",
-            source_sha256="a" * 64,
-            page_count=1,
-            markdown='<a id="p0001-c0001"></a>\n\n# Quarterly Report',
-            chunks=[_chunk()],
-            extraction={"invoice_number": field},
+        _document(
+            extraction=SchemaExtraction(
+                data={"invoice_number": "ACME-42"}, fields={"invoice_number": field}
+            )
         )
 
 
@@ -75,14 +120,32 @@ def test_unresolved_field_cannot_expose_an_unsupported_value() -> None:
         ExtractionField(value="guess", status="unresolved", citations=[])
 
 
-def test_document_result_requires_markdown_anchor_for_every_chunk() -> None:
-    with pytest.raises(ValidationError, match="missing Markdown anchor"):
+def test_document_result_uses_page_spans_without_global_markdown_or_chunks() -> None:
+    document = _document()
+
+    payload = document.model_dump(mode="json", by_alias=True)
+
+    assert payload["schema_version"] == "paperplane-document/v3"
+    assert "markdown" not in payload
+    assert "chunks" not in payload
+    assert payload["pages"][0]["items"][0]["markdown_span"] == {"start": 0, "end": 18}
+
+
+def test_document_item_span_must_fit_its_page_markdown() -> None:
+    page = _document().pages[0].model_copy(deep=True)
+    page.items[0].markdown_span.end = 999
+
+    with pytest.raises(ValidationError, match="markdown span"):
         DocumentResult(
-            source_filename="report.pdf",
-            source_sha256="b" * 64,
-            page_count=1,
-            markdown="# Quarterly Report",
-            chunks=[_chunk()],
+            source=SourceDocument(
+                filename="report.pdf",
+                sha256="b" * 64,
+                mime_type="application/pdf",
+                page_count=1,
+            ),
+            status="completed",
+            pages=[page],
+            processing={"mode": "balanced"},
         )
 
 
@@ -98,18 +161,22 @@ def test_processing_modes_have_bounded_inspection_budgets() -> None:
 def test_document_split_must_reference_known_pages_and_chunks() -> None:
     with pytest.raises(ValidationError, match=r"split .* unknown chunk"):
         DocumentResult(
-            source_filename="mixed.pdf",
-            source_sha256="d" * 64,
-            page_count=1,
-            markdown='<a id="p0001-c0001"></a>\n\n# Quarterly Report',
-            chunks=[_chunk()],
+            source=SourceDocument(
+                filename="mixed.pdf",
+                sha256="d" * 64,
+                mime_type="application/pdf",
+                page_count=1,
+            ),
+            status="completed",
+            pages=[_document().pages[0]],
+            processing={"mode": "balanced"},
             splits=[
                 DocumentSplit(
                     id="split-1",
                     classification="invoice",
                     identifier="INV-42",
                     pages=[1],
-                    chunk_ids=["missing"],
+                    item_ids=["missing"],
                     boundary_reasons=["start_of_file"],
                 )
             ],
