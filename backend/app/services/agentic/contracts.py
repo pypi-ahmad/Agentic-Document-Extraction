@@ -266,6 +266,13 @@ class AgenticPageInput(BaseModel):
     blocks: list[AgenticBlockInput] = Field(default_factory=list)
 
 
+def _find_sequential(haystack: str, needle: str, cursor: int, *, error: str) -> tuple[int, int]:
+    start = haystack.find(needle, cursor)
+    if start < 0:
+        raise ValueError(error)
+    return start, start + len(needle)
+
+
 def assemble_parse_response(
     *,
     document_id: str,
@@ -327,12 +334,12 @@ def assemble_parse_response(
                 cell_search_start = 0
                 cells: list[StructureNode] = []
                 for cell in block.table_cells:
-                    local_start = block.markdown.find(cell.markdown, cell_search_start)
-                    if local_start < 0:
-                        raise ValueError(
-                            "table cell Markdown must occur in its parent table Markdown"
-                        )
-                    local_end = local_start + len(cell.markdown)
+                    local_start, local_end = _find_sequential(
+                        block.markdown,
+                        cell.markdown,
+                        cell_search_start,
+                        error="table cell Markdown must occur in its parent table Markdown",
+                    )
                     cell_search_start = local_end
                     cells.append(
                         StructureNode(
@@ -390,10 +397,12 @@ def _assemble_atomic_grounding(
     search_start = 0
     grounding: list[AtomicGrounding] = []
     for line in lines:
-        local_start = markdown.find(line.text, search_start)
-        if local_start < 0:
-            raise ValueError("atomic grounding text must occur in its parent Markdown")
-        local_end = local_start + len(line.text)
+        local_start, local_end = _find_sequential(
+            markdown,
+            line.text,
+            search_start,
+            error="atomic grounding text must occur in its parent Markdown",
+        )
         search_start = local_end
         grounding.append(
             AtomicGrounding(

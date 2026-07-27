@@ -250,7 +250,7 @@ def _fallback_evidence(value: Any) -> list[SourceEvidence]:
         return []
     if isinstance(value, bool):
         return [SourceEvidence(text=str(value).lower())]
-    if isinstance(value, (str, int, float)) and not isinstance(value, bool):
+    if isinstance(value, (str, int, float)):
         return [SourceEvidence(text=str(value))]
     return []
 
