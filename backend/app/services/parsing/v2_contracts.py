@@ -129,53 +129,128 @@ class ExtractionField(BaseModel):
         return self
 
 
+class MarkdownSpan(BaseModel):
+    """Half-open Unicode code-point offsets into a page's Markdown."""
+
+    start: int = Field(ge=0)
+    end: int = Field(ge=0)
+
+    @model_validator(mode="after")
+    def require_ordered_offsets(self) -> MarkdownSpan:
+        if self.end < self.start:
+            raise ValueError("markdown span end must be greater than or equal to start")
+        return self
+
+
+class ItemVerification(BaseModel):
+    status: VerificationStatus = VerificationStatus.CANDIDATE
+    model: str
+    pass_name: str = Field(alias="pass")
+    warnings: list[str] = Field(default_factory=list)
+
+    model_config = {"populate_by_name": True}
+
+
+class DocumentItem(BaseModel):
+    id: str = Field(pattern=r"^[A-Za-z0-9][A-Za-z0-9._:-]*$")
+    order: int = Field(ge=1)
+    type: ChunkType
+    text: str
+    markdown_span: MarkdownSpan
+    parent_id: str | None = None
+    grounding: list[Grounding] = Field(default_factory=list)
+    verification: ItemVerification
+
+    @model_validator(mode="after")
+    def require_verified_evidence(self) -> DocumentItem:
+        if self.verification.status == VerificationStatus.VERIFIED and not self.grounding:
+            raise ValueError("verified item requires grounding evidence")
+        return self
+
+
+class PageDimensions(BaseModel):
+    width: float = Field(gt=0)
+    height: float = Field(gt=0)
+    unit: Literal["pdf_points", "image_pixels"]
+
+
+class DocumentPage(BaseModel):
+    number: int = Field(ge=1)
+    dimensions: PageDimensions
+    verification_status: VerificationStatus
+    markdown: str
+    warnings: list[str] = Field(default_factory=list)
+    items: list[DocumentItem] = Field(default_factory=list)
+
+
+class SourceDocument(BaseModel):
+    filename: str
+    sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    mime_type: str = "application/pdf"
+    page_count: int = Field(ge=1)
+
+
+class QualitySummary(BaseModel):
+    verified_items: int = Field(default=0, ge=0)
+    candidate_items: int = Field(default=0, ge=0)
+    unresolved_items: int = Field(default=0, ge=0)
+    warning_count: int = Field(default=0, ge=0)
+
+
+class SchemaExtraction(BaseModel):
+    data: Any
+    fields: dict[str, ExtractionField] = Field(default_factory=dict)
+
+
 class DocumentSplit(BaseModel):
     id: str
     classification: str
     identifier: str | None = None
     pages: list[int] = Field(min_length=1)
-    chunk_ids: list[str] = Field(default_factory=list)
+    item_ids: list[str] = Field(default_factory=list)
     boundary_reasons: list[str] = Field(default_factory=list)
 
 
 class DocumentResult(BaseModel):
-    schema_version: Literal["paperplane-document/v2"] = "paperplane-document/v2"
-    source_filename: str
-    source_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
-    page_count: int = Field(ge=1)
-    markdown: str
-    chunks: list[GroundedChunk]
+    schema_version: Literal["paperplane-document/v3"] = "paperplane-document/v3"
+    source: SourceDocument
+    status: Literal["completed", "completed_with_warnings"]
+    quality_summary: QualitySummary = Field(default_factory=QualitySummary)
+    pages: list[DocumentPage] = Field(min_length=1)
     splits: list[DocumentSplit] = Field(default_factory=list)
-    extraction: dict[str, ExtractionField] = Field(default_factory=dict)
+    extraction: SchemaExtraction | None = None
     usage: dict[str, Any] = Field(default_factory=dict)
-    metadata: dict[str, Any] = Field(default_factory=dict)
+    processing: dict[str, Any]
 
     @model_validator(mode="after")
     def validate_grounded_graph(self) -> DocumentResult:
-        chunk_ids = [chunk.id for chunk in self.chunks]
-        if len(chunk_ids) != len(set(chunk_ids)):
-            raise ValueError("chunk IDs must be unique")
-        known_ids = set(chunk_ids)
-        for chunk in self.chunks:
-            if chunk.page > self.page_count:
-                raise ValueError(f"chunk {chunk.id} references page outside document")
-            anchor = f'<a id="{chunk.id}"></a>'
-            if anchor not in self.markdown:
-                raise ValueError(f"missing Markdown anchor for chunk {chunk.id}")
-            related_ids = set(chunk.children)
-            if chunk.parent_id:
-                related_ids.add(chunk.parent_id)
-            unknown = related_ids - known_ids
-            if unknown:
-                raise ValueError(f"chunk {chunk.id} references unknown chunk {sorted(unknown)[0]}")
-        for name, field in self.extraction.items():
+        if len(self.pages) != self.source.page_count:
+            raise ValueError("page count does not match source")
+        if [page.number for page in self.pages] != list(range(1, self.source.page_count + 1)):
+            raise ValueError("pages must be contiguous and ordered")
+        items = [item for page in self.pages for item in page.items]
+        item_ids = [item.id for item in items]
+        if len(item_ids) != len(set(item_ids)):
+            raise ValueError("item IDs must be unique")
+        known_ids = set(item_ids)
+        page_by_item = {item.id: page.number for page in self.pages for item in page.items}
+        for page in self.pages:
+            for item in page.items:
+                if item.markdown_span.end > len(page.markdown):
+                    raise ValueError(f"item {item.id} markdown span is outside page markdown")
+                if item.parent_id:
+                    if item.parent_id not in known_ids:
+                        raise ValueError(f"item {item.id} references unknown item {item.parent_id}")
+                    if page_by_item[item.parent_id] != page.number:
+                        raise ValueError(f"item {item.id} parent must be on the same page")
+        for name, field in (self.extraction.fields if self.extraction else {}).items():
             for citation in field.citations:
                 if citation not in known_ids:
                     raise ValueError(f"field {name} has unknown citation {citation}")
         for split in self.splits:
-            if any(page < 1 or page > self.page_count for page in split.pages):
+            if any(page < 1 or page > self.source.page_count for page in split.pages):
                 raise ValueError(f"split {split.id} references page outside document")
-            unknown = set(split.chunk_ids) - known_ids
+            unknown = set(split.item_ids) - known_ids
             if unknown:
                 raise ValueError(f"split {split.id} references unknown chunk {sorted(unknown)[0]}")
         return self
@@ -183,14 +258,22 @@ class DocumentResult(BaseModel):
 
 __all__ = [
     "BoundingBox",
+    "DocumentItem",
+    "DocumentPage",
     "DocumentResult",
     "DocumentSplit",
     "ExtractionField",
     "GroundedChunk",
     "Grounding",
     "GroundingMethod",
+    "ItemVerification",
+    "MarkdownSpan",
     "ModePolicy",
+    "PageDimensions",
     "ProcessingMode",
+    "QualitySummary",
+    "SchemaExtraction",
+    "SourceDocument",
     "VerificationStatus",
     "mode_policy",
 ]

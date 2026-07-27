@@ -127,7 +127,7 @@ async def test_v2_history_and_cancel_use_clean_contract(api) -> None:
     assert cancelled.json()["status"] == "cancelled"
 
 
-async def test_v2_artifact_download_is_scoped_to_job(api) -> None:
+async def test_v2_pdf_artifact_preview_and_download_are_scoped_to_job(api) -> None:
     client, sessions, store, _ = api
     async with sessions() as session:
         session.add(
@@ -143,25 +143,59 @@ async def test_v2_artifact_download_is_scoped_to_job(api) -> None:
                 settings={"mode": "balanced", "segment_documents": True},
                 artifacts=[
                     Artifact(
-                        id="document",
-                        type="document_json",
-                        relative_path="jobs-v2/job/document.json",
-                        mime_type="application/json",
-                        size=2,
+                        id="annotated",
+                        type="annotated_pdf",
+                        relative_path="jobs-v2/job/annotated.pdf",
+                        mime_type="application/pdf",
+                        size=3,
                         sha256="b" * 64,
                     )
                 ],
             )
         )
         await session.commit()
-    store.write("jobs-v2/job/document.json", b"{}")
+    store.write("jobs-v2/job/annotated.pdf", b"pdf")
 
-    response = await client.get("/api/v2/jobs/job/artifacts/document")
-    missing = await client.get("/api/v2/jobs/other/artifacts/document")
+    detail = await client.get("/api/v2/jobs/job")
+    download = await client.get("/api/v2/jobs/job/artifacts/annotated")
+    preview = await client.get("/api/v2/jobs/job/artifacts/annotated?disposition=inline")
+    missing = await client.get("/api/v2/jobs/other/artifacts/annotated")
 
-    assert response.status_code == 200 and response.content == b"{}"
-    assert response.headers["content-disposition"] == 'attachment; filename="document.json"'
+    artifact = detail.json()["artifacts"][0]
+    assert artifact["download_url"] == "/api/v2/jobs/job/artifacts/annotated"
+    assert artifact["preview_url"] == ("/api/v2/jobs/job/artifacts/annotated?disposition=inline")
+    assert download.status_code == 200 and download.content == b"pdf"
+    assert download.headers["content-disposition"] == 'attachment; filename="annotated.pdf"'
+    assert preview.headers["content-disposition"] == 'inline; filename="annotated.pdf"'
     assert missing.status_code == 404
+
+
+async def test_v2_source_preview_is_authenticated_and_inline(api) -> None:
+    client, sessions, store, _ = api
+    source = _pdf()
+    async with sessions() as session:
+        session.add(
+            ParseJob(
+                id="source-job",
+                original_filename="scan.pdf",
+                source_path="jobs-v2/source-job/source.pdf",
+                source_mime="application/pdf",
+                source_size=len(source),
+                source_sha256="a" * 64,
+                page_count=1,
+                status="completed",
+                settings={"mode": "balanced", "segment_documents": True},
+            )
+        )
+        await session.commit()
+    store.write("jobs-v2/source-job/source.pdf", source)
+
+    job = await client.get("/api/v2/jobs/source-job")
+    preview = await client.get("/api/v2/jobs/source-job/source")
+
+    assert job.json()["source_preview_url"] == "/api/v2/jobs/source-job/source"
+    assert preview.status_code == 200 and preview.content == source
+    assert preview.headers["content-disposition"] == 'inline; filename="scan.pdf"'
 
 
 async def test_v2_job_snapshots_schema_for_terra_extraction(api) -> None:
@@ -202,34 +236,48 @@ async def test_v2_job_snapshots_schema_for_terra_extraction(api) -> None:
 async def test_v2_completed_job_can_be_evaluated_against_grounded_labels(api) -> None:
     client, sessions, store, _ = api
     predicted = {
-        "schema_version": "paperplane-document/v2",
-        "source_filename": "scan.pdf",
-        "source_sha256": "a" * 64,
-        "page_count": 1,
-        "markdown": '<a id="p0001-c0001"></a>\n\nHello',
-        "chunks": [
+        "schema_version": "paperplane-document/v3",
+        "source": {
+            "filename": "scan.pdf",
+            "sha256": "a" * 64,
+            "mime_type": "application/pdf",
+            "page_count": 1,
+        },
+        "status": "completed",
+        "quality_summary": {"verified_items": 1},
+        "pages": [
             {
-                "id": "p0001-c0001",
-                "page": 1,
-                "order": 1,
-                "type": "text",
-                "text": "Hello",
+                "number": 1,
+                "dimensions": {"width": 200, "height": 300, "unit": "pdf_points"},
+                "verification_status": "verified",
                 "markdown": "Hello",
-                "grounding": [
+                "items": [
                     {
-                        "page": 1,
-                        "box": {"left": 0.1, "top": 0.1, "right": 0.5, "bottom": 0.2},
-                        "method": "vision_refined",
-                        "source_box": [10, 10, 50, 20],
-                        "source_unit": "image_pixels",
-                        "evidence_artifact_id": "crop",
+                        "id": "p0001-c0001",
+                        "order": 1,
+                        "type": "text",
+                        "text": "Hello",
+                        "markdown_span": {"start": 0, "end": 5},
+                        "grounding": [
+                            {
+                                "page": 1,
+                                "box": {"left": 0.1, "top": 0.1, "right": 0.5, "bottom": 0.2},
+                                "method": "vision_refined",
+                                "source_box": [10, 10, 50, 20],
+                                "source_unit": "image_pixels",
+                                "evidence_artifact_id": "crop",
+                            }
+                        ],
+                        "verification": {
+                            "status": "verified",
+                            "model": "gpt-5.6-terra",
+                            "pass": "page_reconciliation",
+                        },
                     }
                 ],
-                "verification_status": "verified",
-                "source_model": "gpt-5.6-terra",
-                "source_pass": "crop_verification",
             }
         ],
+        "processing": {"mode": "audit"},
     }
     encoded = __import__("json").dumps(predicted).encode()
     async with sessions() as session:
@@ -247,7 +295,7 @@ async def test_v2_completed_job_can_be_evaluated_against_grounded_labels(api) ->
                 artifacts=[
                     Artifact(
                         id="doc",
-                        type="document_json",
+                        type="json",
                         relative_path="jobs-v2/eval-job/document.json",
                         mime_type="application/json",
                         size=len(encoded),

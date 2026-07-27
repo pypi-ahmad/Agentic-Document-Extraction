@@ -6,24 +6,45 @@ import asyncio
 import datetime as dt
 import hashlib
 import json
+import re
 import uuid
-from typing import Any
+from collections.abc import Mapping, Sequence
+from typing import Any, Protocol
 
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from sqlalchemy.orm import selectinload
 
 from app.config import settings
+from app.logging_setup import get_logger
 from app.models.db_models import Artifact, ParseJob, V2PageTask
 from app.models.enums import JobStatus, PageStatus
+from app.services.agentic.contracts import (
+    AgenticBlockInput,
+    AgenticPageInput,
+    AtomicLineInput,
+    BlockType,
+    NormalizedBox,
+    assemble_parse_response,
+)
+from app.services.agentic.supervisor import AdaptiveDocumentSupervisor
 from app.services.parsing.ingest import render_page
 from app.services.parsing.openai_document import OpenAIUsage
+from app.services.parsing.review_cases import sync_grounded_review_case
 from app.services.parsing.storage import ObjectStore
 from app.services.parsing.v2_annotations import build_annotated_pdf
 from app.services.parsing.v2_cache import PageResultCache, page_cache_key
 from app.services.parsing.v2_contracts import (
+    DocumentItem,
+    DocumentPage,
     DocumentResult,
+    ItemVerification,
+    MarkdownSpan,
+    PageDimensions,
     ProcessingMode,
+    QualitySummary,
+    SchemaExtraction,
+    SourceDocument,
     VerificationStatus,
     mode_policy,
 )
@@ -33,9 +54,198 @@ from app.services.parsing.v2_schema_extraction import V2SchemaExtractor
 from app.services.parsing.v2_segmentation import build_document_splits
 from app.services.v2_tasks import V2TaskLeases
 
+ASSEMBLY_MAX_ATTEMPTS = 3
+logger = get_logger("app.services.v2_worker")
+_ANCHOR_LINE = re.compile(r'^<a id="[^"]+"></a>\r?\n(?:\r?\n)?', re.MULTILINE)
+_BLOCK_TYPE_MAP: dict[str, tuple[BlockType, str | None]] = {
+    "title": ("text", "title"),
+    "heading": ("text", "heading"),
+    "text": ("text", None),
+    "list": ("text", "list"),
+    "checkbox": ("text", "checkbox"),
+    "table": ("table", None),
+    "table_cell": ("text", "table_cell"),
+    "form_field": ("text", "form_field"),
+    "figure": ("figure", None),
+    "chart": ("figure", "chart"),
+    "header": ("marginalia", "header"),
+    "footer": ("marginalia", "footer"),
+}
+
+
+class IncompletePageSetError(RuntimeError):
+    pass
+
+
+class AgenticSupervisor(Protocol):
+    async def run_document(
+        self,
+        pages: Sequence[Mapping[str, object]],
+        *,
+        model: str,
+        thread_id: str,
+    ) -> dict[str, object]: ...
+
 
 def _sha256(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
+
+
+def build_clean_markdown(page_results: list[PageResult]) -> str:
+    pages = [
+        _ANCHOR_LINE.sub("", result.markdown).strip()
+        for result in sorted(page_results, key=lambda item: item.page_number)
+    ]
+    return "\n\n<!-- PAGE BREAK -->\n\n".join(pages)
+
+
+def _document_page(result: PageResult) -> DocumentPage:
+    items: list[DocumentItem] = []
+    cursor = 0
+    for chunk in result.chunks:
+        start = result.markdown.find(chunk.markdown.strip(), cursor)
+        if start < 0:
+            start = result.markdown.find(chunk.markdown.strip())
+        if start < 0:
+            start = end = 0
+        else:
+            end = start + len(chunk.markdown.strip())
+            cursor = end
+        items.append(
+            DocumentItem(
+                id=chunk.id,
+                order=chunk.order,
+                type=chunk.type,
+                text=chunk.text,
+                markdown_span=MarkdownSpan(start=start, end=end),
+                parent_id=chunk.parent_id,
+                grounding=chunk.grounding,
+                verification=ItemVerification(
+                    status=chunk.verification_status,
+                    model=chunk.source_model,
+                    pass_name=chunk.source_pass,
+                    warnings=chunk.warnings,
+                ),
+            )
+        )
+    statuses = {item.verification.status for item in items}
+    page_status = (
+        VerificationStatus.UNRESOLVED
+        if VerificationStatus.UNRESOLVED in statuses
+        else VerificationStatus.CANDIDATE
+        if VerificationStatus.CANDIDATE in statuses
+        else VerificationStatus.VERIFIED
+    )
+    return DocumentPage(
+        number=result.page_number,
+        dimensions=PageDimensions(
+            width=result.width, height=result.height, unit=result.source_unit
+        ),
+        verification_status=page_status,
+        markdown=result.markdown,
+        warnings=[warning for chunk in result.chunks for warning in chunk.warnings],
+        items=items,
+    )
+
+
+def _default_agentic_supervisor() -> AdaptiveDocumentSupervisor:
+    async def assess(page: Mapping[str, object]) -> Mapping[str, object]:
+        result = page["page_result"]
+        if not isinstance(result, PageResult):
+            raise TypeError("agentic page payload must contain a PageResult")
+        types = {chunk.type for chunk in result.chunks}
+        roles = ["text_fidelity", "hierarchy_order"]
+        if types & {"table", "table_cell"}:
+            roles.append("tables")
+        if types & {"form_field", "checkbox"}:
+            roles.append("forms")
+        if types & {"figure", "chart"}:
+            roles.append("visual")
+        if any(chunk.warnings for chunk in result.chunks):
+            roles.append("special_marks")
+        return {"roles": roles}
+
+    async def specialize(page: Mapping[str, object], role: str, wave: int) -> Mapping[str, object]:
+        result = page["page_result"]
+        if not isinstance(result, PageResult):
+            raise TypeError("agentic page payload must contain a PageResult")
+        return {"summary": f"{role} assessed {len(result.chunks)} grounded blocks"}
+
+    async def critique(
+        page: Mapping[str, object], actions: Sequence[Mapping[str, object]], wave: int
+    ) -> Mapping[str, object]:
+        result = page["page_result"]
+        if not isinstance(result, PageResult):
+            raise TypeError("agentic page payload must contain a PageResult")
+        unresolved = any(
+            chunk.verification_status == VerificationStatus.UNRESOLVED for chunk in result.chunks
+        )
+        return {"accepted": not unresolved, "request_roles": []}
+
+    return AdaptiveDocumentSupervisor(
+        assessor=assess,
+        specialist=specialize,
+        critic=critique,
+    )
+
+
+def _normalised_box(result: PageResult, chunk: Any) -> NormalizedBox:
+    if chunk.grounding:
+        box = chunk.grounding[0].box
+        return NormalizedBox(left=box.left, top=box.top, right=box.right, bottom=box.bottom)
+    return NormalizedBox(left=0, top=0, right=1, bottom=1)
+
+
+def _atomic_lines(markdown: str, box: NormalizedBox) -> list[AtomicLineInput]:
+    return [AtomicLineInput(text=line, box=box) for line in markdown.splitlines() if line.strip()]
+
+
+def _agentic_page(result: PageResult) -> AgenticPageInput:
+    chunks = sorted(result.chunks, key=lambda item: item.order)
+    children_by_parent: dict[str, list[Any]] = {}
+    for chunk in chunks:
+        if chunk.type == "table_cell" and chunk.parent_id:
+            children_by_parent.setdefault(chunk.parent_id, []).append(chunk)
+
+    blocks: list[AgenticBlockInput] = []
+    nested_ids: set[str] = set()
+    for chunk in chunks:
+        if chunk.id in nested_ids:
+            continue
+        block_type, semantic_role = _BLOCK_TYPE_MAP[chunk.type]
+
+        box = _normalised_box(result, chunk)
+        table_cells: list[AgenticBlockInput] = []
+        if block_type == "table":
+            cursor = 0
+            for cell_index, cell in enumerate(children_by_parent.get(chunk.id, [])):
+                start = chunk.markdown.find(cell.markdown, cursor)
+                if start < 0:
+                    continue
+                cursor = start + len(cell.markdown)
+                nested_ids.add(cell.id)
+                cell_box = _normalised_box(result, cell)
+                table_cells.append(
+                    AgenticBlockInput(
+                        type="table_cell",
+                        markdown=cell.markdown,
+                        box=cell_box,
+                        atomic_lines=_atomic_lines(cell.markdown, cell_box),
+                        row=0,
+                        col=cell_index,
+                    )
+                )
+        blocks.append(
+            AgenticBlockInput(
+                type=block_type,
+                markdown=chunk.markdown,
+                box=box,
+                semantic_role=semantic_role,
+                atomic_lines=_atomic_lines(chunk.markdown, box),
+                table_cells=table_cells,
+            )
+        )
+    return AgenticPageInput(page_number=result.page_number, blocks=blocks)
 
 
 class V2PageTaskRunner:
@@ -47,12 +257,14 @@ class V2PageTaskRunner:
         leases: V2TaskLeases,
         *,
         extractor: V2SchemaExtractor | None = None,
+        agentic_supervisor: AgenticSupervisor | None = None,
     ) -> None:
         self.sessions = sessions
         self.store = store
         self.processor = processor
         self.leases = leases
         self.extractor = extractor
+        self.agentic_supervisor = agentic_supervisor
 
     async def run(self, task: V2PageTask, *, owner: str) -> None:
         async with self.sessions() as session:
@@ -75,6 +287,8 @@ class V2PageTaskRunner:
             source_path = job.source_path
             source_sha256 = job.source_sha256
             mode = ProcessingMode(job.settings.get("mode", "balanced"))
+            api_family = job.settings.get("api_family")
+            agentic_model = str(job.settings.get("model", "paperplane-ade-latest"))
 
         source = await asyncio.to_thread(self.store.read, source_path)
         policy = mode_policy(mode)
@@ -85,7 +299,7 @@ class V2PageTaskRunner:
         cache_key = page_cache_key(
             rendered.image_png,
             mode=f"{mode.value}:p{task.page_number}",
-            prompt_version="v2",
+            prompt_version="v8",
         )
         result = await asyncio.to_thread(cache.get, cache_key)
         if result is None:
@@ -105,25 +319,77 @@ class V2PageTaskRunner:
             path = f"jobs-v2/{task.job_id}/evidence/{_sha256(evidence_id.encode())[:20]}.png"
             await asyncio.to_thread(self.store.write, path, data)
 
-        await self.leases.complete(task.id, owner, result_path=result_path)
+        if api_family == "agentic_v2":
+            supervisor = self.agentic_supervisor
+            if supervisor is None:
+                supervisor = _default_agentic_supervisor()
+                self.agentic_supervisor = supervisor
+            supervised = await supervisor.run_document(
+                [{"page_number": task.page_number, "page_result": result}],
+                model=agentic_model,
+                thread_id=f"{task.job_id}:page:{task.page_number}",
+            )
+            trace_path = f"jobs-v2/{task.job_id}/pages/p{task.page_number:04d}.trace.json"
+            await asyncio.to_thread(
+                self.store.write,
+                trace_path,
+                json.dumps(supervised, indent=2).encode(),
+            )
+
+        await self.leases.complete(
+            task.id,
+            owner,
+            result_path=result_path,
+            warnings=[warning for chunk in result.chunks for warning in chunk.warnings],
+        )
+        await self._assemble_with_retries(task.job_id)
+
+    async def _assemble_with_retries(self, job_id: str) -> None:
+        for attempt in range(1, ASSEMBLY_MAX_ATTEMPTS + 1):
+            try:
+                await self._assemble_if_complete(job_id)
+                return
+            except Exception as exc:
+                error_type = type(exc).__name__
+                if attempt < ASSEMBLY_MAX_ATTEMPTS:
+                    logger.warning(
+                        "v2_assembly_retry",
+                        job_id=job_id,
+                        attempt=attempt,
+                        error_type=error_type,
+                    )
+                    continue
+                logger.error(
+                    "v2_assembly_failed",
+                    job_id=job_id,
+                    attempt=attempt,
+                    error_type=error_type,
+                )
+                await self._fail_assembly(job_id, error_type)
+
+    async def _fail_assembly(self, job_id: str, error_type: str) -> None:
         async with self.sessions() as session:
             job = await session.scalar(
-                select(ParseJob)
-                .where(ParseJob.id == task.job_id)
-                .options(selectinload(ParseJob.pages))
+                select(ParseJob).where(ParseJob.id == job_id).with_for_update()
             )
             if job is None:
                 return
-            checkpoint = next(page for page in job.pages if page.page_number == task.page_number)
-            checkpoint.status = PageStatus.COMPLETED
-            checkpoint.stage = "page_complete"
-            checkpoint.layout_path = result_path
-            checkpoint.attempts = task.attempts
-            checkpoint.warnings = [warning for chunk in result.chunks for warning in chunk.warnings]
-            job.completed_pages = sum(page.status == PageStatus.COMPLETED for page in job.pages)
+            tasks = list(
+                await session.scalars(
+                    select(V2PageTask)
+                    .where(V2PageTask.job_id == job_id)
+                    .order_by(V2PageTask.page_number)
+                )
+            )
+            job.status = JobStatus.FAILED
             job.current_page = None
+            job.completed_pages = sum(task.status == "completed" for task in tasks)
+            job.failed_pages = sum(task.status == "failed" for task in tasks)
+            job.error_code = "assembly_failed"
+            job.error_message = (
+                f"Assembly failed after {ASSEMBLY_MAX_ATTEMPTS} attempts: {error_type}"[:240]
+            )
             await session.commit()
-        await self._assemble_if_complete(task.job_id)
 
     async def _assemble_if_complete(self, job_id: str) -> None:
         async with self.sessions() as session:
@@ -145,14 +411,20 @@ class V2PageTaskRunner:
             )
             if job is None:
                 return
+            expected_pages = list(range(1, job.page_count + 1))
+            if [task.page_number for task in tasks] != expected_pages:
+                raise IncompletePageSetError("page tasks do not match job page_count")
             job.status = JobStatus.ASSEMBLING
             await session.commit()
             filename = job.original_filename
             source_path = job.source_path
+            source_mime = job.source_mime
             source_sha256 = job.source_sha256
             page_count = job.page_count
             segment_documents = bool(job.settings.get("segment_documents", True))
             mode = ProcessingMode(job.settings.get("mode", "balanced"))
+            api_family = job.settings.get("api_family")
+            agentic_model = str(job.settings.get("model", "paperplane-ade-latest"))
             extraction_schema = job.extraction_schema_snapshot
 
         page_results = [
@@ -162,8 +434,10 @@ class V2PageTaskRunner:
             for task in tasks
             if task.result_path
         ]
+        if [result.page_number for result in page_results] != expected_pages:
+            raise IncompletePageSetError("page results do not match job page_count")
         chunks = [chunk for result in page_results for chunk in result.chunks]
-        markdown = "\n\n".join(result.markdown for result in page_results)
+        clean_markdown = build_clean_markdown(page_results)
         usage: dict[str, Any] = {
             "input_tokens": sum(result.input_tokens for result in page_results),
             "output_tokens": sum(result.output_tokens for result in page_results),
@@ -182,7 +456,7 @@ class V2PageTaskRunner:
         structured_data = None
         if extraction_schema and self.extractor is not None:
             outcome = await self.extractor.extract(
-                markdown=markdown,
+                markdown=clean_markdown,
                 chunks=chunks,
                 user_schema=extraction_schema["json_schema"],
                 source_sha256=source_sha256,
@@ -227,46 +501,107 @@ class V2PageTaskRunner:
                 "cost_by_model": cost.by_model if pricing_configured else {},
             }
         )
-        document = DocumentResult(
-            source_filename=filename,
-            source_sha256=source_sha256,
-            page_count=page_count,
-            markdown=markdown,
-            chunks=chunks,
-            splits=build_document_splits(chunks, page_count=page_count, enabled=segment_documents),
-            extraction=extraction,
-            usage=usage,
-            metadata={
-                "draft_model": "gpt-5.6-luna",
-                "verification_model": "gpt-5.6-terra",
-                "structured_data": structured_data,
-            },
+        unresolved_items = sum(
+            chunk.verification_status == VerificationStatus.UNRESOLVED for chunk in chunks
         )
+        extraction_unresolved = sum(field.status == "unresolved" for field in extraction.values())
+        candidate = sum(
+            chunk.verification_status == VerificationStatus.CANDIDATE for chunk in chunks
+        )
+        verified = sum(chunk.verification_status == VerificationStatus.VERIFIED for chunk in chunks)
+        warning_count = unresolved_items + candidate + extraction_unresolved
+        trace_payload: dict[str, object] | None = None
+        if api_family == "agentic_v2":
+            trace_pages: list[dict[str, object]] = []
+            trace_events: list[dict[str, object]] = []
+            for result in page_results:
+                trace_path = f"jobs-v2/{job_id}/pages/p{result.page_number:04d}.trace.json"
+                page_trace = json.loads(await asyncio.to_thread(self.store.read, trace_path))
+                page_results_trace = page_trace.get("results", [])
+                trace_pages.append(
+                    {
+                        "page_number": result.page_number,
+                        "result": page_results_trace[0] if page_results_trace else {},
+                    }
+                )
+                trace_events.extend(page_trace.get("trace", []))
+            trace_payload = {
+                "job_id": job_id,
+                "model": agentic_model,
+                "pages": trace_pages,
+                "events": trace_events,
+            }
+            parse_response = assemble_parse_response(
+                document_id=job_id,
+                job_id=job_id,
+                model=agentic_model,
+                pages=[_agentic_page(result) for result in page_results],
+            )
+            document_json = parse_response.model_dump_json(indent=2).encode()
+            output_markdown = parse_response.markdown
+        else:
+            document = DocumentResult(
+                source=SourceDocument(
+                    filename=filename,
+                    sha256=source_sha256,
+                    mime_type=source_mime,
+                    page_count=page_count,
+                ),
+                status="completed_with_warnings" if warning_count else "completed",
+                quality_summary=QualitySummary(
+                    verified_items=verified,
+                    candidate_items=candidate,
+                    unresolved_items=unresolved_items,
+                    warning_count=warning_count,
+                ),
+                pages=[_document_page(result) for result in page_results],
+                splits=build_document_splits(
+                    chunks, page_count=page_count, enabled=segment_documents
+                ),
+                extraction=(
+                    SchemaExtraction(data=structured_data, fields=extraction)
+                    if extraction_schema
+                    else None
+                ),
+                usage=usage,
+                processing={
+                    "mode": mode.value,
+                    "draft_model": "gpt-5.6-luna",
+                    "verification_model": "gpt-5.6-terra",
+                },
+            )
+            document_json = document.model_dump_json(indent=2, by_alias=True).encode()
+            output_markdown = clean_markdown
         source = await asyncio.to_thread(self.store.read, source_path)
         annotated_pdf = await asyncio.to_thread(build_annotated_pdf, source, filename, chunks)
         payloads = [
             (
-                "document_json",
+                "markdown",
+                "document.md",
+                output_markdown.encode(),
+                "text/markdown",
+            ),
+            (
+                "json",
                 "document.json",
-                document.model_dump_json(indent=2).encode(),
+                document_json,
                 "application/json",
             ),
-            ("clean_markdown", "document.md", markdown.encode(), "text/markdown"),
-            ("usage", "usage.json", json.dumps(usage, indent=2).encode(), "application/json"),
-            ("annotated_pdf", "annotated.pdf", annotated_pdf, "application/pdf"),
+            (
+                "annotated_pdf",
+                "annotated.pdf",
+                annotated_pdf,
+                "application/pdf",
+            ),
         ]
-        if structured_data is not None:
-            extraction_data = json.dumps(
-                {
-                    "data": structured_data,
-                    "fields": {
-                        name: field.model_dump(mode="json") for name, field in extraction.items()
-                    },
-                },
-                indent=2,
-            ).encode()
+        if trace_payload is not None:
             payloads.append(
-                ("schema_extraction", "extraction.json", extraction_data, "application/json")
+                (
+                    "agent_trace",
+                    "agent-trace.json",
+                    json.dumps(trace_payload, indent=2).encode(),
+                    "application/json",
+                )
             )
         records: list[Artifact] = []
         for artifact_type, filename_out, data, mime_type in payloads:
@@ -290,13 +625,37 @@ class V2PageTaskRunner:
                 return
             await session.execute(delete(Artifact).where(Artifact.job_id == job_id))
             session.add_all(records)
-            unresolved = sum(
-                chunk.verification_status == VerificationStatus.UNRESOLVED for chunk in chunks
-            )
-            unresolved += sum(field.status == "unresolved" for field in extraction.values())
-            job.warning_count = unresolved
-            job.quality_policy_snapshot = {"usage": usage}
-            job.status = JobStatus.COMPLETED_WITH_WARNINGS if unresolved else JobStatus.COMPLETED
+            if api_family == "agentic_v2":
+                for chunk in chunks:
+                    if chunk.verification_status != VerificationStatus.UNRESOLVED:
+                        continue
+                    await sync_grounded_review_case(
+                        session,
+                        job_id=job_id,
+                        item_kind="block",
+                        item_key=chunk.id,
+                        page_number=chunk.page,
+                        original=chunk.model_dump(mode="json"),
+                        failure_codes=chunk.warnings or ["unresolved_grounding"],
+                        policy={"model": agentic_model},
+                    )
+            job.warning_count = warning_count
+            job.quality_policy_snapshot = {
+                "usage": usage,
+                **(
+                    {
+                        "agentic": {
+                            "model": agentic_model,
+                            "trace_path": f"jobs-v2/{job_id}/agent-trace.json",
+                        }
+                    }
+                    if trace_payload is not None
+                    else {}
+                ),
+            }
+            job.status = JobStatus.COMPLETED_WITH_WARNINGS if warning_count else JobStatus.COMPLETED
+            job.current_page = None
             job.completed_pages = page_count
+            job.failed_pages = 0
             job.completed_at = dt.datetime.now(dt.UTC)
             await session.commit()

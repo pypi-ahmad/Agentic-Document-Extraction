@@ -5,9 +5,19 @@ from __future__ import annotations
 import hashlib
 import uuid
 from pathlib import Path
-from typing import Annotated, Any, Protocol
+from typing import Annotated, Any, Literal, Protocol
 
-from fastapi import APIRouter, Depends, File, Form, HTTPException, Response, UploadFile, status
+from fastapi import (
+    APIRouter,
+    Depends,
+    File,
+    Form,
+    HTTPException,
+    Query,
+    Response,
+    UploadFile,
+    status,
+)
 from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -51,6 +61,7 @@ class V2JobResponse(BaseModel):
     error_code: str | None = None
     error_message: str | None = None
     usage: dict[str, Any] | None = None
+    source_preview_url: str
     artifacts: list[dict[str, Any]] = []
 
 
@@ -81,6 +92,11 @@ def _serialize(job: ParseJob) -> V2JobResponse:
             "size": item.size,
             "sha256": item.sha256,
             "download_url": f"/api/v2/jobs/{job.id}/artifacts/{item.id}",
+            "preview_url": (
+                f"/api/v2/jobs/{job.id}/artifacts/{item.id}?disposition=inline"
+                if item.mime_type == "application/pdf"
+                else None
+            ),
         }
         for item in job.artifacts
     ]
@@ -100,6 +116,7 @@ def _serialize(job: ParseJob) -> V2JobResponse:
         error_code=job.error_code,
         error_message=job.error_message,
         usage=usage,
+        source_preview_url=f"/api/v2/jobs/{job.id}/source",
         artifacts=artifact_items,
     )
 
@@ -229,6 +246,7 @@ async def download_v2_artifact(
     artifact_id: str,
     db: AsyncSession = Depends(get_db),
     store: ObjectStore = Depends(get_v2_store),
+    disposition: Literal["attachment", "inline"] = Query(default="attachment"),
 ) -> Response:
     artifact = await db.scalar(
         select(Artifact).where(Artifact.id == artifact_id, Artifact.job_id == job_id)
@@ -239,7 +257,22 @@ async def download_v2_artifact(
     return Response(
         content=store.read(artifact.relative_path),
         media_type=artifact.mime_type,
-        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+        headers={"Content-Disposition": f'{disposition}; filename="{filename}"'},
+    )
+
+
+@router.get("/{job_id}/source")
+async def preview_v2_source(
+    job_id: str,
+    db: AsyncSession = Depends(get_db),
+    store: ObjectStore = Depends(get_v2_store),
+) -> Response:
+    job = await _job(db, job_id)
+    filename = Path(job.original_filename).name
+    return Response(
+        content=store.read(job.source_path),
+        media_type=job.source_mime,
+        headers={"Content-Disposition": f'inline; filename="{filename}"'},
     )
 
 
@@ -252,7 +285,7 @@ async def evaluate_v2_job(
 ) -> GroundedEvaluationReport:
     job = await _job(db, job_id)
     document_artifact = next(
-        (artifact for artifact in job.artifacts if artifact.type == "document_json"), None
+        (artifact for artifact in job.artifacts if artifact.type == "json"), None
     )
     if document_artifact is None:
         raise _error("document_not_ready", "Grounded document artifact is not ready", 409)

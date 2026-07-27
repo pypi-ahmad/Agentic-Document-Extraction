@@ -12,9 +12,9 @@ from fastapi.responses import JSONResponse
 from app.config import settings
 from app.database import close_db, init_db
 from app.logging_setup import configure_logging, get_logger
+from app.routers.dpt_api import router as dpt_api_router
 from app.routers.extraction_schemas import router as extraction_schemas_router
 from app.routers.review_cases import router as review_cases_router
-from app.routers.v2_jobs import router as v2_jobs_router
 from app.security_middleware import SecurityHeadersMiddleware
 from app.services.v2_jobs import get_v2_job_queue
 from app.telemetry import setup_telemetry, shutdown_telemetry
@@ -60,7 +60,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.add_middleware(SecurityHeadersMiddleware)
-app.include_router(v2_jobs_router)
+app.include_router(dpt_api_router)
 app.include_router(extraction_schemas_router)
 app.include_router(review_cases_router)
 

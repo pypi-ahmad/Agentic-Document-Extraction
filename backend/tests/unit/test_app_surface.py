@@ -35,6 +35,7 @@ async def test_legacy_routes_are_not_registered() -> None:
 
     assert "/api/extractions/" not in paths
     assert "/api/schemas/" not in paths
-    assert "/api/v2/jobs" in paths
+    assert "/v2/parse/jobs" in paths
+    assert "/api/v2/jobs" not in paths
     assert "/api/parse-jobs" not in paths
     assert "/api/ollama/models" not in paths
