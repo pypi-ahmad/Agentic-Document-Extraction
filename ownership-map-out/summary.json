@@ -1,0 +1,247 @@
+{
+  "generated_at": "2026-07-27T14:52:53.217123+00:00",
+  "repo": "D:\\AI\\Github\\Agentic-Document-Extraction",
+  "parameters": {
+    "since": null,
+    "until": null,
+    "half_life_days": 180.0,
+    "bus_factor_threshold": 1,
+    "stale_days": 365,
+    "owner_threshold": 0.5,
+    "sensitive_config": "ownership-map-out/sensitive.csv",
+    "identity": "author",
+    "date_field": "author",
+    "include_merges": false,
+    "cochange_enabled": true,
+    "cochange_max_files": 50,
+    "cochange_min_count": 2,
+    "cochange_min_jaccard": 0.05,
+    "cochange_default_excludes": true,
+    "cochange_excludes": [
+      "**/Cargo.lock",
+      "**/Cargo.toml",
+      "**/package-lock.json",
+      "**/yarn.lock",
+      "**/pnpm-lock.yaml",
+      "**/go.sum",
+      "**/go.mod",
+      "**/Gemfile.lock",
+      "**/Pipfile.lock",
+      "**/poetry.lock",
+      "**/composer.lock",
+      "**/.github/**",
+      "**/.gitignore",
+      "**/.gitattributes",
+      "**/.gitmodules",
+      "**/.editorconfig",
+      "**/.vscode/**",
+      "**/.idea/**"
+    ],
+    "author_default_excludes": true,
+    "author_exclude_regexes": [
+      "dependabot"
+    ],
+    "community_top_owners": 5
+  },
+  "orphaned_sensitive_code": [],
+  "hidden_owners": [
+    {
+      "person": "72138709+pypi-ahmad@users.noreply.github.com",
+      "name": "pypi-ahmad",
+      "controls": "62% of auth code",
+      "category": "auth",
+      "share": 0.625
+    },
+    {
+      "person": "72138709+pypi-ahmad@users.noreply.github.com",
+      "name": "pypi-ahmad",
+      "controls": "72% of authz code",
+      "category": "authz",
+      "share": 0.7215
+    },
+    {
+      "person": "72138709+pypi-ahmad@users.noreply.github.com",
+      "name": "pypi-ahmad",
+      "controls": "100% of input_validation code",
+      "category": "input_validation",
+      "share": 1.0
+    },
+    {
+      "person": "72138709+pypi-ahmad@users.noreply.github.com",
+      "name": "pypi-ahmad",
+      "controls": "100% of path_safety code",
+      "category": "path_safety",
+      "share": 1.0
+    }
+  ],
+  "bus_factor_hotspots": [
+    {
+      "path": "backend/app/auth.py",
+      "bus_factor": 1,
+      "last_touch": "2026-07-27T16:49:45+05:30",
+      "sensitivity_tags": [
+        "auth"
+      ],
+      "top_owner": "72138709+pypi-ahmad@users.noreply.github.com"
+    },
+    {
+      "path": "backend/app/routers/dpt_api.py",
+      "bus_factor": 1,
+      "last_touch": "2026-07-27T16:49:45+05:30",
+      "sensitivity_tags": [
+        "authz"
+      ],
+      "top_owner": "72138709+pypi-ahmad@users.noreply.github.com"
+    },
+    {
+      "path": "backend/app/routers/v2_jobs.py",
+      "bus_factor": 1,
+      "last_touch": "2026-07-27T16:49:45+05:30",
+      "sensitivity_tags": [
+        "authz"
+      ],
+      "top_owner": "72138709+pypi-ahmad@users.noreply.github.com"
+    },
+    {
+      "path": "backend/app/services/parsing/ingest.py",
+      "bus_factor": 1,
+      "last_touch": "2026-07-26T17:04:34+05:30",
+      "sensitivity_tags": [
+        "input_validation"
+      ],
+      "top_owner": "72138709+pypi-ahmad@users.noreply.github.com"
+    },
+    {
+      "path": "backend/app/routers/curation.py",
+      "bus_factor": 1,
+      "last_touch": "2026-07-26T13:13:11+05:30",
+      "sensitivity_tags": [
+        "authz"
+      ],
+      "top_owner": "72138709+pypi-ahmad@users.noreply.github.com"
+    },
+    {
+      "path": "backend/app/routers/evaluation_runs.py",
+      "bus_factor": 1,
+      "last_touch": "2026-07-26T13:13:11+05:30",
+      "sensitivity_tags": [
+        "authz"
+      ],
+      "top_owner": "72138709+pypi-ahmad@users.noreply.github.com"
+    },
+    {
+      "path": "backend/app/routers/extraction_schemas.py",
+      "bus_factor": 1,
+      "last_touch": "2026-07-26T13:13:11+05:30",
+      "sensitivity_tags": [
+        "authz"
+      ],
+      "top_owner": "72138709+pypi-ahmad@users.noreply.github.com"
+    },
+    {
+      "path": "backend/app/routers/inspection.py",
+      "bus_factor": 1,
+      "last_touch": "2026-07-26T13:13:11+05:30",
+      "sensitivity_tags": [
+        "authz"
+      ],
+      "top_owner": "72138709+pypi-ahmad@users.noreply.github.com"
+    },
+    {
+      "path": "backend/app/routers/ollama_models.py",
+      "bus_factor": 1,
+      "last_touch": "2026-07-26T13:13:11+05:30",
+      "sensitivity_tags": [
+        "authz"
+      ],
+      "top_owner": "72138709+pypi-ahmad@users.noreply.github.com"
+    },
+    {
+      "path": "backend/app/routers/parse_batches.py",
+      "bus_factor": 1,
+      "last_touch": "2026-07-26T13:13:11+05:30",
+      "sensitivity_tags": [
+        "authz"
+      ],
+      "top_owner": "72138709+pypi-ahmad@users.noreply.github.com"
+    },
+    {
+      "path": "backend/app/routers/parse_jobs.py",
+      "bus_factor": 1,
+      "last_touch": "2026-07-26T13:13:11+05:30",
+      "sensitivity_tags": [
+        "authz"
+      ],
+      "top_owner": "72138709+pypi-ahmad@users.noreply.github.com"
+    },
+    {
+      "path": "backend/app/routers/reprocessing.py",
+      "bus_factor": 1,
+      "last_touch": "2026-07-26T13:13:11+05:30",
+      "sensitivity_tags": [
+        "authz"
+      ],
+      "top_owner": "72138709+pypi-ahmad@users.noreply.github.com"
+    },
+    {
+      "path": "backend/app/routers/review_cases.py",
+      "bus_factor": 1,
+      "last_touch": "2026-07-26T13:13:11+05:30",
+      "sensitivity_tags": [
+        "authz"
+      ],
+      "top_owner": "72138709+pypi-ahmad@users.noreply.github.com"
+    },
+    {
+      "path": "backend/app/routers/runtime_capabilities.py",
+      "bus_factor": 1,
+      "last_touch": "2026-07-26T13:13:11+05:30",
+      "sensitivity_tags": [
+        "authz"
+      ],
+      "top_owner": "72138709+pypi-ahmad@users.noreply.github.com"
+    },
+    {
+      "path": "backend/app/services/parsing/storage.py",
+      "bus_factor": 1,
+      "last_touch": "2026-07-26T13:13:11+05:30",
+      "sensitivity_tags": [
+        "path_safety"
+      ],
+      "top_owner": "72138709+pypi-ahmad@users.noreply.github.com"
+    },
+    {
+      "path": "backend/app/security_middleware.py",
+      "bus_factor": 1,
+      "last_touch": "2026-06-22T01:44:05+05:30",
+      "sensitivity_tags": [
+        "auth"
+      ],
+      "top_owner": "[email protected]"
+    },
+    {
+      "path": "backend/app/routers/__init__.py",
+      "bus_factor": 1,
+      "last_touch": "2026-04-08T18:52:55+05:30",
+      "sensitivity_tags": [
+        "authz"
+      ],
+      "top_owner": "72138709+pypi-ahmad@users.noreply.github.com"
+    }
+  ],
+  "stats": {
+    "commits": 76,
+    "commits_seen": 76,
+    "commits_excluded_identities": 0,
+    "commits_excluded_merges": 0,
+    "edges": 970,
+    "people": 3,
+    "files": 490,
+    "cochange_pairs_total": 4406,
+    "cochange_edges": 460,
+    "cochange_commits_used": 56,
+    "cochange_commits_skipped": 3,
+    "cochange_commits_filtered": 2,
+    "cochange_files_excluded": 20
+  }
+}

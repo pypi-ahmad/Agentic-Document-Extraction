@@ -1,0 +1,642 @@
+person_id,file_id,touches,recency_weight,first_seen,last_seen,sensitive_weight
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/agentic/contracts.py,2,1.998879,2026-07-27T16:49:45+05:30,2026-07-27T16:56:42+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/agentic/extraction.py,2,1.998879,2026-07-27T16:49:45+05:30,2026-07-27T16:56:42+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,README.md,11,9.410523,2026-04-08T18:52:55+05:30,2026-07-27T16:49:45+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/auth.py,2,1.994443,2026-07-26T13:13:11+05:30,2026-07-27T16:49:45+05:30,2.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/main.py,7,5.830088,2026-04-08T18:52:55+05:30,2026-07-27T16:49:45+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/routers/dpt_api.py,1,0.999430,2026-07-27T16:49:45+05:30,2026-07-27T16:49:45+05:30,0.40
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/routers/v2_jobs.py,2,1.995059,2026-07-26T17:04:34+05:30,2026-07-27T16:49:45+05:30,0.80
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/agentic/__init__.py,1,0.999430,2026-07-27T16:49:45+05:30,2026-07-27T16:49:45+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/agentic/supervisor.py,1,0.999430,2026-07-27T16:49:45+05:30,2026-07-27T16:49:45+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/parsing/v2_accuracy.py,1,0.999430,2026-07-27T16:49:45+05:30,2026-07-27T16:49:45+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/parsing/v2_annotations.py,2,1.995059,2026-07-26T17:04:34+05:30,2026-07-27T16:49:45+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/parsing/v2_contracts.py,2,1.995059,2026-07-26T17:04:34+05:30,2026-07-27T16:49:45+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/parsing/v2_evaluation.py,2,1.995059,2026-07-26T17:04:34+05:30,2026-07-27T16:49:45+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/parsing/v2_pipeline.py,2,1.995059,2026-07-26T17:04:34+05:30,2026-07-27T16:49:45+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/parsing/v2_reconciliation.py,1,0.999430,2026-07-27T16:49:45+05:30,2026-07-27T16:49:45+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/parsing/v2_segmentation.py,2,1.995059,2026-07-26T17:04:34+05:30,2026-07-27T16:49:45+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/v2_jobs.py,2,1.995059,2026-07-26T17:04:34+05:30,2026-07-27T16:49:45+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/v2_tasks.py,2,1.995059,2026-07-26T17:04:34+05:30,2026-07-27T16:49:45+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/v2_worker.py,2,1.995059,2026-07-26T17:04:34+05:30,2026-07-27T16:49:45+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/scripts/benchmark_v2_accuracy.py,1,0.999430,2026-07-27T16:49:45+05:30,2026-07-27T16:49:45+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_agentic_extraction.py,1,0.999430,2026-07-27T16:49:45+05:30,2026-07-27T16:49:45+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_agentic_supervisor.py,1,0.999430,2026-07-27T16:49:45+05:30,2026-07-27T16:49:45+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_app_surface.py,3,2.990071,2026-07-26T13:13:11+05:30,2026-07-27T16:49:45+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_auth.py,3,2.990071,2026-07-26T13:13:11+05:30,2026-07-27T16:49:45+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_dpt_api.py,1,0.999430,2026-07-27T16:49:45+05:30,2026-07-27T16:49:45+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_dpt_contracts.py,1,0.999430,2026-07-27T16:49:45+05:30,2026-07-27T16:49:45+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_v2_accuracy.py,1,0.999430,2026-07-27T16:49:45+05:30,2026-07-27T16:49:45+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_v2_annotations.py,2,1.995059,2026-07-26T17:04:34+05:30,2026-07-27T16:49:45+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_v2_api.py,2,1.995059,2026-07-26T17:04:34+05:30,2026-07-27T16:49:45+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_v2_contracts.py,2,1.995059,2026-07-26T17:04:34+05:30,2026-07-27T16:49:45+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_v2_evaluation.py,2,1.995059,2026-07-26T17:04:34+05:30,2026-07-27T16:49:45+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_v2_page_processor.py,2,1.995059,2026-07-26T17:04:34+05:30,2026-07-27T16:49:45+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_v2_queue.py,2,1.995059,2026-07-26T17:04:34+05:30,2026-07-27T16:49:45+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_v2_reconciliation.py,1,0.999430,2026-07-27T16:49:45+05:30,2026-07-27T16:49:45+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_v2_task_leases.py,2,1.995059,2026-07-26T17:04:34+05:30,2026-07-27T16:49:45+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_v2_worker.py,2,1.995059,2026-07-26T17:04:34+05:30,2026-07-27T16:49:45+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,docs/superpowers/plans/2026-07-27-balanced-pdf-latency.md,1,0.999430,2026-07-27T16:49:45+05:30,2026-07-27T16:49:45+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,docs/superpowers/plans/2026-07-27-v2-output-quality.md,1,0.999430,2026-07-27T16:49:45+05:30,2026-07-27T16:49:45+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,frontend/next-env.d.ts,5,4.640217,2026-04-08T18:52:55+05:30,2026-07-27T16:49:45+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,frontend/src/app/globals.css,7,6.293564,2026-04-08T18:52:55+05:30,2026-07-27T16:49:45+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,frontend/src/app/page.test.tsx,5,4.982205,2026-07-26T13:13:11+05:30,2026-07-27T16:49:45+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,frontend/src/app/page.tsx,6,5.636740,2026-04-08T18:52:55+05:30,2026-07-27T16:49:45+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,frontend/src/components/v2/ArtifactPreview.tsx,2,1.995540,2026-07-26T20:05:12+05:30,2026-07-27T16:49:45+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,frontend/src/components/v2/RunHistory.tsx,2,1.995540,2026-07-26T20:05:12+05:30,2026-07-27T16:49:45+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,frontend/src/lib/api.ts,6,4.955992,2026-04-08T18:52:55+05:30,2026-07-27T16:49:45+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,docs/superpowers/specs/2026-07-27-balanced-pdf-latency-design.md,1,0.996976,2026-07-27T01:30:16+05:30,2026-07-27T01:30:16+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,frontend/src/components/v2/DocumentCanvas.tsx,1,0.996109,2026-07-26T20:05:12+05:30,2026-07-26T20:05:12+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,docs/superpowers/plans/2026-07-26-evidence-studio.md,2,1.992178,2026-07-26T19:57:31+05:30,2026-07-26T19:57:40+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,docs/superpowers/specs/2026-07-26-evidence-studio-design.md,2,1.992178,2026-07-26T19:57:29+05:30,2026-07-26T19:57:40+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,.gitignore,5,4.203431,2026-04-08T18:52:55+05:30,2026-07-26T19:56:35+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/.env.example,5,4.298077,2026-04-08T18:52:55+05:30,2026-07-26T19:56:27+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_dev_launcher.py,1,0.996086,2026-07-26T19:56:27+05:30,2026-07-26T19:56:27+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_parse_config.py,2,1.991099,2026-07-26T13:13:11+05:30,2026-07-26T19:56:27+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,scripts/dev.ps1,1,0.996086,2026-07-26T19:56:27+05:30,2026-07-26T19:56:27+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,uv.lock,4,3.860823,2026-06-22T21:42:37+05:30,2026-07-26T19:56:22+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,docs/superpowers/plans/2026-07-26-dark-theme.md,1,0.996035,2026-07-26T19:37:08+05:30,2026-07-26T19:37:08+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,frontend/src/app/v2-tools.css,2,1.991662,2026-07-26T17:04:34+05:30,2026-07-26T19:36:46+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,docs/superpowers/specs/2026-07-26-dark-theme-design.md,2,1.992033,2026-07-26T19:30:15+05:30,2026-07-26T19:30:26+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,CHANGELOG.md,6,5.579049,2026-06-13T22:31:44+05:30,2026-07-26T17:06:07+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/config.py,5,4.297623,2026-04-08T18:52:55+05:30,2026-07-26T17:06:07+05:30,4.50
+72138709+pypi-ahmad@users.noreply.github.com,frontend/package-lock.json,3,2.645180,2026-04-08T18:52:55+05:30,2026-07-26T17:06:07+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,frontend/package.json,3,2.645180,2026-04-08T18:52:55+05:30,2026-07-26T17:06:07+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,pyproject.toml,5,4.734617,2026-06-22T21:42:37+05:30,2026-07-26T17:06:07+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/alembic/versions/0014_openai_v2_page_tasks.py,1,0.995628,2026-07-26T17:04:34+05:30,2026-07-26T17:04:34+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/database.py,3,2.304735,2026-04-08T18:52:55+05:30,2026-07-26T17:04:34+05:30,1.80
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/models/db_models.py,4,3.299748,2026-04-08T18:52:55+05:30,2026-07-26T17:04:34+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/parsing/ingest.py,2,1.990641,2026-07-26T13:13:11+05:30,2026-07-26T17:04:34+05:30,1.40
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/parsing/openai_document.py,1,0.995628,2026-07-26T17:04:34+05:30,2026-07-26T17:04:34+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/parsing/v2_cache.py,1,0.995628,2026-07-26T17:04:34+05:30,2026-07-26T17:04:34+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/parsing/v2_cost.py,1,0.995628,2026-07-26T17:04:34+05:30,2026-07-26T17:04:34+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/parsing/v2_grounding.py,1,0.995628,2026-07-26T17:04:34+05:30,2026-07-26T17:04:34+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/parsing/v2_schema_extraction.py,1,0.995628,2026-07-26T17:04:34+05:30,2026-07-26T17:04:34+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_database_config.py,1,0.995628,2026-07-26T17:04:34+05:30,2026-07-26T17:04:34+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_ingest.py,2,1.990641,2026-07-26T13:13:11+05:30,2026-07-26T17:04:34+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_openai_document_adapter.py,1,0.995628,2026-07-26T17:04:34+05:30,2026-07-26T17:04:34+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_parse_models.py,2,1.990641,2026-07-26T13:13:11+05:30,2026-07-26T17:04:34+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_v2_cache.py,1,0.995628,2026-07-26T17:04:34+05:30,2026-07-26T17:04:34+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_v2_cost.py,1,0.995628,2026-07-26T17:04:34+05:30,2026-07-26T17:04:34+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_v2_grounding.py,1,0.995628,2026-07-26T17:04:34+05:30,2026-07-26T17:04:34+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_v2_schema_extraction.py,1,0.995628,2026-07-26T17:04:34+05:30,2026-07-26T17:04:34+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,docker-compose.yml,2,1.990641,2026-07-26T13:13:11+05:30,2026-07-26T17:04:34+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,frontend/src/app/layout.tsx,3,2.645176,2026-04-08T18:52:55+05:30,2026-07-26T17:04:34+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,.claude/settings.json,1,0.995607,2026-07-26T16:56:28+05:30,2026-07-26T16:56:28+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,.claude/skills/debug-issue/SKILL.md,1,0.995607,2026-07-26T16:56:28+05:30,2026-07-26T16:56:28+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,.claude/skills/explore-codebase/SKILL.md,1,0.995607,2026-07-26T16:56:28+05:30,2026-07-26T16:56:28+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,.claude/skills/refactor-safely/SKILL.md,1,0.995607,2026-07-26T16:56:28+05:30,2026-07-26T16:56:28+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,.claude/skills/review-changes/SKILL.md,1,0.995607,2026-07-26T16:56:28+05:30,2026-07-26T16:56:28+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,.codebuddy/settings.json,1,0.995607,2026-07-26T16:56:28+05:30,2026-07-26T16:56:28+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,.codebuddy/skills/debug-issue/SKILL.md,1,0.995607,2026-07-26T16:56:28+05:30,2026-07-26T16:56:28+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,.codebuddy/skills/explore-codebase/SKILL.md,1,0.995607,2026-07-26T16:56:28+05:30,2026-07-26T16:56:28+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,.codebuddy/skills/refactor-safely/SKILL.md,1,0.995607,2026-07-26T16:56:28+05:30,2026-07-26T16:56:28+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,.codebuddy/skills/review-changes/SKILL.md,1,0.995607,2026-07-26T16:56:28+05:30,2026-07-26T16:56:28+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,.codegraph/.gitignore,1,0.995607,2026-07-26T16:56:28+05:30,2026-07-26T16:56:28+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,.cursor/mcp.json,1,0.995607,2026-07-26T16:56:28+05:30,2026-07-26T16:56:28+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,.cursorrules,1,0.995607,2026-07-26T16:56:28+05:30,2026-07-26T16:56:28+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,.gemini/hooks/crg-session-start.sh,1,0.995607,2026-07-26T16:56:28+05:30,2026-07-26T16:56:28+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,.gemini/hooks/crg-update.sh,1,0.995607,2026-07-26T16:56:28+05:30,2026-07-26T16:56:28+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,.gemini/settings.json,1,0.995607,2026-07-26T16:56:28+05:30,2026-07-26T16:56:28+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,.gemini/settings.json.bak,1,0.995607,2026-07-26T16:56:28+05:30,2026-07-26T16:56:28+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,.gemini/skills/debug-issue/SKILL.md,1,0.995607,2026-07-26T16:56:28+05:30,2026-07-26T16:56:28+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,.gemini/skills/explore-codebase/SKILL.md,1,0.995607,2026-07-26T16:56:28+05:30,2026-07-26T16:56:28+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,.gemini/skills/refactor-safely/SKILL.md,1,0.995607,2026-07-26T16:56:28+05:30,2026-07-26T16:56:28+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,.gemini/skills/review-changes/SKILL.md,1,0.995607,2026-07-26T16:56:28+05:30,2026-07-26T16:56:28+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,.github/code-review-graph.instruction.md,1,0.995607,2026-07-26T16:56:28+05:30,2026-07-26T16:56:28+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,.kiro/settings/mcp.json,1,0.995607,2026-07-26T16:56:28+05:30,2026-07-26T16:56:28+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,.kiro/steering/code-review-graph.md,1,0.995607,2026-07-26T16:56:28+05:30,2026-07-26T16:56:28+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,.mcp.json,1,0.995607,2026-07-26T16:56:28+05:30,2026-07-26T16:56:28+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,.qoder/mcp.json,1,0.995607,2026-07-26T16:56:28+05:30,2026-07-26T16:56:28+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,.qoder/settings.json,1,0.995607,2026-07-26T16:56:28+05:30,2026-07-26T16:56:28+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,.windsurfrules,1,0.995607,2026-07-26T16:56:28+05:30,2026-07-26T16:56:28+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,AGENTS.md,1,0.995607,2026-07-26T16:56:28+05:30,2026-07-26T16:56:28+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,CLAUDE.md,1,0.995607,2026-07-26T16:56:28+05:30,2026-07-26T16:56:28+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,CODEBUDDY.md,1,0.995607,2026-07-26T16:56:28+05:30,2026-07-26T16:56:28+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,GEMINI.md,1,0.995607,2026-07-26T16:56:28+05:30,2026-07-26T16:56:28+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,QODER.md,1,0.995607,2026-07-26T16:56:28+05:30,2026-07-26T16:56:28+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_paddleocr_service.py,2,1.990817,2026-07-26T14:27:19+05:30,2026-07-26T16:56:28+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,deploy/paddleocr-vl/Dockerfile.hpi,2,1.990817,2026-07-26T14:27:19+05:30,2026-07-26T16:56:28+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,deploy/paddleocr-vl/service.py,2,1.990817,2026-07-26T14:27:19+05:30,2026-07-26T16:56:28+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,docs/superpowers/plans/2026-07-22-local-glmocr-markdown.md,1,0.995607,2026-07-26T16:56:28+05:30,2026-07-26T16:56:28+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,docs/superpowers/specs/2026-07-22-local-glmocr-markdown-design.md,1,0.995607,2026-07-26T16:56:28+05:30,2026-07-26T16:56:28+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,opencode.jsonc,1,0.995607,2026-07-26T16:56:28+05:30,2026-07-26T16:56:28+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,tasks/plan.md,1,0.995607,2026-07-26T16:56:28+05:30,2026-07-26T16:56:28+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,tasks/todo.md,1,0.995607,2026-07-26T16:56:28+05:30,2026-07-26T16:56:28+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,.github/ISSUE_TEMPLATE/bug_report.md,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,.github/ISSUE_TEMPLATE/feature_request.md,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,.github/ISSUE_TEMPLATE/provider_request.md,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,.github/dependabot.yml,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,.github/workflows/ci.yml,3,2.743356,2026-06-22T21:42:37+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,.github/workflows/publish-pypi.yml,2,1.869260,2026-06-22T22:47:42+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,.github/workflows/publish-testpypi.yml,2,1.869260,2026-06-22T22:47:42+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,CONTRIBUTING.md,3,2.702441,2026-06-13T22:31:44+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,DATASET.md,2,1.928400,2026-07-09T22:44:45+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,Dockerfile,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,RELEASE.md,2,1.869260,2026-06-22T22:47:42+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,SECURITY.md,2,1.839444,2026-06-13T22:31:44+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,Sample-PDF/PublicWaterMassMailing.pdf,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,Zero_to_Hero_Study_Handbook.html,2,1.895936,2026-06-30T18:07:13+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,Zero_to_Hero_Study_Handbook.md,2,1.895936,2026-06-30T18:07:13+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,Zero_to_Hero_Study_Handbook.pdf,2,1.895936,2026-06-30T18:07:13+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,Zero_to_Hero_Study_Handbook.ps,2,1.895936,2026-06-30T18:07:13+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,Zero_to_Hero_Study_Handbook.rich.html,2,1.895936,2026-06-30T18:07:13+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/alembic/versions/0005_markdown_parser_reset.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/alembic/versions/0006_agentic_page_checkpoints.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/alembic/versions/0007_dynamic_ollama_models.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/alembic/versions/0008_evaluation_runs.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/alembic/versions/0009_domain_profiles.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/alembic/versions/0010_subdocuments.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/alembic/versions/0011_extraction_schemas.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/alembic/versions/0012_quality_feedback.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/alembic/versions/0013_inspection_batches.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/cache.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/constants.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.50
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/mcp_server.py,3,2.743356,2026-06-22T21:42:37+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/metrics.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/middleware.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/models/enums.py,3,2.306362,2026-04-08T18:52:55+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/models/extraction/__init__.py,2,1.649547,2026-04-08T18:52:55+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/models/extraction/_base.py,2,1.649547,2026-04-08T18:52:55+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/models/schemas.py,4,2.960934,2026-04-08T18:52:55+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/routers/curation.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.40
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/routers/documents.py,2,1.649547,2026-04-08T18:52:55+05:30,2026-07-26T13:13:11+05:30,0.80
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/routers/evaluation_runs.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.40
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/routers/extraction_schemas.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,1.40
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/routers/extractions.py,4,2.960934,2026-04-08T18:52:55+05:30,2026-07-26T13:13:11+05:30,1.60
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/routers/inspection.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.40
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/routers/ollama_models.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.40
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/routers/parse_batches.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.40
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/routers/parse_jobs.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.40
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/routers/providers.py,3,2.306362,2026-04-08T18:52:55+05:30,2026-07-26T13:13:11+05:30,1.20
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/routers/reprocessing.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.40
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/routers/review_cases.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.40
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/routers/runtime_capabilities.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.40
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/routers/schemas.py,3,2.306362,2026-04-08T18:52:55+05:30,2026-07-26T13:13:11+05:30,1.20
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/audit.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/eval/__init__.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/eval/calibration.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/eval/calibration_v2.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/eval/judge.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/eval/metrics.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/eval/metrics_v2.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/evaluation.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/evaluation_runtime.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/extraction/business_rules.py,2,1.649584,2026-04-08T19:14:03+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/extraction/cross_page.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/extraction/double_pass.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/extraction/error_classify.py,2,1.649584,2026-04-08T19:14:03+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/extraction/evidence.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/extraction/field_strategies.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/extraction/graph.py,3,2.306362,2026-04-08T18:52:55+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/extraction/presets.py,4,2.960934,2026-04-08T18:52:55+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/extraction/validation.py,3,2.306362,2026-04-08T18:52:55+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/extraction/verifier.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/extraction/vlm_extractor.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/jobs.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/llm/__init__.py,2,1.649547,2026-04-08T18:52:55+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/llm/base.py,3,2.306362,2026-04-08T18:52:55+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/llm/claude_provider.py,3,2.306362,2026-04-08T18:52:55+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/llm/gemini_provider.py,3,2.306362,2026-04-08T18:52:55+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/llm/openai_provider.py,3,2.306362,2026-04-08T18:52:55+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/llm/output_parser.py,3,2.306362,2026-04-08T18:52:55+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/llm/prompts.py,2,1.649547,2026-04-08T18:52:55+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/llm/prompts_loader.py,2,1.869260,2026-06-22T22:47:42+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/llm/registry.py,2,1.649547,2026-04-08T18:52:55+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/ocr/__init__.py,2,1.649547,2026-04-08T18:52:55+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/ocr/base.py,2,1.649547,2026-04-08T18:52:55+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/ocr/docling_layout_provider.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/ocr/docling_provider.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/ocr/glm_ocr_provider.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/ocr/layout_base.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/ocr/layout_registry.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/ocr/paddleocr_provider.py,3,2.306362,2026-04-08T18:52:55+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/ocr/pymupdf_provider.py,3,2.306362,2026-04-08T18:52:55+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/ocr/registry.py,2,1.649547,2026-04-08T18:52:55+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/parsing/__init__.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/parsing/agentic_contracts.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/parsing/artifacts.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/parsing/contracts.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/parsing/diagnostics.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/parsing/domain_extraction.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/parsing/engines.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/parsing/extraction_schemas.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/parsing/glmocr_adapter.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/parsing/inspection.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/parsing/markdown.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/parsing/model_catalog.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/parsing/paddleocr_docker.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/parsing/paddleocr_vl.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/parsing/parser.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/parsing/public_diagnostics.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/parsing/quality_policy.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/parsing/reprocessing.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/parsing/review.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/parsing/review_cases.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/parsing/runtime.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/parsing/schema_extraction.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/parsing/schema_models.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/parsing/segmentation.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/parsing/storage.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.90
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/parsing/structured_blocks.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/parsing/subdocument_artifacts.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/parsing/verification.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/parsing/vision_providers.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/parsing/worker.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/utils/file_handler.py,2,1.649547,2026-04-08T18:52:55+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/utils/http.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/utils/mime.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/pyproject.toml,2,1.649547,2026-04-08T18:52:55+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/requirements.txt,2,1.649547,2026-04-08T18:52:55+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/test_agentic.py,3,2.306362,2026-04-08T18:52:55+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/test_business_rules.py,2,1.649584,2026-04-08T19:14:03+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/test_cache.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/test_calibration_v2.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/test_checkpointing.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/test_config.py,3,2.306362,2026-04-08T18:52:55+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/test_cross_page.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/test_docling_provider.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/test_documents.py,3,2.304119,2026-04-08T18:52:55+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/test_double_pass.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/test_durability.py,3,2.306362,2026-04-08T18:52:55+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/test_error_classify.py,2,1.649584,2026-04-08T19:14:03+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/test_eval_calibration.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/test_eval_diff.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/test_eval_judge.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/test_eval_metrics.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/test_eval_metrics_v2.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/test_evidence.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/test_extraction_graph.py,3,2.306362,2026-04-08T18:52:55+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/test_extraction_schemas.py,2,1.649547,2026-04-08T18:52:55+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/test_fetch_docvqa.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/test_field_strategies.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/test_glm_ocr_provider.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/test_health.py,3,2.306399,2026-04-08T19:14:03+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/test_integration.py,3,2.306362,2026-04-08T18:52:55+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/test_jobs.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/test_layout_base.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/test_llm_registry.py,3,2.306362,2026-04-08T18:52:55+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/test_mcp_server.py,2,1.869108,2026-06-22T21:42:37+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/test_ocr_registry.py,3,2.306362,2026-04-08T18:52:55+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/test_output_parser.py,3,2.306362,2026-04-08T18:52:55+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/test_output_parser_property.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/test_paddleocr_provider.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/test_presets.py,4,2.960934,2026-04-08T18:52:55+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/test_prompts_loader.py,2,1.869260,2026-06-22T22:47:42+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/test_providers.py,3,2.306362,2026-04-08T18:52:55+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/test_reflection_loop.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/test_reviews.py,3,2.306362,2026-04-08T18:52:55+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/test_routes.py,5,3.835030,2026-04-08T18:52:55+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/test_schemas.py,2,1.649547,2026-04-08T18:52:55+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/test_security.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/test_sse_and_cache.py,3,2.306362,2026-04-08T18:52:55+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/test_telemetry.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/test_triage_node.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/test_validation.py,2,1.649547,2026-04-08T18:52:55+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/test_verifier.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/test_vlm_extractor.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_agentic_contracts.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_agentic_migration.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_artifacts.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_diagnostics_builder.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_document_segmentation.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_domain_extraction.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_evaluation.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_evaluation_api.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_extraction_schemas.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_glmocr_adapter.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_job_queue_shutdown.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_layout_graph.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_markdown_output.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_model_catalog.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_paddleocr_docker.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_paddleocr_vl.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_parse_api.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_parse_batches.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_parse_batching.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_parse_contracts.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_parser_runtime.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_public_diagnostics.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_quality_policy.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_reprocessing.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_review.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_runtime_capabilities.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_schema_extraction.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_schema_models.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_sse_events.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_structured_blocks.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_subdocument_artifacts.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_vision_providers.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_worker_cancellation.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/unit/test_worker_logging.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,deploy/paddleocr-vl/worker.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,docs/APP_CAPABILITIES.html,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,docs/APP_CAPABILITIES.md,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,docs/ARCHITECTURE.md,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,docs/ARCHITECTURE_V2.md,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,docs/DEPLOYMENT.md,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,docs/DEVELOPMENT.md,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,docs/PIPELINE_AND_AGENTIC_ARCHITECTURE.md,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,docs/RELEASE_NOTES.md,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,docs/RUNBOOK.md,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,docs/RUN_APP.md,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,docs/ZERO_TO_MASTERY.md,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,docs/how-it-works.md,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,frontend/.eslintrc.json,2,1.651827,2026-04-09T16:33:12+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,frontend/eslint.config.mjs,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,frontend/next.config.js,2,1.649547,2026-04-08T18:52:55+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,frontend/src/app/history/page.tsx,4,2.960934,2026-04-08T18:52:55+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,frontend/src/app/icon.svg,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,frontend/src/app/schemas/page.tsx,3,2.306362,2026-04-08T18:52:55+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,frontend/src/components/ArtifactGallery.test.tsx,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,frontend/src/components/ArtifactGallery.tsx,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,frontend/src/components/DocumentInspector.tsx,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,frontend/src/components/ExtractionForm.tsx,3,2.306362,2026-04-08T18:52:55+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,frontend/src/components/ExtractionResult.tsx,4,2.960934,2026-04-08T18:52:55+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,frontend/src/components/FieldTable.tsx,3,2.306362,2026-04-08T18:52:55+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,frontend/src/components/FileUpload.tsx,3,2.306362,2026-04-08T18:52:55+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,frontend/src/components/QualityDiagnostics.tsx,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,frontend/src/components/ReviewPanel.tsx,3,2.306362,2026-04-08T18:52:55+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,frontend/src/components/ReviewWorkspace.tsx,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,frontend/src/components/SchemaWorkspace.tsx,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,frontend/src/components/SubDocumentGallery.tsx,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,frontend/tsconfig.json,2,1.649547,2026-04-08T18:52:55+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,frontend/vitest.config.ts,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,justfile,2,1.869108,2026-06-22T21:42:37+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,scripts/build_app_guide.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,scripts/build_handbook.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,scripts/eval_diff.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,scripts/fetch_docvqa.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,scripts/fetch_golden_set.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,scripts/fit_calibrator.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,scripts/handbook_pdf.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,scripts/release.py,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,security_best_practices_report.md,1,0.995013,2026-07-26T13:13:11+05:30,2026-07-26T13:13:11+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,docs/MCP.md,1,0.874096,2026-06-22T21:42:37+05:30,2026-06-22T21:42:37+05:30,0.00
+opencode@local,.github/workflows/ci.yml,2,1.745931,2026-06-22T12:09:15+05:30,2026-06-22T15:08:15+05:30,0.00
+opencode@local,justfile,4,3.490203,2026-06-22T02:33:20+05:30,2026-06-22T15:08:15+05:30,0.00
+opencode@local,conftest.py,2,1.746323,2026-06-22T15:00:54+05:30,2026-06-22T15:04:47+05:30,0.00
+opencode@local,pyproject.toml,7,6.107354,2026-06-22T02:51:58+05:30,2026-06-22T15:04:47+05:30,0.00
+opencode@local,CHANGELOG.md,2,1.745695,2026-06-22T10:38:11+05:30,2026-06-22T14:58:27+05:30,0.00
+opencode@local,backend/app/main.py,3,2.617162,2026-06-22T02:56:21+05:30,2026-06-22T14:58:27+05:30,0.00
+opencode@local,backend/tests/test_routes.py,2,1.745695,2026-06-22T10:38:11+05:30,2026-06-22T14:58:27+05:30,0.00
+opencode@local,docs/ARCHITECTURE_V2.md,1,0.873151,2026-06-22T14:58:27+05:30,2026-06-22T14:58:27+05:30,0.00
+opencode@local,backend/app/services/eval/metrics_v2.py,1,0.873145,2026-06-22T14:55:48+05:30,2026-06-22T14:55:48+05:30,0.00
+opencode@local,backend/tests/test_eval_metrics_v2.py,1,0.873145,2026-06-22T14:55:48+05:30,2026-06-22T14:55:48+05:30,0.00
+opencode@local,backend/tests/test_fetch_docvqa.py,1,0.873131,2026-06-22T14:49:46+05:30,2026-06-22T14:49:46+05:30,0.00
+opencode@local,eval/golden_set/v2/manifest.json,1,0.873131,2026-06-22T14:49:46+05:30,2026-06-22T14:49:46+05:30,0.00
+opencode@local,scripts/fetch_docvqa.py,1,0.873131,2026-06-22T14:49:46+05:30,2026-06-22T14:49:46+05:30,0.00
+opencode@local,backend/app/services/eval/calibration_v2.py,1,0.873124,2026-06-22T14:46:43+05:30,2026-06-22T14:46:43+05:30,0.00
+opencode@local,backend/tests/test_calibration_v2.py,1,0.873124,2026-06-22T14:46:43+05:30,2026-06-22T14:46:43+05:30,0.00
+opencode@local,backend/app/services/extraction/double_pass.py,1,0.873113,2026-06-22T14:41:55+05:30,2026-06-22T14:41:55+05:30,0.00
+opencode@local,backend/tests/test_double_pass.py,1,0.873113,2026-06-22T14:41:55+05:30,2026-06-22T14:41:55+05:30,0.00
+opencode@local,backend/app/services/extraction/field_strategies.py,1,0.873102,2026-06-22T14:37:24+05:30,2026-06-22T14:37:24+05:30,0.00
+opencode@local,backend/tests/test_field_strategies.py,1,0.873102,2026-06-22T14:37:24+05:30,2026-06-22T14:37:24+05:30,0.00
+opencode@local,backend/app/services/extraction/cross_page.py,1,0.873091,2026-06-22T14:32:45+05:30,2026-06-22T14:32:45+05:30,0.00
+opencode@local,backend/tests/test_cross_page.py,1,0.873091,2026-06-22T14:32:45+05:30,2026-06-22T14:32:45+05:30,0.00
+opencode@local,backend/app/services/extraction/verifier.py,1,0.873082,2026-06-22T14:28:52+05:30,2026-06-22T14:28:52+05:30,0.00
+opencode@local,backend/tests/test_verifier.py,1,0.873082,2026-06-22T14:28:52+05:30,2026-06-22T14:28:52+05:30,0.00
+opencode@local,backend/alembic/versions/0004_evidence_entities_verifier.py,1,0.873072,2026-06-22T14:24:31+05:30,2026-06-22T14:24:31+05:30,0.00
+opencode@local,backend/app/models/db_models.py,3,2.618027,2026-06-22T10:06:38+05:30,2026-06-22T14:24:31+05:30,0.00
+opencode@local,backend/app/services/extraction/evidence.py,1,0.873072,2026-06-22T14:24:31+05:30,2026-06-22T14:24:31+05:30,0.00
+opencode@local,backend/tests/test_evidence.py,1,0.873072,2026-06-22T14:24:31+05:30,2026-06-22T14:24:31+05:30,0.00
+opencode@local,prompts/v2/extraction.md,1,0.873072,2026-06-22T14:24:31+05:30,2026-06-22T14:24:31+05:30,0.00
+opencode@local,prompts/v2/reflection.md,1,0.873072,2026-06-22T14:24:31+05:30,2026-06-22T14:24:31+05:30,0.00
+opencode@local,backend/app/config.py,8,6.976308,2026-06-22T02:33:20+05:30,2026-06-22T14:18:34+05:30,7.20
+opencode@local,backend/app/services/ocr/docling_layout_provider.py,1,0.873058,2026-06-22T14:18:34+05:30,2026-06-22T14:18:34+05:30,0.00
+opencode@local,backend/app/services/ocr/layout_base.py,1,0.873058,2026-06-22T14:18:34+05:30,2026-06-22T14:18:34+05:30,0.00
+opencode@local,backend/app/services/ocr/layout_registry.py,1,0.873058,2026-06-22T14:18:34+05:30,2026-06-22T14:18:34+05:30,0.00
+opencode@local,backend/tests/test_layout_base.py,1,0.873058,2026-06-22T14:18:34+05:30,2026-06-22T14:18:34+05:30,0.00
+opencode@local,backend/tests/test_ocr_registry.py,5,4.364051,2026-06-22T10:19:48+05:30,2026-06-22T13:51:54+05:30,0.00
+opencode@local,backend/tests/test_paddleocr_provider.py,6,5.236939,2026-06-22T10:14:53+05:30,2026-06-22T13:51:54+05:30,0.00
+opencode@local,backend/app/services/eval/calibration.py,2,1.744143,2026-06-22T02:33:20+05:30,2026-06-22T11:57:37+05:30,0.00
+opencode@local,backend/app/services/eval/metrics.py,2,1.744134,2026-06-22T02:29:38+05:30,2026-06-22T11:57:37+05:30,0.00
+opencode@local,backend/app/services/extraction/vlm_extractor.py,2,1.745237,2026-06-22T10:22:30+05:30,2026-06-22T11:57:37+05:30,0.00
+opencode@local,backend/app/services/llm/prompts_loader.py,2,1.745213,2026-06-22T10:12:30+05:30,2026-06-22T11:57:37+05:30,0.00
+opencode@local,backend/app/services/ocr/docling_provider.py,2,1.745230,2026-06-22T10:19:48+05:30,2026-06-22T11:57:37+05:30,0.00
+opencode@local,backend/app/services/ocr/paddleocr_provider.py,2,1.745219,2026-06-22T10:14:53+05:30,2026-06-22T11:57:37+05:30,0.00
+opencode@local,backend/tests/test_docling_provider.py,2,1.745230,2026-06-22T10:19:48+05:30,2026-06-22T11:57:37+05:30,0.00
+opencode@local,backend/tests/test_eval_calibration.py,2,1.744143,2026-06-22T02:33:20+05:30,2026-06-22T11:57:37+05:30,0.00
+opencode@local,backend/tests/test_eval_judge.py,2,1.745200,2026-06-22T10:06:38+05:30,2026-06-22T11:57:37+05:30,0.00
+opencode@local,backend/tests/test_vlm_extractor.py,2,1.745237,2026-06-22T10:22:30+05:30,2026-06-22T11:57:37+05:30,0.00
+opencode@local,scripts/eval_diff.py,2,1.745213,2026-06-22T10:12:30+05:30,2026-06-22T11:57:37+05:30,0.00
+opencode@local,docs/MIGRATION_GUIDE.md,1,0.872544,2026-06-22T10:38:11+05:30,2026-06-22T10:38:11+05:30,0.00
+opencode@local,docs/QUALITY.md,1,0.872544,2026-06-22T10:38:11+05:30,2026-06-22T10:38:11+05:30,0.00
+opencode@local,docs/RELEASE_NOTES.md,1,0.872544,2026-06-22T10:38:11+05:30,2026-06-22T10:38:11+05:30,0.00
+opencode@local,docs/UPGRADE_SUMMARY.md,1,0.872544,2026-06-22T10:38:11+05:30,2026-06-22T10:38:11+05:30,0.00
+opencode@local,docs/observability.md,1,0.872544,2026-06-22T10:38:11+05:30,2026-06-22T10:38:11+05:30,0.00
+opencode@local,uv.lock,2,1.744011,2026-06-22T02:56:21+05:30,2026-06-22T10:38:11+05:30,0.00
+opencode@local,backend/app/routers/extractions.py,3,2.615424,2026-06-22T02:42:09+05:30,2026-06-22T10:33:40+05:30,1.20
+opencode@local,backend/app/services/extraction/graph.py,4,3.486891,2026-06-22T02:42:09+05:30,2026-06-22T10:33:40+05:30,0.00
+opencode@local,backend/tests/test_durability.py,3,2.615424,2026-06-22T02:42:09+05:30,2026-06-22T10:33:40+05:30,0.00
+opencode@local,backend/tests/test_integration.py,3,2.615424,2026-06-22T02:42:09+05:30,2026-06-22T10:33:40+05:30,0.00
+opencode@local,backend/tests/test_triage_node.py,1,0.872533,2026-06-22T10:33:40+05:30,2026-06-22T10:33:40+05:30,0.00
+opencode@local,docs/ENGINES.md,1,0.872533,2026-06-22T10:33:40+05:30,2026-06-22T10:33:40+05:30,0.00
+opencode@local,backend/app/models/enums.py,1,0.872501,2026-06-22T10:19:48+05:30,2026-06-22T10:19:48+05:30,0.00
+opencode@local,backend/app/services/ocr/registry.py,1,0.872501,2026-06-22T10:19:48+05:30,2026-06-22T10:19:48+05:30,0.00
+opencode@local,backend/alembic/versions/0003_prompt_schema_version.py,1,0.872484,2026-06-22T10:12:30+05:30,2026-06-22T10:12:30+05:30,0.00
+opencode@local,backend/app/services/llm/prompts.py,2,1.743918,2026-06-22T02:42:09+05:30,2026-06-22T10:12:30+05:30,0.00
+opencode@local,backend/tests/test_eval_diff.py,1,0.872484,2026-06-22T10:12:30+05:30,2026-06-22T10:12:30+05:30,0.00
+opencode@local,backend/tests/test_prompts_loader.py,1,0.872484,2026-06-22T10:12:30+05:30,2026-06-22T10:12:30+05:30,0.00
+opencode@local,prompts/v1/extraction.md,1,0.872484,2026-06-22T10:12:30+05:30,2026-06-22T10:12:30+05:30,0.00
+opencode@local,prompts/v1/reflection.md,1,0.872484,2026-06-22T10:12:30+05:30,2026-06-22T10:12:30+05:30,0.00
+opencode@local,backend/alembic/versions/0002_judgments.py,1,0.872470,2026-06-22T10:06:38+05:30,2026-06-22T10:06:38+05:30,0.00
+opencode@local,backend/app/services/eval/__init__.py,3,2.615289,2026-06-22T02:29:38+05:30,2026-06-22T10:06:38+05:30,0.00
+opencode@local,backend/app/services/eval/judge.py,1,0.872470,2026-06-22T10:06:38+05:30,2026-06-22T10:06:38+05:30,0.00
+opencode@local,backend/app/telemetry.py,1,0.871467,2026-06-22T02:56:21+05:30,2026-06-22T02:56:21+05:30,0.00
+opencode@local,backend/tests/test_telemetry.py,1,0.871467,2026-06-22T02:56:21+05:30,2026-06-22T02:56:21+05:30,0.00
+opencode@local,docker-compose.yml,1,0.871467,2026-06-22T02:56:21+05:30,2026-06-22T02:56:21+05:30,0.00
+opencode@local,backend/tests/test_checkpointing.py,1,0.871457,2026-06-22T02:51:58+05:30,2026-06-22T02:51:58+05:30,0.00
+opencode@local,backend/app/metrics.py,1,0.871434,2026-06-22T02:42:09+05:30,2026-06-22T02:42:09+05:30,0.00
+opencode@local,backend/tests/test_reflection_loop.py,1,0.871434,2026-06-22T02:42:09+05:30,2026-06-22T02:42:09+05:30,0.00
+opencode@local,scripts/fit_calibrator.py,1,0.871413,2026-06-22T02:33:20+05:30,2026-06-22T02:33:20+05:30,0.00
+opencode@local,backend/tests/test_eval_metrics.py,1,0.871405,2026-06-22T02:29:38+05:30,2026-06-22T02:29:38+05:30,0.00
+opencode@local,eval/golden_set/v1/manifest.json,1,0.871405,2026-06-22T02:29:38+05:30,2026-06-22T02:29:38+05:30,0.00
+opencode@local,scripts/fetch_golden_set.py,1,0.871405,2026-06-22T02:29:38+05:30,2026-06-22T02:29:38+05:30,0.00
+[email protected],CHANGELOG.md,4,3.485145,2026-06-22T01:11:30+05:30,2026-06-22T02:02:57+05:30,0.00
+[email protected],backend/app/main.py,6,5.227756,2026-06-22T01:18:33+05:30,2026-06-22T02:02:57+05:30,0.00
+[email protected],pyproject.toml,3,2.613843,2026-06-22T01:11:30+05:30,2026-06-22T02:02:57+05:30,0.00
+[email protected],.devcontainer/devcontainer.json,1,0.871341,2026-06-22T02:02:06+05:30,2026-06-22T02:02:06+05:30,0.00
+[email protected],.pre-commit-config.yaml,1,0.871341,2026-06-22T02:02:06+05:30,2026-06-22T02:02:06+05:30,0.00
+[email protected],docs/FAQ.md,1,0.871341,2026-06-22T02:02:06+05:30,2026-06-22T02:02:06+05:30,0.00
+[email protected],docs/MIGRATION_GUIDE.md,1,0.871341,2026-06-22T02:02:06+05:30,2026-06-22T02:02:06+05:30,0.00
+[email protected],docs/RELEASE_NOTES.md,1,0.871341,2026-06-22T02:02:06+05:30,2026-06-22T02:02:06+05:30,0.00
+[email protected],docs/RUNBOOK.md,1,0.871341,2026-06-22T02:02:06+05:30,2026-06-22T02:02:06+05:30,0.00
+[email protected],docs/UPGRADE_SUMMARY.md,1,0.871341,2026-06-22T02:02:06+05:30,2026-06-22T02:02:06+05:30,0.00
+[email protected],docs/adr/0001-record-architecture-decisions.md,1,0.871341,2026-06-22T02:02:06+05:30,2026-06-22T02:02:06+05:30,0.00
+[email protected],docs/adr/0002-langgraph-for-pipeline.md,1,0.871341,2026-06-22T02:02:06+05:30,2026-06-22T02:02:06+05:30,0.00
+[email protected],docs/adr/0003-sqlite-wal-default.md,1,0.871341,2026-06-22T02:02:06+05:30,2026-06-22T02:02:06+05:30,0.00
+[email protected],docs/adr/0004-secure-by-default.md,1,0.871341,2026-06-22T02:02:06+05:30,2026-06-22T02:02:06+05:30,0.00
+[email protected],justfile,1,0.871341,2026-06-22T02:02:06+05:30,2026-06-22T02:02:06+05:30,0.00
+[email protected],.github/dependabot.yml,1,0.871334,2026-06-22T01:59:21+05:30,2026-06-22T01:59:21+05:30,0.00
+[email protected],.github/workflows/ci.yml,2,1.742586,2026-06-22T01:23:58+05:30,2026-06-22T01:59:21+05:30,0.00
+[email protected],.github/workflows/codeql.yml,1,0.871334,2026-06-22T01:59:21+05:30,2026-06-22T01:59:21+05:30,0.00
+[email protected],.github/workflows/dependency-review.yml,1,0.871334,2026-06-22T01:59:21+05:30,2026-06-22T01:59:21+05:30,0.00
+[email protected],backend/tests/test_cache.py,2,1.742658,2026-06-22T01:55:05+05:30,2026-06-22T01:59:21+05:30,0.00
+[email protected],backend/tests/test_output_parser_property.py,1,0.871334,2026-06-22T01:59:21+05:30,2026-06-22T01:59:21+05:30,0.00
+[email protected],backend/app/cache.py,1,0.871324,2026-06-22T01:55:05+05:30,2026-06-22T01:55:05+05:30,0.00
+[email protected],backend/app/routers/providers.py,3,2.613825,2026-06-22T01:11:30+05:30,2026-06-22T01:55:05+05:30,1.20
+[email protected],backend/app/services/llm/output_parser.py,2,1.742602,2026-06-22T01:35:03+05:30,2026-06-22T01:55:05+05:30,0.00
+[email protected],backend/app/routers/extractions.py,3,2.613885,2026-06-22T01:35:03+05:30,2026-06-22T01:52:42+05:30,1.20
+[email protected],backend/app/services/jobs.py,2,1.742627,2026-06-22T01:48:24+05:30,2026-06-22T01:52:42+05:30,0.00
+[email protected],backend/tests/conftest.py,3,2.613895,2026-06-22T01:35:03+05:30,2026-06-22T01:52:42+05:30,0.00
+[email protected],backend/tests/test_jobs.py,1,0.871319,2026-06-22T01:52:42+05:30,2026-06-22T01:52:42+05:30,0.00
+[email protected],Dockerfile,1,0.871309,2026-06-22T01:48:24+05:30,2026-06-22T01:48:24+05:30,0.00
+[email protected],alembic.ini,1,0.871309,2026-06-22T01:48:24+05:30,2026-06-22T01:48:24+05:30,0.00
+[email protected],backend/alembic/env.py,1,0.871309,2026-06-22T01:48:24+05:30,2026-06-22T01:48:24+05:30,0.00
+[email protected],backend/alembic/script.py.mako,1,0.871309,2026-06-22T01:48:24+05:30,2026-06-22T01:48:24+05:30,0.00
+[email protected],backend/alembic/versions/0001_initial_schema.py,1,0.871309,2026-06-22T01:48:24+05:30,2026-06-22T01:48:24+05:30,0.00
+[email protected],backend/app/config.py,3,2.613809,2026-06-22T01:11:30+05:30,2026-06-22T01:48:24+05:30,2.70
+[email protected],backend/app/database.py,2,1.742586,2026-06-22T01:35:03+05:30,2026-06-22T01:48:24+05:30,1.20
+[email protected],docker-compose.yml,1,0.871309,2026-06-22T01:48:24+05:30,2026-06-22T01:48:24+05:30,0.00
+[email protected],docs/DEPLOYMENT.md,1,0.871309,2026-06-22T01:48:24+05:30,2026-06-22T01:48:24+05:30,0.00
+[email protected],backend/app/routers/documents.py,1,0.871299,2026-06-22T01:44:05+05:30,2026-06-22T01:44:05+05:30,0.40
+[email protected],backend/app/security_middleware.py,1,0.871299,2026-06-22T01:44:05+05:30,2026-06-22T01:44:05+05:30,1.00
+[email protected],backend/app/utils/mime.py,1,0.871299,2026-06-22T01:44:05+05:30,2026-06-22T01:44:05+05:30,0.00
+[email protected],backend/app/utils/network.py,1,0.871299,2026-06-22T01:44:05+05:30,2026-06-22T01:44:05+05:30,0.00
+[email protected],backend/tests/test_security.py,1,0.871299,2026-06-22T01:44:05+05:30,2026-06-22T01:44:05+05:30,0.00
+[email protected],backend/app/logging_setup.py,1,0.871289,2026-06-22T01:39:55+05:30,2026-06-22T01:39:55+05:30,0.00
+[email protected],backend/app/metrics.py,1,0.871289,2026-06-22T01:39:55+05:30,2026-06-22T01:39:55+05:30,0.00
+[email protected],backend/app/middleware.py,1,0.871289,2026-06-22T01:39:55+05:30,2026-06-22T01:39:55+05:30,0.00
+[email protected],backend/app/models/db_models.py,2,1.742567,2026-06-22T01:35:03+05:30,2026-06-22T01:39:55+05:30,0.00
+[email protected],backend/app/services/audit.py,1,0.871289,2026-06-22T01:39:55+05:30,2026-06-22T01:39:55+05:30,0.00
+[email protected],backend/app/services/extraction/graph.py,2,1.742567,2026-06-22T01:35:03+05:30,2026-06-22T01:39:55+05:30,0.00
+[email protected],.editorconfig,1,0.871278,2026-06-22T01:35:03+05:30,2026-06-22T01:35:03+05:30,0.00
+[email protected],CONTRIBUTING.md,1,0.871278,2026-06-22T01:35:03+05:30,2026-06-22T01:35:03+05:30,0.00
+[email protected],backend/app/constants.py,1,0.871278,2026-06-22T01:35:03+05:30,2026-06-22T01:35:03+05:30,0.50
+[email protected],backend/app/models/enums.py,2,1.742500,2026-06-22T01:11:30+05:30,2026-06-22T01:35:03+05:30,0.00
+[email protected],backend/app/models/schemas.py,2,1.742500,2026-06-22T01:11:30+05:30,2026-06-22T01:35:03+05:30,0.00
+[email protected],backend/app/routers/schemas.py,1,0.871278,2026-06-22T01:35:03+05:30,2026-06-22T01:35:03+05:30,0.40
+[email protected],backend/app/services/extraction/business_rules.py,1,0.871278,2026-06-22T01:35:03+05:30,2026-06-22T01:35:03+05:30,0.00
+[email protected],backend/app/services/extraction/error_classify.py,1,0.871278,2026-06-22T01:35:03+05:30,2026-06-22T01:35:03+05:30,0.00
+[email protected],backend/app/services/extraction/presets.py,1,0.871278,2026-06-22T01:35:03+05:30,2026-06-22T01:35:03+05:30,0.00
+[email protected],backend/app/services/extraction/validation.py,1,0.871278,2026-06-22T01:35:03+05:30,2026-06-22T01:35:03+05:30,0.00
+[email protected],backend/app/services/llm/__init__.py,1,0.871278,2026-06-22T01:35:03+05:30,2026-06-22T01:35:03+05:30,0.00
+[email protected],backend/app/services/llm/base.py,1,0.871278,2026-06-22T01:35:03+05:30,2026-06-22T01:35:03+05:30,0.00
+[email protected],backend/app/services/llm/claude_provider.py,1,0.871278,2026-06-22T01:35:03+05:30,2026-06-22T01:35:03+05:30,0.00
+[email protected],backend/app/services/llm/gemini_provider.py,1,0.871278,2026-06-22T01:35:03+05:30,2026-06-22T01:35:03+05:30,0.00
+[email protected],backend/app/services/llm/openai_provider.py,1,0.871278,2026-06-22T01:35:03+05:30,2026-06-22T01:35:03+05:30,0.00
+[email protected],backend/app/services/llm/prompts.py,1,0.871278,2026-06-22T01:35:03+05:30,2026-06-22T01:35:03+05:30,0.00
+[email protected],backend/app/services/llm/registry.py,1,0.871278,2026-06-22T01:35:03+05:30,2026-06-22T01:35:03+05:30,0.00
+[email protected],backend/app/services/ocr/__init__.py,1,0.871278,2026-06-22T01:35:03+05:30,2026-06-22T01:35:03+05:30,0.00
+[email protected],backend/app/services/ocr/base.py,1,0.871278,2026-06-22T01:35:03+05:30,2026-06-22T01:35:03+05:30,0.00
+[email protected],backend/app/services/ocr/glm_ocr_provider.py,2,1.742500,2026-06-22T01:11:30+05:30,2026-06-22T01:35:03+05:30,0.00
+[email protected],backend/app/services/ocr/paddleocr_provider.py,1,0.871278,2026-06-22T01:35:03+05:30,2026-06-22T01:35:03+05:30,0.00
+[email protected],backend/app/services/ocr/pymupdf_provider.py,1,0.871278,2026-06-22T01:35:03+05:30,2026-06-22T01:35:03+05:30,0.00
+[email protected],backend/app/services/ocr/registry.py,2,1.742500,2026-06-22T01:11:30+05:30,2026-06-22T01:35:03+05:30,0.00
+[email protected],backend/app/utils/datetime.py,1,0.871278,2026-06-22T01:35:03+05:30,2026-06-22T01:35:03+05:30,0.00
+[email protected],backend/app/utils/file_handler.py,1,0.871278,2026-06-22T01:35:03+05:30,2026-06-22T01:35:03+05:30,0.00
+[email protected],backend/app/utils/http.py,1,0.871278,2026-06-22T01:35:03+05:30,2026-06-22T01:35:03+05:30,0.00
+[email protected],backend/tests/test_agentic.py,1,0.871278,2026-06-22T01:35:03+05:30,2026-06-22T01:35:03+05:30,0.00
+[email protected],backend/tests/test_business_rules.py,1,0.871278,2026-06-22T01:35:03+05:30,2026-06-22T01:35:03+05:30,0.00
+[email protected],backend/tests/test_config.py,1,0.871278,2026-06-22T01:35:03+05:30,2026-06-22T01:35:03+05:30,0.00
+[email protected],backend/tests/test_durability.py,1,0.871278,2026-06-22T01:35:03+05:30,2026-06-22T01:35:03+05:30,0.00
+[email protected],backend/tests/test_extraction_graph.py,1,0.871278,2026-06-22T01:35:03+05:30,2026-06-22T01:35:03+05:30,0.00
+[email protected],backend/tests/test_extraction_schemas.py,1,0.871278,2026-06-22T01:35:03+05:30,2026-06-22T01:35:03+05:30,0.00
+[email protected],backend/tests/test_glm_ocr_provider.py,2,1.742500,2026-06-22T01:11:30+05:30,2026-06-22T01:35:03+05:30,0.00
+[email protected],backend/tests/test_health.py,1,0.871278,2026-06-22T01:35:03+05:30,2026-06-22T01:35:03+05:30,0.00
+[email protected],backend/tests/test_integration.py,1,0.871278,2026-06-22T01:35:03+05:30,2026-06-22T01:35:03+05:30,0.00
+[email protected],backend/tests/test_llm_registry.py,1,0.871278,2026-06-22T01:35:03+05:30,2026-06-22T01:35:03+05:30,0.00
+[email protected],backend/tests/test_ocr_registry.py,2,1.742500,2026-06-22T01:11:30+05:30,2026-06-22T01:35:03+05:30,0.00
+[email protected],backend/tests/test_output_parser.py,1,0.871278,2026-06-22T01:35:03+05:30,2026-06-22T01:35:03+05:30,0.00
+[email protected],backend/tests/test_presets.py,1,0.871278,2026-06-22T01:35:03+05:30,2026-06-22T01:35:03+05:30,0.00
+[email protected],backend/tests/test_providers.py,1,0.871278,2026-06-22T01:35:03+05:30,2026-06-22T01:35:03+05:30,0.00
+[email protected],backend/tests/test_reviews.py,1,0.871278,2026-06-22T01:35:03+05:30,2026-06-22T01:35:03+05:30,0.00
+[email protected],backend/tests/test_routes.py,2,1.742517,2026-06-22T01:18:33+05:30,2026-06-22T01:35:03+05:30,0.00
+[email protected],backend/tests/test_schemas.py,1,0.871278,2026-06-22T01:35:03+05:30,2026-06-22T01:35:03+05:30,0.00
+[email protected],backend/tests/test_sse_and_cache.py,1,0.871278,2026-06-22T01:35:03+05:30,2026-06-22T01:35:03+05:30,0.00
+[email protected],backend/tests/test_validation.py,1,0.871278,2026-06-22T01:35:03+05:30,2026-06-22T01:35:03+05:30,0.00
+[email protected],.github/ISSUE_TEMPLATE/bug_report.md,1,0.871252,2026-06-22T01:23:58+05:30,2026-06-22T01:23:58+05:30,0.00
+[email protected],.github/ISSUE_TEMPLATE/config.yml,1,0.871252,2026-06-22T01:23:58+05:30,2026-06-22T01:23:58+05:30,0.00
+[email protected],.github/ISSUE_TEMPLATE/feature_request.md,1,0.871252,2026-06-22T01:23:58+05:30,2026-06-22T01:23:58+05:30,0.00
+[email protected],.github/ISSUE_TEMPLATE/provider_request.md,1,0.871252,2026-06-22T01:23:58+05:30,2026-06-22T01:23:58+05:30,0.00
+[email protected],RELEASE.md,1,0.871252,2026-06-22T01:23:58+05:30,2026-06-22T01:23:58+05:30,0.00
+[email protected],scripts/release.py,1,0.871252,2026-06-22T01:23:58+05:30,2026-06-22T01:23:58+05:30,0.00
+[email protected],.gitignore,1,0.871223,2026-06-22T01:11:30+05:30,2026-06-22T01:11:30+05:30,0.00
+[email protected],.python-version,1,0.871223,2026-06-22T01:11:30+05:30,2026-06-22T01:11:30+05:30,0.00
+[email protected],README.md,1,0.871223,2026-06-22T01:11:30+05:30,2026-06-22T01:11:30+05:30,0.00
+[email protected],backend/.env.example,1,0.871223,2026-06-22T01:11:30+05:30,2026-06-22T01:11:30+05:30,0.00
+[email protected],docs/ARCHITECTURE.md,1,0.871223,2026-06-22T01:11:30+05:30,2026-06-22T01:11:30+05:30,0.00
+[email protected],docs/DEVELOPMENT.md,1,0.871223,2026-06-22T01:11:30+05:30,2026-06-22T01:11:30+05:30,0.00
+[email protected],docs/GLM_OCR.md,1,0.871223,2026-06-22T01:11:30+05:30,2026-06-22T01:11:30+05:30,0.00
+[email protected],docs/LIMITATIONS.md,1,0.871223,2026-06-22T01:11:30+05:30,2026-06-22T01:11:30+05:30,0.00
+[email protected],frontend/src/lib/api.ts,1,0.871223,2026-06-22T01:11:30+05:30,2026-06-22T01:11:30+05:30,0.00
+[email protected],uv.lock,1,0.871223,2026-06-22T01:11:30+05:30,2026-06-22T01:11:30+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,CODE_OF_CONDUCT.md,1,0.844432,2026-06-13T22:31:44+05:30,2026-06-13T22:31:44+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,LICENSE,1,0.844432,2026-06-13T22:31:44+05:30,2026-06-13T22:31:44+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/conftest.py,2,1.311374,2026-04-08T18:52:55+05:30,2026-04-09T16:46:59+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,frontend/css.d.ts,2,1.311374,2026-04-08T18:52:55+05:30,2026-04-09T16:46:59+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/scripts/validate_llm_providers.py,2,1.311349,2026-04-08T18:52:55+05:30,2026-04-09T16:33:12+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/__init__.py,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/models/__init__.py,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/routers/__init__.py,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.40
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/__init__.py,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/services/extraction/__init__.py,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/app/utils/__init__.py,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/scripts/e2e_validation.py,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/__init__.py,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/016e683b6f0743ba8a16f3935add0c5c.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/01c458340ef644169597370531437963.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/0fbee126fb5c4cd7ae76462570cfdc29.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/105dbbac2cfd4c38b8aab4bb10a1c4b1.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/12d256f6e7184e8ab516b1b93e1875d6.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/1ccd7f1772c14ca2be8a6bc19cebb8b4.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/1f04f8cb318647d7b4fb11314a2a32b9.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/2cbb964b803d428180619ac8d00410cc.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/2e257aa7e3624002b55fc1dc4ed44e32.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/306f339c05e5449aa32839ebe176bb8b.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/312110203c7c47b9a8d3a1990c97ae9b.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/37183cd0e4ad41fb93dc3ea01ba6ce15.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/3e3aba551ed048f6a3560ffb0d4fed8c.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/403080ca8acd436a8a51fc0a31348091.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/42ef8c9ae4724617a1a16b21de9dcfaf.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/4aaeda768dbb48bb8d76071a805b6cab.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/4b378f78f6dd4f18afc6d9f1eb87cf60.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/4b58f3c7adb14f9297d286bd5e8a0034.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/616487cdb1bd47fcaf8e95460e8eb1e8.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/62819d73f2e540078288e0f179be749c.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/669538a55ea243948aefd5ae78fe66cb.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/66a7adb8316b474c80965e128d532bbd.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/6dab9686d6324b9eacf2cf2ef273d92d.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/6e54750ef1774b59ace5cb235817c5a8.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/701d2a31b7294ba6bcbe0e5bf6d32a07.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/7597fec356d9408ca35a559a6dbe0cf8.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/7863bb3a5e384f05b69932804506e2ee.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/7d61c55bebc64adba541db5709dea847.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/7dd89f68d0ca4c6a962195210dac5d19.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/84d8a5e8e3844c67974031aab8d6f54b.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/8d7eed59625b4ced9be2c020be87cbbe.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/8fbef5caecb34f219131cf0973ab2fe1.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/918651b23279468b9b61a3cb7eb8e177.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/944c965ba9ce4060bfd3a2a6b036f742.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/9c7aa620bf3c47ffa4c9b60a125d392a.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/a81b74af04bf49189e95d7c3de340fa8.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/ab40a5c804224142b5aac9169061975f.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/b00897281bfd42db8fcc3b0066c0afaa.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/b031ee562524479db4b6b5ffc2e699c1.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/b23160db94ee46e88681ceb134496d90.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/b5803889b1be4ae5a995ff5011e90e58.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/bb17f22c732743c7b996ffec49d5ba14.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/bda8072bd28645e8922f940cb9c4fc6b.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/c27de4b04d5a46b19a88182efea20219.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/c2e5cf3ee4f640eb8bf115ac7cb114cd.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/c696a202a03048d1a3205b5028b18593.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/c77fda157af643fd903903733a5a02ee.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/cdb6ee6b24954f7c82b9d52ceeb53fb9.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/d0cd5c507401429e9348bb811b9bb3d3.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/d3cf8d1457be4c64bbf9c2a00367924d.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/d75307545dc5491484d6b0381b0f18cc.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/d8b37a1ece0b410e85d615ec15efb269.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/dadb2c6c504141c9a0445d164f5d1dcb.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/dbe23013d9144130b5341ceef7a3f7bd.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/dce38bbe95c24c39a816b1e1e0798941.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/df51491e7050471d8a0de231e8fe455c.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/e0f48d133ee44c3ba345026bfb925385.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/f0d1768753614103869645e0a1dff30b.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/f91d2589bf6e4d479251b2627ed9ff06.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/fa31edf4a9fd46fa9480d1dadbc2b437.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/fa587d148caf4379ba4b22ecbe622ebc.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/fb0e0bb007774e81aea0acc219c4705b.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/fcacb92980d748ee8ee7329d7c63968d.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,backend/tests/_test_uploads/fdaa1a9b62b740c3bd0a8ccee30d6436.pdf,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,frontend/postcss.config.js,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00
+72138709+pypi-ahmad@users.noreply.github.com,frontend/tailwind.config.ts,1,0.654535,2026-04-08T18:52:55+05:30,2026-04-08T18:52:55+05:30,0.00

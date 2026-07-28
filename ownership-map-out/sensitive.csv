@@ -1,0 +1,13 @@
+# pattern,tag,weight
+**/auth.py,auth,1.0
+**/security_middleware.py,auth,1.0
+**/constants.py,auth,0.5
+**/config.py,secrets,0.9
+**/storage.py,path_safety,0.9
+**/database.py,secrets,0.6
+**/routers/extraction_schemas.py,authz,1.0
+**/routers/*.py,authz,0.4
+**/services/parsing/ingest.py,input_validation,0.7
+**/*.env,secrets,1.0
+**/*.pem,secrets,1.0
+**/*.key,secrets,1.0
