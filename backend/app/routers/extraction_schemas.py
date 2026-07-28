@@ -9,6 +9,7 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.auth import require_api_key
 from app.database import get_db
 from app.models.db_models import ExtractionSchema
 from app.models.schemas import (
@@ -20,7 +21,11 @@ from app.models.schemas import (
 )
 from app.services.parsing.extraction_schemas import schema_sha256, validate_extraction_schema
 
-router = APIRouter(prefix="/api/extraction-schemas", tags=["Extraction Schemas"])
+router = APIRouter(
+    prefix="/api/extraction-schemas",
+    tags=["Extraction Schemas"],
+    dependencies=[Depends(require_api_key)],
+)
 
 
 def _name(value: str) -> str:

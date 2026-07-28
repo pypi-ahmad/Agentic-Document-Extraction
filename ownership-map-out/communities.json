@@ -1,0 +1,356 @@
+[
+  {
+    "id": 1,
+    "size": 35,
+    "files": [
+      "CHANGELOG.md",
+      "README.md",
+      "backend/.env.example",
+      "backend/app/config.py",
+      "backend/app/database.py",
+      "backend/app/main.py",
+      "backend/app/mcp_server.py",
+      "backend/app/metrics.py",
+      "backend/app/models/db_models.py",
+      "backend/app/models/enums.py",
+      "backend/app/models/schemas.py",
+      "backend/app/routers/extractions.py",
+      "backend/app/routers/providers.py",
+      "backend/app/services/eval/__init__.py",
+      "backend/app/services/extraction/graph.py",
+      "backend/app/services/extraction/presets.py",
+      "backend/app/services/llm/output_parser.py",
+      "backend/app/services/ocr/docling_provider.py",
+      "backend/app/services/ocr/paddleocr_provider.py",
+      "backend/app/services/ocr/registry.py",
+      "backend/tests/test_docling_provider.py",
+      "backend/tests/test_durability.py",
+      "backend/tests/test_health.py",
+      "backend/tests/test_integration.py",
+      "backend/tests/test_ocr_registry.py",
+      "backend/tests/test_paddleocr_provider.py",
+      "backend/tests/test_presets.py",
+      "backend/tests/test_routes.py",
+      "docker-compose.yml",
+      "frontend/src/app/history/page.tsx",
+      "frontend/src/components/ExtractionResult.tsx",
+      "frontend/src/lib/api.ts",
+      "justfile",
+      "pyproject.toml",
+      "uv.lock"
+    ],
+    "maintainers": [
+      {
+        "person_id": "72138709+pypi-ahmad@users.noreply.github.com",
+        "name": "pypi-ahmad",
+        "touches": 126,
+        "touch_share": 0.5101,
+        "recency_share": 0.4968,
+        "sensitive_share": 0.3824,
+        "primary_tz_offset": "+05:30"
+      },
+      {
+        "person_id": "opencode@local",
+        "name": "opencode",
+        "touches": 68,
+        "touch_share": 0.2753,
+        "recency_share": 0.2829,
+        "sensitive_share": 0.3529,
+        "primary_tz_offset": "+05:30"
+      },
+      {
+        "person_id": "[email protected]",
+        "name": "Ahmad",
+        "touches": 53,
+        "touch_share": 0.2146,
+        "recency_share": 0.2203,
+        "sensitive_share": 0.2647,
+        "primary_tz_offset": "+05:30"
+      }
+    ],
+    "bus_factor": 3,
+    "owner_count": 3,
+    "totals": {
+      "touches": 247,
+      "recency_weight": 209.651995,
+      "sensitive_weight": 23.8
+    }
+  },
+  {
+    "id": 2,
+    "size": 19,
+    "files": [
+      "backend/app/routers/v2_jobs.py",
+      "backend/app/services/parsing/v2_annotations.py",
+      "backend/app/services/parsing/v2_contracts.py",
+      "backend/app/services/parsing/v2_evaluation.py",
+      "backend/app/services/parsing/v2_pipeline.py",
+      "backend/app/services/parsing/v2_segmentation.py",
+      "backend/app/services/v2_jobs.py",
+      "backend/app/services/v2_tasks.py",
+      "backend/app/services/v2_worker.py",
+      "backend/tests/unit/test_app_surface.py",
+      "backend/tests/unit/test_auth.py",
+      "backend/tests/unit/test_v2_annotations.py",
+      "backend/tests/unit/test_v2_api.py",
+      "backend/tests/unit/test_v2_contracts.py",
+      "backend/tests/unit/test_v2_evaluation.py",
+      "backend/tests/unit/test_v2_page_processor.py",
+      "backend/tests/unit/test_v2_queue.py",
+      "backend/tests/unit/test_v2_task_leases.py",
+      "backend/tests/unit/test_v2_worker.py"
+    ],
+    "maintainers": [
+      {
+        "person_id": "72138709+pypi-ahmad@users.noreply.github.com",
+        "name": "pypi-ahmad",
+        "touches": 40,
+        "touch_share": 1.0,
+        "recency_share": 1.0,
+        "sensitive_share": 1.0,
+        "primary_tz_offset": "+05:30"
+      }
+    ],
+    "bus_factor": 1,
+    "owner_count": 1,
+    "totals": {
+      "touches": 40,
+      "recency_weight": 39.896139,
+      "sensitive_weight": 0.8
+    }
+  },
+  {
+    "id": 3,
+    "size": 6,
+    "files": [
+      "frontend/src/app/globals.css",
+      "frontend/src/app/page.test.tsx",
+      "frontend/src/app/page.tsx",
+      "frontend/src/app/v2-tools.css",
+      "frontend/src/components/v2/ArtifactPreview.tsx",
+      "frontend/src/components/v2/RunHistory.tsx"
+    ],
+    "maintainers": [
+      {
+        "person_id": "72138709+pypi-ahmad@users.noreply.github.com",
+        "name": "pypi-ahmad",
+        "touches": 24,
+        "touch_share": 1.0,
+        "recency_share": 1.0,
+        "sensitive_share": 0.0,
+        "primary_tz_offset": "+05:30"
+      }
+    ],
+    "bus_factor": 1,
+    "owner_count": 1,
+    "totals": {
+      "touches": 24,
+      "recency_weight": 22.89525,
+      "sensitive_weight": 0
+    }
+  },
+  {
+    "id": 4,
+    "size": 3,
+    "files": [
+      "backend/tests/unit/test_paddleocr_service.py",
+      "deploy/paddleocr-vl/Dockerfile.hpi",
+      "deploy/paddleocr-vl/service.py"
+    ],
+    "maintainers": [
+      {
+        "person_id": "72138709+pypi-ahmad@users.noreply.github.com",
+        "name": "pypi-ahmad",
+        "touches": 6,
+        "touch_share": 1.0,
+        "recency_share": 1.0,
+        "sensitive_share": 0.0,
+        "primary_tz_offset": "+05:30"
+      }
+    ],
+    "bus_factor": 1,
+    "owner_count": 1,
+    "totals": {
+      "touches": 6,
+      "recency_weight": 5.97245,
+      "sensitive_weight": 0
+    }
+  },
+  {
+    "id": 5,
+    "size": 3,
+    "files": [
+      "backend/app/services/llm/prompts_loader.py",
+      "backend/tests/test_prompts_loader.py",
+      "scripts/eval_diff.py"
+    ],
+    "maintainers": [
+      {
+        "person_id": "72138709+pypi-ahmad@users.noreply.github.com",
+        "name": "pypi-ahmad",
+        "touches": 5,
+        "touch_share": 0.5,
+        "recency_share": 0.5204,
+        "sensitive_share": 0.0,
+        "primary_tz_offset": "+05:30"
+      },
+      {
+        "person_id": "opencode@local",
+        "name": "opencode",
+        "touches": 5,
+        "touch_share": 0.5,
+        "recency_share": 0.4796,
+        "sensitive_share": 0.0,
+        "primary_tz_offset": "+05:30"
+      }
+    ],
+    "bus_factor": 2,
+    "owner_count": 2,
+    "totals": {
+      "touches": 10,
+      "recency_weight": 9.096444,
+      "sensitive_weight": 0
+    }
+  },
+  {
+    "id": 6,
+    "size": 3,
+    "files": [
+      "docs/MIGRATION_GUIDE.md",
+      "docs/RELEASE_NOTES.md",
+      "docs/UPGRADE_SUMMARY.md"
+    ],
+    "maintainers": [
+      {
+        "person_id": "opencode@local",
+        "name": "opencode",
+        "touches": 3,
+        "touch_share": 0.4286,
+        "recency_share": 0.4204,
+        "sensitive_share": 0.0,
+        "primary_tz_offset": "+05:30"
+      },
+      {
+        "person_id": "[email protected]",
+        "name": "Ahmad",
+        "touches": 3,
+        "touch_share": 0.4286,
+        "recency_share": 0.4198,
+        "sensitive_share": 0.0,
+        "primary_tz_offset": "+05:30"
+      },
+      {
+        "person_id": "72138709+pypi-ahmad@users.noreply.github.com",
+        "name": "pypi-ahmad",
+        "touches": 1,
+        "touch_share": 0.1429,
+        "recency_share": 0.1598,
+        "sensitive_share": 0.0,
+        "primary_tz_offset": "+05:30"
+      }
+    ],
+    "bus_factor": 3,
+    "owner_count": 3,
+    "totals": {
+      "touches": 7,
+      "recency_weight": 6.226666,
+      "sensitive_weight": 0
+    }
+  },
+  {
+    "id": 7,
+    "size": 2,
+    "files": [
+      "backend/app/services/agentic/contracts.py",
+      "backend/app/services/agentic/extraction.py"
+    ],
+    "maintainers": [
+      {
+        "person_id": "72138709+pypi-ahmad@users.noreply.github.com",
+        "name": "pypi-ahmad",
+        "touches": 4,
+        "touch_share": 1.0,
+        "recency_share": 1.0,
+        "sensitive_share": 0.0,
+        "primary_tz_offset": "+05:30"
+      }
+    ],
+    "bus_factor": 1,
+    "owner_count": 1,
+    "totals": {
+      "touches": 4,
+      "recency_weight": 3.997758,
+      "sensitive_weight": 0
+    }
+  },
+  {
+    "id": 8,
+    "size": 2,
+    "files": [
+      "backend/app/services/eval/calibration.py",
+      "backend/tests/test_eval_calibration.py"
+    ],
+    "maintainers": [
+      {
+        "person_id": "opencode@local",
+        "name": "opencode",
+        "touches": 4,
+        "touch_share": 0.6667,
+        "recency_share": 0.6367,
+        "sensitive_share": 0.0,
+        "primary_tz_offset": "+05:30"
+      },
+      {
+        "person_id": "72138709+pypi-ahmad@users.noreply.github.com",
+        "name": "pypi-ahmad",
+        "touches": 2,
+        "touch_share": 0.3333,
+        "recency_share": 0.3633,
+        "sensitive_share": 0.0,
+        "primary_tz_offset": "+05:30"
+      }
+    ],
+    "bus_factor": 2,
+    "owner_count": 2,
+    "totals": {
+      "touches": 6,
+      "recency_weight": 5.478311,
+      "sensitive_weight": 0
+    }
+  },
+  {
+    "id": 9,
+    "size": 2,
+    "files": [
+      "backend/app/services/extraction/vlm_extractor.py",
+      "backend/tests/test_vlm_extractor.py"
+    ],
+    "maintainers": [
+      {
+        "person_id": "opencode@local",
+        "name": "opencode",
+        "touches": 4,
+        "touch_share": 0.6667,
+        "recency_share": 0.6369,
+        "sensitive_share": 0.0,
+        "primary_tz_offset": "+05:30"
+      },
+      {
+        "person_id": "72138709+pypi-ahmad@users.noreply.github.com",
+        "name": "pypi-ahmad",
+        "touches": 2,
+        "touch_share": 0.3333,
+        "recency_share": 0.3631,
+        "sensitive_share": 0.0,
+        "primary_tz_offset": "+05:30"
+      }
+    ],
+    "bus_factor": 2,
+    "owner_count": 2,
+    "totals": {
+      "touches": 6,
+      "recency_weight": 5.480499,
+      "sensitive_weight": 0
+    }
+  }
+]

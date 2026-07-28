@@ -1,0 +1,3333 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {
+    "community_maintainers": [
+      {
+        "id": 1,
+        "size": 35,
+        "maintainers": [
+          {
+            "person_id": "72138709+pypi-ahmad@users.noreply.github.com",
+            "name": "pypi-ahmad",
+            "touches": 126,
+            "touch_share": 0.5101,
+            "recency_share": 0.4968,
+            "sensitive_share": 0.3824,
+            "primary_tz_offset": "+05:30"
+          },
+          {
+            "person_id": "opencode@local",
+            "name": "opencode",
+            "touches": 68,
+            "touch_share": 0.2753,
+            "recency_share": 0.2829,
+            "sensitive_share": 0.3529,
+            "primary_tz_offset": "+05:30"
+          },
+          {
+            "person_id": "[email protected]",
+            "name": "Ahmad",
+            "touches": 53,
+            "touch_share": 0.2146,
+            "recency_share": 0.2203,
+            "sensitive_share": 0.2647,
+            "primary_tz_offset": "+05:30"
+          }
+        ],
+        "bus_factor": 3,
+        "owner_count": 3,
+        "totals": {
+          "touches": 247,
+          "recency_weight": 209.651995,
+          "sensitive_weight": 23.8
+        }
+      },
+      {
+        "id": 2,
+        "size": 19,
+        "maintainers": [
+          {
+            "person_id": "72138709+pypi-ahmad@users.noreply.github.com",
+            "name": "pypi-ahmad",
+            "touches": 40,
+            "touch_share": 1.0,
+            "recency_share": 1.0,
+            "sensitive_share": 1.0,
+            "primary_tz_offset": "+05:30"
+          }
+        ],
+        "bus_factor": 1,
+        "owner_count": 1,
+        "totals": {
+          "touches": 40,
+          "recency_weight": 39.896139,
+          "sensitive_weight": 0.8
+        }
+      },
+      {
+        "id": 3,
+        "size": 6,
+        "maintainers": [
+          {
+            "person_id": "72138709+pypi-ahmad@users.noreply.github.com",
+            "name": "pypi-ahmad",
+            "touches": 24,
+            "touch_share": 1.0,
+            "recency_share": 1.0,
+            "sensitive_share": 0.0,
+            "primary_tz_offset": "+05:30"
+          }
+        ],
+        "bus_factor": 1,
+        "owner_count": 1,
+        "totals": {
+          "touches": 24,
+          "recency_weight": 22.89525,
+          "sensitive_weight": 0
+        }
+      },
+      {
+        "id": 4,
+        "size": 3,
+        "maintainers": [
+          {
+            "person_id": "72138709+pypi-ahmad@users.noreply.github.com",
+            "name": "pypi-ahmad",
+            "touches": 6,
+            "touch_share": 1.0,
+            "recency_share": 1.0,
+            "sensitive_share": 0.0,
+            "primary_tz_offset": "+05:30"
+          }
+        ],
+        "bus_factor": 1,
+        "owner_count": 1,
+        "totals": {
+          "touches": 6,
+          "recency_weight": 5.97245,
+          "sensitive_weight": 0
+        }
+      },
+      {
+        "id": 5,
+        "size": 3,
+        "maintainers": [
+          {
+            "person_id": "72138709+pypi-ahmad@users.noreply.github.com",
+            "name": "pypi-ahmad",
+            "touches": 5,
+            "touch_share": 0.5,
+            "recency_share": 0.5204,
+            "sensitive_share": 0.0,
+            "primary_tz_offset": "+05:30"
+          },
+          {
+            "person_id": "opencode@local",
+            "name": "opencode",
+            "touches": 5,
+            "touch_share": 0.5,
+            "recency_share": 0.4796,
+            "sensitive_share": 0.0,
+            "primary_tz_offset": "+05:30"
+          }
+        ],
+        "bus_factor": 2,
+        "owner_count": 2,
+        "totals": {
+          "touches": 10,
+          "recency_weight": 9.096444,
+          "sensitive_weight": 0
+        }
+      },
+      {
+        "id": 6,
+        "size": 3,
+        "maintainers": [
+          {
+            "person_id": "opencode@local",
+            "name": "opencode",
+            "touches": 3,
+            "touch_share": 0.4286,
+            "recency_share": 0.4204,
+            "sensitive_share": 0.0,
+            "primary_tz_offset": "+05:30"
+          },
+          {
+            "person_id": "[email protected]",
+            "name": "Ahmad",
+            "touches": 3,
+            "touch_share": 0.4286,
+            "recency_share": 0.4198,
+            "sensitive_share": 0.0,
+            "primary_tz_offset": "+05:30"
+          },
+          {
+            "person_id": "72138709+pypi-ahmad@users.noreply.github.com",
+            "name": "pypi-ahmad",
+            "touches": 1,
+            "touch_share": 0.1429,
+            "recency_share": 0.1598,
+            "sensitive_share": 0.0,
+            "primary_tz_offset": "+05:30"
+          }
+        ],
+        "bus_factor": 3,
+        "owner_count": 3,
+        "totals": {
+          "touches": 7,
+          "recency_weight": 6.226666,
+          "sensitive_weight": 0
+        }
+      },
+      {
+        "id": 7,
+        "size": 2,
+        "maintainers": [
+          {
+            "person_id": "72138709+pypi-ahmad@users.noreply.github.com",
+            "name": "pypi-ahmad",
+            "touches": 4,
+            "touch_share": 1.0,
+            "recency_share": 1.0,
+            "sensitive_share": 0.0,
+            "primary_tz_offset": "+05:30"
+          }
+        ],
+        "bus_factor": 1,
+        "owner_count": 1,
+        "totals": {
+          "touches": 4,
+          "recency_weight": 3.997758,
+          "sensitive_weight": 0
+        }
+      },
+      {
+        "id": 8,
+        "size": 2,
+        "maintainers": [
+          {
+            "person_id": "opencode@local",
+            "name": "opencode",
+            "touches": 4,
+            "touch_share": 0.6667,
+            "recency_share": 0.6367,
+            "sensitive_share": 0.0,
+            "primary_tz_offset": "+05:30"
+          },
+          {
+            "person_id": "72138709+pypi-ahmad@users.noreply.github.com",
+            "name": "pypi-ahmad",
+            "touches": 2,
+            "touch_share": 0.3333,
+            "recency_share": 0.3633,
+            "sensitive_share": 0.0,
+            "primary_tz_offset": "+05:30"
+          }
+        ],
+        "bus_factor": 2,
+        "owner_count": 2,
+        "totals": {
+          "touches": 6,
+          "recency_weight": 5.478311,
+          "sensitive_weight": 0
+        }
+      },
+      {
+        "id": 9,
+        "size": 2,
+        "maintainers": [
+          {
+            "person_id": "opencode@local",
+            "name": "opencode",
+            "touches": 4,
+            "touch_share": 0.6667,
+            "recency_share": 0.6369,
+            "sensitive_share": 0.0,
+            "primary_tz_offset": "+05:30"
+          },
+          {
+            "person_id": "72138709+pypi-ahmad@users.noreply.github.com",
+            "name": "pypi-ahmad",
+            "touches": 2,
+            "touch_share": 0.3333,
+            "recency_share": 0.3631,
+            "sensitive_share": 0.0,
+            "primary_tz_offset": "+05:30"
+          }
+        ],
+        "bus_factor": 2,
+        "owner_count": 2,
+        "totals": {
+          "touches": 6,
+          "recency_weight": 5.480499,
+          "sensitive_weight": 0
+        }
+      }
+    ]
+  },
+  "nodes": [
+    {
+      "community_id": 7,
+      "id": "backend/app/services/agentic/contracts.py"
+    },
+    {
+      "community_id": 7,
+      "id": "backend/app/services/agentic/extraction.py"
+    },
+    {
+      "community_id": 1,
+      "id": "README.md"
+    },
+    {
+      "community_id": 1,
+      "id": "backend/app/main.py"
+    },
+    {
+      "community_id": 2,
+      "id": "backend/app/routers/v2_jobs.py"
+    },
+    {
+      "community_id": 2,
+      "id": "backend/app/services/parsing/v2_annotations.py"
+    },
+    {
+      "community_id": 2,
+      "id": "backend/app/services/parsing/v2_contracts.py"
+    },
+    {
+      "community_id": 2,
+      "id": "backend/app/services/parsing/v2_evaluation.py"
+    },
+    {
+      "community_id": 2,
+      "id": "backend/app/services/parsing/v2_pipeline.py"
+    },
+    {
+      "community_id": 2,
+      "id": "backend/app/services/parsing/v2_segmentation.py"
+    },
+    {
+      "community_id": 2,
+      "id": "backend/app/services/v2_jobs.py"
+    },
+    {
+      "community_id": 2,
+      "id": "backend/app/services/v2_tasks.py"
+    },
+    {
+      "community_id": 2,
+      "id": "backend/app/services/v2_worker.py"
+    },
+    {
+      "community_id": 2,
+      "id": "backend/tests/unit/test_app_surface.py"
+    },
+    {
+      "community_id": 2,
+      "id": "backend/tests/unit/test_auth.py"
+    },
+    {
+      "community_id": 2,
+      "id": "backend/tests/unit/test_v2_annotations.py"
+    },
+    {
+      "community_id": 2,
+      "id": "backend/tests/unit/test_v2_api.py"
+    },
+    {
+      "community_id": 2,
+      "id": "backend/tests/unit/test_v2_contracts.py"
+    },
+    {
+      "community_id": 2,
+      "id": "backend/tests/unit/test_v2_evaluation.py"
+    },
+    {
+      "community_id": 2,
+      "id": "backend/tests/unit/test_v2_page_processor.py"
+    },
+    {
+      "community_id": 2,
+      "id": "backend/tests/unit/test_v2_queue.py"
+    },
+    {
+      "community_id": 2,
+      "id": "backend/tests/unit/test_v2_task_leases.py"
+    },
+    {
+      "community_id": 2,
+      "id": "backend/tests/unit/test_v2_worker.py"
+    },
+    {
+      "community_id": 3,
+      "id": "frontend/src/app/globals.css"
+    },
+    {
+      "community_id": 3,
+      "id": "frontend/src/app/page.test.tsx"
+    },
+    {
+      "community_id": 3,
+      "id": "frontend/src/app/page.tsx"
+    },
+    {
+      "community_id": 1,
+      "id": "frontend/src/lib/api.ts"
+    },
+    {
+      "community_id": 3,
+      "id": "frontend/src/components/v2/ArtifactPreview.tsx"
+    },
+    {
+      "community_id": 3,
+      "id": "frontend/src/components/v2/RunHistory.tsx"
+    },
+    {
+      "community_id": 1,
+      "id": "backend/.env.example"
+    },
+    {
+      "community_id": 3,
+      "id": "frontend/src/app/v2-tools.css"
+    },
+    {
+      "community_id": 1,
+      "id": "CHANGELOG.md"
+    },
+    {
+      "community_id": 1,
+      "id": "backend/app/config.py"
+    },
+    {
+      "community_id": 1,
+      "id": "pyproject.toml"
+    },
+    {
+      "community_id": 1,
+      "id": "uv.lock"
+    },
+    {
+      "community_id": 1,
+      "id": "backend/app/database.py"
+    },
+    {
+      "community_id": 1,
+      "id": "backend/app/models/db_models.py"
+    },
+    {
+      "community_id": 1,
+      "id": "docker-compose.yml"
+    },
+    {
+      "community_id": 4,
+      "id": "backend/tests/unit/test_paddleocr_service.py"
+    },
+    {
+      "community_id": 4,
+      "id": "deploy/paddleocr-vl/Dockerfile.hpi"
+    },
+    {
+      "community_id": 4,
+      "id": "deploy/paddleocr-vl/service.py"
+    },
+    {
+      "community_id": 1,
+      "id": "backend/app/mcp_server.py"
+    },
+    {
+      "community_id": 5,
+      "id": "backend/app/services/llm/prompts_loader.py"
+    },
+    {
+      "community_id": 5,
+      "id": "backend/tests/test_prompts_loader.py"
+    },
+    {
+      "community_id": 1,
+      "id": "backend/tests/test_routes.py"
+    },
+    {
+      "community_id": 1,
+      "id": "justfile"
+    },
+    {
+      "community_id": 1,
+      "id": "backend/tests/test_ocr_registry.py"
+    },
+    {
+      "community_id": 1,
+      "id": "backend/tests/test_paddleocr_provider.py"
+    },
+    {
+      "community_id": 8,
+      "id": "backend/app/services/eval/calibration.py"
+    },
+    {
+      "community_id": 8,
+      "id": "backend/tests/test_eval_calibration.py"
+    },
+    {
+      "community_id": 9,
+      "id": "backend/app/services/extraction/vlm_extractor.py"
+    },
+    {
+      "community_id": 9,
+      "id": "backend/tests/test_vlm_extractor.py"
+    },
+    {
+      "community_id": 5,
+      "id": "scripts/eval_diff.py"
+    },
+    {
+      "community_id": 1,
+      "id": "backend/app/services/ocr/docling_provider.py"
+    },
+    {
+      "community_id": 1,
+      "id": "backend/tests/test_docling_provider.py"
+    },
+    {
+      "community_id": 1,
+      "id": "backend/app/services/ocr/paddleocr_provider.py"
+    },
+    {
+      "community_id": 6,
+      "id": "docs/MIGRATION_GUIDE.md"
+    },
+    {
+      "community_id": 6,
+      "id": "docs/RELEASE_NOTES.md"
+    },
+    {
+      "community_id": 6,
+      "id": "docs/UPGRADE_SUMMARY.md"
+    },
+    {
+      "community_id": 1,
+      "id": "backend/app/routers/extractions.py"
+    },
+    {
+      "community_id": 1,
+      "id": "backend/app/services/extraction/graph.py"
+    },
+    {
+      "community_id": 1,
+      "id": "backend/tests/test_durability.py"
+    },
+    {
+      "community_id": 1,
+      "id": "backend/tests/test_integration.py"
+    },
+    {
+      "community_id": 1,
+      "id": "backend/app/models/enums.py"
+    },
+    {
+      "community_id": 1,
+      "id": "backend/app/services/ocr/registry.py"
+    },
+    {
+      "community_id": 1,
+      "id": "backend/app/services/eval/__init__.py"
+    },
+    {
+      "community_id": 1,
+      "id": "backend/app/metrics.py"
+    },
+    {
+      "community_id": 1,
+      "id": "backend/app/routers/providers.py"
+    },
+    {
+      "community_id": 1,
+      "id": "backend/app/services/llm/output_parser.py"
+    },
+    {
+      "community_id": 1,
+      "id": "backend/app/models/schemas.py"
+    },
+    {
+      "community_id": 1,
+      "id": "backend/app/services/extraction/presets.py"
+    },
+    {
+      "community_id": 1,
+      "id": "backend/tests/test_health.py"
+    },
+    {
+      "community_id": 1,
+      "id": "backend/tests/test_presets.py"
+    },
+    {
+      "community_id": 1,
+      "id": "frontend/src/app/history/page.tsx"
+    },
+    {
+      "community_id": 1,
+      "id": "frontend/src/components/ExtractionResult.tsx"
+    }
+  ],
+  "edges": [
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/agentic/contracts.py",
+      "target": "backend/app/services/agentic/extraction.py"
+    },
+    {
+      "weight": 0.222222,
+      "count": 4,
+      "source": "README.md",
+      "target": "backend/app/main.py"
+    },
+    {
+      "weight": 0.222222,
+      "count": 2,
+      "source": "README.md",
+      "target": "backend/app/routers/v2_jobs.py"
+    },
+    {
+      "weight": 0.222222,
+      "count": 2,
+      "source": "README.md",
+      "target": "backend/app/services/parsing/v2_annotations.py"
+    },
+    {
+      "weight": 0.222222,
+      "count": 2,
+      "source": "README.md",
+      "target": "backend/app/services/parsing/v2_contracts.py"
+    },
+    {
+      "weight": 0.222222,
+      "count": 2,
+      "source": "README.md",
+      "target": "backend/app/services/parsing/v2_evaluation.py"
+    },
+    {
+      "weight": 0.222222,
+      "count": 2,
+      "source": "README.md",
+      "target": "backend/app/services/parsing/v2_pipeline.py"
+    },
+    {
+      "weight": 0.222222,
+      "count": 2,
+      "source": "README.md",
+      "target": "backend/app/services/parsing/v2_segmentation.py"
+    },
+    {
+      "weight": 0.222222,
+      "count": 2,
+      "source": "README.md",
+      "target": "backend/app/services/v2_jobs.py"
+    },
+    {
+      "weight": 0.222222,
+      "count": 2,
+      "source": "README.md",
+      "target": "backend/app/services/v2_tasks.py"
+    },
+    {
+      "weight": 0.222222,
+      "count": 2,
+      "source": "README.md",
+      "target": "backend/app/services/v2_worker.py"
+    },
+    {
+      "weight": 0.222222,
+      "count": 2,
+      "source": "README.md",
+      "target": "backend/tests/unit/test_app_surface.py"
+    },
+    {
+      "weight": 0.222222,
+      "count": 2,
+      "source": "README.md",
+      "target": "backend/tests/unit/test_auth.py"
+    },
+    {
+      "weight": 0.222222,
+      "count": 2,
+      "source": "README.md",
+      "target": "backend/tests/unit/test_v2_annotations.py"
+    },
+    {
+      "weight": 0.222222,
+      "count": 2,
+      "source": "README.md",
+      "target": "backend/tests/unit/test_v2_api.py"
+    },
+    {
+      "weight": 0.222222,
+      "count": 2,
+      "source": "README.md",
+      "target": "backend/tests/unit/test_v2_contracts.py"
+    },
+    {
+      "weight": 0.222222,
+      "count": 2,
+      "source": "README.md",
+      "target": "backend/tests/unit/test_v2_evaluation.py"
+    },
+    {
+      "weight": 0.222222,
+      "count": 2,
+      "source": "README.md",
+      "target": "backend/tests/unit/test_v2_page_processor.py"
+    },
+    {
+      "weight": 0.222222,
+      "count": 2,
+      "source": "README.md",
+      "target": "backend/tests/unit/test_v2_queue.py"
+    },
+    {
+      "weight": 0.222222,
+      "count": 2,
+      "source": "README.md",
+      "target": "backend/tests/unit/test_v2_task_leases.py"
+    },
+    {
+      "weight": 0.222222,
+      "count": 2,
+      "source": "README.md",
+      "target": "backend/tests/unit/test_v2_worker.py"
+    },
+    {
+      "weight": 0.272727,
+      "count": 3,
+      "source": "README.md",
+      "target": "frontend/src/app/globals.css"
+    },
+    {
+      "weight": 0.181818,
+      "count": 2,
+      "source": "README.md",
+      "target": "frontend/src/app/page.test.tsx"
+    },
+    {
+      "weight": 0.181818,
+      "count": 2,
+      "source": "README.md",
+      "target": "frontend/src/app/page.tsx"
+    },
+    {
+      "weight": 0.4,
+      "count": 4,
+      "source": "README.md",
+      "target": "frontend/src/lib/api.ts"
+    },
+    {
+      "weight": 0.444444,
+      "count": 4,
+      "source": "README.md",
+      "target": "backend/.env.example"
+    },
+    {
+      "weight": 0.333333,
+      "count": 5,
+      "source": "README.md",
+      "target": "CHANGELOG.md"
+    },
+    {
+      "weight": 0.157895,
+      "count": 3,
+      "source": "README.md",
+      "target": "backend/app/config.py"
+    },
+    {
+      "weight": 0.235294,
+      "count": 4,
+      "source": "README.md",
+      "target": "pyproject.toml"
+    },
+    {
+      "weight": 0.272727,
+      "count": 3,
+      "source": "README.md",
+      "target": "uv.lock"
+    },
+    {
+      "weight": 0.222222,
+      "count": 2,
+      "source": "README.md",
+      "target": "backend/app/mcp_server.py"
+    },
+    {
+      "weight": 0.153846,
+      "count": 2,
+      "source": "README.md",
+      "target": "backend/tests/test_routes.py"
+    },
+    {
+      "weight": 0.2,
+      "count": 2,
+      "source": "README.md",
+      "target": "backend/app/models/enums.py"
+    },
+    {
+      "weight": 0.2,
+      "count": 2,
+      "source": "README.md",
+      "target": "backend/app/models/schemas.py"
+    },
+    {
+      "weight": 0.2,
+      "count": 2,
+      "source": "README.md",
+      "target": "backend/app/routers/providers.py"
+    },
+    {
+      "weight": 0.142857,
+      "count": 2,
+      "source": "README.md",
+      "target": "backend/tests/test_ocr_registry.py"
+    },
+    {
+      "weight": 0.153846,
+      "count": 2,
+      "source": "backend/app/main.py",
+      "target": "backend/app/routers/v2_jobs.py"
+    },
+    {
+      "weight": 0.153846,
+      "count": 2,
+      "source": "backend/app/main.py",
+      "target": "backend/app/services/parsing/v2_annotations.py"
+    },
+    {
+      "weight": 0.153846,
+      "count": 2,
+      "source": "backend/app/main.py",
+      "target": "backend/app/services/parsing/v2_contracts.py"
+    },
+    {
+      "weight": 0.153846,
+      "count": 2,
+      "source": "backend/app/main.py",
+      "target": "backend/app/services/parsing/v2_evaluation.py"
+    },
+    {
+      "weight": 0.153846,
+      "count": 2,
+      "source": "backend/app/main.py",
+      "target": "backend/app/services/parsing/v2_pipeline.py"
+    },
+    {
+      "weight": 0.153846,
+      "count": 2,
+      "source": "backend/app/main.py",
+      "target": "backend/app/services/parsing/v2_segmentation.py"
+    },
+    {
+      "weight": 0.153846,
+      "count": 2,
+      "source": "backend/app/main.py",
+      "target": "backend/app/services/v2_jobs.py"
+    },
+    {
+      "weight": 0.153846,
+      "count": 2,
+      "source": "backend/app/main.py",
+      "target": "backend/app/services/v2_tasks.py"
+    },
+    {
+      "weight": 0.153846,
+      "count": 2,
+      "source": "backend/app/main.py",
+      "target": "backend/app/services/v2_worker.py"
+    },
+    {
+      "weight": 0.153846,
+      "count": 2,
+      "source": "backend/app/main.py",
+      "target": "backend/tests/unit/test_app_surface.py"
+    },
+    {
+      "weight": 0.153846,
+      "count": 2,
+      "source": "backend/app/main.py",
+      "target": "backend/tests/unit/test_auth.py"
+    },
+    {
+      "weight": 0.153846,
+      "count": 2,
+      "source": "backend/app/main.py",
+      "target": "backend/tests/unit/test_v2_annotations.py"
+    },
+    {
+      "weight": 0.153846,
+      "count": 2,
+      "source": "backend/app/main.py",
+      "target": "backend/tests/unit/test_v2_api.py"
+    },
+    {
+      "weight": 0.153846,
+      "count": 2,
+      "source": "backend/app/main.py",
+      "target": "backend/tests/unit/test_v2_contracts.py"
+    },
+    {
+      "weight": 0.153846,
+      "count": 2,
+      "source": "backend/app/main.py",
+      "target": "backend/tests/unit/test_v2_evaluation.py"
+    },
+    {
+      "weight": 0.153846,
+      "count": 2,
+      "source": "backend/app/main.py",
+      "target": "backend/tests/unit/test_v2_page_processor.py"
+    },
+    {
+      "weight": 0.153846,
+      "count": 2,
+      "source": "backend/app/main.py",
+      "target": "backend/tests/unit/test_v2_queue.py"
+    },
+    {
+      "weight": 0.153846,
+      "count": 2,
+      "source": "backend/app/main.py",
+      "target": "backend/tests/unit/test_v2_task_leases.py"
+    },
+    {
+      "weight": 0.153846,
+      "count": 2,
+      "source": "backend/app/main.py",
+      "target": "backend/tests/unit/test_v2_worker.py"
+    },
+    {
+      "weight": 0.2,
+      "count": 3,
+      "source": "backend/app/main.py",
+      "target": "frontend/src/app/globals.css"
+    },
+    {
+      "weight": 0.133333,
+      "count": 2,
+      "source": "backend/app/main.py",
+      "target": "frontend/src/app/page.test.tsx"
+    },
+    {
+      "weight": 0.133333,
+      "count": 2,
+      "source": "backend/app/main.py",
+      "target": "frontend/src/app/page.tsx"
+    },
+    {
+      "weight": 0.285714,
+      "count": 4,
+      "source": "backend/app/main.py",
+      "target": "frontend/src/lib/api.ts"
+    },
+    {
+      "weight": 0.333333,
+      "count": 6,
+      "source": "backend/app/main.py",
+      "target": "CHANGELOG.md"
+    },
+    {
+      "weight": 0.133333,
+      "count": 2,
+      "source": "backend/app/main.py",
+      "target": "backend/.env.example"
+    },
+    {
+      "weight": 0.181818,
+      "count": 4,
+      "source": "backend/app/main.py",
+      "target": "backend/app/config.py"
+    },
+    {
+      "weight": 0.230769,
+      "count": 3,
+      "source": "backend/app/main.py",
+      "target": "backend/app/database.py"
+    },
+    {
+      "weight": 0.1875,
+      "count": 3,
+      "source": "backend/app/main.py",
+      "target": "backend/app/models/db_models.py"
+    },
+    {
+      "weight": 0.230769,
+      "count": 3,
+      "source": "backend/app/main.py",
+      "target": "docker-compose.yml"
+    },
+    {
+      "weight": 0.315789,
+      "count": 6,
+      "source": "backend/app/main.py",
+      "target": "pyproject.toml"
+    },
+    {
+      "weight": 0.285714,
+      "count": 4,
+      "source": "backend/app/main.py",
+      "target": "uv.lock"
+    },
+    {
+      "weight": 0.461538,
+      "count": 6,
+      "source": "backend/app/main.py",
+      "target": "backend/tests/test_routes.py"
+    },
+    {
+      "weight": 0.1875,
+      "count": 3,
+      "source": "backend/app/main.py",
+      "target": "backend/app/services/extraction/graph.py"
+    },
+    {
+      "weight": 0.176471,
+      "count": 3,
+      "source": "backend/app/main.py",
+      "target": "backend/app/routers/extractions.py"
+    },
+    {
+      "weight": 0.142857,
+      "count": 2,
+      "source": "backend/app/main.py",
+      "target": "backend/app/models/schemas.py"
+    },
+    {
+      "weight": 0.153846,
+      "count": 2,
+      "source": "backend/app/main.py",
+      "target": "backend/app/services/extraction/presets.py"
+    },
+    {
+      "weight": 0.153846,
+      "count": 2,
+      "source": "backend/app/main.py",
+      "target": "backend/tests/test_health.py"
+    },
+    {
+      "weight": 0.153846,
+      "count": 2,
+      "source": "backend/app/main.py",
+      "target": "backend/tests/test_presets.py"
+    },
+    {
+      "weight": 0.153846,
+      "count": 2,
+      "source": "backend/app/main.py",
+      "target": "frontend/src/app/history/page.tsx"
+    },
+    {
+      "weight": 0.153846,
+      "count": 2,
+      "source": "backend/app/main.py",
+      "target": "frontend/src/components/ExtractionResult.tsx"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/routers/v2_jobs.py",
+      "target": "backend/app/services/parsing/v2_annotations.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/routers/v2_jobs.py",
+      "target": "backend/app/services/parsing/v2_contracts.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/routers/v2_jobs.py",
+      "target": "backend/app/services/parsing/v2_evaluation.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/routers/v2_jobs.py",
+      "target": "backend/app/services/parsing/v2_pipeline.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/routers/v2_jobs.py",
+      "target": "backend/app/services/parsing/v2_segmentation.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/routers/v2_jobs.py",
+      "target": "backend/app/services/v2_jobs.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/routers/v2_jobs.py",
+      "target": "backend/app/services/v2_tasks.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/routers/v2_jobs.py",
+      "target": "backend/app/services/v2_worker.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/routers/v2_jobs.py",
+      "target": "backend/tests/unit/test_app_surface.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/routers/v2_jobs.py",
+      "target": "backend/tests/unit/test_auth.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/routers/v2_jobs.py",
+      "target": "backend/tests/unit/test_v2_annotations.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/routers/v2_jobs.py",
+      "target": "backend/tests/unit/test_v2_api.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/routers/v2_jobs.py",
+      "target": "backend/tests/unit/test_v2_contracts.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/routers/v2_jobs.py",
+      "target": "backend/tests/unit/test_v2_evaluation.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/routers/v2_jobs.py",
+      "target": "backend/tests/unit/test_v2_page_processor.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/routers/v2_jobs.py",
+      "target": "backend/tests/unit/test_v2_queue.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/routers/v2_jobs.py",
+      "target": "backend/tests/unit/test_v2_task_leases.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/routers/v2_jobs.py",
+      "target": "backend/tests/unit/test_v2_worker.py"
+    },
+    {
+      "weight": 0.4,
+      "count": 2,
+      "source": "backend/app/routers/v2_jobs.py",
+      "target": "frontend/src/app/globals.css"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "backend/app/routers/v2_jobs.py",
+      "target": "frontend/src/app/page.test.tsx"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "backend/app/routers/v2_jobs.py",
+      "target": "frontend/src/app/page.tsx"
+    },
+    {
+      "weight": 0.4,
+      "count": 2,
+      "source": "backend/app/routers/v2_jobs.py",
+      "target": "frontend/src/lib/api.ts"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_annotations.py",
+      "target": "backend/app/services/parsing/v2_contracts.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_annotations.py",
+      "target": "backend/app/services/parsing/v2_evaluation.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_annotations.py",
+      "target": "backend/app/services/parsing/v2_pipeline.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_annotations.py",
+      "target": "backend/app/services/parsing/v2_segmentation.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_annotations.py",
+      "target": "backend/app/services/v2_jobs.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_annotations.py",
+      "target": "backend/app/services/v2_tasks.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_annotations.py",
+      "target": "backend/app/services/v2_worker.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_annotations.py",
+      "target": "backend/tests/unit/test_app_surface.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_annotations.py",
+      "target": "backend/tests/unit/test_auth.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_annotations.py",
+      "target": "backend/tests/unit/test_v2_annotations.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_annotations.py",
+      "target": "backend/tests/unit/test_v2_api.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_annotations.py",
+      "target": "backend/tests/unit/test_v2_contracts.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_annotations.py",
+      "target": "backend/tests/unit/test_v2_evaluation.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_annotations.py",
+      "target": "backend/tests/unit/test_v2_page_processor.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_annotations.py",
+      "target": "backend/tests/unit/test_v2_queue.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_annotations.py",
+      "target": "backend/tests/unit/test_v2_task_leases.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_annotations.py",
+      "target": "backend/tests/unit/test_v2_worker.py"
+    },
+    {
+      "weight": 0.4,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_annotations.py",
+      "target": "frontend/src/app/globals.css"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_annotations.py",
+      "target": "frontend/src/app/page.test.tsx"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_annotations.py",
+      "target": "frontend/src/app/page.tsx"
+    },
+    {
+      "weight": 0.4,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_annotations.py",
+      "target": "frontend/src/lib/api.ts"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_contracts.py",
+      "target": "backend/app/services/parsing/v2_evaluation.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_contracts.py",
+      "target": "backend/app/services/parsing/v2_pipeline.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_contracts.py",
+      "target": "backend/app/services/parsing/v2_segmentation.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_contracts.py",
+      "target": "backend/app/services/v2_jobs.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_contracts.py",
+      "target": "backend/app/services/v2_tasks.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_contracts.py",
+      "target": "backend/app/services/v2_worker.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_contracts.py",
+      "target": "backend/tests/unit/test_app_surface.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_contracts.py",
+      "target": "backend/tests/unit/test_auth.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_contracts.py",
+      "target": "backend/tests/unit/test_v2_annotations.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_contracts.py",
+      "target": "backend/tests/unit/test_v2_api.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_contracts.py",
+      "target": "backend/tests/unit/test_v2_contracts.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_contracts.py",
+      "target": "backend/tests/unit/test_v2_evaluation.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_contracts.py",
+      "target": "backend/tests/unit/test_v2_page_processor.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_contracts.py",
+      "target": "backend/tests/unit/test_v2_queue.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_contracts.py",
+      "target": "backend/tests/unit/test_v2_task_leases.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_contracts.py",
+      "target": "backend/tests/unit/test_v2_worker.py"
+    },
+    {
+      "weight": 0.4,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_contracts.py",
+      "target": "frontend/src/app/globals.css"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_contracts.py",
+      "target": "frontend/src/app/page.test.tsx"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_contracts.py",
+      "target": "frontend/src/app/page.tsx"
+    },
+    {
+      "weight": 0.4,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_contracts.py",
+      "target": "frontend/src/lib/api.ts"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_evaluation.py",
+      "target": "backend/app/services/parsing/v2_pipeline.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_evaluation.py",
+      "target": "backend/app/services/parsing/v2_segmentation.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_evaluation.py",
+      "target": "backend/app/services/v2_jobs.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_evaluation.py",
+      "target": "backend/app/services/v2_tasks.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_evaluation.py",
+      "target": "backend/app/services/v2_worker.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_evaluation.py",
+      "target": "backend/tests/unit/test_app_surface.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_evaluation.py",
+      "target": "backend/tests/unit/test_auth.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_evaluation.py",
+      "target": "backend/tests/unit/test_v2_annotations.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_evaluation.py",
+      "target": "backend/tests/unit/test_v2_api.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_evaluation.py",
+      "target": "backend/tests/unit/test_v2_contracts.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_evaluation.py",
+      "target": "backend/tests/unit/test_v2_evaluation.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_evaluation.py",
+      "target": "backend/tests/unit/test_v2_page_processor.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_evaluation.py",
+      "target": "backend/tests/unit/test_v2_queue.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_evaluation.py",
+      "target": "backend/tests/unit/test_v2_task_leases.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_evaluation.py",
+      "target": "backend/tests/unit/test_v2_worker.py"
+    },
+    {
+      "weight": 0.4,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_evaluation.py",
+      "target": "frontend/src/app/globals.css"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_evaluation.py",
+      "target": "frontend/src/app/page.test.tsx"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_evaluation.py",
+      "target": "frontend/src/app/page.tsx"
+    },
+    {
+      "weight": 0.4,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_evaluation.py",
+      "target": "frontend/src/lib/api.ts"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_pipeline.py",
+      "target": "backend/app/services/parsing/v2_segmentation.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_pipeline.py",
+      "target": "backend/app/services/v2_jobs.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_pipeline.py",
+      "target": "backend/app/services/v2_tasks.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_pipeline.py",
+      "target": "backend/app/services/v2_worker.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_pipeline.py",
+      "target": "backend/tests/unit/test_app_surface.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_pipeline.py",
+      "target": "backend/tests/unit/test_auth.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_pipeline.py",
+      "target": "backend/tests/unit/test_v2_annotations.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_pipeline.py",
+      "target": "backend/tests/unit/test_v2_api.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_pipeline.py",
+      "target": "backend/tests/unit/test_v2_contracts.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_pipeline.py",
+      "target": "backend/tests/unit/test_v2_evaluation.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_pipeline.py",
+      "target": "backend/tests/unit/test_v2_page_processor.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_pipeline.py",
+      "target": "backend/tests/unit/test_v2_queue.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_pipeline.py",
+      "target": "backend/tests/unit/test_v2_task_leases.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_pipeline.py",
+      "target": "backend/tests/unit/test_v2_worker.py"
+    },
+    {
+      "weight": 0.4,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_pipeline.py",
+      "target": "frontend/src/app/globals.css"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_pipeline.py",
+      "target": "frontend/src/app/page.test.tsx"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_pipeline.py",
+      "target": "frontend/src/app/page.tsx"
+    },
+    {
+      "weight": 0.4,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_pipeline.py",
+      "target": "frontend/src/lib/api.ts"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_segmentation.py",
+      "target": "backend/app/services/v2_jobs.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_segmentation.py",
+      "target": "backend/app/services/v2_tasks.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_segmentation.py",
+      "target": "backend/app/services/v2_worker.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_segmentation.py",
+      "target": "backend/tests/unit/test_app_surface.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_segmentation.py",
+      "target": "backend/tests/unit/test_auth.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_segmentation.py",
+      "target": "backend/tests/unit/test_v2_annotations.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_segmentation.py",
+      "target": "backend/tests/unit/test_v2_api.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_segmentation.py",
+      "target": "backend/tests/unit/test_v2_contracts.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_segmentation.py",
+      "target": "backend/tests/unit/test_v2_evaluation.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_segmentation.py",
+      "target": "backend/tests/unit/test_v2_page_processor.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_segmentation.py",
+      "target": "backend/tests/unit/test_v2_queue.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_segmentation.py",
+      "target": "backend/tests/unit/test_v2_task_leases.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_segmentation.py",
+      "target": "backend/tests/unit/test_v2_worker.py"
+    },
+    {
+      "weight": 0.4,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_segmentation.py",
+      "target": "frontend/src/app/globals.css"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_segmentation.py",
+      "target": "frontend/src/app/page.test.tsx"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_segmentation.py",
+      "target": "frontend/src/app/page.tsx"
+    },
+    {
+      "weight": 0.4,
+      "count": 2,
+      "source": "backend/app/services/parsing/v2_segmentation.py",
+      "target": "frontend/src/lib/api.ts"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/v2_jobs.py",
+      "target": "backend/app/services/v2_tasks.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/v2_jobs.py",
+      "target": "backend/app/services/v2_worker.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/v2_jobs.py",
+      "target": "backend/tests/unit/test_app_surface.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/v2_jobs.py",
+      "target": "backend/tests/unit/test_auth.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/v2_jobs.py",
+      "target": "backend/tests/unit/test_v2_annotations.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/v2_jobs.py",
+      "target": "backend/tests/unit/test_v2_api.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/v2_jobs.py",
+      "target": "backend/tests/unit/test_v2_contracts.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/v2_jobs.py",
+      "target": "backend/tests/unit/test_v2_evaluation.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/v2_jobs.py",
+      "target": "backend/tests/unit/test_v2_page_processor.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/v2_jobs.py",
+      "target": "backend/tests/unit/test_v2_queue.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/v2_jobs.py",
+      "target": "backend/tests/unit/test_v2_task_leases.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/v2_jobs.py",
+      "target": "backend/tests/unit/test_v2_worker.py"
+    },
+    {
+      "weight": 0.4,
+      "count": 2,
+      "source": "backend/app/services/v2_jobs.py",
+      "target": "frontend/src/app/globals.css"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "backend/app/services/v2_jobs.py",
+      "target": "frontend/src/app/page.test.tsx"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "backend/app/services/v2_jobs.py",
+      "target": "frontend/src/app/page.tsx"
+    },
+    {
+      "weight": 0.4,
+      "count": 2,
+      "source": "backend/app/services/v2_jobs.py",
+      "target": "frontend/src/lib/api.ts"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/v2_tasks.py",
+      "target": "backend/app/services/v2_worker.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/v2_tasks.py",
+      "target": "backend/tests/unit/test_app_surface.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/v2_tasks.py",
+      "target": "backend/tests/unit/test_auth.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/v2_tasks.py",
+      "target": "backend/tests/unit/test_v2_annotations.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/v2_tasks.py",
+      "target": "backend/tests/unit/test_v2_api.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/v2_tasks.py",
+      "target": "backend/tests/unit/test_v2_contracts.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/v2_tasks.py",
+      "target": "backend/tests/unit/test_v2_evaluation.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/v2_tasks.py",
+      "target": "backend/tests/unit/test_v2_page_processor.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/v2_tasks.py",
+      "target": "backend/tests/unit/test_v2_queue.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/v2_tasks.py",
+      "target": "backend/tests/unit/test_v2_task_leases.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/v2_tasks.py",
+      "target": "backend/tests/unit/test_v2_worker.py"
+    },
+    {
+      "weight": 0.4,
+      "count": 2,
+      "source": "backend/app/services/v2_tasks.py",
+      "target": "frontend/src/app/globals.css"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "backend/app/services/v2_tasks.py",
+      "target": "frontend/src/app/page.test.tsx"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "backend/app/services/v2_tasks.py",
+      "target": "frontend/src/app/page.tsx"
+    },
+    {
+      "weight": 0.4,
+      "count": 2,
+      "source": "backend/app/services/v2_tasks.py",
+      "target": "frontend/src/lib/api.ts"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/v2_worker.py",
+      "target": "backend/tests/unit/test_app_surface.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/v2_worker.py",
+      "target": "backend/tests/unit/test_auth.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/v2_worker.py",
+      "target": "backend/tests/unit/test_v2_annotations.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/v2_worker.py",
+      "target": "backend/tests/unit/test_v2_api.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/v2_worker.py",
+      "target": "backend/tests/unit/test_v2_contracts.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/v2_worker.py",
+      "target": "backend/tests/unit/test_v2_evaluation.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/v2_worker.py",
+      "target": "backend/tests/unit/test_v2_page_processor.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/v2_worker.py",
+      "target": "backend/tests/unit/test_v2_queue.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/v2_worker.py",
+      "target": "backend/tests/unit/test_v2_task_leases.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/v2_worker.py",
+      "target": "backend/tests/unit/test_v2_worker.py"
+    },
+    {
+      "weight": 0.4,
+      "count": 2,
+      "source": "backend/app/services/v2_worker.py",
+      "target": "frontend/src/app/globals.css"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "backend/app/services/v2_worker.py",
+      "target": "frontend/src/app/page.test.tsx"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "backend/app/services/v2_worker.py",
+      "target": "frontend/src/app/page.tsx"
+    },
+    {
+      "weight": 0.4,
+      "count": 2,
+      "source": "backend/app/services/v2_worker.py",
+      "target": "frontend/src/lib/api.ts"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/tests/unit/test_app_surface.py",
+      "target": "backend/tests/unit/test_auth.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/tests/unit/test_app_surface.py",
+      "target": "backend/tests/unit/test_v2_annotations.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/tests/unit/test_app_surface.py",
+      "target": "backend/tests/unit/test_v2_api.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/tests/unit/test_app_surface.py",
+      "target": "backend/tests/unit/test_v2_contracts.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/tests/unit/test_app_surface.py",
+      "target": "backend/tests/unit/test_v2_evaluation.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/tests/unit/test_app_surface.py",
+      "target": "backend/tests/unit/test_v2_page_processor.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/tests/unit/test_app_surface.py",
+      "target": "backend/tests/unit/test_v2_queue.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/tests/unit/test_app_surface.py",
+      "target": "backend/tests/unit/test_v2_task_leases.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/tests/unit/test_app_surface.py",
+      "target": "backend/tests/unit/test_v2_worker.py"
+    },
+    {
+      "weight": 0.4,
+      "count": 2,
+      "source": "backend/tests/unit/test_app_surface.py",
+      "target": "frontend/src/app/globals.css"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "backend/tests/unit/test_app_surface.py",
+      "target": "frontend/src/app/page.test.tsx"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "backend/tests/unit/test_app_surface.py",
+      "target": "frontend/src/app/page.tsx"
+    },
+    {
+      "weight": 0.4,
+      "count": 2,
+      "source": "backend/tests/unit/test_app_surface.py",
+      "target": "frontend/src/lib/api.ts"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/tests/unit/test_auth.py",
+      "target": "backend/tests/unit/test_v2_annotations.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/tests/unit/test_auth.py",
+      "target": "backend/tests/unit/test_v2_api.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/tests/unit/test_auth.py",
+      "target": "backend/tests/unit/test_v2_contracts.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/tests/unit/test_auth.py",
+      "target": "backend/tests/unit/test_v2_evaluation.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/tests/unit/test_auth.py",
+      "target": "backend/tests/unit/test_v2_page_processor.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/tests/unit/test_auth.py",
+      "target": "backend/tests/unit/test_v2_queue.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/tests/unit/test_auth.py",
+      "target": "backend/tests/unit/test_v2_task_leases.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/tests/unit/test_auth.py",
+      "target": "backend/tests/unit/test_v2_worker.py"
+    },
+    {
+      "weight": 0.4,
+      "count": 2,
+      "source": "backend/tests/unit/test_auth.py",
+      "target": "frontend/src/app/globals.css"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "backend/tests/unit/test_auth.py",
+      "target": "frontend/src/app/page.test.tsx"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "backend/tests/unit/test_auth.py",
+      "target": "frontend/src/app/page.tsx"
+    },
+    {
+      "weight": 0.4,
+      "count": 2,
+      "source": "backend/tests/unit/test_auth.py",
+      "target": "frontend/src/lib/api.ts"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_annotations.py",
+      "target": "backend/tests/unit/test_v2_api.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_annotations.py",
+      "target": "backend/tests/unit/test_v2_contracts.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_annotations.py",
+      "target": "backend/tests/unit/test_v2_evaluation.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_annotations.py",
+      "target": "backend/tests/unit/test_v2_page_processor.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_annotations.py",
+      "target": "backend/tests/unit/test_v2_queue.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_annotations.py",
+      "target": "backend/tests/unit/test_v2_task_leases.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_annotations.py",
+      "target": "backend/tests/unit/test_v2_worker.py"
+    },
+    {
+      "weight": 0.4,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_annotations.py",
+      "target": "frontend/src/app/globals.css"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_annotations.py",
+      "target": "frontend/src/app/page.test.tsx"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_annotations.py",
+      "target": "frontend/src/app/page.tsx"
+    },
+    {
+      "weight": 0.4,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_annotations.py",
+      "target": "frontend/src/lib/api.ts"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_api.py",
+      "target": "backend/tests/unit/test_v2_contracts.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_api.py",
+      "target": "backend/tests/unit/test_v2_evaluation.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_api.py",
+      "target": "backend/tests/unit/test_v2_page_processor.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_api.py",
+      "target": "backend/tests/unit/test_v2_queue.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_api.py",
+      "target": "backend/tests/unit/test_v2_task_leases.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_api.py",
+      "target": "backend/tests/unit/test_v2_worker.py"
+    },
+    {
+      "weight": 0.4,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_api.py",
+      "target": "frontend/src/app/globals.css"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_api.py",
+      "target": "frontend/src/app/page.test.tsx"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_api.py",
+      "target": "frontend/src/app/page.tsx"
+    },
+    {
+      "weight": 0.4,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_api.py",
+      "target": "frontend/src/lib/api.ts"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_contracts.py",
+      "target": "backend/tests/unit/test_v2_evaluation.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_contracts.py",
+      "target": "backend/tests/unit/test_v2_page_processor.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_contracts.py",
+      "target": "backend/tests/unit/test_v2_queue.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_contracts.py",
+      "target": "backend/tests/unit/test_v2_task_leases.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_contracts.py",
+      "target": "backend/tests/unit/test_v2_worker.py"
+    },
+    {
+      "weight": 0.4,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_contracts.py",
+      "target": "frontend/src/app/globals.css"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_contracts.py",
+      "target": "frontend/src/app/page.test.tsx"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_contracts.py",
+      "target": "frontend/src/app/page.tsx"
+    },
+    {
+      "weight": 0.4,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_contracts.py",
+      "target": "frontend/src/lib/api.ts"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_evaluation.py",
+      "target": "backend/tests/unit/test_v2_page_processor.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_evaluation.py",
+      "target": "backend/tests/unit/test_v2_queue.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_evaluation.py",
+      "target": "backend/tests/unit/test_v2_task_leases.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_evaluation.py",
+      "target": "backend/tests/unit/test_v2_worker.py"
+    },
+    {
+      "weight": 0.4,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_evaluation.py",
+      "target": "frontend/src/app/globals.css"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_evaluation.py",
+      "target": "frontend/src/app/page.test.tsx"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_evaluation.py",
+      "target": "frontend/src/app/page.tsx"
+    },
+    {
+      "weight": 0.4,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_evaluation.py",
+      "target": "frontend/src/lib/api.ts"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_page_processor.py",
+      "target": "backend/tests/unit/test_v2_queue.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_page_processor.py",
+      "target": "backend/tests/unit/test_v2_task_leases.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_page_processor.py",
+      "target": "backend/tests/unit/test_v2_worker.py"
+    },
+    {
+      "weight": 0.4,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_page_processor.py",
+      "target": "frontend/src/app/globals.css"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_page_processor.py",
+      "target": "frontend/src/app/page.test.tsx"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_page_processor.py",
+      "target": "frontend/src/app/page.tsx"
+    },
+    {
+      "weight": 0.4,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_page_processor.py",
+      "target": "frontend/src/lib/api.ts"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_queue.py",
+      "target": "backend/tests/unit/test_v2_task_leases.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_queue.py",
+      "target": "backend/tests/unit/test_v2_worker.py"
+    },
+    {
+      "weight": 0.4,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_queue.py",
+      "target": "frontend/src/app/globals.css"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_queue.py",
+      "target": "frontend/src/app/page.test.tsx"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_queue.py",
+      "target": "frontend/src/app/page.tsx"
+    },
+    {
+      "weight": 0.4,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_queue.py",
+      "target": "frontend/src/lib/api.ts"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_task_leases.py",
+      "target": "backend/tests/unit/test_v2_worker.py"
+    },
+    {
+      "weight": 0.4,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_task_leases.py",
+      "target": "frontend/src/app/globals.css"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_task_leases.py",
+      "target": "frontend/src/app/page.test.tsx"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_task_leases.py",
+      "target": "frontend/src/app/page.tsx"
+    },
+    {
+      "weight": 0.4,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_task_leases.py",
+      "target": "frontend/src/lib/api.ts"
+    },
+    {
+      "weight": 0.4,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_worker.py",
+      "target": "frontend/src/app/globals.css"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_worker.py",
+      "target": "frontend/src/app/page.test.tsx"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_worker.py",
+      "target": "frontend/src/app/page.tsx"
+    },
+    {
+      "weight": 0.4,
+      "count": 2,
+      "source": "backend/tests/unit/test_v2_worker.py",
+      "target": "frontend/src/lib/api.ts"
+    },
+    {
+      "weight": 0.5,
+      "count": 3,
+      "source": "frontend/src/app/globals.css",
+      "target": "frontend/src/app/page.test.tsx"
+    },
+    {
+      "weight": 0.5,
+      "count": 3,
+      "source": "frontend/src/app/globals.css",
+      "target": "frontend/src/app/page.tsx"
+    },
+    {
+      "weight": 0.4,
+      "count": 2,
+      "source": "frontend/src/app/globals.css",
+      "target": "frontend/src/components/v2/ArtifactPreview.tsx"
+    },
+    {
+      "weight": 0.4,
+      "count": 2,
+      "source": "frontend/src/app/globals.css",
+      "target": "frontend/src/components/v2/RunHistory.tsx"
+    },
+    {
+      "weight": 0.428571,
+      "count": 3,
+      "source": "frontend/src/app/globals.css",
+      "target": "frontend/src/lib/api.ts"
+    },
+    {
+      "weight": 0.4,
+      "count": 2,
+      "source": "frontend/src/app/globals.css",
+      "target": "frontend/src/app/v2-tools.css"
+    },
+    {
+      "weight": 0.285714,
+      "count": 2,
+      "source": "frontend/src/app/globals.css",
+      "target": "backend/.env.example"
+    },
+    {
+      "weight": 0.125,
+      "count": 2,
+      "source": "frontend/src/app/globals.css",
+      "target": "backend/app/config.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 4,
+      "source": "frontend/src/app/page.test.tsx",
+      "target": "frontend/src/app/page.tsx"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "frontend/src/app/page.test.tsx",
+      "target": "frontend/src/components/v2/ArtifactPreview.tsx"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "frontend/src/app/page.test.tsx",
+      "target": "frontend/src/components/v2/RunHistory.tsx"
+    },
+    {
+      "weight": 0.285714,
+      "count": 2,
+      "source": "frontend/src/app/page.test.tsx",
+      "target": "frontend/src/lib/api.ts"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "frontend/src/app/page.tsx",
+      "target": "frontend/src/components/v2/ArtifactPreview.tsx"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "frontend/src/app/page.tsx",
+      "target": "frontend/src/components/v2/RunHistory.tsx"
+    },
+    {
+      "weight": 0.285714,
+      "count": 2,
+      "source": "frontend/src/app/page.tsx",
+      "target": "frontend/src/lib/api.ts"
+    },
+    {
+      "weight": 0.142857,
+      "count": 2,
+      "source": "frontend/src/lib/api.ts",
+      "target": "CHANGELOG.md"
+    },
+    {
+      "weight": 0.5,
+      "count": 3,
+      "source": "frontend/src/lib/api.ts",
+      "target": "backend/.env.example"
+    },
+    {
+      "weight": 0.2,
+      "count": 3,
+      "source": "frontend/src/lib/api.ts",
+      "target": "backend/app/config.py"
+    },
+    {
+      "weight": 0.333333,
+      "count": 2,
+      "source": "frontend/src/lib/api.ts",
+      "target": "backend/app/database.py"
+    },
+    {
+      "weight": 0.222222,
+      "count": 2,
+      "source": "frontend/src/lib/api.ts",
+      "target": "backend/app/models/db_models.py"
+    },
+    {
+      "weight": 0.133333,
+      "count": 2,
+      "source": "frontend/src/lib/api.ts",
+      "target": "pyproject.toml"
+    },
+    {
+      "weight": 0.25,
+      "count": 2,
+      "source": "frontend/src/lib/api.ts",
+      "target": "uv.lock"
+    },
+    {
+      "weight": 0.333333,
+      "count": 2,
+      "source": "frontend/src/lib/api.ts",
+      "target": "backend/app/models/enums.py"
+    },
+    {
+      "weight": 0.6,
+      "count": 3,
+      "source": "frontend/src/lib/api.ts",
+      "target": "backend/app/models/schemas.py"
+    },
+    {
+      "weight": 0.333333,
+      "count": 2,
+      "source": "frontend/src/lib/api.ts",
+      "target": "backend/app/routers/providers.py"
+    },
+    {
+      "weight": 0.2,
+      "count": 2,
+      "source": "frontend/src/lib/api.ts",
+      "target": "backend/tests/test_ocr_registry.py"
+    },
+    {
+      "weight": 0.2,
+      "count": 2,
+      "source": "frontend/src/lib/api.ts",
+      "target": "backend/app/routers/extractions.py"
+    },
+    {
+      "weight": 0.4,
+      "count": 2,
+      "source": "frontend/src/lib/api.ts",
+      "target": "backend/app/services/extraction/presets.py"
+    },
+    {
+      "weight": 0.4,
+      "count": 2,
+      "source": "frontend/src/lib/api.ts",
+      "target": "backend/tests/test_health.py"
+    },
+    {
+      "weight": 0.4,
+      "count": 2,
+      "source": "frontend/src/lib/api.ts",
+      "target": "backend/tests/test_presets.py"
+    },
+    {
+      "weight": 0.222222,
+      "count": 2,
+      "source": "frontend/src/lib/api.ts",
+      "target": "backend/tests/test_routes.py"
+    },
+    {
+      "weight": 0.4,
+      "count": 2,
+      "source": "frontend/src/lib/api.ts",
+      "target": "frontend/src/app/history/page.tsx"
+    },
+    {
+      "weight": 0.4,
+      "count": 2,
+      "source": "frontend/src/lib/api.ts",
+      "target": "frontend/src/components/ExtractionResult.tsx"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "frontend/src/components/v2/ArtifactPreview.tsx",
+      "target": "frontend/src/components/v2/RunHistory.tsx"
+    },
+    {
+      "weight": 0.153846,
+      "count": 2,
+      "source": "backend/.env.example",
+      "target": "CHANGELOG.md"
+    },
+    {
+      "weight": 0.214286,
+      "count": 3,
+      "source": "backend/.env.example",
+      "target": "backend/app/config.py"
+    },
+    {
+      "weight": 0.142857,
+      "count": 2,
+      "source": "backend/.env.example",
+      "target": "pyproject.toml"
+    },
+    {
+      "weight": 0.285714,
+      "count": 2,
+      "source": "backend/.env.example",
+      "target": "uv.lock"
+    },
+    {
+      "weight": 0.4,
+      "count": 2,
+      "source": "backend/.env.example",
+      "target": "backend/app/models/enums.py"
+    },
+    {
+      "weight": 0.4,
+      "count": 2,
+      "source": "backend/.env.example",
+      "target": "backend/app/models/schemas.py"
+    },
+    {
+      "weight": 0.4,
+      "count": 2,
+      "source": "backend/.env.example",
+      "target": "backend/app/routers/providers.py"
+    },
+    {
+      "weight": 0.222222,
+      "count": 2,
+      "source": "backend/.env.example",
+      "target": "backend/tests/test_ocr_registry.py"
+    },
+    {
+      "weight": 0.142857,
+      "count": 3,
+      "source": "CHANGELOG.md",
+      "target": "backend/app/config.py"
+    },
+    {
+      "weight": 0.533333,
+      "count": 8,
+      "source": "CHANGELOG.md",
+      "target": "pyproject.toml"
+    },
+    {
+      "weight": 0.333333,
+      "count": 4,
+      "source": "CHANGELOG.md",
+      "target": "uv.lock"
+    },
+    {
+      "weight": 0.181818,
+      "count": 2,
+      "source": "CHANGELOG.md",
+      "target": "backend/app/mcp_server.py"
+    },
+    {
+      "weight": 0.307692,
+      "count": 4,
+      "source": "CHANGELOG.md",
+      "target": "backend/tests/test_routes.py"
+    },
+    {
+      "weight": 0.133333,
+      "count": 2,
+      "source": "CHANGELOG.md",
+      "target": "justfile"
+    },
+    {
+      "weight": 0.181818,
+      "count": 2,
+      "source": "CHANGELOG.md",
+      "target": "docs/MIGRATION_GUIDE.md"
+    },
+    {
+      "weight": 0.181818,
+      "count": 2,
+      "source": "CHANGELOG.md",
+      "target": "docs/RELEASE_NOTES.md"
+    },
+    {
+      "weight": 0.181818,
+      "count": 2,
+      "source": "CHANGELOG.md",
+      "target": "docs/UPGRADE_SUMMARY.md"
+    },
+    {
+      "weight": 0.25,
+      "count": 5,
+      "source": "backend/app/config.py",
+      "target": "pyproject.toml"
+    },
+    {
+      "weight": 0.142857,
+      "count": 2,
+      "source": "backend/app/config.py",
+      "target": "backend/app/database.py"
+    },
+    {
+      "weight": 0.117647,
+      "count": 2,
+      "source": "backend/app/config.py",
+      "target": "backend/app/models/db_models.py"
+    },
+    {
+      "weight": 0.230769,
+      "count": 3,
+      "source": "backend/app/config.py",
+      "target": "docker-compose.yml"
+    },
+    {
+      "weight": 0.2,
+      "count": 3,
+      "source": "backend/app/config.py",
+      "target": "uv.lock"
+    },
+    {
+      "weight": 0.230769,
+      "count": 3,
+      "source": "backend/app/config.py",
+      "target": "backend/app/models/enums.py"
+    },
+    {
+      "weight": 0.153846,
+      "count": 2,
+      "source": "backend/app/config.py",
+      "target": "backend/app/services/ocr/registry.py"
+    },
+    {
+      "weight": 0.176471,
+      "count": 3,
+      "source": "backend/app/config.py",
+      "target": "backend/tests/test_ocr_registry.py"
+    },
+    {
+      "weight": 0.142857,
+      "count": 2,
+      "source": "backend/app/config.py",
+      "target": "backend/app/services/eval/__init__.py"
+    },
+    {
+      "weight": 0.266667,
+      "count": 4,
+      "source": "backend/app/config.py",
+      "target": "backend/app/services/extraction/graph.py"
+    },
+    {
+      "weight": 0.176471,
+      "count": 3,
+      "source": "backend/app/config.py",
+      "target": "backend/app/routers/extractions.py"
+    },
+    {
+      "weight": 0.214286,
+      "count": 3,
+      "source": "backend/app/config.py",
+      "target": "backend/tests/test_durability.py"
+    },
+    {
+      "weight": 0.214286,
+      "count": 3,
+      "source": "backend/app/config.py",
+      "target": "backend/tests/test_integration.py"
+    },
+    {
+      "weight": 0.142857,
+      "count": 2,
+      "source": "backend/app/config.py",
+      "target": "backend/app/models/schemas.py"
+    },
+    {
+      "weight": 0.142857,
+      "count": 2,
+      "source": "backend/app/config.py",
+      "target": "backend/app/routers/providers.py"
+    },
+    {
+      "weight": 0.153846,
+      "count": 2,
+      "source": "pyproject.toml",
+      "target": "docker-compose.yml"
+    },
+    {
+      "weight": 0.416667,
+      "count": 5,
+      "source": "pyproject.toml",
+      "target": "uv.lock"
+    },
+    {
+      "weight": 0.166667,
+      "count": 2,
+      "source": "pyproject.toml",
+      "target": "backend/app/mcp_server.py"
+    },
+    {
+      "weight": 0.2,
+      "count": 3,
+      "source": "pyproject.toml",
+      "target": "backend/tests/test_routes.py"
+    },
+    {
+      "weight": 0.125,
+      "count": 2,
+      "source": "pyproject.toml",
+      "target": "backend/app/services/extraction/graph.py"
+    },
+    {
+      "weight": 0.333333,
+      "count": 2,
+      "source": "uv.lock",
+      "target": "docker-compose.yml"
+    },
+    {
+      "weight": 0.222222,
+      "count": 2,
+      "source": "uv.lock",
+      "target": "backend/tests/test_routes.py"
+    },
+    {
+      "weight": 0.285714,
+      "count": 2,
+      "source": "backend/app/database.py",
+      "target": "backend/app/models/db_models.py"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "backend/app/database.py",
+      "target": "docker-compose.yml"
+    },
+    {
+      "weight": 0.181818,
+      "count": 2,
+      "source": "backend/app/models/db_models.py",
+      "target": "backend/app/routers/extractions.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/tests/unit/test_paddleocr_service.py",
+      "target": "deploy/paddleocr-vl/Dockerfile.hpi"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/tests/unit/test_paddleocr_service.py",
+      "target": "deploy/paddleocr-vl/service.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "deploy/paddleocr-vl/Dockerfile.hpi",
+      "target": "deploy/paddleocr-vl/service.py"
+    },
+    {
+      "weight": 0.666667,
+      "count": 2,
+      "source": "backend/app/services/llm/prompts_loader.py",
+      "target": "backend/tests/test_prompts_loader.py"
+    },
+    {
+      "weight": 0.666667,
+      "count": 2,
+      "source": "backend/app/services/llm/prompts_loader.py",
+      "target": "scripts/eval_diff.py"
+    },
+    {
+      "weight": 0.285714,
+      "count": 2,
+      "source": "backend/tests/test_routes.py",
+      "target": "backend/app/models/schemas.py"
+    },
+    {
+      "weight": 0.181818,
+      "count": 2,
+      "source": "backend/tests/test_routes.py",
+      "target": "backend/app/routers/extractions.py"
+    },
+    {
+      "weight": 0.333333,
+      "count": 2,
+      "source": "backend/tests/test_routes.py",
+      "target": "backend/app/services/extraction/presets.py"
+    },
+    {
+      "weight": 0.333333,
+      "count": 2,
+      "source": "backend/tests/test_routes.py",
+      "target": "backend/tests/test_health.py"
+    },
+    {
+      "weight": 0.333333,
+      "count": 2,
+      "source": "backend/tests/test_routes.py",
+      "target": "backend/tests/test_presets.py"
+    },
+    {
+      "weight": 0.333333,
+      "count": 2,
+      "source": "backend/tests/test_routes.py",
+      "target": "frontend/src/app/history/page.tsx"
+    },
+    {
+      "weight": 0.333333,
+      "count": 2,
+      "source": "backend/tests/test_routes.py",
+      "target": "frontend/src/components/ExtractionResult.tsx"
+    },
+    {
+      "weight": 0.5,
+      "count": 4,
+      "source": "backend/tests/test_ocr_registry.py",
+      "target": "backend/tests/test_paddleocr_provider.py"
+    },
+    {
+      "weight": 0.285714,
+      "count": 2,
+      "source": "backend/tests/test_ocr_registry.py",
+      "target": "backend/app/services/ocr/docling_provider.py"
+    },
+    {
+      "weight": 0.25,
+      "count": 2,
+      "source": "backend/tests/test_ocr_registry.py",
+      "target": "backend/app/services/ocr/paddleocr_provider.py"
+    },
+    {
+      "weight": 0.285714,
+      "count": 2,
+      "source": "backend/tests/test_ocr_registry.py",
+      "target": "backend/tests/test_docling_provider.py"
+    },
+    {
+      "weight": 0.428571,
+      "count": 3,
+      "source": "backend/tests/test_ocr_registry.py",
+      "target": "backend/app/models/enums.py"
+    },
+    {
+      "weight": 0.285714,
+      "count": 2,
+      "source": "backend/tests/test_ocr_registry.py",
+      "target": "backend/app/services/ocr/registry.py"
+    },
+    {
+      "weight": 0.25,
+      "count": 2,
+      "source": "backend/tests/test_ocr_registry.py",
+      "target": "backend/app/models/schemas.py"
+    },
+    {
+      "weight": 0.25,
+      "count": 2,
+      "source": "backend/tests/test_ocr_registry.py",
+      "target": "backend/app/routers/providers.py"
+    },
+    {
+      "weight": 0.333333,
+      "count": 2,
+      "source": "backend/tests/test_paddleocr_provider.py",
+      "target": "backend/app/services/ocr/paddleocr_provider.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/eval/calibration.py",
+      "target": "backend/tests/test_eval_calibration.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/extraction/vlm_extractor.py",
+      "target": "backend/tests/test_vlm_extractor.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/ocr/docling_provider.py",
+      "target": "backend/tests/test_docling_provider.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "docs/MIGRATION_GUIDE.md",
+      "target": "docs/RELEASE_NOTES.md"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "docs/MIGRATION_GUIDE.md",
+      "target": "docs/UPGRADE_SUMMARY.md"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "docs/RELEASE_NOTES.md",
+      "target": "docs/UPGRADE_SUMMARY.md"
+    },
+    {
+      "weight": 0.625,
+      "count": 5,
+      "source": "backend/app/routers/extractions.py",
+      "target": "backend/app/services/extraction/graph.py"
+    },
+    {
+      "weight": 0.571429,
+      "count": 4,
+      "source": "backend/app/routers/extractions.py",
+      "target": "backend/tests/test_durability.py"
+    },
+    {
+      "weight": 0.571429,
+      "count": 4,
+      "source": "backend/app/routers/extractions.py",
+      "target": "backend/tests/test_integration.py"
+    },
+    {
+      "weight": 0.285714,
+      "count": 2,
+      "source": "backend/app/routers/extractions.py",
+      "target": "backend/app/metrics.py"
+    },
+    {
+      "weight": 0.25,
+      "count": 2,
+      "source": "backend/app/routers/extractions.py",
+      "target": "backend/app/models/schemas.py"
+    },
+    {
+      "weight": 0.285714,
+      "count": 2,
+      "source": "backend/app/routers/extractions.py",
+      "target": "backend/app/services/extraction/presets.py"
+    },
+    {
+      "weight": 0.285714,
+      "count": 2,
+      "source": "backend/app/routers/extractions.py",
+      "target": "backend/tests/test_health.py"
+    },
+    {
+      "weight": 0.285714,
+      "count": 2,
+      "source": "backend/app/routers/extractions.py",
+      "target": "backend/tests/test_presets.py"
+    },
+    {
+      "weight": 0.285714,
+      "count": 2,
+      "source": "backend/app/routers/extractions.py",
+      "target": "frontend/src/app/history/page.tsx"
+    },
+    {
+      "weight": 0.285714,
+      "count": 2,
+      "source": "backend/app/routers/extractions.py",
+      "target": "frontend/src/components/ExtractionResult.tsx"
+    },
+    {
+      "weight": 0.666667,
+      "count": 4,
+      "source": "backend/app/services/extraction/graph.py",
+      "target": "backend/tests/test_durability.py"
+    },
+    {
+      "weight": 0.666667,
+      "count": 4,
+      "source": "backend/app/services/extraction/graph.py",
+      "target": "backend/tests/test_integration.py"
+    },
+    {
+      "weight": 0.333333,
+      "count": 2,
+      "source": "backend/app/services/extraction/graph.py",
+      "target": "backend/app/metrics.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 4,
+      "source": "backend/tests/test_durability.py",
+      "target": "backend/tests/test_integration.py"
+    },
+    {
+      "weight": 0.666667,
+      "count": 2,
+      "source": "backend/app/models/enums.py",
+      "target": "backend/app/services/ocr/registry.py"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "backend/app/models/enums.py",
+      "target": "backend/app/models/schemas.py"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "backend/app/models/enums.py",
+      "target": "backend/app/routers/providers.py"
+    },
+    {
+      "weight": 0.666667,
+      "count": 2,
+      "source": "backend/app/routers/providers.py",
+      "target": "backend/app/services/llm/output_parser.py"
+    },
+    {
+      "weight": 0.5,
+      "count": 2,
+      "source": "backend/app/routers/providers.py",
+      "target": "backend/app/models/schemas.py"
+    },
+    {
+      "weight": 0.666667,
+      "count": 2,
+      "source": "backend/app/models/schemas.py",
+      "target": "backend/app/services/extraction/presets.py"
+    },
+    {
+      "weight": 0.666667,
+      "count": 2,
+      "source": "backend/app/models/schemas.py",
+      "target": "backend/tests/test_health.py"
+    },
+    {
+      "weight": 0.666667,
+      "count": 2,
+      "source": "backend/app/models/schemas.py",
+      "target": "backend/tests/test_presets.py"
+    },
+    {
+      "weight": 0.666667,
+      "count": 2,
+      "source": "backend/app/models/schemas.py",
+      "target": "frontend/src/app/history/page.tsx"
+    },
+    {
+      "weight": 0.666667,
+      "count": 2,
+      "source": "backend/app/models/schemas.py",
+      "target": "frontend/src/components/ExtractionResult.tsx"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/extraction/presets.py",
+      "target": "backend/tests/test_health.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/extraction/presets.py",
+      "target": "backend/tests/test_presets.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/extraction/presets.py",
+      "target": "frontend/src/app/history/page.tsx"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/app/services/extraction/presets.py",
+      "target": "frontend/src/components/ExtractionResult.tsx"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/tests/test_health.py",
+      "target": "backend/tests/test_presets.py"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/tests/test_health.py",
+      "target": "frontend/src/app/history/page.tsx"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/tests/test_health.py",
+      "target": "frontend/src/components/ExtractionResult.tsx"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/tests/test_presets.py",
+      "target": "frontend/src/app/history/page.tsx"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "backend/tests/test_presets.py",
+      "target": "frontend/src/components/ExtractionResult.tsx"
+    },
+    {
+      "weight": 1.0,
+      "count": 2,
+      "source": "frontend/src/app/history/page.tsx",
+      "target": "frontend/src/components/ExtractionResult.tsx"
+    }
+  ]
+}
