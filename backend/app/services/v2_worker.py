@@ -11,7 +11,7 @@ import uuid
 from collections.abc import Mapping, Sequence
 from typing import Any, Protocol
 
-from sqlalchemy import delete, select
+from sqlalchemy import delete, func, select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from sqlalchemy.orm import selectinload
 
@@ -272,9 +272,13 @@ class V2PageTaskRunner:
                 select(ParseJob)
                 .where(ParseJob.id == task.job_id)
                 .options(selectinload(ParseJob.pages))
+                .with_for_update()
             )
             if job is None:
                 await self.leases.fail(task.id, owner, error_message="job_not_found")
+                return
+            if job.cancel_requested:
+                await self._skip_cancelled_task(session, job, task)
                 return
             job.status = JobStatus.PROCESSING
             job.current_page = task.page_number
@@ -344,6 +348,38 @@ class V2PageTaskRunner:
         )
         await self._assemble_with_retries(task.job_id)
 
+    async def _skip_cancelled_task(
+        self, session: AsyncSession, job: ParseJob, task: V2PageTask
+    ) -> None:
+        """A cancel landed before this task's provider work started — mark it
+        cancelled rather than processed, and finalize the job once no
+        queued/leased tasks remain. In-flight tasks (already past this check)
+        are not aborted; see _assemble_if_complete for the assembly-side guard.
+        """
+        db_task = await session.get(V2PageTask, task.id)
+        if db_task is not None:
+            db_task.status = "cancelled"
+            db_task.lease_owner = None
+            db_task.lease_expires_at = None
+        remaining = await session.scalar(
+            select(func.count())
+            .select_from(V2PageTask)
+            .where(V2PageTask.job_id == job.id, V2PageTask.status.in_(("queued", "leased")))
+        )
+        finalized = False
+        if not remaining and job.status != JobStatus.CANCELLED:
+            job.status = JobStatus.CANCELLED
+            job.current_page = None
+            job.completed_at = dt.datetime.now(dt.UTC)
+            finalized = True
+        await session.commit()
+        logger.info(
+            "v2_page_task_skipped_cancelled",
+            job_id=job.id,
+            page_number=task.page_number,
+            job_finalized=finalized,
+        )
+
     async def _assemble_with_retries(self, job_id: str) -> None:
         for attempt in range(1, ASSEMBLY_MAX_ATTEMPTS + 1):
             try:
@@ -372,7 +408,7 @@ class V2PageTaskRunner:
             job = await session.scalar(
                 select(ParseJob).where(ParseJob.id == job_id).with_for_update()
             )
-            if job is None:
+            if job is None or job.status == JobStatus.CANCELLED:
                 return
             tasks = list(
                 await session.scalars(
@@ -410,6 +446,19 @@ class V2PageTaskRunner:
                 .options(selectinload(ParseJob.artifacts), selectinload(ParseJob.pages))
             )
             if job is None:
+                return
+            if job.cancel_requested or job.status == JobStatus.CANCELLED:
+                # Every page finished (it was already in flight when cancel
+                # landed — see _skip_cancelled_task), but assembly itself is
+                # new work: extraction calls, PDF annotation. Cancellation
+                # blocks that even though the pages themselves ran to completion.
+                if job.status != JobStatus.CANCELLED:
+                    job.status = JobStatus.CANCELLED
+                    job.current_page = None
+                    job.completed_pages = sum(task.status == "completed" for task in tasks)
+                    job.completed_at = dt.datetime.now(dt.UTC)
+                    await session.commit()
+                    logger.info("v2_job_cancelled_before_assembly", job_id=job_id)
                 return
             expected_pages = list(range(1, job.page_count + 1))
             if [task.page_number for task in tasks] != expected_pages:

@@ -71,7 +71,7 @@ def test_llm_markdown_preserves_hierarchy_and_grounded_citations() -> None:
                         heading_level=1,
                         bbox=_box(0.05, 0.1),
                         content="Quarterly Report",
-                        source="paddleocr_vl",
+                        source="cloud_vlm",
                     ),
                     Region(
                         id="p0001-r0002",
@@ -79,14 +79,14 @@ def test_llm_markdown_preserves_hierarchy_and_grounded_citations() -> None:
                         heading_level=2,
                         bbox=_box(0.15, 0.2),
                         content="Revenue",
-                        source="paddleocr_vl",
+                        source="cloud_vlm",
                     ),
                     Region(
                         id="p0001-r0003",
                         type="text",
                         bbox=_box(0.25, 0.35),
                         content="Revenue grew.",
-                        source="glm_ocr",
+                        source="cloud_vlm",
                     ),
                 ],
             )

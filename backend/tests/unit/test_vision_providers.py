@@ -136,3 +136,52 @@ def test_unknown_provider_is_rejected() -> None:
 
     with pytest.raises(ProviderError, match="Unknown provider"):
         registry.models_for("ourtoken")
+
+
+@pytest.mark.asyncio
+async def test_glmocr_provider_is_ready_without_an_api_key() -> None:
+    registry = VisionProviderRegistry(
+        httpx.AsyncClient(transport=httpx.MockTransport(lambda request: httpx.Response(200))),
+        _OllamaCatalog(),
+        _settings(),
+    )
+
+    providers = await registry.list_providers()
+    glmocr = next(provider for provider in providers if provider.id == "glmocr")
+
+    assert glmocr.state == "ready"
+    assert [model.id for model in glmocr.models] == ["glm-ocr"]
+    await registry.aclose()
+
+
+@pytest.mark.asyncio
+async def test_glmocr_uses_chat_completions_shape_with_no_auth_header() -> None:
+    captured: dict = {}
+
+    async def handler(request: httpx.Request) -> httpx.Response:
+        captured["url"] = str(request.url)
+        captured["body"] = json.loads(request.content)
+        captured["has_auth"] = "authorization" in request.headers
+        return httpx.Response(
+            200,
+            json={
+                "choices": [{"message": {"content": "Invoice number 42"}}],
+                "usage": {"prompt_tokens": 120, "completion_tokens": 6},
+            },
+        )
+
+    registry = VisionProviderRegistry(
+        httpx.AsyncClient(transport=httpx.MockTransport(handler)),
+        _OllamaCatalog(),
+        _settings(),
+    )
+
+    result = await registry.generate("glmocr", "glm-ocr", b"png", "Transcribe")
+
+    assert captured["url"] == "http://localhost:8080/v1/chat/completions"
+    assert captured["has_auth"] is False
+    assert captured["body"]["model"] == "glm-ocr"
+    assert captured["body"]["messages"][0]["content"][0]["type"] == "image_url"
+    assert result.text == "Invoice number 42"
+    assert result.input_tokens == 120
+    await registry.aclose()

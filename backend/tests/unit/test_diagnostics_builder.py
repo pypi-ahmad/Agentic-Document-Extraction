@@ -85,16 +85,16 @@ def test_build_page_diagnostics_records_blinded_candidate_as_second_local_attemp
                 type="text",
                 bbox=BoundingBox(left=0.1, top=0.1, right=0.9, bottom=0.3),
                 content="second local read",
-                source="glm_ocr",
+                source="cloud_vlm",
                 recognition_candidates=[
-                    RecognitionCandidate(source="paddleocr_vl", content="paddle"),
+                    RecognitionCandidate(source="native", content="native"),
                     RecognitionCandidate(
-                        source="glm_ocr", content="first local read", model="glm-ocr"
+                        source="cloud_vlm", content="first local read", model="repair-model"
                     ),
                     RecognitionCandidate(
-                        source="glm_ocr",
+                        source="cloud_vlm",
                         content="second local read",
-                        model="glm-ocr",
+                        model="repair-model",
                         selected=True,
                     ),
                 ],

@@ -26,9 +26,7 @@ from app.services.parsing.artifacts import build_bundle, build_grounding_pdf, bu
 from app.services.parsing.contracts import ContextChunk, DocumentLayout, PageLayout
 from app.services.parsing.diagnostics import build_page_diagnostics
 from app.services.parsing.domain_extraction import DomainExtraction, extract_domain
-from app.services.parsing.glmocr_adapter import GLMOCRAdapter, GLMOCRUnavailable
 from app.services.parsing.markdown import render_llm_markdown
-from app.services.parsing.paddleocr_vl import PaddleOCRVLUnavailable
 from app.services.parsing.parser import LayoutParser
 from app.services.parsing.public_diagnostics import to_public_diagnostics
 from app.services.parsing.reprocessing import (
@@ -198,13 +196,7 @@ async def run_parse_job(
             transient = ParserRuntime(
                 checkpoint_path=app_settings.langgraph_checkpoint_path,
                 ollama_base_url=app_settings.ollama_base_url,
-                paddleocr_vl_image=app_settings.paddleocr_vl_image,
-                paddleocr_vl_cache_dir=app_settings.paddleocr_vl_cache_dir,
-                timeout_seconds=max(
-                    app_settings.glm_ocr_timeout_seconds,
-                    app_settings.ollama_review_timeout_seconds,
-                    app_settings.paddleocr_vl_timeout_seconds,
-                ),
+                timeout_seconds=app_settings.ollama_review_timeout_seconds,
             )
             async with transient:
                 await prepare_reprocess(job_id, sessions, store, transient)
@@ -224,19 +216,6 @@ async def run_parse_job(
             "Server shut down while this job was active; resume to continue.",
         )
         raise
-    except PaddleOCRVLUnavailable as exc:
-        await fail_reprocess(job_id, sessions, str(exc))
-        logger.warning(
-            "parse_job.paddleocr_vl_unavailable",
-            job_id=job_id,
-        )
-        await _terminalize(
-            sessions,
-            job_id,
-            JobStatus.FAILED,
-            "paddleocr_vl_unavailable",
-            str(exc),
-        )
     except Exception as exc:
         await fail_reprocess(job_id, sessions, f"Reprocessing failed: {type(exc).__name__}")
         logger.exception(
@@ -295,10 +274,6 @@ async def _run_batches(
         "figure_crops": {},
         "repair_count": 0,
     }
-    runtime.paddleocr_vl.set_progress_callback(
-        job_id,
-        lambda page, event: _publish_page_progress(sessions, job_id, page, event),
-    )
     for batch_index, page_numbers in enumerate(
         _page_batches(pending, app_settings.parse_batch_pages), start=1
     ):
@@ -340,7 +315,6 @@ async def _run_batches(
                     for node, values in graph_update.items():
                         state.update(values)
                         if await _publish_stage(sessions, job_id, node):
-                            await runtime.paddleocr_vl.cancel(job_id)
                             return None
                 batch_result = state
                 await _persist_batch_result(
@@ -632,7 +606,6 @@ async def _execute(
         if result is None:
             return
     finally:
-        runtime.paddleocr_vl.set_progress_callback(job_id, None)
         unload_warnings = await _unload_local_models(runtime, local_models)
         if result is not None:
             result.setdefault("warnings", []).extend(unload_warnings)
@@ -1123,27 +1096,6 @@ async def _terminalize(sessions, job_id: str, status: JobStatus, code: str, mess
         await session.commit()
 
 
-async def _publish_page_progress(
-    sessions: async_sessionmaker[AsyncSession],
-    job_id: str,
-    page_number: int,
-    event: str,
-) -> None:
-    async with sessions() as session:
-        job = await _load_job(session, job_id)
-        if job is None:
-            return
-        job.current_page = page_number
-        checkpoint = next((page for page in job.pages if page.page_number == page_number), None)
-        if checkpoint is not None:
-            checkpoint.stage = event
-            if event in {"page_parsed", "page_refined"}:
-                checkpoint.status = PageStatus.PROCESSING
-        if event == "page_refined":
-            job.completed_pages = sum(page.stage == "page_refined" for page in job.pages)
-        await session.commit()
-
-
 async def _unload_local_models(
     runtime: ParserRuntime,
     models: set[str],
@@ -1153,8 +1105,11 @@ async def _unload_local_models(
     warnings: list[str] = []
     for model in sorted(models):
         try:
-            await GLMOCRAdapter(runtime.client, model).unload()
-        except GLMOCRUnavailable:
+            response = await runtime.client.post(
+                "/api/generate", json={"model": model, "prompt": "", "keep_alive": 0}
+            )
+            response.raise_for_status()
+        except httpx.HTTPError:
             warnings.append(f"ollama:{model}:unload_failed")
     if not report_resident:
         return warnings

@@ -23,7 +23,7 @@ def test_structured_document_preserves_hierarchy_provenance_and_cell_grounding()
                         heading_level=2,
                         bbox=BoundingBox(left=0.1, top=0.05, right=0.9, bottom=0.1),
                         content="Charges",
-                        source="paddleocr_vl",
+                        source="cloud_vlm",
                     ),
                     Region(
                         id="p0001-r0002",
@@ -31,7 +31,7 @@ def test_structured_document_preserves_hierarchy_provenance_and_cell_grounding()
                         parent_id="p0001-r0001",
                         bbox=BoundingBox(left=0.1, top=0.2, right=0.9, bottom=0.6),
                         content="Item Amount",
-                        source="paddleocr_vl",
+                        source="cloud_vlm",
                         table_cells=[
                             TableCell(
                                 bbox=BoundingBox(left=0.1, top=0.2, right=0.5, bottom=0.3),
@@ -61,4 +61,4 @@ def test_structured_document_preserves_hierarchy_provenance_and_cell_grounding()
     }
     assert result.blocks[1].cells[0].id == "p0001-r0002-c0001"
     assert result.blocks[1].cells[0].parent_id == "p0001-r0002"
-    assert result.blocks[1].provenance.parser == "paddleocr_vl"
+    assert result.blocks[1].provenance.parser == "cloud_vlm"

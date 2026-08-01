@@ -1,4 +1,4 @@
-"""Primary PaddleOCR-VL parser and optional Ollama repair engine."""
+"""Vision-provider zone repair engine for the local parsing pipeline."""
 
 from __future__ import annotations
 
@@ -7,16 +7,15 @@ import difflib
 import io
 import re
 from pathlib import Path
-from typing import cast
+from typing import Literal, cast
 
-import httpx
 from PIL import Image
 
 from app.services.parsing.contracts import RecognitionCandidate, Region
-from app.services.parsing.glmocr_adapter import GLMOCRAdapter, PromptKind
-from app.services.parsing.paddleocr_docker import PaddleOCRVLDockerRunner
-from app.services.parsing.parser import LayoutParser
+from app.services.parsing.parser import LayoutEngine, LayoutParser
 from app.services.parsing.vision_providers import VisionProviderRegistry
+
+PromptKind = Literal["text", "table", "chart", "formula", "figure"]
 
 
 def _crop(image_path: Path, zone: Region) -> bytes:
@@ -36,10 +35,9 @@ def _crop(image_path: Path, zone: Region) -> bytes:
 
 
 class VisionZoneEngine:
-    """Repair a failed PaddleOCR-VL region using a selected vision provider."""
+    """Repair a low-confidence region using a cloud vision provider."""
 
-    def __init__(self, ollama_client: httpx.AsyncClient, providers: VisionProviderRegistry) -> None:
-        self.ollama_client = ollama_client
+    def __init__(self, providers: VisionProviderRegistry) -> None:
         self.providers = providers
 
     async def process(
@@ -48,7 +46,7 @@ class VisionZoneEngine:
         zone: Region,
         device: str = "auto",
         model: str | None = None,
-        provider: str = "ollama",
+        provider: str = "openai",
     ) -> Region:
         del device
         if not model:
@@ -59,29 +57,20 @@ class VisionZoneEngine:
             if zone.type in {"table", "chart", "formula", "figure"}
             else "text"
         )
-        if provider == "ollama":
-            result = await GLMOCRAdapter(self.ollama_client, model).recognize(image, kind)
-            content, source = result.text, "glm_ocr"
-            input_tokens, output_tokens, latency_ms = (
-                result.prompt_eval_count,
-                result.eval_count,
-                result.latency_ms,
-            )
-        else:
-            prompt = {
-                "text": "Transcribe this crop as exact Markdown. Return only Markdown.",
-                "table": "Transcribe this table as complete Markdown. Return only the table.",
-                "chart": "Describe this chart faithfully, including labels, axes, and values, as Markdown.",
-                "formula": "Transcribe this formula as LaTeX. Return only LaTeX.",
-                "figure": "Describe this figure faithfully as concise Markdown.",
-            }[kind]
-            result = await self.providers.generate(provider, model, image, prompt)
-            content, source = result.text, "cloud_vlm"
-            input_tokens, output_tokens, latency_ms = (
-                result.input_tokens,
-                result.output_tokens,
-                result.latency_ms,
-            )
+        prompt = {
+            "text": "Transcribe this crop as exact Markdown. Return only Markdown.",
+            "table": "Transcribe this table as complete Markdown. Return only the table.",
+            "chart": "Describe this chart faithfully, including labels, axes, and values, as Markdown.",
+            "formula": "Transcribe this formula as LaTeX. Return only LaTeX.",
+            "figure": "Describe this figure faithfully as concise Markdown.",
+        }[kind]
+        result = await self.providers.generate(provider, model, image, prompt)
+        content, source = result.text, "cloud_vlm"
+        input_tokens, output_tokens, latency_ms = (
+            result.input_tokens,
+            result.output_tokens,
+            result.latency_ms,
+        )
         candidates = [
             candidate.model_copy(update={"selected": False})
             for candidate in zone.recognition_candidates
@@ -129,13 +118,7 @@ def _candidate_similarity(first: str, second: str) -> float:
 
 
 def build_default_parser(
-    ollama_client,
-    paddleocr_vl: PaddleOCRVLDockerRunner,
-    providers: VisionProviderRegistry,
+    providers: VisionProviderRegistry, layout_engine: LayoutEngine | None = None
 ) -> LayoutParser:
-    repair = VisionZoneEngine(ollama_client, providers)
-    return LayoutParser(
-        layout_engine=paddleocr_vl,
-        text_engine=repair,
-        table_engine=repair,
-    )
+    repair = VisionZoneEngine(providers)
+    return LayoutParser(layout_engine=layout_engine, text_engine=repair, table_engine=repair)

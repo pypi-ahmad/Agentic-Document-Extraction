@@ -249,7 +249,7 @@ async def test_mixed_image_page_runs_full_local_recognition(tmp_path) -> None:
                         type="text",
                         bbox=BoundingBox(left=0.1, top=0.1, right=0.9, bottom=0.3),
                         content="Paddle text",
-                        source="paddleocr_vl",
+                        source="cloud_vlm",
                     )
                 ]
                 for page in kwargs["page_numbers"]
@@ -268,7 +268,7 @@ async def test_mixed_image_page_runs_full_local_recognition(tmp_path) -> None:
             repair_hint=None,
         ):
             self.calls += 1
-            return zone.model_copy(update={"content": "GLM text", "source": "glm_ocr"})
+            return zone.model_copy(update={"content": "GLM text", "source": "cloud_vlm"})
 
     source = tmp_path / "scan.png"
     Image.new("RGB", (200, 100), "white").save(source)
@@ -307,14 +307,14 @@ async def test_adaptive_cloud_review_receives_flagged_local_candidates(tmp_path)
                         type="text",
                         bbox=BoundingBox(left=0.1, top=0.1, right=0.9, bottom=0.3),
                         content="GLM candidate",
-                        source="glm_ocr",
+                        source="cloud_vlm",
                         warnings=["recognition_disagreement"],
                         recognition_candidates=[
                             RecognitionCandidate(
-                                source="paddleocr_vl", content="Paddle candidate"
+                                source="cloud_vlm", content="Paddle candidate"
                             ),
                             RecognitionCandidate(
-                                source="glm_ocr",
+                                source="cloud_vlm",
                                 content="GLM candidate",
                                 model="glm-ocr:latest",
                                 selected=True,
@@ -377,8 +377,8 @@ async def test_adaptive_cloud_review_receives_flagged_local_candidates(tmp_path)
 
     assert reviewer.calls == 1
     assert reviewer.candidates["p0001-r0001"] == [
-        "paddleocr_vl: Paddle candidate",
-        "glm_ocr: GLM candidate",
+        "cloud_vlm: Paddle candidate",
+        "cloud_vlm: GLM candidate",
     ]
     assert result["status"] == "completed"
 
@@ -396,7 +396,7 @@ async def test_cloud_disagreement_blind_retry_never_receives_cloud_feedback(
                         type="text",
                         bbox=BoundingBox(left=0.1, top=0.1, right=0.9, bottom=0.3),
                         content="Paddle text",
-                        source="paddleocr_vl",
+                        source="cloud_vlm",
                     )
                 ]
                 for page in kwargs["page_numbers"]
@@ -419,7 +419,7 @@ async def test_cloud_disagreement_blind_retry_never_receives_cloud_feedback(
             self.calls += 1
             self.hints.append(repair_hint)
             return zone.model_copy(
-                update={"content": f"GLM attempt {self.calls}", "source": "glm_ocr"}
+                update={"content": f"GLM attempt {self.calls}", "source": "cloud_vlm"}
             )
 
     class Reviewer:

@@ -11,7 +11,7 @@ export interface ParseSettings {
   allow_sensitive_cloud: boolean;
   processing_mode: "local_only" | "hybrid" | "maximum_accuracy";
   quality_overrides: Partial<Record<"min_region_confidence" | "min_overall" | "min_extraction_accuracy" | "min_structural_fidelity" | "min_completeness" | "min_markdown_consistency" | "min_table_integrity" | "min_citation_coverage" | "max_repairs", number>>;
-  ocr_provider: "ollama" | "openai" | "anthropic" | "gemini" | "xai";
+  ocr_provider: "openai" | "anthropic" | "gemini" | "xai" | "glmocr";
   ocr_model: string | null;
   review_provider: "ollama" | "openai" | "anthropic" | "gemini" | "xai";
   review_model: string | null;
@@ -49,25 +49,12 @@ export interface ExtractionSchemaValidation {
 }
 
 export interface RuntimeCapabilities {
-  paddleocr_vl_available: boolean;
-  parser_model: string;
-  pipeline_version: string;
-  paddleocr_vl: {
-    available: boolean;
-    docker_available: boolean;
-    gpu_available: boolean;
-    image_present: boolean;
-    cache_ready: boolean;
-    image: string;
-    error: string | null;
-    pull_command: string | null;
-  };
   providers: VisionProvider[];
 }
 
 export interface VisionModel { id: string; name: string }
 export interface VisionProvider {
-  id: ParseSettings["ocr_provider"];
+  id: "ollama" | "openai" | "anthropic" | "gemini" | "xai" | "glmocr";
   name: string;
   state: "ready" | "not_configured" | "unavailable";
   models: VisionModel[];

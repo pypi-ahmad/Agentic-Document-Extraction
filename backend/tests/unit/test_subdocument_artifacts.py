@@ -31,7 +31,7 @@ def test_subdocument_exports_selected_pages_and_preserves_source_page_citations(
                         type="text",
                         bbox=BoundingBox(left=0.1, top=0.1, right=0.9, bottom=0.2),
                         content=f"Page {page}",
-                        source="paddleocr_vl",
+                        source="cloud_vlm",
                     )
                 ],
             )

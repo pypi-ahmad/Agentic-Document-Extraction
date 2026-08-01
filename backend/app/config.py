@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from pydantic import Field
+from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -19,15 +19,11 @@ class Settings(BaseSettings):
     max_document_pages: int = Field(default=500, ge=1)
 
     ollama_base_url: str = "http://localhost:11434"
-    paddleocr_vl_image: str = (
-        "ccr-2vdh3abv-pub.cnc.bj.baidubce.com/paddlepaddle/"
-        "paddleocr-vl:latest-nvidia-gpu@sha256:"
-        "ad0b1f056a76967f9191cd06398e8babb21b49a4673a28c3de5fd31f481884db"
-    )
-    paddleocr_vl_cache_dir: str = "./.cache/paddleocr-vl"
-    paddleocr_vl_timeout_seconds: float = Field(default=600.0, gt=0)
-    glm_ocr_timeout_seconds: float = Field(default=600.0, gt=0)
     ollama_review_timeout_seconds: float = Field(default=600.0, gt=0)
+    glmocr_server_url: str = "http://localhost:5002"
+    glmocr_server_timeout_seconds: float = Field(default=120.0, gt=0)
+    glmocr_vlm_base_url: str = "http://localhost:8080/v1"
+    glmocr_vlm_timeout_seconds: float = Field(default=120.0, gt=0)
     job_shutdown_grace_seconds: float = Field(default=30.0, ge=0)
     job_max_concurrent: int = Field(default=1, ge=1, le=1)
     job_queue_max_depth: int = Field(default=50, ge=1)
@@ -42,7 +38,11 @@ class Settings(BaseSettings):
     port: int = Field(default=8000, ge=1, le=65535)
     debug: bool = False
     cors_origins: str = "http://localhost:3000,http://127.0.0.1:3000"
+    cors_allow_credentials: bool = True
     api_key: str = ""
+    rate_limit_enabled: bool = True
+    rate_limit_requests_per_minute: int = Field(default=60, ge=1)
+    testing: bool = False
 
     openai_api_key: str = ""
     anthropic_api_key: str = ""
@@ -71,6 +71,18 @@ class Settings(BaseSettings):
     @property
     def cors_origin_list(self) -> list[str]:
         return [origin.strip() for origin in self.cors_origins.split(",") if origin.strip()]
+
+    @model_validator(mode="after")
+    def validate_cors_origins(self) -> Settings:
+        if "*" in self.cors_origin_list and (self.cors_allow_credentials or self.api_key):
+            raise ValueError(
+                "CORS_ORIGINS cannot include '*' while CORS_ALLOW_CREDENTIALS is enabled "
+                "or API_KEY is set — a wildcard origin combined with credentials or "
+                "API-key auth lets any site's browser script authenticated requests. "
+                "List explicit origins in CORS_ORIGINS, or set CORS_ALLOW_CREDENTIALS=false "
+                "and leave API_KEY unset if you really want a fully open, unauthenticated API."
+            )
+        return self
 
     @property
     def upload_path(self) -> Path:
