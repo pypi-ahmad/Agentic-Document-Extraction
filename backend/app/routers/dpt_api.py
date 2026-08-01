@@ -23,13 +23,14 @@ from fastapi import (
 )
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.auth import require_api_key
 from app.config import settings as app_settings
 from app.database import get_db
+from app.rate_limit import require_rate_limit
 from app.models.db_models import Artifact, PageCheckpoint, ParseJob
 from app.models.enums import JobStatus, PageStatus
 from app.services.agentic.contracts import ExtractionResponse, ParseMetadata, ParseResponse
@@ -55,7 +56,11 @@ MODEL_TO_MODE: dict[ModelAlias, str] = {
     "paperplane-ade-audit-latest": "audit",
 }
 
-router = APIRouter(prefix="/v2", tags=["agentic-v2"], dependencies=[Depends(require_api_key)])
+router = APIRouter(
+    prefix="/v2",
+    tags=["agentic-v2"],
+    dependencies=[Depends(require_api_key), Depends(require_rate_limit)],
+)
 
 
 class ArtifactResponse(BaseModel):
@@ -368,13 +373,30 @@ async def get_parse_job(job_id: str, db: AsyncSession = Depends(get_db)) -> Pars
 async def cancel_parse_job(job_id: str, db: AsyncSession = Depends(get_db)) -> ParseJobResponse:
     job = await _load_job(db, job_id)
     if job.status == JobStatus.QUEUED:
-        job.status = JobStatus.CANCELLED
+        result = await db.execute(
+            update(ParseJob)
+            .where(ParseJob.id == job_id, ParseJob.status == JobStatus.QUEUED)
+            .values(status=JobStatus.CANCELLED)
+        )
     elif job.status in {JobStatus.INSPECTING, JobStatus.PROCESSING, JobStatus.ASSEMBLING}:
-        job.cancel_requested = True
-        job.status = JobStatus.CANCELLING
+        result = await db.execute(
+            update(ParseJob)
+            .where(
+                ParseJob.id == job_id,
+                ParseJob.status.in_(
+                    [JobStatus.INSPECTING, JobStatus.PROCESSING, JobStatus.ASSEMBLING]
+                ),
+            )
+            .values(cancel_requested=True, status=JobStatus.CANCELLING)
+        )
     else:
         raise _error("invalid_state", f"Cannot cancel a job in {job.status} state", 409)
     await db.commit()
+    if result.rowcount != 1:
+        raise _error(
+            "invalid_state", "Job state changed concurrently — refresh and retry", 409
+        )
+    await db.refresh(job)
     return _serialize_job(job)
 
 

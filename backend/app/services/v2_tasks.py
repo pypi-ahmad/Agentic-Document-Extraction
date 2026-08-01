@@ -34,17 +34,19 @@ class V2TaskLeases:
         async with self.sessions() as session:
             statement = (
                 select(V2PageTask)
+                .join(ParseJob, ParseJob.id == V2PageTask.job_id)
                 .where(
+                    ParseJob.cancel_requested.is_(False),
                     or_(
                         V2PageTask.status == "queued",
                         and_(
                             V2PageTask.status == "leased",
                             V2PageTask.lease_expires_at < now,
                         ),
-                    )
+                    ),
                 )
                 .order_by(V2PageTask.created_at, V2PageTask.page_number)
-                .with_for_update(skip_locked=True)
+                .with_for_update(of=V2PageTask, skip_locked=True)
                 .limit(1)
             )
             task = await session.scalar(statement)
@@ -131,7 +133,7 @@ class V2TaskLeases:
 
     async def _recompute_job_summary(self, session: AsyncSession, job_id: str) -> None:
         job = await session.scalar(select(ParseJob).where(ParseJob.id == job_id).with_for_update())
-        if job is None:
+        if job is None or job.status == JobStatus.CANCELLED:
             return
         tasks = list(
             await session.scalars(

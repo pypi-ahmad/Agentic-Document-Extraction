@@ -45,7 +45,9 @@ _MODELS: dict[str, tuple[str, list[str]]] = {
     "anthropic": ("Anthropic", ["claude-sonnet-5", "claude-opus-4-8"]),
     "gemini": ("Google Gemini", ["gemini-3.6-flash", "gemini-3.5-flash-lite"]),
     "xai": ("xAI", ["grok-4.5"]),
+    "glmocr": ("GLM-OCR (local)", ["glm-ocr"]),
 }
+_NO_API_KEY_PROVIDERS = {"glmocr"}
 
 
 def _responses_url(base_url: str) -> str:
@@ -96,12 +98,14 @@ class VisionProviderRegistry:
             )
         )
         for provider, (name, _) in _MODELS.items():
-            key = getattr(self.settings, f"{provider}_api_key")
+            ready = provider in _NO_API_KEY_PROVIDERS or bool(
+                getattr(self.settings, f"{provider}_api_key")
+            )
             providers.append(
                 VisionProvider(
                     id=provider,
                     name=name,
-                    state="ready" if key else "not_configured",
+                    state="ready" if ready else "not_configured",
                     models=self.models_for(provider),
                 )
             )
@@ -119,7 +123,9 @@ class VisionProviderRegistry:
         allowed = {item.id for item in self.models_for(provider)}
         if model not in allowed:
             raise ProviderError("model_not_supported", f"Unsupported {provider} model: {model}")
-        if not getattr(self.settings, f"{provider}_api_key"):
+        if provider not in _NO_API_KEY_PROVIDERS and not getattr(
+            self.settings, f"{provider}_api_key"
+        ):
             raise ProviderError("provider_not_configured", f"{provider} API key is not configured")
 
     async def generate(
@@ -140,9 +146,13 @@ class VisionProviderRegistry:
         allowed = {item.id for item in self.models_for(provider)}
         if model not in allowed:
             raise ProviderError("model_not_supported", f"Unsupported {provider} model: {model}")
-        api_key = getattr(self.settings, f"{provider}_api_key")
-        if not api_key:
-            raise ProviderError("provider_not_configured", f"{provider} API key is not configured")
+        api_key = None
+        if provider not in _NO_API_KEY_PROVIDERS:
+            api_key = getattr(self.settings, f"{provider}_api_key")
+            if not api_key:
+                raise ProviderError(
+                    "provider_not_configured", f"{provider} API key is not configured"
+                )
         encoded = base64.b64encode(image).decode("ascii") if image is not None else None
         started = time.perf_counter()
         try:
@@ -272,6 +282,45 @@ class VisionProviderRegistry:
                     text=text,
                     input_tokens=usage.get("promptTokenCount"),
                     output_tokens=usage.get("candidatesTokenCount"),
+                )
+            elif provider == "glmocr":
+                base_url = self.settings.glmocr_vlm_base_url.rstrip("/")
+                response = await self.http.post(
+                    f"{base_url}/chat/completions",
+                    json={
+                        "model": model,
+                        "temperature": 0,
+                        "messages": [
+                            {
+                                "role": "user",
+                                "content": (
+                                    [
+                                        {
+                                            "type": "image_url",
+                                            "image_url": {
+                                                "url": f"data:image/png;base64,{encoded}"
+                                            },
+                                        }
+                                    ]
+                                    if encoded is not None
+                                    else []
+                                )
+                                + [{"type": "text", "text": prompt}],
+                            }
+                        ],
+                    },
+                )
+                response.raise_for_status()
+                body = response.json()
+                choices = body.get("choices", [])
+                text = str(
+                    choices[0].get("message", {}).get("content", "") if choices else ""
+                ).strip()
+                usage = body.get("usage", {})
+                result = VisionGeneration(
+                    text=text,
+                    input_tokens=usage.get("prompt_tokens"),
+                    output_tokens=usage.get("completion_tokens"),
                 )
             else:
                 raise ProviderError("provider_not_supported", f"Unknown provider: {provider}")

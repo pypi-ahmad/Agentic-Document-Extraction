@@ -15,11 +15,12 @@ from sqlalchemy.orm import selectinload
 from app.auth import require_api_key
 from app.database import get_db
 from app.models.db_models import ReviewCase, ReviewDecision
+from app.rate_limit import require_rate_limit
 
 router = APIRouter(
     prefix="/api/review-cases",
     tags=["review-cases"],
-    dependencies=[Depends(require_api_key)],
+    dependencies=[Depends(require_api_key), Depends(require_rate_limit)],
 )
 
 

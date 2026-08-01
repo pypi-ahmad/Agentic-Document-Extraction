@@ -8,7 +8,7 @@ from app.services.parsing.contracts import BoundingBox, DocumentLayout, PageLayo
 def test_parse_settings_defaults_are_safe() -> None:
     settings = ParseSettings()
 
-    assert settings.ocr_provider == "ollama"
+    assert settings.ocr_provider == "glmocr"
     assert settings.review_provider == "ollama"
     assert settings.processing_mode == "local_only"
     assert settings.cloud_mode == "off"
@@ -173,16 +173,16 @@ def test_region_accepts_chart_type() -> None:
     assert region.type == "chart"
 
 
-def test_region_accepts_paddleocr_vl_source_and_reading_order() -> None:
+def test_region_accepts_cloud_vlm_source_and_reading_order() -> None:
     region = Region(
         type="text",
         bbox=BoundingBox(left=0.1, top=0.1, right=0.9, bottom=0.9),
         content="Body",
-        source="paddleocr_vl",
+        source="cloud_vlm",
         order=3,
     )
 
-    assert region.source == "paddleocr_vl"
+    assert region.source == "cloud_vlm"
     assert region.order == 3
 
 

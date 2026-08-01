@@ -119,13 +119,14 @@ def build_page_diagnostics(
             (index for index, candidate in enumerate(selected_candidates) if candidate.selected),
             max(0, len(selected_candidates) - 1),
         )
-        glm_candidate_indexes = [
+        repair_candidate_indexes = [
             index
             for index, candidate in enumerate(selected_candidates)
-            if candidate.source == "glm_ocr"
+            if candidate.source == "cloud_vlm"
         ]
         blind_retry = (
-            len(glm_candidate_indexes) > 1 and selected_candidate_index == glm_candidate_indexes[-1]
+            len(repair_candidate_indexes) > 1
+            and selected_candidate_index == repair_candidate_indexes[-1]
         )
         prompt_variant = "blind_retry" if blind_retry else "repair" if repair_count else "primary"
         planned_region = next(
@@ -158,9 +159,9 @@ def build_page_diagnostics(
                 prompt_version="1",
                 prompt_variant=(
                     "blind_retry"
-                    if candidate.source == "glm_ocr"
-                    and index == glm_candidate_indexes[-1]
-                    and len(glm_candidate_indexes) > 1
+                    if candidate.source == "cloud_vlm"
+                    and index == repair_candidate_indexes[-1]
+                    and len(repair_candidate_indexes) > 1
                     else "primary"
                 ),
                 source=candidate.source,

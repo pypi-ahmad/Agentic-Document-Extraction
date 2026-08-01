@@ -329,22 +329,13 @@ async def create_parse_job(
             "schema_sha256": extraction_schema.schema_sha256,
         }
     runtime = getattr(request.app.state, "parser_runtime", None)
-    if runtime is not None and not (paddle_status := await runtime.paddleocr_vl.status()).available:
-        raise _error(
-            "paddleocr_vl_unavailable",
-            paddle_status.error or "PaddleOCR-VL Docker runtime is unavailable.",
-            503,
-        )
     review_model = None
     extraction_model = None
     try:
-        if parse_settings.ocr_model:
-            if parse_settings.ocr_provider == "ollama":
-                await catalog.require_compatible(parse_settings.ocr_model)
-            elif runtime is not None:
-                await runtime.provider_registry.validate_selection(
-                    parse_settings.ocr_provider, parse_settings.ocr_model
-                )
+        if parse_settings.ocr_model and runtime is not None:
+            await runtime.provider_registry.validate_selection(
+                parse_settings.ocr_provider, parse_settings.ocr_model
+            )
         if parse_settings.cloud_mode != "off" and parse_settings.review_model:
             if parse_settings.review_provider == "ollama":
                 review_model = await catalog.require_compatible(parse_settings.review_model)
@@ -416,7 +407,7 @@ async def create_parse_job(
         status=JobStatus.QUEUED,
         settings=parse_settings.model_dump(),
         quality_policy_snapshot=policy.model_dump(mode="json"),
-        model_name="PaddleOCR-VL-1.6",
+        model_name="native-text",
         model_digest=None,
         review_model_name=review_model.name if review_model else None,
         review_model_digest=review_model.digest if review_model else None,
@@ -540,7 +531,6 @@ async def get_page_diagnostics(
 
 @router.post("/{job_id}/cancel", response_model=ParseJobResponse)
 async def cancel_parse_job(
-    request: Request,
     job_id: str,
     db: AsyncSession = Depends(get_db),
 ) -> ParseJobResponse:
@@ -553,9 +543,6 @@ async def cancel_parse_job(
     else:
         raise _error("invalid_state", f"Cannot cancel a job in {job.status} state", 409)
     await db.commit()
-    runtime = getattr(request.app.state, "parser_runtime", None)
-    if runtime is not None and job.cancel_requested:
-        await runtime.paddleocr_vl.cancel(job_id)
     return _serialize(job)
 
 

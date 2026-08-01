@@ -39,7 +39,7 @@ def layout() -> bytes:
       "regions": [{
         "id": "p0001-r0001", "type": "text",
         "bbox": {"left": 0.1, "top": 0.1, "right": 0.9, "bottom": 0.3},
-        "content": "old", "source": "paddleocr_vl", "order": 0, "confidence": 0.7
+        "content": "old", "source": "cloud_vlm", "order": 0, "confidence": 0.7
       }]
     }'''
 

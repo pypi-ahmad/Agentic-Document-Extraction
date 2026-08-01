@@ -178,7 +178,7 @@ server {
 
     add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload" always;
     add_header X-Content-Type-Options "nosniff" always;
-    add_header X-Frame-Options "DENY" always;
+    add_header X-Frame-Options "SAMEORIGIN" always;
     add_header Referrer-Policy "no-referrer" always;
     client_max_body_size 64m;
 
@@ -262,6 +262,18 @@ recreate the tables. The startup code logs a warning if you forget.
 
 ## 8. Security checklist
 
+- [ ] `CORS_ORIGINS` is an explicit, comma-separated list of exact
+      origins — never `*`. Startup fails immediately (`ValueError` from
+      `Settings.validate_cors_origins`) if `CORS_ORIGINS=*` is combined
+      with `CORS_ALLOW_CREDENTIALS=true` (the default) or a non-empty
+      `API_KEY` — a wildcard origin with credentials or API-key auth lets
+      any site's browser script authenticated requests against this API.
+      Safe: `CORS_ORIGINS=https://app.example.com`. Unsafe (fails to
+      start): `CORS_ORIGINS=*` with `API_KEY` set.
+- [ ] `API_KEY` is set for any deployment reachable beyond localhost.
+- [ ] `RATE_LIMIT_ENABLED=true` (default) and
+      `RATE_LIMIT_REQUESTS_PER_MINUTE` is sized for expected traffic —
+      only takes effect once `API_KEY` is set (see `app/rate_limit.py`).
 - [ ] `OLLAMA_BASE_URL` points at a loopback / local address. If not,
       `OLLAMA_ALLOW_PRIVATE_HOSTS=true` is set explicitly.
 - [ ] At least one LLM API key is set. The startup log line

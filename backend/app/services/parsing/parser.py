@@ -40,7 +40,7 @@ class ZoneEngine(Protocol):
         zone: Region,
         device: str = "auto",
         model: str | None = None,
-        provider: str = "ollama",
+        provider: str = "openai",
     ) -> Region: ...
 
 
@@ -290,7 +290,7 @@ class LayoutParser:
 
     @staticmethod
     def _annotate_layout(document: DocumentLayout) -> None:
-        """Add lightweight column and relationship metadata without replacing Paddle order."""
+        """Add lightweight column and relationship metadata without replacing reading order."""
         for page in document.pages:
             column_regions = [
                 region

@@ -92,7 +92,7 @@ def _document(row_count: int = 2) -> tuple:
                         type="table",
                         bbox=BoundingBox(left=0.1, top=0.2, right=0.9, bottom=0.95),
                         content="Item Amount",
-                        source="paddleocr_vl",
+                        source="cloud_vlm",
                         table_cells=cells,
                         related_region_ids=related,
                         heading_level=None,
@@ -109,7 +109,7 @@ def _document(row_count: int = 2) -> tuple:
             type="text",
             bbox=BoundingBox(left=0.1, top=0.02, right=0.9, bottom=0.08),
             content="Invoice Number: INV-42\nVendor Name: Acme Corp",
-            source="paddleocr_vl",
+            source="cloud_vlm",
         ),
     )
     layout = DocumentLayout(pages=pages)

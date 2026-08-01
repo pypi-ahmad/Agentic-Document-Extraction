@@ -1,4 +1,4 @@
-"""Normalized parser contracts independent of GLM-OCR's SDK payloads."""
+"""Normalized parser contracts independent of any specific OCR engine's SDK payloads."""
 
 from __future__ import annotations
 
@@ -27,10 +27,8 @@ RegionType = Literal[
 ]
 RegionSource = Literal[
     "native",
-    "paddleocr_vl",
-    "paddle",
     "docling",
-    "glm_ocr",
+    "glmocr",
     "cloud_vlm",
     "fallback",
 ]
@@ -77,7 +75,7 @@ class Region(BaseModel):
     type: RegionType
     bbox: BoundingBox
     content: str
-    source: RegionSource = "glm_ocr"
+    source: RegionSource = "fallback"
     source_label: str | None = None
     heading_level: int | None = Field(default=None, ge=1, le=6)
     order: int | None = Field(default=None, ge=0)

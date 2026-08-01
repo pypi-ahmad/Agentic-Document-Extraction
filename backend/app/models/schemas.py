@@ -66,7 +66,7 @@ class ParseSettings(BaseModel):
     allow_sensitive_cloud: bool = False
     processing_mode: Literal["local_only", "hybrid", "maximum_accuracy"] = "local_only"
     quality_overrides: QualityOverrides = Field(default_factory=QualityOverrides)
-    ocr_provider: Literal["ollama", "openai", "anthropic", "gemini", "xai"] = "ollama"
+    ocr_provider: Literal["openai", "anthropic", "gemini", "xai", "glmocr"] = "glmocr"
     ocr_model: str | None = Field(default=None, min_length=1, max_length=120)
     review_provider: Literal["ollama", "openai", "anthropic", "gemini", "xai"] = "ollama"
     review_model: str | None = Field(default=None, min_length=1, max_length=120)
@@ -116,8 +116,6 @@ class ParseSettings(BaseModel):
             self.cloud_mode = "adaptive"
         else:
             self.cloud_mode = "all_pages"
-        if self.ocr_provider != "ollama" and not self.ocr_model:
-            raise ValueError("ocr_model is required for a cloud repair provider")
         if self.review_provider != "ollama" and not self.review_model:
             raise ValueError("review_model is required for a cloud review provider")
         if self.cloud_mode != "off" and not self.review_model:

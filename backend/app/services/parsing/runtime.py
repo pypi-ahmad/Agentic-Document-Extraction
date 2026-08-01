@@ -11,8 +11,8 @@ from langgraph.checkpoint.sqlite.aio import AsyncSqliteSaver
 from app.config import settings
 from app.services.extraction.graph import build_parser_graph
 from app.services.parsing.engines import build_default_parser
+from app.services.parsing.glmocr_layout_engine import GlmOcrLayoutEngine
 from app.services.parsing.model_catalog import OllamaModelCatalog
-from app.services.parsing.paddleocr_docker import PaddleOCRVLDockerRunner
 from app.services.parsing.review import OllamaReviewer, ProviderReviewer
 from app.services.parsing.vision_providers import VisionProviderRegistry
 
@@ -26,19 +26,12 @@ class ParserRuntime:
         checkpoint_path: str,
         ollama_base_url: str,
         timeout_seconds: float,
-        paddleocr_vl_image: str | None = None,
-        paddleocr_vl_cache_dir: str | None = None,
     ) -> None:
         self.checkpoint_path = checkpoint_path
         self.ollama_base_url = ollama_base_url
         self.timeout_seconds = timeout_seconds
         self._stack: AsyncExitStack | None = None
         self._client: httpx.AsyncClient | None = None
-        self._paddleocr_vl = PaddleOCRVLDockerRunner(
-            image=paddleocr_vl_image or settings.paddleocr_vl_image,
-            cache_dir=paddleocr_vl_cache_dir or settings.paddleocr_vl_cache_dir,
-            timeout_seconds=timeout_seconds,
-        )
         self._graph = None
         self._parser = None
         self._model_catalog: OllamaModelCatalog | None = None
@@ -79,10 +72,6 @@ class ParserRuntime:
             return OllamaReviewer(self.client, model)
         return ProviderReviewer(self.provider_registry, provider, model)
 
-    @property
-    def paddleocr_vl(self) -> PaddleOCRVLDockerRunner:
-        return self._paddleocr_vl
-
     async def __aenter__(self) -> ParserRuntime:
         if self._stack is not None:
             return self
@@ -106,9 +95,8 @@ class ParserRuntime:
             self._model_catalog,
             settings,
         )
-        parser = build_default_parser(
-            self._client, self._paddleocr_vl, self._provider_registry
-        )
+        layout_engine = GlmOcrLayoutEngine(cloud_client, settings.glmocr_server_url)
+        parser = build_default_parser(self._provider_registry, layout_engine)
         self._parser = parser
         self._graph = build_parser_graph(
             parser,
@@ -129,7 +117,6 @@ class ParserRuntime:
     ) -> None:
         if self._stack is not None:
             await self._stack.aclose()
-        await self._paddleocr_vl.shutdown()
         self._stack = None
         self._graph = None
         self._parser = None

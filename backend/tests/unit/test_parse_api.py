@@ -782,19 +782,19 @@ async def test_inspection_endpoints_expose_job_scoped_source_layout_and_quality(
                 "type": "text",
                 "bbox": {"left": 0.1, "top": 0.1, "right": 0.9, "bottom": 0.3},
                 "content": "Invoice number 42",
-                "source": "glm_ocr",
+                "source": "cloud_vlm",
                 "order": 0,
                 "confidence": 0.82,
                 "recognition_candidates": [
                     {
-                        "source": "paddleocr_vl",
+                        "source": "cloud_vlm",
                         "content": "Invoice number 47",
-                        "model": "PaddleOCR-VL-1.6",
+                        "model": "repair-model-1",
                     },
                     {
-                        "source": "glm_ocr",
+                        "source": "cloud_vlm",
                         "content": "Invoice number 42",
-                        "model": "glm-ocr",
+                        "model": "repair-model-2",
                         "selected": True,
                     },
                 ],
@@ -804,7 +804,7 @@ async def test_inspection_endpoints_expose_job_scoped_source_layout_and_quality(
     diagnostics = _sensitive_diagnostics_payload()
     diagnostics["region_decisions"][0]["observation"]["content"] = "Invoice number 42"
     diagnostics["region_decisions"][0]["attempts"][0]["output"] = "Invoice number 42"
-    diagnostics["region_decisions"][0]["attempts"][0]["source"] = "glm_ocr"
+    diagnostics["region_decisions"][0]["attempts"][0]["source"] = "cloud_vlm"
     async with sessions() as session:
         session.add(
             ParseJob(

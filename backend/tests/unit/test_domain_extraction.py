@@ -9,7 +9,7 @@ def _chunk(region_id: str, page: int, text: str) -> ContextChunk:
         page=page,
         bbox=BoundingBox(left=0.1, top=0.1, right=0.9, bottom=0.2),
         type="text",
-        source="paddleocr_vl",
+        source="cloud_vlm",
         markdown=text,
         text=text,
     )

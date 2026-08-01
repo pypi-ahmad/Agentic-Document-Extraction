@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Annotated, Any
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
-from fastapi import APIRouter, Depends, File, Form, Request, Response, UploadFile, status
+from fastapi import APIRouter, Depends, File, Form, Response, UploadFile, status
 from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -160,7 +160,6 @@ async def _read_files(files: list[UploadFile]) -> list[dict[str, Any]]:
 
 @router.post("", response_model=ParseBatchResponse, status_code=status.HTTP_202_ACCEPTED)
 async def create_parse_batch(
-    request: Request,
     files: Annotated[list[UploadFile], File()],
     settings_json: Annotated[str, Form(alias="settings")] = "{}",
     db: AsyncSession = Depends(get_db),
@@ -174,13 +173,6 @@ async def create_parse_batch(
     prepared = await _read_files(files)
     if queue.in_flight + len(prepared) > app_settings.job_queue_max_depth:
         raise _error("queue_full", "Batch exceeds available queue capacity", 503)
-    runtime = getattr(request.app.state, "parser_runtime", None)
-    if runtime is not None and not (paddle_status := await runtime.paddleocr_vl.status()).available:
-        raise _error(
-            "paddleocr_vl_unavailable",
-            paddle_status.error or "PaddleOCR-VL Docker runtime is unavailable.",
-            503,
-        )
     schema = None
     schema_snapshot = None
     if parse_settings.extraction_schema_id:
@@ -231,7 +223,7 @@ async def create_parse_batch(
                     status=JobStatus.QUEUED,
                     settings=parse_settings.model_dump(mode="json"),
                     quality_policy_snapshot=policy.model_dump(mode="json"),
-                    model_name="PaddleOCR-VL-1.6",
+                    model_name="native-text",
                     review_model_name=parse_settings.review_model,
                     extraction_schema_id=schema.id if schema else None,
                     extraction_schema_snapshot=schema_snapshot,

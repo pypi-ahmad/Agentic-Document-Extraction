@@ -47,9 +47,15 @@ REQUEST_ID_CONTEXT_KEY: str = "request_id"
 REQUEST_ID_MAX_LENGTH: int = 128
 
 # ── Security ─────────────────────────────────────────────────────────
+# X-Frame-Options is SAMEORIGIN, not DENY: the frontend's own document
+# preview (frontend/src/components/v2/DocumentCanvas.tsx,
+# ArtifactPreview.tsx, ArtifactGallery.tsx) iframes artifact/preview
+# responses from this API. DENY blocks framing unconditionally, including
+# same-origin, and would break that feature. SAMEORIGIN still blocks
+# third-party clickjacking, which is what this header is for.
 SECURITY_HEADERS: dict[str, str] = {
     "X-Content-Type-Options": "nosniff",
-    "X-Frame-Options": "DENY",
+    "X-Frame-Options": "SAMEORIGIN",
     "Referrer-Policy": "no-referrer",
     "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
 }

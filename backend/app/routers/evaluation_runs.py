@@ -225,7 +225,7 @@ async def create_batch_evaluation(
             page_count=inspected.page_count,
             status=JobStatus.QUEUED,
             settings=parse_settings.model_dump(mode="json"),
-            model_name="PaddleOCR-VL-1.6",
+            model_name="native-text",
             review_model_name=parse_settings.review_model,
             pages=[
                 PageCheckpoint(page_number=page, status=PageStatus.PENDING)
@@ -255,12 +255,9 @@ async def _validate_models(request: Request, parse_settings: ParseSettings) -> N
         raise _error("runtime_unavailable", "Parser runtime is unavailable", 503)
     try:
         if parse_settings.ocr_model:
-            if parse_settings.ocr_provider == "ollama":
-                await runtime.model_catalog.require_compatible(parse_settings.ocr_model)
-            else:
-                await runtime.provider_registry.validate_selection(
-                    parse_settings.ocr_provider, parse_settings.ocr_model
-                )
+            await runtime.provider_registry.validate_selection(
+                parse_settings.ocr_provider, parse_settings.ocr_model
+            )
         if parse_settings.cloud_mode != "off" and parse_settings.review_model:
             if parse_settings.review_provider == "ollama":
                 await runtime.model_catalog.require_compatible(parse_settings.review_model)
@@ -357,12 +354,11 @@ async def get_evaluation_run(
 
 @router.post("/{run_id}/cancel", response_model=EvaluationRunResponse)
 async def cancel_evaluation_run(
-    request: Request, run_id: str, db: AsyncSession = Depends(get_db)
+    run_id: str, db: AsyncSession = Depends(get_db)
 ) -> EvaluationRunResponse:
     run = await _run_or_404(db, run_id)
     if run.status not in {"pending", "running"}:
         raise _error("invalid_state", f"Cannot cancel an evaluation in {run.status} state", 409)
-    active_job_ids: list[str] = []
     for case in run.cases:
         if case.status != "pending":
             continue
@@ -376,16 +372,11 @@ async def cancel_evaluation_run(
         }:
             job.cancel_requested = True
             job.status = JobStatus.CANCELLING
-            active_job_ids.append(job.id)
         case.status = "failed"
         case.error_message = "Evaluation cancelled"
     run.status = "cancelled"
     run.failed_cases = sum(case.status == "failed" for case in run.cases)
     await db.commit()
-    runtime = getattr(request.app.state, "parser_runtime", None)
-    if runtime is not None:
-        for job_id in active_job_ids:
-            await runtime.paddleocr_vl.cancel(job_id)
     return _serialize(run)
 
 
