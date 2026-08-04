@@ -16,9 +16,7 @@ from app.services.parsing.artifacts import crop_region
 from app.services.parsing.contracts import Region
 
 
-def verify_region_coordinates(
-    image_png: bytes, regions: list[Region]
-) -> dict[str, dict[str, Any]]:
+def verify_region_coordinates(image_png: bytes, regions: list[Region]) -> dict[str, dict[str, Any]]:
     results: dict[str, dict[str, Any]] = {}
     for region in regions:
         if not region.id:

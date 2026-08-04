@@ -101,9 +101,7 @@ async def request_reprocess(
         raise _error("job_busy", "Wait for the current job operation to finish", 409)
     if any(item.status in {"queued", "running"} for item in job.reprocess_runs):
         raise _error("reprocess_active", "A reprocessing run is already active", 409)
-    checkpoint = next(
-        (item for item in job.pages if item.page_number == body.page_number), None
-    )
+    checkpoint = next((item for item in job.pages if item.page_number == body.page_number), None)
     if checkpoint is None:
         raise _error("page_not_found", "Page is outside the selected parse range", 404)
     if body.target_kind == "region":
@@ -164,9 +162,7 @@ async def request_reprocess(
     return _serialize(run)
 
 
-@router.get(
-    "/{job_id}/reprocess-runs/{run_id}", response_model=ReprocessRunResponse
-)
+@router.get("/{job_id}/reprocess-runs/{run_id}", response_model=ReprocessRunResponse)
 async def get_reprocess_run(
     job_id: str, run_id: str, db: AsyncSession = Depends(get_db)
 ) -> ReprocessRunResponse:

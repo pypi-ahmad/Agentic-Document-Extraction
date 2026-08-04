@@ -61,7 +61,9 @@ async def source_page_image(
         image = render_source_page(job, page_number, dpi, store)
     except (KeyError, OSError, ValueError, RuntimeError):
         raise _error("page_render_failed", "Source page could not be rendered", 422) from None
-    return Response(content=image, media_type="image/png", headers={"Cache-Control": "private, max-age=300"})
+    return Response(
+        content=image, media_type="image/png", headers={"Cache-Control": "private, max-age=300"}
+    )
 
 
 @router.get("/{job_id}/pages/{page_number}/inspection")

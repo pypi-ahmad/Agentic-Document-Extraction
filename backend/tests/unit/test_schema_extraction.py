@@ -25,9 +25,7 @@ SCHEMA = {
         "vendor": {
             "type": "object",
             "additionalProperties": False,
-            "properties": {
-                "name": {"type": "string", "x-paperplane-aliases": ["vendor name"]}
-            },
+            "properties": {"name": {"type": "string", "x-paperplane-aliases": ["vendor name"]}},
             "required": ["name"],
         },
         "line_items": {
@@ -312,6 +310,4 @@ def test_model_pointer_writer_supports_nested_arrays() -> None:
     _set_pointer(data, "/claims/0/lines/0/code", "A100")
     _set_pointer(data, "/claims/0/lines/1/code", "B200")
 
-    assert data == {
-        "claims": [{"lines": [{"code": "A100"}, {"code": "B200"}]}]
-    }
+    assert data == {"claims": [{"lines": [{"code": "A100"}, {"code": "B200"}]}]}

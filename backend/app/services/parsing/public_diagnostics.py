@@ -100,6 +100,8 @@ class PublicRegionDecision(BaseModel):
         if self.final_status != self.attempts[self.selected_attempt_index].verdict:
             raise ValueError("final_status must match the selected attempt verdict")
         return self
+
+
 class PublicPageDiagnostics(BaseModel):
     schema_version: Literal["1"] = "1"
     planning_mode: PlanningMode

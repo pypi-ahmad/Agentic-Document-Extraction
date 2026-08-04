@@ -9,9 +9,7 @@ from app.routers.runtime_capabilities import runtime_capabilities
 @pytest.mark.asyncio
 async def test_runtime_reports_vision_providers() -> None:
     runtime = SimpleNamespace(
-        provider_registry=SimpleNamespace(
-            list_providers=AsyncMock(return_value=[])
-        ),
+        provider_registry=SimpleNamespace(list_providers=AsyncMock(return_value=[])),
     )
     request = SimpleNamespace(app=SimpleNamespace(state=SimpleNamespace(parser_runtime=runtime)))
 

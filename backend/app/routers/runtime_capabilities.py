@@ -6,9 +6,7 @@ from pydantic import BaseModel
 from app.auth import require_api_key
 from app.services.parsing.vision_providers import VisionProvider
 
-router = APIRouter(
-    prefix="/api/runtime", tags=["runtime"], dependencies=[Depends(require_api_key)]
-)
+router = APIRouter(prefix="/api/runtime", tags=["runtime"], dependencies=[Depends(require_api_key)])
 
 
 class RuntimeCapabilitiesResponse(BaseModel):
@@ -19,9 +17,5 @@ class RuntimeCapabilitiesResponse(BaseModel):
 async def runtime_capabilities(request: Request) -> RuntimeCapabilitiesResponse:
     runtime = getattr(request.app.state, "parser_runtime", None)
     return RuntimeCapabilitiesResponse(
-        providers=(
-            await runtime.provider_registry.list_providers()
-            if runtime is not None
-            else []
-        ),
+        providers=(await runtime.provider_registry.list_providers() if runtime is not None else []),
     )

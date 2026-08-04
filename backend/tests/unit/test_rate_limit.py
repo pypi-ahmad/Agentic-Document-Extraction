@@ -46,7 +46,9 @@ AUTH_HEADERS = {"X-API-Key": "test-secret-key"}
 
 
 @pytest.mark.asyncio
-async def test_enforcement_returns_429_after_limit_exceeded(rate_limited_settings, rl_client) -> None:
+async def test_enforcement_returns_429_after_limit_exceeded(
+    rate_limited_settings, rl_client
+) -> None:
     first = await rl_client.get("/api/extraction-schemas", headers=AUTH_HEADERS)
     second = await rl_client.get("/api/extraction-schemas", headers=AUTH_HEADERS)
     third = await rl_client.get("/api/extraction-schemas", headers=AUTH_HEADERS)
@@ -73,9 +75,7 @@ async def test_response_contract(rate_limited_settings, rl_client) -> None:
 async def test_auth_checked_before_rate_limit_and_bad_key_does_not_consume_budget(
     rate_limited_settings, rl_client
 ) -> None:
-    bad = await rl_client.get(
-        "/api/extraction-schemas", headers={"X-API-Key": "wrong-key"}
-    )
+    bad = await rl_client.get("/api/extraction-schemas", headers={"X-API-Key": "wrong-key"})
     good_one = await rl_client.get("/api/extraction-schemas", headers=AUTH_HEADERS)
     good_two = await rl_client.get("/api/extraction-schemas", headers=AUTH_HEADERS)
 
@@ -103,7 +103,9 @@ async def test_testing_flag_short_circuits(rate_limited_settings, rl_client) -> 
 
 
 @pytest.mark.asyncio
-async def test_no_identity_when_auth_disabled_skips_limiting(rate_limited_settings, rl_client) -> None:
+async def test_no_identity_when_auth_disabled_skips_limiting(
+    rate_limited_settings, rl_client
+) -> None:
     settings.api_key = ""
 
     for _ in range(5):

@@ -127,7 +127,9 @@ async def test_runner_skips_provider_work_and_does_not_complete_a_cancelled_job(
         job = await session.get(ParseJob, "job")
         assert job is not None
         assert job.status == "cancelled", "the last outstanding task must finalize the job"
-        assert processor.calls == 0, "OpenAI/provider work must be skipped, not just the final status"
+        assert processor.calls == 0, (
+            "OpenAI/provider work must be skipped, not just the final status"
+        )
     await engine.dispose()
 
 

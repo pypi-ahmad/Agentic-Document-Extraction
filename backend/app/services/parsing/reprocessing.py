@@ -119,7 +119,9 @@ async def prepare_reprocess(
         )
         candidate_page = layout.model_copy(deep=True)
         candidate_page.regions[region_index] = processed
-        old_score = diagnostics.quality_score.overall if diagnostics and diagnostics.quality_score else 0.0
+        old_score = (
+            diagnostics.quality_score.overall if diagnostics and diagnostics.quality_score else 0.0
+        )
         old_status = (
             next(
                 (
@@ -141,9 +143,11 @@ async def prepare_reprocess(
         reason = "No reviewer result"
         if model:
             reviewer = runtime.reviewer(provider, model)
-            markdown = MarkdownRenderer().render(
-                DocumentLayout(pages=[candidate_page]), settings.marginalia_policy
-            ).clean
+            markdown = (
+                MarkdownRenderer()
+                .render(DocumentLayout(pages=[candidate_page]), settings.marginalia_policy)
+                .clean
+            )
             try:
                 review = await reviewer.review(
                     image_png,
@@ -174,8 +178,10 @@ async def prepare_reprocess(
                 reason = str(exc)
         thresholds = (job.quality_policy_snapshot or {}).get("thresholds", {})
         minimum = float(thresholds.get("min_overall", 0.75))
-        accepted = bool(processed.content.strip()) and verdict == "pass" and score >= max(
-            minimum, old_score
+        accepted = (
+            bool(processed.content.strip())
+            and verdict == "pass"
+            and score >= max(minimum, old_score)
         )
         if not accepted and old_status == "fail" and processed.content.strip() and score >= minimum:
             accepted = verdict != "fail"
@@ -193,9 +199,7 @@ async def prepare_reprocess(
         }
         if accepted:
             data = candidate_page.model_dump_json(indent=2).encode()
-            store.write(
-                f"jobs/{job.id}/checkpoints/p{run.page_number:04d}/layout.json", data
-            )
+            store.write(f"jobs/{job.id}/checkpoints/p{run.page_number:04d}/layout.json", data)
             checkpoint = next(item for item in job.pages if item.page_number == run.page_number)
             checkpoint.layout_sha256 = hashlib.sha256(data).hexdigest()
             checkpoint.fingerprint = result_fingerprint
@@ -218,9 +222,7 @@ async def finalize_reprocess(
         previous_dpi = decision.get("previous_dpi")
         if previous_dpi in {150, 200, 300}:
             job.settings = {**job.settings, "dpi": previous_dpi}
-        checkpoint = next(
-            (item for item in job.pages if item.page_number == run.page_number), None
-        )
+        checkpoint = next((item for item in job.pages if item.page_number == run.page_number), None)
         if checkpoint is None or checkpoint.status != "completed":
             run.status = "failed"
             run.error_message = "Target page did not complete successfully"

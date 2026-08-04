@@ -38,9 +38,7 @@ def test_schema_validator_normalizes_nested_objects_and_tables() -> None:
     assert result.normalized_schema["additionalProperties"] is False
     assert result.normalized_schema["properties"]["vendor"]["additionalProperties"] is False
     assert (
-        result.normalized_schema["properties"]["line_items"]["items"][
-            "additionalProperties"
-        ]
+        result.normalized_schema["properties"]["line_items"]["items"]["additionalProperties"]
         is False
     )
 

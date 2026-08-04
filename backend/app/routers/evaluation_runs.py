@@ -286,7 +286,8 @@ def _prepare_dataset(archive: bytes, parse_settings: ParseSettings) -> list[dict
                 raise ValueError("dataset archive must contain manifest.json")
             manifest = DatasetManifest.model_validate_json(bundle.read(manifest_info))
             if manifest.schema_version not in {
-                "paperplane-eval-dataset/v1", "paperplane-eval-dataset/v2"
+                "paperplane-eval-dataset/v1",
+                "paperplane-eval-dataset/v2",
             }:
                 raise ValueError("unsupported evaluation dataset schema")
             if len({case.id for case in manifest.cases}) != len(manifest.cases):
@@ -340,7 +341,9 @@ async def list_evaluation_runs(
                 .order_by(EvaluationRun.created_at.desc())
                 .limit(limit)
             )
-        ).scalars().unique()
+        )
+        .scalars()
+        .unique()
     )
     return EvaluationRunListResponse(items=[_serialize(run) for run in runs], total=total)
 

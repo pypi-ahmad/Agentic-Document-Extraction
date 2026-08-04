@@ -464,17 +464,13 @@ async def _persist_batch_result(
                         "before_diagnostics_path"
                     )
                     if isinstance(before_layout_path, str):
-                        previous_layout = await asyncio.to_thread(
-                            store.read, before_layout_path
-                        )
+                        previous_layout = await asyncio.to_thread(store.read, before_layout_path)
                         await asyncio.to_thread(store.write, layout_path, previous_layout)
                     if isinstance(before_diagnostics_path, str):
                         previous_diagnostics = await asyncio.to_thread(
                             store.read, before_diagnostics_path
                         )
-                        await asyncio.to_thread(
-                            store.write, diagnostics_path, previous_diagnostics
-                        )
+                        await asyncio.to_thread(store.write, diagnostics_path, previous_diagnostics)
                     checkpoint.status = PageStatus.COMPLETED
                     checkpoint.stage = "completed"
                     checkpoint.fingerprint = reprocess.previous_fingerprint

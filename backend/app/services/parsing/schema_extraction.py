@@ -72,9 +72,7 @@ class SchemaExtractionInstance(BaseModel):
 
 
 class SchemaExtractionDocument(BaseModel):
-    schema_version: Literal["paperplane-schema-extraction/v1"] = (
-        "paperplane-schema-extraction/v1"
-    )
+    schema_version: Literal["paperplane-schema-extraction/v1"] = "paperplane-schema-extraction/v1"
     schema_definition: dict[str, Any] = Field(alias="schema")
     source: dict[str, str]
     complete: bool
@@ -292,7 +290,9 @@ def _find_scalar_matches(
 ) -> list[tuple[str, ContentBlock]]:
     aliases = [name.replace("_", " "), str(schema.get("title") or "")]
     aliases.extend(str(item) for item in schema.get("x-paperplane-aliases", []))
-    aliases = sorted({item.strip().casefold() for item in aliases if item.strip()}, key=len, reverse=True)
+    aliases = sorted(
+        {item.strip().casefold() for item in aliases if item.strip()}, key=len, reverse=True
+    )
     matches: list[tuple[str, ContentBlock]] = []
     for block in blocks:
         if block.type in {"table", "figure", "chart", "formula"}:
@@ -329,7 +329,9 @@ def _table_schemas(schema: dict[str, Any], path: list[str] | None = None):
 
 
 def _table_groups(blocks: list[ContentBlock]) -> list[list[ContentBlock]]:
-    tables = sorted((block for block in blocks if block.type == "table" and block.cells), key=lambda b: b.order)
+    tables = sorted(
+        (block for block in blocks if block.type == "table" and block.cells), key=lambda b: b.order
+    )
     groups: list[list[ContentBlock]] = []
     for block in tables:
         if not groups:
@@ -356,7 +358,9 @@ def _headers(block: ContentBlock) -> list[str]:
     first_row = min(cell.row for cell in block.cells)
     return [
         _normalize(cell.text)
-        for cell in sorted((cell for cell in block.cells if cell.row == first_row), key=lambda c: c.column)
+        for cell in sorted(
+            (cell for cell in block.cells if cell.row == first_row), key=lambda c: c.column
+        )
     ]
 
 
@@ -372,7 +376,9 @@ def _select_table_group(
         score = 0
         for name, definition in columns.items():
             aliases = {_normalize(name), _normalize(str(definition.get("title") or ""))}
-            aliases.update(_normalize(str(item)) for item in definition.get("x-paperplane-aliases", []))
+            aliases.update(
+                _normalize(str(item)) for item in definition.get("x-paperplane-aliases", [])
+            )
             aliases.discard("")
             if any(alias in headers for alias in aliases):
                 score += 1
@@ -398,7 +404,9 @@ def _materialize_table(
         mapping: dict[str, int] = {}
         for name, definition in columns.items():
             aliases = {_normalize(name), _normalize(str(definition.get("title") or ""))}
-            aliases.update(_normalize(str(item)) for item in definition.get("x-paperplane-aliases", []))
+            aliases.update(
+                _normalize(str(item)) for item in definition.get("x-paperplane-aliases", [])
+            )
             aliases.discard("")
             match = next(
                 (
@@ -481,7 +489,9 @@ def _validation_errors(
     schema: dict[str, Any], data: dict[str, Any]
 ) -> list[ExtractionValidationError]:
     validator = Draft202012Validator(schema)
-    errors = sorted(validator.iter_errors(data), key=lambda item: (list(item.absolute_path), item.message))
+    errors = sorted(
+        validator.iter_errors(data), key=lambda item: (list(item.absolute_path), item.message)
+    )
     return [
         ExtractionValidationError(
             instance_path=_json_pointer([str(item) for item in error.absolute_path]),
@@ -502,9 +512,7 @@ def _evidence_index(blocks: list[ContentBlock]) -> dict[str, ValueCitation]:
     return evidence
 
 
-def _model_prompt(
-    schema: dict[str, Any], blocks: list[ContentBlock], *, blind: bool
-) -> str:
+def _model_prompt(schema: dict[str, Any], blocks: list[ContentBlock], *, blind: bool) -> str:
     evidence = [
         {
             "id": block.id,
@@ -652,9 +660,7 @@ def _set_pointer(data: dict[str, Any], pointer: str, value: Any) -> None:
 
 def _pointer_parts(pointer: str) -> list[str]:
     return [
-        part.replace("~1", "/").replace("~0", "~")
-        for part in pointer.strip("/").split("/")
-        if part
+        part.replace("~1", "/").replace("~0", "~") for part in pointer.strip("/").split("/") if part
     ]
 
 
@@ -681,7 +687,9 @@ def _get_path(target: dict[str, Any], path: list[str]) -> Any:
 def _leaf_paths(value: Any, path: list[str] | None = None) -> list[str]:
     current = path or []
     if isinstance(value, dict):
-        return [item for key, child in value.items() for item in _leaf_paths(child, [*current, key])]
+        return [
+            item for key, child in value.items() for item in _leaf_paths(child, [*current, key])
+        ]
     if isinstance(value, list):
         return [
             item

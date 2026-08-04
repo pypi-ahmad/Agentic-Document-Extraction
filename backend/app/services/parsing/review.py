@@ -102,7 +102,9 @@ def _result(
             overall=sum(dimensions) / len(dimensions),
             reasons=parsed.reasons,
         ),
-        regions=[region for region in parsed.regions if region.region_id in set(allowed_region_ids)],
+        regions=[
+            region for region in parsed.regions if region.region_id in set(allowed_region_ids)
+        ],
         eval_count=eval_count,
         prompt_eval_count=prompt_eval_count,
         latency_ms=latency_ms,
@@ -171,9 +173,7 @@ class ProviderReviewer:
     prompt_id = "page-alignment-review"
     prompt_version = "1"
 
-    def __init__(
-        self, registry: VisionProviderRegistry, provider: str, model: str
-    ) -> None:
+    def __init__(self, registry: VisionProviderRegistry, provider: str, model: str) -> None:
         self.registry = registry
         self.provider = provider
         self.model = model
@@ -194,17 +194,13 @@ class ProviderReviewer:
             json_only=True,
         )
         try:
-            generation = await self.registry.generate(
-                self.provider, self.model, image_png, prompt
-            )
+            generation = await self.registry.generate(self.provider, self.model, image_png, prompt)
             content = generation.text.strip()
             if content.startswith("```"):
                 content = content.split("\n", 1)[-1].rsplit("```", 1)[0]
             parsed = _ReviewPayload.model_validate(json.loads(content))
         except (ProviderError, json.JSONDecodeError, TypeError, ValueError) as exc:
-            raise ReviewUnavailable(
-                f"Visual review failed: {type(exc).__name__}"
-            ) from exc
+            raise ReviewUnavailable(f"Visual review failed: {type(exc).__name__}") from exc
         return _result(
             parsed,
             allowed_region_ids,

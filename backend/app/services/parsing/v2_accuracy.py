@@ -108,7 +108,9 @@ def _metrics(candidate: str, expected: str) -> dict[str, float]:
     actual_tokens = _tokens(candidate)
     expected_tokens = _tokens(expected)
     distance = _edit_distance(actual_tokens, expected_tokens)
-    word_error_rate = distance / len(expected_tokens) if expected_tokens else float(bool(actual_tokens))
+    word_error_rate = (
+        distance / len(expected_tokens) if expected_tokens else float(bool(actual_tokens))
+    )
     actual_counts = Counter(actual_tokens)
     expected_counts = Counter(expected_tokens)
     overlap = sum((actual_counts & expected_counts).values())
