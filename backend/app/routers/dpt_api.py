@@ -30,9 +30,9 @@ from sqlalchemy.orm import selectinload
 from app.auth import require_api_key
 from app.config import settings as app_settings
 from app.database import get_db
-from app.rate_limit import require_rate_limit
 from app.models.db_models import Artifact, PageCheckpoint, ParseJob
 from app.models.enums import JobStatus, PageStatus
+from app.rate_limit import require_rate_limit
 from app.services.agentic.contracts import ExtractionResponse, ParseMetadata, ParseResponse
 from app.services.agentic.extraction import (
     AgenticSchemaExtractor,

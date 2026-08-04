@@ -12,7 +12,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.auth import require_api_key
 from app.database import get_db
 from app.models.db_models import ExtractionSchema
-from app.rate_limit import require_rate_limit
 from app.models.schemas import (
     ExtractionSchemaListResponse,
     ExtractionSchemaResponse,
@@ -20,6 +19,7 @@ from app.models.schemas import (
     ExtractionSchemaValidationResponse,
     ExtractionSchemaWrite,
 )
+from app.rate_limit import require_rate_limit
 from app.services.parsing.extraction_schemas import schema_sha256, validate_extraction_schema
 
 router = APIRouter(
