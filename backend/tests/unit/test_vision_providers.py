@@ -92,9 +92,7 @@ async def test_openai_text_generation_omits_image_content() -> None:
         return httpx.Response(
             200,
             json={
-                "output": [
-                    {"type": "message", "content": [{"type": "output_text", "text": "{}"}]}
-                ],
+                "output": [{"type": "message", "content": [{"type": "output_text", "text": "{}"}]}],
                 "usage": {"input_tokens": 4, "output_tokens": 1},
             },
         )

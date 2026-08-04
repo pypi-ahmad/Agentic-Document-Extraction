@@ -96,7 +96,9 @@ class VisionZoneEngine:
             )
         )
         warnings = [
-            warning for warning in zone.warnings if not warning.startswith("recognition_disagreement")
+            warning
+            for warning in zone.warnings
+            if not warning.startswith("recognition_disagreement")
         ]
         if zone.content.strip() and _candidate_similarity(zone.content, content) < 0.6:
             warnings.append("recognition_disagreement")

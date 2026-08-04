@@ -99,9 +99,7 @@ def validate_extraction_schema(schema: dict[str, Any]) -> ExtractionSchemaValida
         )
     if counts["tables"] > MAX_TABLE_FIELDS:
         errors.append(
-            _error(
-                "/properties", "too_many_tables", f"Schema exceeds {MAX_TABLE_FIELDS} tables"
-            )
+            _error("/properties", "too_many_tables", f"Schema exceeds {MAX_TABLE_FIELDS} tables")
         )
     if not errors:
         try:
@@ -125,7 +123,9 @@ def _validate_node(
 ) -> None:
     pointer = path or "/"
     if depth > MAX_SCHEMA_DEPTH:
-        errors.append(_error(pointer, "schema_too_deep", f"Schema exceeds depth {MAX_SCHEMA_DEPTH}"))
+        errors.append(
+            _error(pointer, "schema_too_deep", f"Schema exceeds depth {MAX_SCHEMA_DEPTH}")
+        )
         return
     if not isinstance(node, dict):
         errors.append(_error(pointer, "invalid_schema_node", "Every schema node must be an object"))
@@ -179,9 +179,15 @@ def _validate_node(
             )
         for name, child in properties.items():
             counts["fields"] += 1
-            if not isinstance(name, str) or not name.strip() or any(ord(char) < 32 for char in name):
+            if (
+                not isinstance(name, str)
+                or not name.strip()
+                or any(ord(char) < 32 for char in name)
+            ):
                 errors.append(
-                    _error(f"{path}/properties", "invalid_field_name", "Field names must be printable")
+                    _error(
+                        f"{path}/properties", "invalid_field_name", "Field names must be printable"
+                    )
                 )
                 continue
             _validate_node(
@@ -196,7 +202,9 @@ def _validate_node(
     if node_type == "array":
         items = node.get("items")
         if not isinstance(items, dict):
-            errors.append(_error(f"{path}/items", "invalid_items", "Arrays require one item schema"))
+            errors.append(
+                _error(f"{path}/items", "invalid_items", "Arrays require one item schema")
+            )
             return
         if node.get("x-paperplane-kind") == "table":
             counts["tables"] += 1

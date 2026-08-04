@@ -61,9 +61,7 @@ def completed_layouts(job: ParseJob, store: ObjectStore) -> list[PageLayout]:
     return layouts
 
 
-def render_source_page(
-    job: ParseJob, page_number: int, dpi: int, store: ObjectStore
-) -> bytes:
+def render_source_page(job: ParseJob, page_number: int, dpi: int, store: ObjectStore) -> bytes:
     source = store.read(job.source_path)
     return render_page(source, job.original_filename, page_number, dpi).image_png
 
@@ -81,9 +79,11 @@ def _region_markdown(region: Region) -> str:
 def page_inspection(job: ParseJob, page_number: int, store: ObjectStore) -> dict[str, Any]:
     layout = load_page_layout(job, page_number, store)
     diagnostics = load_page_diagnostics(job, page_number, store)
-    decisions = {
-        item.observation.region_id: item for item in diagnostics.region_decisions
-    } if diagnostics else {}
+    decisions = (
+        {item.observation.region_id: item for item in diagnostics.region_decisions}
+        if diagnostics
+        else {}
+    )
     regions: list[dict[str, Any]] = []
     for index, region in enumerate(layout.regions):
         region_id = region.id or f"p{page_number:04d}-r{index + 1:04d}"
@@ -175,7 +175,9 @@ def page_inspection(job: ParseJob, page_number: int, store: ObjectStore) -> dict
             "model": job.review_model_name or settings.get("review_model"),
             "enabled": settings.get("cloud_mode", "off") != "off",
         },
-        "warnings": list(dict.fromkeys([*layout.warnings, *(diagnostics.warnings if diagnostics else [])])),
+        "warnings": list(
+            dict.fromkeys([*layout.warnings, *(diagnostics.warnings if diagnostics else [])])
+        ),
         "regions": regions,
     }
 
@@ -202,9 +204,7 @@ def document_tree(job: ParseJob, store: ObjectStore, query: str = "") -> list[di
             else:
                 parent_id = region.parent_id or (heading_stack[-1][1] if heading_stack else None)
                 heading_path = [item[2] for item in heading_stack]
-            haystack = " ".join(
-                [region_id, region.type, region.content, *heading_path]
-            ).casefold()
+            haystack = " ".join([region_id, region.type, region.content, *heading_path]).casefold()
             if needle and needle not in haystack:
                 continue
             nodes.append(
@@ -239,9 +239,11 @@ def quality_report(job: ParseJob, store: ObjectStore) -> dict[str, Any]:
     for page in layouts:
         warnings.extend(page.warnings)
         diagnostics = load_page_diagnostics(job, page.page_number, store)
-        decision_by_id = {
-            item.observation.region_id: item for item in diagnostics.region_decisions
-        } if diagnostics else {}
+        decision_by_id = (
+            {item.observation.region_id: item for item in diagnostics.region_decisions}
+            if diagnostics
+            else {}
+        )
         for region in page.regions:
             source_counts[region.source] += 1
             warnings.extend(region.warnings)
@@ -252,7 +254,11 @@ def quality_report(job: ParseJob, store: ObjectStore) -> dict[str, Any]:
             }
             if len(normalized) > 1:
                 disagreements.append(
-                    {"page": page.page_number, "region_id": region.id, "candidate_count": len(normalized)}
+                    {
+                        "page": page.page_number,
+                        "region_id": region.id,
+                        "candidate_count": len(normalized),
+                    }
                 )
             decision = decision_by_id.get(region.id or "")
             if decision and decision.final_status != "pass":
@@ -269,14 +275,20 @@ def quality_report(job: ParseJob, store: ObjectStore) -> dict[str, Any]:
     tables = [region for page in layouts for region in page.regions if region.type == "table"]
     valid_tables = sum(
         bool(region.content.strip())
-        and (bool(region.table_cells) or "|" in region.content or "<table" in region.content.lower())
+        and (
+            bool(region.table_cells) or "|" in region.content or "<table" in region.content.lower()
+        )
         for region in tables
     )
     selected_complete = bool(job.pages) and all(
         page.status == PageStatus.COMPLETED for page in job.pages
     )
-    verified = selected_complete and not unresolved and not any(
-        case.status == "open" and case.item_kind == "region" for case in job.review_cases
+    verified = (
+        selected_complete
+        and not unresolved
+        and not any(
+            case.status == "open" and case.item_kind == "region" for case in job.review_cases
+        )
     )
     return {
         "schema_version": "paperplane-quality/v1",

@@ -63,8 +63,21 @@ async def test_completed_job_can_be_evaluated_against_grounded_labels(monkeypatc
                 page_count=1,
                 status=JobStatus.COMPLETED,
                 settings=ParseSettings().model_dump(mode="json"),
-                pages=[PageCheckpoint(page_number=1, status=PageStatus.COMPLETED, layout_path="layout.json")],
-                artifacts=[Artifact(job_id="job1", type=ArtifactType.CLEAN_MARKDOWN, relative_path="document.md", mime_type="text/markdown", size=6, sha256="b" * 64)],
+                pages=[
+                    PageCheckpoint(
+                        page_number=1, status=PageStatus.COMPLETED, layout_path="layout.json"
+                    )
+                ],
+                artifacts=[
+                    Artifact(
+                        job_id="job1",
+                        type=ArtifactType.CLEAN_MARKDOWN,
+                        relative_path="document.md",
+                        mime_type="text/markdown",
+                        size=6,
+                        sha256="b" * 64,
+                    )
+                ],
             )
         )
         await session.commit()
@@ -83,7 +96,20 @@ async def test_completed_job_can_be_evaluated_against_grounded_labels(monkeypatc
         "document_id": "sample",
         "source_sha256": "a" * 64,
         "markdown": "Hello\n",
-        "pages": [{"page": 1, "regions": [{"id": "body", "type": "text", "order": 0, "bbox": {"left": 0.1, "top": 0.1, "right": 0.9, "bottom": 0.5}, "text": "Hello"}]}],
+        "pages": [
+            {
+                "page": 1,
+                "regions": [
+                    {
+                        "id": "body",
+                        "type": "text",
+                        "order": 0,
+                        "bbox": {"left": 0.1, "top": 0.1, "right": 0.9, "bottom": 0.5},
+                        "text": "Hello",
+                    }
+                ],
+            }
+        ],
     }
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
         response = await client.post(

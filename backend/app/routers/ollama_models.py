@@ -15,9 +15,15 @@ class OllamaModelsResponse(BaseModel):
 
 
 @router.get("/models", response_model=OllamaModelsResponse)
-async def list_ollama_models(request: Request, refresh: bool = Query(False)) -> OllamaModelsResponse:
+async def list_ollama_models(
+    request: Request, refresh: bool = Query(False)
+) -> OllamaModelsResponse:
     try:
         models = await request.app.state.parser_runtime.model_catalog.list_models(refresh=refresh)
     except OllamaCatalogUnavailable as exc:
-        raise HTTPException(503, detail={"code": "ollama_unavailable", "message": str(exc)}) from exc
-    return OllamaModelsResponse(models=models, compatible_count=sum(model.compatible for model in models))
+        raise HTTPException(
+            503, detail={"code": "ollama_unavailable", "message": str(exc)}
+        ) from exc
+    return OllamaModelsResponse(
+        models=models, compatible_count=sum(model.compatible for model in models)
+    )

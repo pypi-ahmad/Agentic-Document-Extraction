@@ -31,8 +31,22 @@ async def test_segment_document_maps_regions_and_normalizes_bbox(tmp_path) -> No
             200,
             json={
                 "json_result": [
-                    [{"index": 0, "label": "text", "content": "Hello", "bbox_2d": [100, 200, 900, 300]}],
-                    [{"index": 0, "label": "table", "content": "<table><tr><td>A</td><td>B</td></tr></table>", "bbox_2d": [0, 0, 1000, 1000]}],
+                    [
+                        {
+                            "index": 0,
+                            "label": "text",
+                            "content": "Hello",
+                            "bbox_2d": [100, 200, 900, 300],
+                        }
+                    ],
+                    [
+                        {
+                            "index": 0,
+                            "label": "table",
+                            "content": "<table><tr><td>A</td><td>B</td></tr></table>",
+                            "bbox_2d": [0, 0, 1000, 1000],
+                        }
+                    ],
                 ]
             },
         )
@@ -63,7 +77,14 @@ async def test_unknown_label_falls_back_to_text(tmp_path) -> None:
             200,
             json={
                 "json_result": [
-                    [{"index": 0, "label": "doc_title", "content": "Title", "bbox_2d": [0, 0, 500, 50]}]
+                    [
+                        {
+                            "index": 0,
+                            "label": "doc_title",
+                            "content": "Title",
+                            "bbox_2d": [0, 0, 500, 50],
+                        }
+                    ]
                 ]
             },
         )

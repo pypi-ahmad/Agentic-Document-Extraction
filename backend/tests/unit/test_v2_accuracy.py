@@ -30,9 +30,7 @@ def test_accuracy_report_keeps_figure_text_and_scores_pages_and_types() -> None:
     assert report["per_page"][2]["strict_word_accuracy"] == pytest.approx(2 / 3)
     assert report["per_type"]["text"]["strict_word_accuracy"] == pytest.approx(2 / 3)
     assert report["per_type"]["figure"]["strict_word_accuracy"] == pytest.approx(2 / 3)
-    assert report["minimums"] == pytest.approx(
-        {"page_accuracy": 2 / 3, "type_accuracy": 2 / 3}
-    )
+    assert report["minimums"] == pytest.approx({"page_accuracy": 2 / 3, "type_accuracy": 2 / 3})
 
 
 def test_accuracy_normalization_ignores_markdown_punctuation_case_and_spacing() -> None:

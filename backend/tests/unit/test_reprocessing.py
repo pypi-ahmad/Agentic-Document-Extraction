@@ -33,7 +33,7 @@ def pdf() -> bytes:
 
 
 def layout() -> bytes:
-    return b'''{
+    return b"""{
       "page_number": 1, "width": 200, "height": 300,
       "coordinate_unit": "pdf_points",
       "regions": [{
@@ -41,13 +41,13 @@ def layout() -> bytes:
         "bbox": {"left": 0.1, "top": 0.1, "right": 0.9, "bottom": 0.3},
         "content": "old", "source": "cloud_vlm", "order": 0, "confidence": 0.7
       }]
-    }'''
+    }"""
 
 
 @pytest.fixture
-async def reprocess_api(tmp_path) -> AsyncIterator[
-    tuple[AsyncClient, async_sessionmaker[AsyncSession], FileStore, Queue]
-]:
+async def reprocess_api(
+    tmp_path,
+) -> AsyncIterator[tuple[AsyncClient, async_sessionmaker[AsyncSession], FileStore, Queue]]:
     engine = create_async_engine("sqlite+aiosqlite:///:memory:")
     sessions = async_sessionmaker(engine, expire_on_commit=False)
     async with engine.begin() as connection:
@@ -70,7 +70,9 @@ async def reprocess_api(tmp_path) -> AsyncIterator[
 
 
 @pytest.mark.asyncio
-async def test_region_reprocess_is_queued_with_durable_parameters_and_backups(reprocess_api) -> None:
+async def test_region_reprocess_is_queued_with_durable_parameters_and_backups(
+    reprocess_api,
+) -> None:
     client, sessions, store, queue = reprocess_api
     source_path = "jobs/job/source.pdf"
     layout_path = "jobs/job/checkpoints/p0001/layout.json"

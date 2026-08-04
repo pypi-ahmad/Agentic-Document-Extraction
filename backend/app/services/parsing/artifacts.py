@@ -79,8 +79,9 @@ def build_grounding_pdf(source: bytes, filename: str, layout: DocumentLayout) ->
                         f"{(region.order if region.order is not None else '?')} · "
                         f"{region.id or 'region'} · {region.type} · "
                         f"{region.source_label or region.source} · "
-                        f"{region.confidence:.0%}" if region.confidence is not None else
-                        f"{(region.order if region.order is not None else '?')} · "
+                        f"{region.confidence:.0%}"
+                        if region.confidence is not None
+                        else f"{(region.order if region.order is not None else '?')} · "
                         f"{region.id or 'region'} · {region.type} · "
                         f"{region.source_label or region.source}"
                     ),

@@ -227,8 +227,7 @@ def _serialize(job: ParseJob) -> ParseJobResponse:
             bool(job.pages)
             and all(page.status == PageStatus.COMPLETED for page in job.pages)
             and not any(
-                case.status == "open" and case.item_kind == "region"
-                for case in job.review_cases
+                case.status == "open" and case.item_kind == "region" for case in job.review_cases
             )
         ),
         error_code=job.error_code,

@@ -73,8 +73,7 @@ class SchemaModelClient:
                     **payload,
                     "input_tokens": input_tokens,
                     "output_tokens": output_tokens,
-                    "latency_ms": provider_latency
-                    or (time.perf_counter() - started) * 1000,
+                    "latency_ms": provider_latency or (time.perf_counter() - started) * 1000,
                 }
             )
         except SchemaModelError:

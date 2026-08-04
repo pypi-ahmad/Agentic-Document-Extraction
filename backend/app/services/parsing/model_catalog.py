@@ -33,7 +33,11 @@ class OllamaModelCatalog:
 
     async def list_models(self, *, refresh: bool = False) -> list[OllamaModel]:
         async with self._lock:
-            if not refresh and self._cached is not None and time.monotonic() - self._cached_at < self.ttl_seconds:
+            if (
+                not refresh
+                and self._cached is not None
+                and time.monotonic() - self._cached_at < self.ttl_seconds
+            ):
                 return list(self._cached)
             try:
                 response = await self.client.get("/api/tags")
@@ -57,7 +61,11 @@ class OllamaModelCatalog:
                         shown = await self.client.post("/api/show", json={"model": name})
                         shown.raise_for_status()
                     shown_payload = shown.json()
-                    values = shown_payload.get("capabilities", []) if isinstance(shown_payload, dict) else []
+                    values = (
+                        shown_payload.get("capabilities", [])
+                        if isinstance(shown_payload, dict)
+                        else []
+                    )
                     capabilities = sorted(str(value) for value in values if isinstance(value, str))
                 except (httpx.HTTPError, ValueError):
                     error = "Capabilities could not be inspected"
@@ -66,14 +74,19 @@ class OllamaModelCatalog:
                     name=name,
                     digest=raw.get("digest") if isinstance(raw.get("digest"), str) else None,
                     size=raw.get("size") if isinstance(raw.get("size"), int) else None,
-                    modified_at=raw.get("modified_at") if isinstance(raw.get("modified_at"), str) else None,
+                    modified_at=raw.get("modified_at")
+                    if isinstance(raw.get("modified_at"), str)
+                    else None,
                     capabilities=capabilities,
                     compatible=required.issubset(capabilities),
                     inspection_error=error,
                 )
 
             inspected = await asyncio.gather(*(inspect(raw) for raw in raw_models))
-            models = sorted((model for model in inspected if model is not None), key=lambda model: model.name.casefold())
+            models = sorted(
+                (model for model in inspected if model is not None),
+                key=lambda model: model.name.casefold(),
+            )
             self._cached = models
             self._cached_at = time.monotonic()
             return list(models)

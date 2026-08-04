@@ -393,9 +393,7 @@ async def cancel_parse_job(job_id: str, db: AsyncSession = Depends(get_db)) -> P
         raise _error("invalid_state", f"Cannot cancel a job in {job.status} state", 409)
     await db.commit()
     if result.rowcount != 1:
-        raise _error(
-            "invalid_state", "Job state changed concurrently — refresh and retry", 409
-        )
+        raise _error("invalid_state", "Job state changed concurrently — refresh and retry", 409)
     await db.refresh(job)
     return _serialize_job(job)
 

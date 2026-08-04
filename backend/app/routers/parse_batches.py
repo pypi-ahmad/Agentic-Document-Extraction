@@ -92,8 +92,13 @@ def _status(batch: ParseBatch) -> tuple[str, bool]:
     statuses = [job.status for job in batch.jobs]
     all_terminal = bool(statuses) and all(value in TERMINAL for value in statuses)
     if not all_terminal:
-        return ("processing" if any(value != JobStatus.QUEUED for value in statuses) else "queued", False)
-    if any(value in {JobStatus.FAILED, JobStatus.CANCELLED, JobStatus.PAUSED} for value in statuses):
+        return (
+            "processing" if any(value != JobStatus.QUEUED for value in statuses) else "queued",
+            False,
+        )
+    if any(
+        value in {JobStatus.FAILED, JobStatus.CANCELLED, JobStatus.PAUSED} for value in statuses
+    ):
         return "completed_with_warnings", True
     return "completed", True
 
@@ -136,7 +141,9 @@ async def _read_files(files: list[UploadFile]) -> list[dict[str, Any]]:
             size += len(chunk)
             total_bytes += len(chunk)
             if size > app_settings.max_upload_bytes:
-                raise _error("too_large", f"{name} exceeds {app_settings.max_upload_size_mb} MB", 413)
+                raise _error(
+                    "too_large", f"{name} exceeds {app_settings.max_upload_size_mb} MB", 413
+                )
             if total_bytes > max_total:
                 raise _error(
                     "batch_too_large",
@@ -257,9 +264,7 @@ async def list_parse_batches(db: AsyncSession = Depends(get_db)) -> ParseBatchLi
 
 
 @router.get("/{batch_id}", response_model=ParseBatchResponse)
-async def get_parse_batch(
-    batch_id: str, db: AsyncSession = Depends(get_db)
-) -> ParseBatchResponse:
+async def get_parse_batch(batch_id: str, db: AsyncSession = Depends(get_db)) -> ParseBatchResponse:
     batch = await _batch_or_404(db, batch_id)
     current_status, terminal = _status(batch)
     if batch.status != current_status:
@@ -271,7 +276,10 @@ async def get_parse_batch(
 
 
 def _archive_name(job: ParseJob) -> str:
-    stem = "".join(character if character.isalnum() or character in "-_" else "_" for character in Path(job.original_filename).stem)
+    stem = "".join(
+        character if character.isalnum() or character in "-_" else "_"
+        for character in Path(job.original_filename).stem
+    )
     return f"{job.batch_ordinal or 0:03d}-{stem or 'document'}"
 
 
@@ -285,7 +293,9 @@ async def download_parse_batch_bundle(
     _, terminal = _status(batch)
     successful = [job for job in batch.jobs if job.status in SUCCESSFUL]
     if not terminal or not successful:
-        raise _error("batch_not_ready", "Batch export is available after all jobs are terminal", 409)
+        raise _error(
+            "batch_not_ready", "Batch export is available after all jobs are terminal", 409
+        )
     manifest: dict[str, Any] = {
         "schema_version": "paperplane-batch/v1",
         "batch_id": batch.id,

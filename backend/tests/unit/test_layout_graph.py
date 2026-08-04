@@ -284,9 +284,9 @@ async def test_mixed_image_page_runs_full_local_recognition(tmp_path) -> None:
             "job_id": "mixed-scan-job",
             "source_path": str(source),
             "work_dir": str(tmp_path / "runtime"),
-            "settings": ParseSettings(
-                input_mode="mixed", ocr_model="glm-ocr:latest"
-            ).model_dump(mode="json"),
+            "settings": ParseSettings(input_mode="mixed", ocr_model="glm-ocr:latest").model_dump(
+                mode="json"
+            ),
             "repair_count": 0,
             "warnings": [],
         }
@@ -310,9 +310,7 @@ async def test_adaptive_cloud_review_receives_flagged_local_candidates(tmp_path)
                         source="cloud_vlm",
                         warnings=["recognition_disagreement"],
                         recognition_candidates=[
-                            RecognitionCandidate(
-                                source="cloud_vlm", content="Paddle candidate"
-                            ),
+                            RecognitionCandidate(source="cloud_vlm", content="Paddle candidate"),
                             RecognitionCandidate(
                                 source="cloud_vlm",
                                 content="GLM candidate",
@@ -481,6 +479,8 @@ async def test_cloud_disagreement_blind_retry_never_receives_cloud_feedback(
     assert "SECRET-CLOUD-TEXT" not in result["markdown"]
     assert f"GLM attempt {expected_calls}" in result["markdown"]
     assert result["status"] == "completed_with_warnings"
+
+
 def test_stitching_preserves_nested_heading_hierarchy_across_pages() -> None:
     parser = LayoutParser()
     pages = {
