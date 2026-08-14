@@ -15,8 +15,9 @@ cited downstream data.
 - Optional cloud enhancement after Docling, PDF Inspector, or Ollama; no automatic routing.
 - Agnes 2.5 Flash supports private visual Parse and enhancement through inline PNG input;
   uploads do not require public image URLs.
-- Agnes structured results use forced schema tool calls, local geometry validation, and one
-  bounded correction attempt so valid regions reach annotated PDFs.
+- Agnes structured results accept schema tool calls or JSON content, normalize equivalent
+  0–1000 boxes and omitted nullable chunk fields, then apply local geometry validation and
+  one bounded correction attempt so valid regions reach annotated PDFs.
 - Ollama discovery includes every installed model and checks the reported `vision`
   capability before enabling Parse.
 - Prior selected-page context, ordered assembly, section starts, repeated marginalia, and

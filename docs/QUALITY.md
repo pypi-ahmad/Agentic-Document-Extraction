@@ -4,8 +4,9 @@ Paperplane validates structure and evidence independently of model fluency.
 
 ## Runtime safeguards
 
-- Strict provider JSON Schema where supported, followed by Pydantic validation. Agnes uses
-  a forced schema tool call plus local JSON Schema and geometry validation, with one bounded
+- Strict provider JSON Schema where supported, followed by Pydantic validation. Agnes tool
+  arguments and JSON content responses normalize equivalent 0–1000 boxes and omitted
+  nullable chunk fields before local JSON Schema and geometry validation, with one bounded
   correction attempt.
 - Exact Unicode range validation, normalized box validation, ordered hierarchy, and table
   coordinates.

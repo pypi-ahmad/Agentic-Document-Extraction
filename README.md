@@ -101,10 +101,11 @@ only its corresponding environment variable. The UI records provider-reported in
 output tokens and shows a configured cost estimate; that estimate is not an invoice.
 
 Agnes visual Parse and enhancement use inline PNG data URLs. Uploaded images do not need
-to be published at a public URL. Agnes structured results use forced schema tool calls,
-local validation, and one bounded correction attempt so usable geometry reaches annotated
-PDFs. All cloud models still receive the selected page content, so use Docling, PDF
-Inspector, or Ollama when content must not leave the machine.
+to be published at a public URL. Paperplane requests schema tool calls from Agnes and also
+accepts its JSON content response. Paperplane normalizes equivalent 0–1000 boxes and omitted
+nullable chunk fields before local validation and one bounded correction attempt. All cloud models still
+receive the selected page content, so use Docling, PDF Inspector, or Ollama when content
+must not leave the machine.
 
 ### Page selection, isolation, and document context
 
