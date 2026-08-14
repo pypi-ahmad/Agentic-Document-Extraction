@@ -33,27 +33,36 @@ def _png() -> bytes:
     return output.getvalue()
 
 
+def _select_engine(app: AppTest, label: str) -> AppTest:
+    return next(item for item in app.toggle if item.label == label).set_value(True).run()
+
+
 def test_app_explains_missing_api_key(monkeypatch) -> None:
     _clear_api_keys(monkeypatch)
     app = AppTest.from_file(APP_PATH).run()
+    app = _select_engine(app, "Cloud AI ADE")
+    app.file_uploader[0].set_value([("invoice.png", _png(), "image/png")]).run()
 
     assert app.title[0].value == "Paperplane"
     assert any("OPENAI_API_KEY" in warning.value for warning in app.warning)
-    assert next(button for button in app.button if button.label == "Parse document").disabled
+    assert next(button for button in app.button if button.label == "Parse files").disabled
 
 
 def test_app_allows_local_document_upload_without_api_key(monkeypatch) -> None:
     _clear_api_keys(monkeypatch)
     app = AppTest.from_file(APP_PATH).run()
+    app = _select_engine(app, "Docling ADE")
     app.file_uploader[0].set_value(
-        (
-            "report.docx",
-            b"test fixture",
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        )
+        [
+            (
+                "report.docx",
+                b"test fixture",
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            )
+        ]
     ).run()
 
-    assert not next(button for button in app.button if button.label == "Parse document").disabled
+    assert not next(button for button in app.button if button.label == "Parse files").disabled
 
 
 def test_app_parses_upload_and_exposes_downloads(monkeypatch) -> None:
@@ -61,6 +70,9 @@ def test_app_parses_upload_and_exposes_downloads(monkeypatch) -> None:
         assert kwargs["filename"] == "invoice.png"
         assert kwargs["model"] == "paperplane-ade-latest"
         assert kwargs["ai_model"] == "gpt-5.6-luna"
+        assert kwargs["strategy"] == "ai"
+        assert kwargs["page_start"] == 1
+        assert kwargs["page_end"] == 1
         assert kwargs["openai_base_url"] == "https://openai.example/v1"
         return assemble_parse_response(
             document_id="document",
@@ -70,6 +82,9 @@ def test_app_parses_upload_and_exposes_downloads(monkeypatch) -> None:
             input_tokens=1_000_000,
             output_tokens=1_000_000,
             cached_input_tokens=250_000,
+            processing_strategy="ai",
+            source_page_count=1,
+            page_range=(1, 1),
             pages=[
                 AgenticPageInput(
                     page_number=1,
@@ -89,8 +104,9 @@ def test_app_parses_upload_and_exposes_downloads(monkeypatch) -> None:
     monkeypatch.setenv("OPENAI_BASE_URL", "https://openai.example/v1")
     monkeypatch.setattr(runtime, "parse_document", fake_parse_document)
     app = AppTest.from_file(APP_PATH).run()
-    app.file_uploader[0].set_value(("invoice.png", _png(), "image/png")).run()
-    next(button for button in app.button if button.label == "Parse document").click().run()
+    app = _select_engine(app, "Cloud AI ADE")
+    app.file_uploader[0].set_value([("invoice.png", _png(), "image/png")]).run()
+    next(button for button in app.button if button.label == "Parse files").click().run(timeout=20)
 
     assert any(metric.label == "Pages" and metric.value == "1" for metric in app.metric)
     assert any(
@@ -98,53 +114,55 @@ def test_app_parses_upload_and_exposes_downloads(monkeypatch) -> None:
     )
     assert any("1,000,000 input tokens" in caption.value for caption in app.caption)
     assert any("Invoice total: 42" in item.value for item in app.markdown)
-    assert [tab.label for tab in app.tabs] == ["Output", "Annotated PDF", "Markdown", "JSON"]
+    assert [tab.label for tab in app.tabs] == [
+        "Input preview",
+        "Output",
+        "Annotated PDF",
+        "Markdown",
+        "HTML",
+        "JSON",
+    ]
     assert {button.label for button in app.download_button} == {
         "Download Markdown",
+        "Download HTML",
         "Download annotated PDF",
-        "Download JSON",
+        "Download Paperplane JSON",
+        "Download ADE v2 JSON",
+        "Download batch ZIP",
     }
 
-    app.session_state["result_view"] = "Annotated PDF"
+    app.session_state["workspace_view"] = "Annotated PDF"
     app.run()
     assert any("grounded blocks" in caption.value for caption in app.caption)
 
-    app.session_state["result_view"] = "Markdown"
+    app.session_state["workspace_view"] = "Markdown"
     app.run()
     assert any("Invoice total: 42" in code.value for code in app.code)
 
-    app.session_state["result_view"] = "JSON"
+    app.session_state["workspace_view"] = "HTML"
+    app.run()
+    assert any("Sanitized standalone HTML" in caption.value for caption in app.caption)
+
+    app.session_state["workspace_view"] = "JSON"
     app.run()
     assert app.json
 
 
-def test_app_selects_agnes_model(monkeypatch) -> None:
-    captured: dict = {}
-
-    async def fake_parse_document(**kwargs):
-        captured.update(kwargs)
-        return assemble_parse_response(
-            document_id="document",
-            job_id="request",
-            model=kwargs["model"],
-            pages=[],
-            duration_ms=1,
-        )
-
+def test_app_blocks_private_agnes_visual_parse(monkeypatch) -> None:
     monkeypatch.setenv("AGNES_API_KEY", "agnes-test")
-    monkeypatch.setattr(runtime, "parse_document", fake_parse_document)
     app = AppTest.from_file(APP_PATH).run()
+    app = _select_engine(app, "Cloud AI ADE")
     app.selectbox[0].select("Agnes 2.5 Flash").run()
-    app.file_uploader[0].set_value(("invoice.png", _png(), "image/png")).run()
-    next(button for button in app.button if button.label == "Parse document").click().run()
+    app.file_uploader[0].set_value([("invoice.png", _png(), "image/png")]).run()
 
-    assert captured["ai_model"] == "agnes-2.5-flash"
-    assert captured["api_key"] == "agnes-test"
+    assert any("private visual processing is unavailable" in error.value for error in app.error)
+    assert next(button for button in app.button if button.label == "Parse files").disabled
 
 
 def test_app_lists_only_supported_document_models(monkeypatch) -> None:
     _clear_api_keys(monkeypatch)
     app = AppTest.from_file(APP_PATH).run()
+    app = _select_engine(app, "Cloud AI ADE")
 
     assert app.selectbox[0].options == [
         "Grok 4.6",
@@ -154,3 +172,65 @@ def test_app_lists_only_supported_document_models(monkeypatch) -> None:
         "Claude Sonnet 5",
         "Agnes 2.5 Flash",
     ]
+
+
+def test_app_exposes_four_exclusive_engines_and_per_file_ranges(monkeypatch) -> None:
+    _clear_api_keys(monkeypatch)
+    app = AppTest.from_file(APP_PATH).run()
+
+    assert [item.label for item in list(app.toggle)[:4]] == [
+        "Docling ADE",
+        "PDF Inspector ADE",
+        "Cloud AI ADE",
+        "Ollama ADE",
+    ]
+    assert [item.label for item in list(app.sidebar.toggle)[:4]] == [
+        "Docling ADE",
+        "PDF Inspector ADE",
+        "Cloud AI ADE",
+        "Ollama ADE",
+    ]
+    assert len(app.sidebar.file_uploader) == 1
+    app = _select_engine(app, "Docling ADE")
+    app.file_uploader[0].set_value(
+        [("first.png", _png(), "image/png"), ("second.png", _png(), "image/png")]
+    ).run()
+
+    assert [item.label for item in app.number_input] == [
+        "Start page — first.png",
+        "End page — first.png",
+        "Start page — second.png",
+        "End page — second.png",
+    ]
+
+
+def test_engine_toggles_are_exclusive_and_can_all_be_off(monkeypatch) -> None:
+    _clear_api_keys(monkeypatch)
+    app = AppTest.from_file(APP_PATH).run()
+
+    app = _select_engine(app, "Docling ADE")
+    app = _select_engine(app, "PDF Inspector ADE")
+    values = {item.label: item.value for item in list(app.toggle)[:4]}
+    assert values == {
+        "Docling ADE": False,
+        "PDF Inspector ADE": True,
+        "Cloud AI ADE": False,
+        "Ollama ADE": False,
+    }
+
+    app = (
+        next(item for item in app.toggle if item.label == "PDF Inspector ADE")
+        .set_value(False)
+        .run()
+    )
+    assert not any(item.value for item in list(app.toggle)[:4])
+
+
+def test_app_rejects_non_pdf_batch_for_pdf_inspector(monkeypatch) -> None:
+    _clear_api_keys(monkeypatch)
+    app = AppTest.from_file(APP_PATH).run()
+    app = _select_engine(app, "PDF Inspector ADE")
+    app.file_uploader[0].set_value([("invoice.png", _png(), "image/png")]).run()
+
+    assert any("PDF files only" in error.value for error in app.error)
+    assert next(button for button in app.button if button.label == "Parse files").disabled

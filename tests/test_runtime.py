@@ -3,7 +3,9 @@ from io import BytesIO
 import pytest
 from PIL import Image
 
-from paperplane.runtime import parse_document
+import paperplane.runtime as runtime
+from paperplane.contracts import AgenticPageInput, assemble_parse_response
+from paperplane.runtime import BatchParseRequest, parse_document
 
 
 @pytest.mark.asyncio
@@ -67,3 +69,43 @@ async def test_runtime_rejects_unknown_ai_model() -> None:
             api_key="test-key",
             ai_model="imaginary-model",
         )
+
+
+@pytest.mark.asyncio
+async def test_batch_runtime_limits_concurrency_and_isolates_failures(monkeypatch) -> None:
+    active = 0
+    peak = 0
+
+    async def fake_parse_document(**kwargs):
+        nonlocal active, peak
+        active += 1
+        peak = max(peak, active)
+        await __import__("asyncio").sleep(0.01)
+        active -= 1
+        if kwargs["filename"] == "bad.pdf":
+            raise ValueError("bad document")
+        return assemble_parse_response(
+            document_id=kwargs["filename"],
+            job_id=kwargs["filename"],
+            model=kwargs["model"],
+            pages=[AgenticPageInput(page_number=1)],
+        )
+
+    monkeypatch.setattr(runtime, "parse_document", fake_parse_document)
+    requests = [
+        BatchParseRequest(
+            file_id=str(index),
+            data=b"pdf",
+            filename="bad.pdf" if index == 7 else f"{index}.pdf",
+            model="paperplane-ade-latest",
+            api_key="",
+        )
+        for index in range(8)
+    ]
+
+    outcomes = await runtime.parse_documents(requests, max_concurrency=3)
+
+    assert peak == 3
+    assert [outcome.file_id for outcome in outcomes] == [str(index) for index in range(8)]
+    assert outcomes[-1].error == "bad document"
+    assert all(outcome.result is not None for outcome in outcomes[:-1])

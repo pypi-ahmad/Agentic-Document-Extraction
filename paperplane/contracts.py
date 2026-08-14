@@ -31,13 +31,24 @@ StructureType = Literal[
     "scan_code",
 ]
 GroundingStatus = Literal["grounded", "semantic_only"]
+ProcessingStrategy = Literal[
+    "docling",
+    "ai",
+    "docling_ai",
+    "pdf_inspector",
+    "pdf_inspector_ai",
+    "ollama",
+    "ollama_ai",
+]
 ParserEngine = Literal[
     "docling",
+    "pdf_inspector",
     "openai_vision",
     "xai_vision",
     "google_vision",
     "anthropic_vision",
     "agnes_vision",
+    "ollama_vision",
 ]
 
 
@@ -75,6 +86,17 @@ class AtomicGrounding(BaseModel):
     text: str
     box: NormalizedBox
     ranges: list[CodepointRange] = Field(min_length=1)
+
+
+class GroundedWord(BaseModel):
+    """An observed native/OCR word aligned to exact Markdown text."""
+
+    text: str = Field(min_length=1)
+    page: int = Field(ge=1)
+    box: NormalizedBox
+    range: CodepointRange
+    source: Literal["native_pdf", "local_ocr"]
+    raw_confidence: float | None = Field(default=None, ge=0, le=1)
 
 
 class StructureNode(BaseModel):
@@ -134,22 +156,45 @@ class ParseMetadata(BaseModel):
     service_tier: str | None = None
     total_credits: int = Field(default=0, ge=0)
     source_format: str = Field(default="unknown", min_length=1)
+    processing_strategy: ProcessingStrategy = "ai"
+    source_page_count: int | None = Field(default=None, ge=1)
+    page_range: tuple[int, int] | None = None
+    ai_refined_pages: list[int] = Field(default_factory=list)
+    pdf_type: str | None = None
+    pdf_inspector_confidence: float | None = Field(default=None, ge=0, le=1)
+    pages_needing_ocr: list[int] = Field(default_factory=list)
     engine: Literal[
         "docling",
+        "pdf_inspector",
         "openai_vision",
         "xai_vision",
         "google_vision",
         "anthropic_vision",
         "agnes_vision",
+        "ollama_vision",
         "hybrid",
     ] = "openai_vision"
     warnings: list[str] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def validate_page_metadata(self) -> ParseMetadata:
+        if self.page_range is None:
+            return self
+        start, end = self.page_range
+        if start < 1 or end < start:
+            raise ValueError("page_range must be ordered and one-based")
+        if self.source_page_count is not None and end > self.source_page_count:
+            raise ValueError("page_range cannot exceed source_page_count")
+        if any(page < start or page > end for page in self.ai_refined_pages):
+            raise ValueError("ai_refined_pages must be within page_range")
+        return self
 
 
 class ParseResponse(BaseModel):
     markdown: str
     metadata: ParseMetadata
     structure: StructureNode
+    words: list[GroundedWord] = Field(default_factory=list)
 
     @model_validator(mode="after")
     def validate_grounded_document(self) -> ParseResponse:
@@ -167,6 +212,9 @@ class ParseResponse(BaseModel):
                 raise ValueError("pages must be contiguous and ordered")
             for block in page.children:
                 self._validate_block(block, page.page, expected_ids, parent_type=None)
+        for word in self.words:
+            if self.markdown[word.range.start : word.range.end] != word.text:
+                raise ValueError("word grounding text must match its Markdown range")
         return self
 
     def _validate_block(
@@ -299,13 +347,22 @@ def assemble_parse_response(
     failed_pages: list[int] | None = None,
     duration_ms: int | None = None,
     source_format: str = "unknown",
+    processing_strategy: ProcessingStrategy = "ai",
+    source_page_count: int | None = None,
+    page_range: tuple[int, int] | None = None,
+    ai_refined_pages: list[int] | None = None,
+    pdf_type: str | None = None,
+    pdf_inspector_confidence: float | None = None,
+    pages_needing_ocr: list[int] | None = None,
     engine: Literal[
         "docling",
+        "pdf_inspector",
         "openai_vision",
         "xai_vision",
         "google_vision",
         "anthropic_vision",
         "agnes_vision",
+        "ollama_vision",
         "hybrid",
     ] = "openai_vision",
     warnings: list[str] | None = None,
@@ -422,6 +479,13 @@ def assemble_parse_response(
             failed_pages=failed_pages or [],
             duration_ms=duration_ms,
             source_format=source_format,
+            processing_strategy=processing_strategy,
+            source_page_count=source_page_count,
+            page_range=page_range,
+            ai_refined_pages=ai_refined_pages or [],
+            pdf_type=pdf_type,
+            pdf_inspector_confidence=pdf_inspector_confidence,
+            pages_needing_ocr=pages_needing_ocr or [],
             engine=engine,
             warnings=warnings or [],
         ),
@@ -461,10 +525,12 @@ __all__ = [
     "AtomicLineInput",
     "BlockType",
     "CodepointRange",
+    "GroundedWord",
     "NormalizedBox",
     "ParseMetadata",
     "ParseResponse",
     "ParserEngine",
+    "ProcessingStrategy",
     "StructureNode",
     "assemble_parse_response",
 ]

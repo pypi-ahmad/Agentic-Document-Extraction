@@ -3,12 +3,12 @@ import json
 import httpx
 import pytest
 
-from paperplane.agnes_document import AGNES_MODEL, AgnesDocumentAdapter
+from paperplane.agnes_document import AGNES_MODEL, AgnesDocumentAdapter, AgnesRequestError
 from paperplane.openai_document import capture_audit_calls
 
 
 @pytest.mark.asyncio
-async def test_agnes_uses_chat_completions_with_local_image_data() -> None:
+async def test_agnes_uses_chat_completions_for_text_workflows() -> None:
     captured: dict = {}
 
     async def handler(request: httpx.Request) -> httpx.Response:
@@ -29,7 +29,7 @@ async def test_agnes_uses_chat_completions_with_local_image_data() -> None:
     with capture_audit_calls(calls):
         result = await adapter.generate_structured(
             model=AGNES_MODEL,
-            image=b"png",
+            image=None,
             instructions="Extract chunks.",
             schema_name="page_draft",
             schema={"type": "object"},
@@ -41,9 +41,7 @@ async def test_agnes_uses_chat_completions_with_local_image_data() -> None:
     body = captured["body"]
     assert captured["url"] == "https://apihub.agnes-ai.com/v1/chat/completions"
     assert body["model"] == AGNES_MODEL
-    assert body["messages"][0]["content"][1]["image_url"]["url"].startswith(
-        "data:image/png;base64,"
-    )
+    assert len(body["messages"][0]["content"]) == 1
     assert result.value == {"chunks": []}
     assert result.usage.input_tokens == 12
     assert result.usage.output_tokens == 4
@@ -51,3 +49,20 @@ async def test_agnes_uses_chat_completions_with_local_image_data() -> None:
     assert "agnes-test" not in json.dumps(calls)
     assert "data:image" not in json.dumps(calls)
     await http.aclose()
+
+
+@pytest.mark.asyncio
+async def test_agnes_rejects_private_visual_inputs() -> None:
+    async with httpx.AsyncClient() as http:
+        adapter = AgnesDocumentAdapter(http, api_key="agnes-test")
+        with pytest.raises(AgnesRequestError, match="public image URL"):
+            await adapter.generate_structured(
+                model=AGNES_MODEL,
+                image=b"private",
+                instructions="Extract chunks.",
+                schema_name="page_draft",
+                schema={"type": "object"},
+                reasoning_effort="low",
+                detail="high",
+                prompt_cache_key="page:v2:shard-0",
+            )
