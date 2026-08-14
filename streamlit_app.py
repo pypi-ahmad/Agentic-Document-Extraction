@@ -6,6 +6,7 @@ import asyncio
 import hashlib
 import json
 import os
+from decimal import Decimal
 from pathlib import Path
 from typing import Any
 
@@ -17,6 +18,13 @@ import paperplane.runtime as runtime
 from paperplane.annotated_pdf import AnnotatedPdfArtifact, build_annotated_pdf
 from paperplane.contracts import ParseResponse, StructureNode
 from paperplane.ingest import DocumentInputError
+from paperplane.model_catalog import (
+    DEFAULT_DOCUMENT_MODEL,
+    DOCUMENT_MODEL_BY_ID,
+    DOCUMENT_MODEL_BY_LABEL,
+    DOCUMENT_MODELS,
+    estimate_model_cost,
+)
 from paperplane.openai_document import OpenAIRequestError
 
 APP_VERSION = "4.1.0"
@@ -30,10 +38,7 @@ MODEL_HELP = {
     "Balanced": "Adaptive verification for most documents.",
     "Audit": "Maximum inspection depth for difficult pages.",
 }
-AI_MODEL_LABELS = {
-    "OpenAI (Luna + Terra)": "openai",
-    "Agnes 2.5 Flash": "agnes",
-}
+AI_MODEL_LABELS = [model.label for model in DOCUMENT_MODELS]
 IMAGE_EXTENSIONS = {".bmp", ".jpeg", ".jpg", ".png", ".tif", ".tiff", ".webp"}
 SUPPORTED_EXTENSIONS = [
     "pdf",
@@ -93,6 +98,10 @@ def _count_blocks(node: StructureNode) -> int:
     return own + sum(_count_blocks(child) for child in node.children)
 
 
+def _format_cost_usd(value: Decimal) -> str:
+    return f"${value:.6f}" if value < 1 else f"${value:.4f}"
+
+
 def _clear_workspace() -> None:
     st.session_state.upload_generation += 1
     st.session_state.result = None
@@ -122,8 +131,7 @@ st.session_state.setdefault("annotated_pdf", None)
 st.session_state.setdefault("artifact_error", None)
 st.session_state.setdefault("result_view", "Output")
 
-openai_api_key = _setting("OPENAI_API_KEY")
-agnes_api_key = _setting("AGNES_API_KEY")
+api_keys = {model.api_key_env: _setting(model.api_key_env) for model in DOCUMENT_MODELS}
 openai_base_url = _setting("OPENAI_BASE_URL", runtime.DEFAULT_OPENAI_BASE_URL)
 
 with st.container(horizontal=True, vertical_alignment="center"):
@@ -139,17 +147,22 @@ preview_column, workspace_column = st.columns([1.15, 1], gap="large")
 with workspace_column:
     with st.container(border=True):
         st.subheader("New parse")
-        selected_ai_label = st.selectbox("AI model", list(AI_MODEL_LABELS))
-        selected_provider = AI_MODEL_LABELS[selected_ai_label]
-        api_key = agnes_api_key if selected_provider == "agnes" else openai_api_key
-        base_url = openai_base_url
+        default_model_label = DOCUMENT_MODEL_BY_ID[DEFAULT_DOCUMENT_MODEL].label
+        selected_ai_label = st.selectbox(
+            "AI model",
+            AI_MODEL_LABELS,
+            index=AI_MODEL_LABELS.index(default_model_label),
+        )
+        selected_ai_model = DOCUMENT_MODEL_BY_LABEL[selected_ai_label]
+        api_key = api_keys[selected_ai_model.api_key_env]
         if not api_key:
-            key_name = "AGNES_API_KEY" if selected_provider == "agnes" else "OPENAI_API_KEY"
             st.warning(
-                f"Local Office and native-PDF parsing is available. Set `{key_name}` to parse "
+                "Local Office and native-PDF parsing is available. Set "
+                f"`{selected_ai_model.api_key_env}` to parse "
                 "scans and images or describe figures.",
                 icon=":material/key:",
             )
+        st.caption(f"`{selected_ai_model.model_id}` · {selected_ai_model.help_text}")
         selected_label = st.segmented_control(
             "Processing mode",
             list(MODEL_LABELS),
@@ -208,9 +221,9 @@ with workspace_column:
                         data=uploaded_data,
                         filename=filename,
                         model=MODEL_LABELS[selected_label],
+                        ai_model=selected_ai_model.model_id,
                         api_key=api_key,
-                        base_url=base_url,
-                        provider=selected_provider,
+                        openai_base_url=openai_base_url,
                     )
                 )
                 st.write("Building annotated evidence PDF")
@@ -241,14 +254,35 @@ with workspace_column:
     if isinstance(result, ParseResponse):
         with result_slot:
             st.subheader(st.session_state.result_filename or "Result")
-            metrics = st.columns(4)
+            ai_model = (
+                DOCUMENT_MODEL_BY_ID.get(result.metadata.ai_model)
+                if result.metadata.ai_model
+                else None
+            )
+            cost = (
+                estimate_model_cost(
+                    ai_model.model_id,
+                    input_tokens=result.metadata.input_tokens,
+                    output_tokens=result.metadata.output_tokens,
+                    cached_input_tokens=result.metadata.cached_input_tokens,
+                )
+                if ai_model is not None
+                else None
+            )
+            metrics = st.columns(5)
             metrics[0].metric("Pages", result.metadata.page_count)
             metrics[1].metric("Blocks", _count_blocks(result.structure))
             metrics[2].metric("Engine", result.metadata.engine.replace("_", " ").title())
             metrics[3].metric("Duration", f"{result.metadata.duration_ms or 0} ms")
+            metrics[4].metric(
+                "Estimated cost",
+                _format_cost_usd(cost.total_cost_usd) if cost is not None else "Unavailable",
+            )
             st.caption(
                 f"{result.metadata.output_characters:,} characters · "
-                f"{result.metadata.source_format.upper()} source"
+                f"{result.metadata.source_format.upper()} source · "
+                f"{result.metadata.input_tokens:,} input tokens · "
+                f"{result.metadata.output_tokens:,} output tokens"
             )
             for warning in result.metadata.warnings:
                 if warning == "figure_description_unavailable":
@@ -257,6 +291,31 @@ with workspace_column:
                     )
                 else:
                     st.warning(warning)
+
+            if ai_model is not None and cost is not None:
+                with st.expander("Cost calculation"):
+                    st.write(f"**{ai_model.label}** (`{ai_model.model_id}`)")
+                    st.write(
+                        f"Input: {_format_cost_usd(cost.input_cost_usd)} at "
+                        f"${ai_model.input_price_per_million}/1M tokens"
+                    )
+                    if result.metadata.cached_input_tokens:
+                        cached_rate = (
+                            ai_model.cached_input_price_per_million
+                            or ai_model.input_price_per_million
+                        )
+                        st.caption(
+                            f"Includes {result.metadata.cached_input_tokens:,} cached input "
+                            f"tokens at ${cached_rate}/1M."
+                        )
+                    st.write(
+                        f"Output: {_format_cost_usd(cost.output_cost_usd)} at "
+                        f"${ai_model.output_price_per_million}/1M tokens"
+                    )
+                    st.caption(
+                        f"Estimate only. {ai_model.pricing_note} Provider invoices remain "
+                        "authoritative."
+                    )
 
             output_tab, pdf_tab, markdown_tab, json_tab = st.tabs(
                 ["Output", "Annotated PDF", "Markdown", "JSON"],

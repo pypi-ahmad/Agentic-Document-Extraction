@@ -27,15 +27,15 @@ uv sync --locked
 uv run streamlit run streamlit_app.py --server.port=8551
 ```
 
-Configuration uses `OPENAI_API_KEY` and optional `OPENAI_BASE_URL` for OpenAI, or
-`AGNES_API_KEY` for Agnes 2.5 Flash, from user/process environment variables, ignored
-`.env`, or ignored Streamlit secrets.
+Configuration prefers user/process environment variables. OpenAI uses `OPENAI_API_KEY`
+and the optional `OPENAI_BASE_URL`; Agnes 2.5 Flash uses `AGNES_API_KEY`. Ignored `.env`
+and Streamlit secrets remain portable fallbacks for other machines. See the complete
+[model catalog](MODELS.md).
 
 ## Added in v4.1
 
 - local Docling parsing for native PDFs and modern Office/OpenDocument/CSV input
-- OpenAI vision parsing for scanned PDFs and images
-- selectable Agnes 2.5 Flash vision parsing
+- selectable cloud vision parsing, including OpenAI and Agnes 2.5 Flash
 - automatic per-page routing for mixed PDFs
 - shared reading-order Markdown and hierarchical grounding JSON
 - HTML tables, atomic-line evidence, and table-cell metadata

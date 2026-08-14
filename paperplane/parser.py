@@ -14,6 +14,7 @@ from paperplane.contracts import (
     AtomicLineInput,
     BlockType,
     NormalizedBox,
+    ParserEngine,
     ParseResponse,
     assemble_parse_response,
 )
@@ -60,9 +61,7 @@ def _atomic_lines(markdown: str, box: NormalizedBox) -> list[AtomicLineInput]:
     return [AtomicLineInput(text=line, box=box) for line in markdown.splitlines() if line.strip()]
 
 
-def _agentic_page(
-    result: PageResult, *, parser: Literal["openai_vision", "agnes_vision"]
-) -> AgenticPageInput:
+def _agentic_page(result: PageResult, *, parser: ParserEngine) -> AgenticPageInput:
     chunks = sorted(result.chunks, key=lambda item: item.order)
     children_by_parent: dict[str, list[Any]] = {}
     for chunk in chunks:
@@ -153,7 +152,7 @@ class AgenticDocumentParser:
         *,
         vision_enabled: bool,
         vision_key_name: str = "OPENAI_API_KEY",
-        vision_parser: Literal["openai_vision", "agnes_vision"] = "openai_vision",
+        vision_parser: ParserEngine = "openai_vision",
         max_upload_bytes: int = DEFAULT_MAX_UPLOAD_BYTES,
         max_document_pages: int = DEFAULT_MAX_DOCUMENT_PAGES,
         recipe_version: RecipeVersion = DEFAULT_RECIPE_VERSION,
@@ -162,7 +161,7 @@ class AgenticDocumentParser:
         self.docling_parser = docling_parser
         self.vision_enabled = vision_enabled
         self.vision_key_name = vision_key_name
-        self.vision_parser: Literal["openai_vision", "agnes_vision"] = vision_parser
+        self.vision_parser: ParserEngine = vision_parser
         self.max_upload_bytes = max_upload_bytes
         self.max_document_pages = max_document_pages
         self.recipe_version: RecipeVersion = recipe_version
@@ -180,9 +179,23 @@ class AgenticDocumentParser:
         started = time.monotonic()
         pages: dict[int | None, AgenticPageInput] = {}
         warnings: list[str] = []
+        input_tokens = 0
+        output_tokens = 0
+        cached_input_tokens = 0
+        cache_write_tokens = 0
 
         async def describe_figure(image_png: bytes, caption: str) -> str:
-            return await self.processor.describe_figure(image_png, caption, mode=mode)
+            nonlocal input_tokens, output_tokens, cached_input_tokens, cache_write_tokens
+            description, usage = await self.processor.describe_figure_with_usage(
+                image_png,
+                caption,
+                mode=mode,
+            )
+            input_tokens += usage.input_tokens
+            output_tokens += usage.output_tokens
+            cached_input_tokens += usage.cached_input_tokens
+            cache_write_tokens += usage.cache_write_tokens
+            return description
 
         suffix = filename.lower().rsplit(".", 1)[-1]
         is_office = f".{suffix}" in OFFICE_EXTENSIONS
@@ -220,6 +233,10 @@ class AgenticDocumentParser:
                 mode=mode,
                 recipe_version=self.recipe_version,
             )
+            input_tokens += result.input_tokens
+            output_tokens += result.output_tokens
+            cached_input_tokens += result.cached_input_tokens
+            cache_write_tokens += result.cache_write_tokens
             pages[page_number] = _agentic_page(result, parser=self.vision_parser)
 
         if not pages:
@@ -227,7 +244,15 @@ class AgenticDocumentParser:
 
         ordered_pages = [pages[key] for key in sorted(pages, key=lambda item: item or 0)]
         engines = {page.parser for page in ordered_pages}
-        engine: Literal["docling", "openai_vision", "agnes_vision", "hybrid"] = (
+        engine: Literal[
+            "docling",
+            "openai_vision",
+            "xai_vision",
+            "google_vision",
+            "anthropic_vision",
+            "agnes_vision",
+            "hybrid",
+        ] = (
             "hybrid"
             if len(engines) > 1
             else "docling"
@@ -240,11 +265,16 @@ class AgenticDocumentParser:
             document_id=request_id,
             job_id=request_id,
             model=model,
+            ai_model=self.processor.model,
             pages=ordered_pages,
             duration_ms=round((time.monotonic() - started) * 1000),
             source_format=inspected.source_format,
             engine=engine,
             warnings=warnings,
+            input_tokens=input_tokens,
+            output_tokens=output_tokens,
+            cached_input_tokens=cached_input_tokens,
+            cache_write_tokens=cache_write_tokens,
         )
 
 

@@ -1,12 +1,12 @@
 {
   "name": "Paperplane 4.1.0",
-  "description": "Local Streamlit document extraction with Docling and selectable OpenAI/Agnes vision inference",
+  "description": "Local Streamlit document extraction with Docling and six selectable cloud vision models",
   "nodes": [
     {
       "id": "ui",
       "type": "application",
       "label": "Streamlit workspace",
-      "sublabel": "Upload, preview, mode, inspect, download",
+      "sublabel": "Upload, preview, mode, inspect cost, download",
       "sources": [{"path": "streamlit_app.py", "line": 1}]
     },
     {
@@ -44,22 +44,16 @@
       ]
     },
     {
-      "id": "openai",
+      "id": "providers",
       "type": "external",
-      "label": "OpenAI Responses API",
-      "sublabel": "Scans, images, and optional figure descriptions"
-    },
-    {
-      "id": "agnes",
-      "type": "external",
-      "label": "Agnes Chat Completions API",
-      "sublabel": "Agnes 2.5 Flash vision alternative"
+      "label": "Cloud model providers",
+      "sublabel": "OpenAI, xAI, Google, Anthropic, or Agnes"
     },
     {
       "id": "assembler",
       "type": "service",
       "label": "Grounded assembler",
-      "sublabel": "Reading-order Markdown and hierarchical JSON",
+      "sublabel": "Markdown, hierarchical JSON, and token totals",
       "sources": [{"path": "paperplane/contracts.py", "line": 1}]
     },
     {
@@ -75,8 +69,7 @@
     {"from": "runtime", "to": "router", "label": "direct Python call"},
     {"from": "router", "to": "docling", "label": "native content"},
     {"from": "router", "to": "vision", "label": "scans and images"},
-    {"from": "vision", "to": "openai", "label": "structured requests"},
-    {"from": "vision", "to": "agnes", "label": "JSON-only requests"},
+    {"from": "vision", "to": "providers", "label": "provider-native structured requests"},
     {"from": "docling", "to": "assembler", "label": "native blocks"},
     {"from": "vision", "to": "assembler", "label": "grounded blocks"},
     {"from": "assembler", "to": "evidence", "label": "validated response"},
@@ -84,7 +77,7 @@
     {"from": "evidence", "to": "ui", "label": "in-memory PDF"}
   ],
   "boundaries": {
-    "network": "127.0.0.1 Streamlit plus selected OpenAI or Agnes API",
+    "network": "127.0.0.1 Streamlit plus the selected model provider API",
     "state": "Current Streamlit session only",
     "persistence": "No document or result store"
   }

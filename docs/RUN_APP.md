@@ -16,12 +16,15 @@ while still checking the locked dependency set.
 
 ## Credentials
 
-The launcher refreshes `OPENAI_API_KEY`, `OPENAI_BASE_URL`, and `AGNES_API_KEY` from the
-current Windows user's environment registry. It never prints or writes their values.
+The launcher refreshes all catalog provider keys and `OPENAI_BASE_URL` from the current
+Windows user's environment registry. It never prints or writes their values.
 
 ```powershell
 [Environment]::SetEnvironmentVariable("OPENAI_API_KEY", "your-key", "User")
 [Environment]::SetEnvironmentVariable("OPENAI_BASE_URL", "https://api.openai.com", "User")
+[Environment]::SetEnvironmentVariable("XAI_API_KEY", "your-key", "User")
+[Environment]::SetEnvironmentVariable("GEMINI_API_KEY", "your-key", "User")
+[Environment]::SetEnvironmentVariable("ANTHROPIC_API_KEY", "your-key", "User")
 [Environment]::SetEnvironmentVariable("AGNES_API_KEY", "your-key", "User")
 ```
 
@@ -32,7 +35,8 @@ copy `.env.example` to `.env` or `.streamlit/secrets.toml.example` to
 Without the key for the selected model, native PDFs and supported Office files remain
 available. Scans and images show an actionable error, and figures use placeholders.
 
-The AI selector defaults to OpenAI. Choose **Agnes 2.5 Flash** to use `AGNES_API_KEY`.
+The AI selector defaults to **GPT-5.6 Luna**. See [MODELS.md](MODELS.md) for every choice
+and its credential.
 
 ## Terminal launch
 
@@ -46,8 +50,9 @@ uploads at 200 MB.
 
 ## Use and stop
 
-After parsing, inspect Output, Annotated PDF, Markdown, and JSON. Downloading the annotated
-PDF, Markdown, or JSON is the only application-supported persistence action.
+After parsing, review token usage and the estimated model cost, then inspect Output,
+Annotated PDF, Markdown, and JSON. Downloading the annotated PDF, Markdown, or JSON is the
+only application-supported persistence action.
 
 Choose **New extraction** to clear the workspace. Press Ctrl+C or close the launcher window
 to stop Streamlit and end active sessions.

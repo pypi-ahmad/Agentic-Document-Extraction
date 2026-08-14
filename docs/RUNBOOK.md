@@ -15,21 +15,16 @@ installer can complete.
 
 ## A scan or image asks for an API key
 
-Set `OPENAI_API_KEY` plus optional `OPENAI_BASE_URL`, or set `AGNES_API_KEY`, as Windows
-user environment variables. Select the matching model in the UI. Alternatively use ignored
-`.env` or Streamlit secrets. Native PDFs and supported Office files do not require a key.
+Set the environment variable listed for the selected model in [MODELS.md](MODELS.md).
+Select the matching model in the UI. Alternatively use ignored `.env` or Streamlit secrets.
+Native PDFs and supported Office files do not require a key.
 
-## OpenAI request fails
+## Provider request fails
 
-Check the credential, `OPENAI_BASE_URL`, network access, Responses API compatibility, model
-availability, and local terminal logs. Paperplane displays a safe summary instead of raw
-provider payloads. The default request timeout is 180 seconds.
-
-## Agnes request fails
-
-Check `AGNES_API_KEY`, network access to `https://apihub.agnes-ai.com`, and account model
-access. Paperplane uses `agnes-2.5-flash` through Chat Completions and reports only a safe
-summary on failure.
+Check the selected model's credential, provider network access, account model access, and
+local terminal logs. For OpenAI only, also check `OPENAI_BASE_URL` and Responses API
+compatibility. Paperplane displays a safe summary instead of raw provider payloads. The
+default request timeout is 180 seconds.
 
 ## File is rejected
 

@@ -11,5 +11,8 @@ def test_env_example_contains_only_safe_placeholders() -> None:
     assert values == {
         "OPENAI_API_KEY": "replace-with-your-openai-api-key",
         "OPENAI_BASE_URL": "https://api.openai.com",
+        "XAI_API_KEY": "replace-with-your-xai-api-key",
+        "GEMINI_API_KEY": "replace-with-your-gemini-api-key",
+        "ANTHROPIC_API_KEY": "replace-with-your-anthropic-api-key",
         "AGNES_API_KEY": "replace-with-your-agnes-api-key",
     }

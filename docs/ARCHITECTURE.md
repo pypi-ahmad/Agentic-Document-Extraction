@@ -11,11 +11,9 @@ flowchart LR
     Runtime --> Inspect[Validate and inspect]
     Inspect -->|native PDF or Office| Docling[Local Docling]
     Inspect -->|scan or image| Render[PyMuPDF or Pillow render]
-    Render --> Choice{AI model}
-    Choice -->|OpenAI| OpenAI[OpenAI Luna/Terra policy]
-    Choice -->|Agnes| Agnes[Agnes 2.5 Flash policy]
-    OpenAI --> Ground[Deterministic grounding]
-    Agnes --> Ground
+    Render --> Catalog{Six-model catalog}
+    Catalog --> Adapter[Provider-native adapter]
+    Adapter --> Ground[Deterministic grounding]
     Docling --> Assemble[Shared contract assembler]
     Ground --> Assemble
     Assemble --> Evidence[In-memory annotated PDF]
@@ -29,8 +27,11 @@ flowchart LR
 |---|---|
 | `streamlit_app.py` | Widgets, preview, session state, result views, and downloads |
 | `paperplane/runtime.py` | Cached Docling resources and short-lived provider HTTP client |
+| `paperplane/model_catalog.py` | Fixed model names, API IDs, providers, and credential names |
 | `paperplane/agnes_document.py` | Agnes 2.5 Flash Chat Completions boundary |
-| `paperplane/openai_document.py` | OpenAI Responses boundary |
+| `paperplane/openai_document.py` | OpenAI and xAI Responses boundary |
+| `paperplane/gemini_document.py` | Google Gemini `generateContent` boundary |
+| `paperplane/anthropic_document.py` | Anthropic Messages boundary |
 | `paperplane/ingest.py` | Type, integrity, size, page, canvas, pixel, and routing checks |
 | `paperplane/parser.py` | Per-document orchestration and engine merge |
 | `paperplane/docling_parser.py` | Local native-document structure and table conversion |
@@ -43,12 +44,13 @@ flowchart LR
 
 1. Streamlit accepts one supported document, one AI model, and one processing mode.
 2. The parser validates bytes and classifies each PDF page as native or scan-like.
-3. Docling handles native content; the selected OpenAI or Agnes model handles scans and images.
+3. Docling handles native content; the selected catalog model handles scans and images.
 4. Mixed-engine pages are merged by original one-based page number.
 5. The assembler produces one validated `ParseResponse` containing Markdown, structure,
-   metadata, ranges, and grounding.
+   metadata, provider token usage, ranges, and grounding.
 6. The evidence builder overlays physical boxes or emits a semantic-only Office report.
-7. Streamlit displays the result and exposes three downloads.
+7. Streamlit estimates model cost from the reported tokens and configured catalog rates,
+   displays the result, and exposes three downloads.
 8. The provider client closes; document state remains only in the current Streamlit session.
 
 ## Grounding model
@@ -64,8 +66,8 @@ The cached Docling converter contains model resources only. Uploads, model respo
 annotated PDFs, and final results are never placed in a persistent application cache.
 
 Configuration resolves in this order: existing process/user environment, ignored `.env`,
-ignored Streamlit secrets, then the built-in provider base URLs. OpenAI uses
-`OPENAI_API_KEY` and optional `OPENAI_BASE_URL`; Agnes uses `AGNES_API_KEY` and its fixed
-official API base URL. Streamlit binds to
+ignored Streamlit secrets, then the built-in provider base URLs. Each model's credential
+name is defined in the [model catalog](MODELS.md); `OPENAI_BASE_URL` is an optional
+OpenAI-only override. Streamlit binds to
 `127.0.0.1`, enables XSRF protection, and sanitizes model-produced Markdown before rendering
 supported HTML.

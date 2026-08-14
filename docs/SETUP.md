@@ -12,13 +12,15 @@ No Node.js, container runtime, GPU, C++ compiler, database, or local model serve
 
 ## Credentials
 
-The key for the selected OpenAI or Agnes model is required for scans, images, and
-native-document figure descriptions. Native PDFs and supported Office files can run
-locally without either key.
+The key for the selected cloud model is required for scans, images, and native-document
+figure descriptions. Native PDFs and supported Office files can run locally without a key.
 
 ```powershell
 [Environment]::SetEnvironmentVariable("OPENAI_API_KEY", "your-key", "User")
 [Environment]::SetEnvironmentVariable("OPENAI_BASE_URL", "https://api.openai.com", "User")
+[Environment]::SetEnvironmentVariable("XAI_API_KEY", "your-key", "User")
+[Environment]::SetEnvironmentVariable("GEMINI_API_KEY", "your-key", "User")
+[Environment]::SetEnvironmentVariable("ANTHROPIC_API_KEY", "your-key", "User")
 [Environment]::SetEnvironmentVariable("AGNES_API_KEY", "your-key", "User")
 ```
 
@@ -27,13 +29,13 @@ Open a new terminal after setting user variables. Configuration precedence is:
 1. existing process or Windows user environment;
 2. ignored `.env` copied from `.env.example`;
 3. ignored `.streamlit/secrets.toml` copied from its example; and
-4. the built-in OpenAI and Agnes base URLs.
+4. the built-in provider base URLs.
 
 Never place a real key in an example file or commit it.
 
-OpenAI is selected by default in the UI. Select **Agnes 2.5 Flash** when using
-`AGNES_API_KEY`. Agnes uses its fixed official base URL; `OPENAI_BASE_URL` affects only the
-OpenAI selection.
+**GPT-5.6 Luna** is selected by default. Select the model matching the configured key.
+`OPENAI_BASE_URL` affects only the OpenAI selection. See [MODELS.md](MODELS.md) for the
+complete mapping.
 
 ## Manual runtime setup
 

@@ -10,12 +10,13 @@ authentication system, database, worker, or durable upload store.
 
 Operators must:
 
-- keep `OPENAI_API_KEY`, optional `OPENAI_BASE_URL`, and `AGNES_API_KEY` in user/process
-  environment variables, an ignored `.env`, or ignored Streamlit secrets, in that
-  precedence order;
+- keep `OPENAI_API_KEY`, `XAI_API_KEY`, `GEMINI_API_KEY`, `ANTHROPIC_API_KEY`, and
+  `AGNES_API_KEY` in user/process environment variables, an ignored `.env`, or ignored
+  Streamlit secrets, in that precedence order; `OPENAI_BASE_URL` is an optional
+  OpenAI-only override;
 - run the app on `127.0.0.1`;
 - review sensitive document handling before sending scans, images, or figure crops to the
-  selected OpenAI or Agnes endpoint;
+  selected model provider endpoint;
 - use the local Docling path for supported native documents when external inference is not desired;
 - keep annotated PDFs session-only unless the user explicitly downloads them;
 - keep dependencies locked and updated;

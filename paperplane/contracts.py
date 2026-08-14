@@ -31,7 +31,14 @@ StructureType = Literal[
     "scan_code",
 ]
 GroundingStatus = Literal["grounded", "semantic_only"]
-ParserEngine = Literal["docling", "openai_vision", "agnes_vision"]
+ParserEngine = Literal[
+    "docling",
+    "openai_vision",
+    "xai_vision",
+    "google_vision",
+    "anthropic_vision",
+    "agnes_vision",
+]
 
 
 class NormalizedBox(BaseModel):
@@ -114,15 +121,28 @@ class StructureNode(BaseModel):
 class ParseMetadata(BaseModel):
     job_id: str = Field(min_length=1)
     model: str = Field(min_length=1)
+    ai_model: str | None = None
     page_count: int = Field(ge=1)
     output_characters: int = Field(ge=0)
+    input_tokens: int = Field(default=0, ge=0)
+    output_tokens: int = Field(default=0, ge=0)
+    cached_input_tokens: int = Field(default=0, ge=0)
+    cache_write_tokens: int = Field(default=0, ge=0)
     range_units: Literal["unicode_codepoints"] = "unicode_codepoints"
     failed_pages: list[int] = Field(default_factory=list)
     duration_ms: int | None = Field(default=None, ge=0)
     service_tier: str | None = None
     total_credits: int = Field(default=0, ge=0)
     source_format: str = Field(default="unknown", min_length=1)
-    engine: Literal["docling", "openai_vision", "agnes_vision", "hybrid"] = "openai_vision"
+    engine: Literal[
+        "docling",
+        "openai_vision",
+        "xai_vision",
+        "google_vision",
+        "anthropic_vision",
+        "agnes_vision",
+        "hybrid",
+    ] = "openai_vision"
     warnings: list[str] = Field(default_factory=list)
 
 
@@ -275,11 +295,24 @@ def assemble_parse_response(
     job_id: str,
     model: str,
     pages: list[AgenticPageInput],
+    ai_model: str | None = None,
     failed_pages: list[int] | None = None,
     duration_ms: int | None = None,
     source_format: str = "unknown",
-    engine: Literal["docling", "openai_vision", "agnes_vision", "hybrid"] = "openai_vision",
+    engine: Literal[
+        "docling",
+        "openai_vision",
+        "xai_vision",
+        "google_vision",
+        "anthropic_vision",
+        "agnes_vision",
+        "hybrid",
+    ] = "openai_vision",
     warnings: list[str] | None = None,
+    input_tokens: int = 0,
+    output_tokens: int = 0,
+    cached_input_tokens: int = 0,
+    cache_write_tokens: int = 0,
 ) -> ParseResponse:
     """Assemble page-agent observations into globally grounded Markdown without model calls."""
 
@@ -379,8 +412,13 @@ def assemble_parse_response(
         metadata=ParseMetadata(
             job_id=job_id,
             model=model,
+            ai_model=ai_model,
             page_count=len(pages),
             output_characters=len(markdown),
+            input_tokens=input_tokens,
+            output_tokens=output_tokens,
+            cached_input_tokens=cached_input_tokens,
+            cache_write_tokens=cache_write_tokens,
             failed_pages=failed_pages or [],
             duration_ms=duration_ms,
             source_format=source_format,
@@ -426,6 +464,7 @@ __all__ = [
     "NormalizedBox",
     "ParseMetadata",
     "ParseResponse",
+    "ParserEngine",
     "StructureNode",
     "assemble_parse_response",
 ]

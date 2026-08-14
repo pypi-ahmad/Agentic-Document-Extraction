@@ -50,16 +50,19 @@ Set Windows user environment variables for scanned PDFs and images:
 ```powershell
 [Environment]::SetEnvironmentVariable("OPENAI_API_KEY", "your-key", "User")
 [Environment]::SetEnvironmentVariable("OPENAI_BASE_URL", "https://api.openai.com", "User")
+[Environment]::SetEnvironmentVariable("XAI_API_KEY", "your-key", "User")
+[Environment]::SetEnvironmentVariable("GEMINI_API_KEY", "your-key", "User")
+[Environment]::SetEnvironmentVariable("ANTHROPIC_API_KEY", "your-key", "User")
 [Environment]::SetEnvironmentVariable("AGNES_API_KEY", "your-key", "User")
 ```
 
 Open a new terminal after changing user-level variables. `Paperplane.cmd` also refreshes
 these values directly from the current user's Windows environment before launch.
 
-`OPENAI_BASE_URL` is optional and defaults to `https://api.openai.com`. Select OpenAI or
-Agnes 2.5 Flash in the UI; scans and images require the matching key. Native PDFs and
-supported Office files can run locally without either key; figure descriptions are then
-unavailable.
+`OPENAI_BASE_URL` is an optional OpenAI-only override. Select one of the six models in the
+[catalog](docs/MODELS.md); scans and images require its matching key. Native PDFs and
+supported Office files can run locally without a provider key; figure descriptions are
+then unavailable.
 
 On a machine where user-level variables are impractical, use one ignored local fallback:
 
@@ -75,9 +78,10 @@ the default base URL. Never commit a real credential.
 2. Select Fast, Balanced, or Audit mode.
 3. Select **Parse document**.
 4. Inspect page count, block count, engine, duration, and warnings.
-5. Review the Output, Annotated PDF, Markdown, and JSON tabs.
-6. Download the Markdown, annotated PDF, or JSON if the result should persist.
-7. Choose **New extraction** to clear the current workspace.
+5. Review provider token totals and the expandable estimated-cost calculation.
+6. Review the Output, Annotated PDF, Markdown, and JSON tabs.
+7. Download the Markdown, annotated PDF, or JSON if the result should persist.
+8. Choose **New extraction** to clear the current workspace.
 
 PDFs and images are previewed before parsing. Office and spreadsheet content appears after
 Docling has converted it into the generated Markdown.
@@ -89,16 +93,16 @@ uploaded bytes
   -> validate size, extension, integrity, and page limits
   -> inspect every PDF page
      -> meaningful selectable text and no dominant full-page raster: Docling
-     -> otherwise: selected OpenAI or Agnes vision model
+     -> otherwise: selected cloud vision model
   -> non-PDF Office/OpenDocument/CSV: Docling
-  -> image: selected OpenAI or Agnes vision model
+  -> image: selected cloud vision model
   -> merge results in original reading order
 ```
 
 A mixed PDF can use both engines. Pages are merged by their original one-based page number.
 There is no manual engine selector because routing is derived from the document itself.
 
-The final metadata reports `docling`, `openai_vision`, `agnes_vision`, or `hybrid`.
+The final metadata reports the selected provider engine, `docling`, or `hybrid`.
 
 ## 5. Understand the processing modes
 
@@ -106,19 +110,18 @@ The UI labels map to stable Paperplane model names and internal processing polic
 
 | UI mode | Parser model | Vision behavior |
 |---|---|---|
-| Fast | `paperplane-ade-fast-latest` | Luna draft and deterministic grounding; no Terra pass |
-| Balanced | `paperplane-ade-latest` | Luna draft with Terra checks for flagged content |
+| Fast | `paperplane-ade-fast-latest` | One draft and deterministic grounding; no verification pass |
+| Balanced | `paperplane-ade-latest` | Selected-model checks for flagged content |
 | Audit | `paperplane-ade-audit-latest` | Highest rendering, verification, and repair budget |
 
 The selected mode changes work performed on pixel-based content. Native Docling conversion
 still follows the document's structure, although the selected AI model can describe
 figures when its key is configured.
 
-The table describes the OpenAI model roles. When Agnes is selected,
-`agnes-2.5-flash` serves every model-call role; the mode still bounds reconciliation,
-verification, crop work, and repairs.
+The selected model serves every model-call role. The mode bounds reconciliation,
+verification, crop work, and repairs without changing the selected API model ID.
 
-## 6. Understand the two engines
+## 6. Understand the processing engines
 
 ### Docling path
 
@@ -134,22 +137,18 @@ Native-document figures use the selected AI model for a literal semantic descrip
 available. Without a key—or if description fails—the figure remains in reading order with
 an explicit “description unavailable” placeholder and a result warning.
 
-### OpenAI vision path
+### Cloud vision path
 
-`gpt-5.6-luna` reads each rendered scan or image and proposes reading-order blocks, tight
-normalized boxes, atomic visual lines, and table-cell coordinates. Deterministic code then
-aligns native words when available, suppresses duplicates, validates critical tokens, and
-builds evidence.
+The selected model reads each rendered scan or image and proposes reading-order blocks,
+tight normalized boxes, atomic visual lines, and table-cell coordinates. Deterministic code
+then aligns native words when available, suppresses duplicates, validates critical tokens,
+and builds evidence.
 
-Balanced and Audit modes can ask `gpt-5.6-terra` to reconcile a difficult page or verify a
+Balanced and Audit modes can reuse that model to reconcile a difficult page or verify a
 focused crop. Vision pages are processed sequentially and bounded by the selected policy.
-
-### Agnes 2.5 Flash vision path
-
-`agnes-2.5-flash` is available from the AI model selector. It fills both draft and
-verification roles through Agnes Chat Completions, then passes through the same
-deterministic grounding and Pydantic contract validation. Paperplane reads
-`AGNES_API_KEY` from the environment and never displays or stores it.
+Provider-native adapters cover OpenAI and xAI Responses, Google Gemini `generateContent`,
+Anthropic Messages, and Agnes Chat Completions. Every result passes through the same
+deterministic grounding and Pydantic contract validation.
 
 ## 7. Understand the output contract
 
@@ -179,7 +178,9 @@ Important contract rules:
   document is parsed again.
 
 The response metadata includes source format, model, engine, duration, page count, output
-character count, and non-fatal warnings.
+character count, provider token usage, and non-fatal warnings. Streamlit uses those token
+counts and the configured rates in `docs/MODELS.md` to estimate input, output, and total
+cost. The estimate does not replace the provider invoice.
 
 ## 8. Understand the annotated PDF
 
@@ -200,7 +201,7 @@ Choosing another file, starting a new extraction, closing the tab, or stopping t
 that application state. Downloading is the user's explicit persistence action.
 
 Docling processing is local. Scanned pages, image files, and requested figure crops are sent
-to the selected OpenAI Responses or Agnes Chat Completions endpoint. Paperplane does not print,
+to the selected provider endpoint. Paperplane does not print,
 commit, or deliberately persist the API key or document content.
 
 The launcher still installs dependencies and model weights on disk; “stateless” describes
@@ -217,8 +218,8 @@ telemetry. Rendered Markdown is sanitized before the UI allows its supported HTM
 - Maximum decoded image content: 40,000,000 pixels across frames.
 - Processing is synchronous; there are no resumable or background jobs.
 - Legacy DOC/PPT/XLS, RTF, encrypted PDFs, and password-protected documents are unsupported.
-- Local Docling conversion does not OCR scanned pages; those require the selected OpenAI
-  or Agnes model.
+- Local Docling conversion does not OCR scanned pages; those require the selected cloud
+  model and its credential.
 - There is no schema extraction, async API, saved history, reusable schema store, or
   multi-user authentication.
 - Extraction and grounding must be reviewed before high-impact use.
@@ -229,16 +230,19 @@ Read these files in order:
 
 1. `streamlit_app.py` — upload, mode controls, preview, result tabs, and downloads.
 2. `paperplane/runtime.py` — in-process construction of Docling and the selected AI adapter.
-3. `paperplane/openai_document.py` — OpenAI Responses structured-output boundary.
-4. `paperplane/agnes_document.py` — Agnes 2.5 Flash Chat Completions boundary.
-5. `paperplane/ingest.py` — validation, PDF classification, and page rendering.
-6. `paperplane/parser.py` — automatic routing, engine merge, and response metadata.
-7. `paperplane/docling_parser.py` — native serialization, tables, figures, and provenance.
-8. `paperplane/pipeline.py` — provider-neutral drafting, deterministic checks, and verification.
-9. `paperplane/grounding.py` — coordinate transforms and native-word alignment.
-10. `paperplane/contracts.py` — final Markdown assembly and contract validation.
-11. `paperplane/annotated_pdf.py` — source overlays and semantic evidence reports.
-12. `tests/` — executable examples of routing, contracts, configuration, UI, and artifacts.
+3. `paperplane/model_catalog.py` — supported model names, API IDs, and credential mapping.
+4. `paperplane/openai_document.py` — OpenAI and xAI Responses boundary.
+5. `paperplane/gemini_document.py` — Google Gemini `generateContent` boundary.
+6. `paperplane/anthropic_document.py` — Anthropic Messages boundary.
+7. `paperplane/agnes_document.py` — Agnes Chat Completions boundary.
+8. `paperplane/ingest.py` — validation, PDF classification, and page rendering.
+9. `paperplane/parser.py` — automatic routing, engine merge, and response metadata.
+10. `paperplane/docling_parser.py` — native serialization, tables, figures, and provenance.
+11. `paperplane/pipeline.py` — provider-neutral drafting, deterministic checks, and verification.
+12. `paperplane/grounding.py` — coordinate transforms and native-word alignment.
+13. `paperplane/contracts.py` — final Markdown assembly and contract validation.
+14. `paperplane/annotated_pdf.py` — source overlays and semantic evidence reports.
+15. `tests/` — executable examples of routing, contracts, configuration, UI, and artifacts.
 
 The important design boundary is simple: Streamlit owns interaction and session state;
 `paperplane` receives bytes and returns validated Python values without saving them.
@@ -295,5 +299,6 @@ uv run streamlit run streamlit_app.py --server.port=8551
 ```
 
 The concise tutorial is [docs/ZERO_TO_MASTERY.md](docs/ZERO_TO_MASTERY.md). Continue with
-the [architecture guide](docs/ARCHITECTURE.md), [capability reference](docs/APP_CAPABILITIES.md),
-[run guide](docs/RUN_APP.md), and [limitations](docs/LIMITATIONS.md).
+the [model catalog](docs/MODELS.md), [architecture guide](docs/ARCHITECTURE.md),
+[capability reference](docs/APP_CAPABILITIES.md), [run guide](docs/RUN_APP.md), and
+[limitations](docs/LIMITATIONS.md).

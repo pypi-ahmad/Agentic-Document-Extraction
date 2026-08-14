@@ -17,7 +17,7 @@ system.
 Paperplane keeps the useful document-first workflow without the removed service stack:
 
 - one upload and preview area;
-- OpenAI or Agnes 2.5 Flash model selection;
+- six-model cloud vision selection;
 - Fast, Balanced, and Audit mode selection;
 - direct in-process parsing;
 - Output, Annotated PDF, Markdown, and JSON tabs;

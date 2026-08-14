@@ -28,7 +28,7 @@ async def test_agnes_uses_chat_completions_with_local_image_data() -> None:
     calls: list[dict] = []
     with capture_audit_calls(calls):
         result = await adapter.generate_structured(
-            model="gpt-5.6-luna",
+            model=AGNES_MODEL,
             image=b"png",
             instructions="Extract chunks.",
             schema_name="page_draft",

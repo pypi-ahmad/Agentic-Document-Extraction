@@ -13,6 +13,18 @@ from paperplane.contracts import (
 )
 
 APP_PATH = Path(__file__).resolve().parents[1] / "streamlit_app.py"
+API_KEY_NAMES = [
+    "OPENAI_API_KEY",
+    "XAI_API_KEY",
+    "GEMINI_API_KEY",
+    "ANTHROPIC_API_KEY",
+    "AGNES_API_KEY",
+]
+
+
+def _clear_api_keys(monkeypatch) -> None:
+    for name in API_KEY_NAMES:
+        monkeypatch.delenv(name, raising=False)
 
 
 def _png() -> bytes:
@@ -22,8 +34,7 @@ def _png() -> bytes:
 
 
 def test_app_explains_missing_api_key(monkeypatch) -> None:
-    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
-    monkeypatch.delenv("AGNES_API_KEY", raising=False)
+    _clear_api_keys(monkeypatch)
     app = AppTest.from_file(APP_PATH).run()
 
     assert app.title[0].value == "Paperplane"
@@ -32,8 +43,7 @@ def test_app_explains_missing_api_key(monkeypatch) -> None:
 
 
 def test_app_allows_local_document_upload_without_api_key(monkeypatch) -> None:
-    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
-    monkeypatch.delenv("AGNES_API_KEY", raising=False)
+    _clear_api_keys(monkeypatch)
     app = AppTest.from_file(APP_PATH).run()
     app.file_uploader[0].set_value(
         (
@@ -50,11 +60,16 @@ def test_app_parses_upload_and_exposes_downloads(monkeypatch) -> None:
     async def fake_parse_document(**kwargs):
         assert kwargs["filename"] == "invoice.png"
         assert kwargs["model"] == "paperplane-ade-latest"
-        assert kwargs["provider"] == "openai"
+        assert kwargs["ai_model"] == "gpt-5.6-luna"
+        assert kwargs["openai_base_url"] == "https://openai.example/v1"
         return assemble_parse_response(
             document_id="document",
             job_id="request",
             model=kwargs["model"],
+            ai_model=kwargs["ai_model"],
+            input_tokens=1_000_000,
+            output_tokens=1_000_000,
+            cached_input_tokens=250_000,
             pages=[
                 AgenticPageInput(
                     page_number=1,
@@ -71,12 +86,17 @@ def test_app_parses_upload_and_exposes_downloads(monkeypatch) -> None:
         )
 
     monkeypatch.setenv("OPENAI_API_KEY", "test-key")
+    monkeypatch.setenv("OPENAI_BASE_URL", "https://openai.example/v1")
     monkeypatch.setattr(runtime, "parse_document", fake_parse_document)
     app = AppTest.from_file(APP_PATH).run()
     app.file_uploader[0].set_value(("invoice.png", _png(), "image/png")).run()
     next(button for button in app.button if button.label == "Parse document").click().run()
 
     assert any(metric.label == "Pages" and metric.value == "1" for metric in app.metric)
+    assert any(
+        metric.label == "Estimated cost" and metric.value == "$1.3550" for metric in app.metric
+    )
+    assert any("1,000,000 input tokens" in caption.value for caption in app.caption)
     assert any("Invoice total: 42" in item.value for item in app.markdown)
     assert [tab.label for tab in app.tabs] == ["Output", "Annotated PDF", "Markdown", "JSON"]
     assert {button.label for button in app.download_button} == {
@@ -118,5 +138,19 @@ def test_app_selects_agnes_model(monkeypatch) -> None:
     app.file_uploader[0].set_value(("invoice.png", _png(), "image/png")).run()
     next(button for button in app.button if button.label == "Parse document").click().run()
 
-    assert captured["provider"] == "agnes"
+    assert captured["ai_model"] == "agnes-2.5-flash"
     assert captured["api_key"] == "agnes-test"
+
+
+def test_app_lists_only_supported_document_models(monkeypatch) -> None:
+    _clear_api_keys(monkeypatch)
+    app = AppTest.from_file(APP_PATH).run()
+
+    assert app.selectbox[0].options == [
+        "Grok 4.6",
+        "GPT-5.6 Luna",
+        "Gemini 3.5 Flash-Lite",
+        "Gemini 3.6 Flash",
+        "Claude Sonnet 5",
+        "Agnes 2.5 Flash",
+    ]

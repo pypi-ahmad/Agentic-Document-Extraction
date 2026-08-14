@@ -173,7 +173,7 @@ class StructuredAdapter(Protocol):
     async def generate_structured(
         self,
         *,
-        model: Literal["gpt-5.6-luna", "gpt-5.6-terra"],
+        model: str,
         image: bytes | None,
         instructions: str,
         context: str | None = None,
@@ -249,9 +249,9 @@ def _raw_chunks_agree(
 def _merge_reconciled_chunks(
     draft_chunks: list[dict[str, Any]], reconciled_chunks: list[dict[str, Any]]
 ) -> list[dict[str, Any]]:
-    terra_to_draft: dict[int, int] = {}
+    verification_to_draft: dict[int, int] = {}
     used_draft: set[int] = set()
-    for terra_index, candidate in enumerate(reconciled_chunks, start=1):
+    for verification_index, candidate in enumerate(reconciled_chunks, start=1):
         candidate_box = _parse_model_box(candidate.get("box"))
         matches = [
             (overlap_over_smaller_area(candidate_box, draft_box), draft_index)
@@ -264,30 +264,32 @@ def _merge_reconciled_chunks(
         ]
         if matches:
             _, draft_index = max(matches)
-            terra_to_draft[terra_index] = draft_index
+            verification_to_draft[verification_index] = draft_index
             used_draft.add(draft_index)
 
-    draft_to_terra = {draft: terra for terra, draft in terra_to_draft.items()}
+    draft_to_verification = {
+        draft: verification for verification, draft in verification_to_draft.items()
+    }
     records: list[tuple[dict[str, Any], str, int, int | None]] = []
     for draft_index, draft in enumerate(draft_chunks, start=1):
-        terra_index = draft_to_terra.get(draft_index)
-        if terra_index is not None:
-            reconciled = dict(reconciled_chunks[terra_index - 1])
+        verification_index = draft_to_verification.get(draft_index)
+        if verification_index is not None:
+            reconciled = dict(reconciled_chunks[verification_index - 1])
             reconciled["_reconciled"] = True
-            records.append((reconciled, "terra", terra_index, draft_index))
+            records.append((reconciled, "verification", verification_index, draft_index))
         else:
             fallback = dict(draft)
             fallback["_draft_fallback"] = True
             records.append((fallback, "draft", draft_index, draft_index))
 
-    unmatched_terra = []
+    unmatched_verification = []
     for index, chunk in enumerate(reconciled_chunks, start=1):
-        if index in terra_to_draft:
+        if index in verification_to_draft:
             continue
         reconciled = dict(chunk)
         reconciled["_reconciled"] = True
-        unmatched_terra.append((reconciled, "terra", index, None))
-    for record in unmatched_terra:
+        unmatched_verification.append((reconciled, "verification", index, None))
+    for record in unmatched_verification:
         key = _spatial_reading_key(record[0])
         position = next(
             (
@@ -304,15 +306,15 @@ def _merge_reconciled_chunks(
         for output_index, (_, _, _, draft_index) in enumerate(records, start=1)
         if draft_index is not None
     }
-    terra_positions = {
+    verification_positions = {
         source_index: output_index
         for output_index, (_, source, source_index, _) in enumerate(records, start=1)
-        if source == "terra"
+        if source == "verification"
     }
     merged: list[dict[str, Any]] = []
     for output_index, (chunk, source, _, _) in enumerate(records, start=1):
         parent = chunk.get("parent_order")
-        positions = terra_positions if source == "terra" else draft_positions
+        positions = verification_positions if source == "verification" else draft_positions
         remapped = positions.get(parent) if isinstance(parent, int) else None
         chunk["parent_order"] = (
             remapped if remapped is not None and remapped < output_index else None
@@ -435,19 +437,20 @@ def _best_fallback_content(
     candidate_text: str,
     candidate_markdown: str,
     verification: dict[str, Any] | None,
-    candidate_source_model: str = "gpt-5.6-luna",
+    candidate_source_model: str,
+    verification_source_model: str,
     candidate_source_pass: str = "page_draft",
 ) -> tuple[str, str, str, str]:
     text, markdown = _fallback_content(candidate_text, candidate_markdown)
     if text or markdown:
         return text, markdown, candidate_source_model, candidate_source_pass
-    terra_text, terra_markdown = _fallback_content(
+    verification_text, verification_markdown = _fallback_content(
         str((verification or {}).get("text", "")),
         str((verification or {}).get("markdown", "")),
     )
-    if terra_text or terra_markdown:
-        return terra_text, terra_markdown, "gpt-5.6-terra", "crop_fallback"
-    return "", "", "gpt-5.6-luna", "page_draft"
+    if verification_text or verification_markdown:
+        return verification_text, verification_markdown, verification_source_model, "crop_fallback"
+    return "", "", candidate_source_model, "page_draft"
 
 
 def _source_box(box: BoundingBox, page: RenderedPage) -> tuple[float, float, float, float]:
@@ -460,8 +463,9 @@ def _source_box(box: BoundingBox, page: RenderedPage) -> tuple[float, float, flo
 
 
 class V2PageProcessor:
-    def __init__(self, adapter: StructuredAdapter) -> None:
+    def __init__(self, adapter: StructuredAdapter, *, model: str = "gpt-5.6-luna") -> None:
         self.adapter = adapter
+        self.model = model
 
     async def describe_figure(
         self,
@@ -471,9 +475,24 @@ class V2PageProcessor:
         mode: ProcessingMode,
     ) -> str:
         """Describe one trusted Docling figure crop without re-parsing its page."""
+        description, _ = await self.describe_figure_with_usage(
+            image_png,
+            caption,
+            mode=mode,
+        )
+        return description
+
+    async def describe_figure_with_usage(
+        self,
+        image_png: bytes,
+        caption: str,
+        *,
+        mode: ProcessingMode,
+    ) -> tuple[str, OpenAIUsage]:
+        """Describe a figure and return the provider-reported token usage."""
         policy = mode_policy(mode)
         result = await self.adapter.generate_structured(
-            model="gpt-5.6-luna",
+            model=self.model,
             image=image_png,
             instructions=(
                 "Classify and describe this document figure literally. Preserve readable labels, "
@@ -485,7 +504,7 @@ class V2PageProcessor:
             ),
             schema_name="native_figure_description_v1",
             schema=FIGURE_DESCRIPTION_SCHEMA,
-            reasoning_effort=policy.luna_reasoning_effort,
+            reasoning_effort=policy.draft_reasoning_effort,
             detail="original",
             prompt_cache_key=_cache_key("native-figure", hashlib.sha256(image_png).hexdigest()),
         )
@@ -496,7 +515,7 @@ class V2PageProcessor:
         body = f"<description>{description}</description>"
         if visible_text:
             body += f"\n{visible_text}"
-        return f'<figure type="{result.value["type"]}">{body}</figure>'
+        return f'<figure type="{result.value["type"]}">{body}</figure>', result.usage
 
     async def process_page(
         self,
@@ -510,10 +529,10 @@ class V2PageProcessor:
     ) -> PageResult:
         policy = mode_policy(mode)
         budget = processing_recipe(recipe_version).verification_budgets[mode.value]
-        terra_calls = 0
+        verification_calls = 0
         crop_calls = 0
         draft = await self.adapter.generate_structured(
-            model="gpt-5.6-luna",
+            model=self.model,
             image=page.image_png,
             instructions=(
                 "Extract every visible document region in reading order as coherent chunks. Return "
@@ -535,14 +554,14 @@ class V2PageProcessor:
             ),
             schema_name="page_draft_v8",
             schema=PAGE_DRAFT_SCHEMA,
-            reasoning_effort=policy.luna_reasoning_effort,
+            reasoning_effort=policy.draft_reasoning_effort,
             detail="high",
             prompt_cache_key=_cache_key("page-draft", source_sha256),
         )
         chunks: list[GroundedChunk] = []
         evidence_artifacts: dict[str, bytes] = {}
         total_usage = draft.usage.model_copy()
-        model_usage = {"gpt-5.6-luna": draft.usage.model_copy()}
+        model_usage = {self.model: draft.usage.model_copy()}
         draft_raw_chunks = list(draft.value.get("chunks", []))
         raw_chunks = draft_raw_chunks
         scan_like = _is_scan_like(filename, page)
@@ -561,7 +580,7 @@ class V2PageProcessor:
                         text=str(raw.get("text", "")),
                         markdown=str(raw.get("markdown", "")),
                         parent_id=("parent" if raw.get("parent_order") else None),
-                        source_model="gpt-5.6-luna",
+                        source_model=self.model,
                         source_pass="page_draft",
                     ),
                     box,
@@ -572,9 +591,9 @@ class V2PageProcessor:
             mode == ProcessingMode.BALANCED and quality.flagged
         )
         reconciliation_failed = False
-        if reconcile_page and terra_calls < budget.max_terra_calls_per_page:
+        if reconcile_page and verification_calls < budget.max_verification_calls_per_page:
             reconciliation = await self.adapter.generate_structured(
-                model="gpt-5.6-terra",
+                model=self.model,
                 image=page.image_png,
                 instructions=(
                     "Reconcile this full page into mutually exclusive top-level regions. Preserve all "
@@ -582,14 +601,14 @@ class V2PageProcessor:
                     "and checkboxes exactly once. Inspect emails, URLs, IDs, dates, and numbers character "
                     "by character. Keep figures at their reading-order anchors and do not repeat a parent "
                     "region as child text. Set parent_order only for real semantic containment, never for "
-                    "the prior reading-order item. Return faithful Markdown and normalized 0-1 boxes. The Luna "
+                    "the prior reading-order item. Return faithful Markdown and normalized 0-1 boxes. The "
                     "draft was flagged for: "
                     + ", ".join(quality.reasons)
                     + ". Serialize every table as valid HTML <table> markup."
                 ),
                 schema_name="page_reconciliation_v8",
                 schema=PAGE_DRAFT_SCHEMA,
-                reasoning_effort=policy.terra_reasoning_effort or "medium",
+                reasoning_effort=policy.verification_reasoning_effort or "medium",
                 detail="high",
                 prompt_cache_key=_cache_key("page-reconciliation", source_sha256),
             )
@@ -605,15 +624,18 @@ class V2PageProcessor:
             total_usage.output_tokens += reconciliation.usage.output_tokens
             total_usage.cached_input_tokens += reconciliation.usage.cached_input_tokens
             total_usage.cache_write_tokens += reconciliation.usage.cache_write_tokens
-            model_usage["gpt-5.6-terra"] = reconciliation.usage.model_copy()
-            terra_calls += 1
+            model_usage[self.model].input_tokens += reconciliation.usage.input_tokens
+            model_usage[self.model].output_tokens += reconciliation.usage.output_tokens
+            model_usage[self.model].cached_input_tokens += reconciliation.usage.cached_input_tokens
+            model_usage[self.model].cache_write_tokens += reconciliation.usage.cache_write_tokens
+            verification_calls += 1
         if (
             mode == ProcessingMode.AUDIT
             and _needs_figure_reconciliation(raw_chunks)
-            and terra_calls < budget.max_terra_calls_per_page
+            and verification_calls < budget.max_verification_calls_per_page
         ):
             figure_reconciliation = await self.adapter.generate_structured(
-                model="gpt-5.6-terra",
+                model=self.model,
                 image=page.image_png,
                 instructions=(
                     "Inspect only the visual figures, illustrations, charts, and flowcharts on this page. "
@@ -626,7 +648,7 @@ class V2PageProcessor:
                 ),
                 schema_name="figure_reconciliation_v8",
                 schema=PAGE_DRAFT_SCHEMA,
-                reasoning_effort=policy.terra_reasoning_effort or "high",
+                reasoning_effort=policy.verification_reasoning_effort or "high",
                 detail="original",
                 prompt_cache_key=_cache_key("figure-reconciliation", source_sha256),
             )
@@ -637,18 +659,21 @@ class V2PageProcessor:
             total_usage.output_tokens += figure_reconciliation.usage.output_tokens
             total_usage.cached_input_tokens += figure_reconciliation.usage.cached_input_tokens
             total_usage.cache_write_tokens += figure_reconciliation.usage.cache_write_tokens
-            terra_usage = model_usage.setdefault("gpt-5.6-terra", OpenAIUsage())
-            terra_usage.input_tokens += figure_reconciliation.usage.input_tokens
-            terra_usage.output_tokens += figure_reconciliation.usage.output_tokens
-            terra_usage.cached_input_tokens += figure_reconciliation.usage.cached_input_tokens
-            terra_usage.cache_write_tokens += figure_reconciliation.usage.cache_write_tokens
-            terra_calls += 1
+            model_usage[self.model].input_tokens += figure_reconciliation.usage.input_tokens
+            model_usage[self.model].output_tokens += figure_reconciliation.usage.output_tokens
+            model_usage[
+                self.model
+            ].cached_input_tokens += figure_reconciliation.usage.cached_input_tokens
+            model_usage[
+                self.model
+            ].cache_write_tokens += figure_reconciliation.usage.cache_write_tokens
+            verification_calls += 1
         previous_heading_text: str | None = None
         for order, raw in enumerate(raw_chunks, start=1):
             chunk_id = f"p{page.page_number:04d}-c{order:04d}"
             text = str(raw["text"])
             grounding: Grounding | None
-            source_model = "gpt-5.6-luna"
+            source_model = self.model
             source_pass = "page_draft"
             exact = align_text_to_native_words(text, page.native_words)
             if exact is not None:
@@ -707,7 +732,7 @@ class V2PageProcessor:
                     final_text = normalize_extracted_text(text)
                     final_markdown = normalize_extracted_text(str(raw["markdown"]))
                     warnings = []
-                    source_model = "gpt-5.6-terra"
+                    source_model = self.model
                     source_pass = "page_reconciliation"
                 elif reconciliation_failed:
                     status = (
@@ -721,7 +746,7 @@ class V2PageProcessor:
                 else:
                     matched = raw
                     candidate_box = box
-                    candidate_source_model = "gpt-5.6-terra"
+                    candidate_source_model = self.model
                     candidate_source_pass = (
                         "figure_reconciliation"
                         if raw.get("_figure_specialist")
@@ -743,7 +768,7 @@ class V2PageProcessor:
                             or str(draft_match.get("markdown", "")).strip()
                         ):
                             matched = draft_match
-                            candidate_source_model = "gpt-5.6-luna"
+                            candidate_source_model = self.model
                             candidate_source_pass = "page_draft"
                         if not precision_required:
                             candidate_box = _parse_model_box(matched.get("box")) or box
@@ -768,11 +793,11 @@ class V2PageProcessor:
                         candidate_markdown=str(matched["markdown"]),
                         box=candidate_box,
                         crop_dpi=policy.crop_dpi,
-                        reasoning_effort=policy.terra_reasoning_effort or "medium",
+                        reasoning_effort=policy.verification_reasoning_effort or "medium",
                         max_rounds=min(
                             policy.max_repair_rounds,
                             budget.max_crop_calls_per_page - crop_calls,
-                            budget.max_terra_calls_per_page - terra_calls,
+                            budget.max_verification_calls_per_page - verification_calls,
                         ),
                         mode=mode,
                         scan_like=scan_like,
@@ -785,15 +810,14 @@ class V2PageProcessor:
                         total_usage.output_tokens += usage.output_tokens
                         total_usage.cached_input_tokens += usage.cached_input_tokens
                         total_usage.cache_write_tokens += usage.cache_write_tokens
-                        terra_usage = model_usage.setdefault("gpt-5.6-terra", OpenAIUsage())
-                        terra_usage.input_tokens += usage.input_tokens
-                        terra_usage.output_tokens += usage.output_tokens
-                        terra_usage.cached_input_tokens += usage.cached_input_tokens
-                        terra_usage.cache_write_tokens += usage.cache_write_tokens
+                        model_usage[self.model].input_tokens += usage.input_tokens
+                        model_usage[self.model].output_tokens += usage.output_tokens
+                        model_usage[self.model].cached_input_tokens += usage.cached_input_tokens
+                        model_usage[self.model].cache_write_tokens += usage.cache_write_tokens
                     evidence_artifacts.update(evidence)
                     crop_calls += len(usages)
-                    terra_calls += len(usages)
-            elif policy.terra_scope == "none":
+                    verification_calls += len(usages)
+            elif policy.verification_scope == "none":
                 grounding = Grounding(
                     page=page.page_number,
                     box=box,
@@ -828,16 +852,16 @@ class V2PageProcessor:
                     candidate_markdown=str(raw["markdown"]),
                     box=box,
                     crop_dpi=policy.crop_dpi,
-                    reasoning_effort=policy.terra_reasoning_effort or "medium",
+                    reasoning_effort=policy.verification_reasoning_effort or "medium",
                     max_rounds=min(
                         policy.max_repair_rounds,
                         budget.max_crop_calls_per_page - crop_calls,
-                        budget.max_terra_calls_per_page - terra_calls,
+                        budget.max_verification_calls_per_page - verification_calls,
                     ),
                     mode=mode,
                     scan_like=scan_like,
                     verified_source_pass="crop_verification",
-                    candidate_source_model="gpt-5.6-luna",
+                    candidate_source_model=self.model,
                     candidate_source_pass="page_draft",
                 )
                 for usage in usages:
@@ -845,14 +869,13 @@ class V2PageProcessor:
                     total_usage.output_tokens += usage.output_tokens
                     total_usage.cached_input_tokens += usage.cached_input_tokens
                     total_usage.cache_write_tokens += usage.cache_write_tokens
-                    terra_usage = model_usage.setdefault("gpt-5.6-terra", OpenAIUsage())
-                    terra_usage.input_tokens += usage.input_tokens
-                    terra_usage.output_tokens += usage.output_tokens
-                    terra_usage.cached_input_tokens += usage.cached_input_tokens
-                    terra_usage.cache_write_tokens += usage.cache_write_tokens
+                    model_usage[self.model].input_tokens += usage.input_tokens
+                    model_usage[self.model].output_tokens += usage.output_tokens
+                    model_usage[self.model].cached_input_tokens += usage.cached_input_tokens
+                    model_usage[self.model].cache_write_tokens += usage.cache_write_tokens
                 evidence_artifacts.update(evidence)
                 crop_calls += len(usages)
-                terra_calls += len(usages)
+                verification_calls += len(usages)
             if raw["type"] in _VISUAL_TYPES and not _is_semantic_visual_markdown(final_markdown):
                 status = VerificationStatus.UNRESOLVED
                 final_text = ""
@@ -1005,7 +1028,7 @@ class V2PageProcessor:
             else:
                 prior_text = str((last_value or {}).get("text", ""))
                 candidate_data = json.dumps(
-                    {"luna_text": candidate_text, "prior_terra_text": prior_text},
+                    {"draft_text": candidate_text, "prior_verification_text": prior_text},
                     ensure_ascii=False,
                 )
                 instructions = (
@@ -1018,7 +1041,7 @@ class V2PageProcessor:
                     "to the crop."
                 )
             result = await self.adapter.generate_structured(
-                model="gpt-5.6-terra",
+                model=self.model,
                 image=marked_png,
                 instructions=instructions,
                 schema_name="crop_verification_v8",
@@ -1045,6 +1068,7 @@ class V2PageProcessor:
                         candidate_markdown,
                         last_value,
                         candidate_source_model,
+                        self.model,
                         candidate_source_pass,
                     )
                 )
@@ -1075,7 +1099,7 @@ class V2PageProcessor:
                     ["invalid_verification_box"],
                     usages,
                     {evidence_id: marked_png},
-                    "gpt-5.6-luna",
+                    self.model,
                     "page_draft",
                 )
             corrected_markdown = str(result.value.get("markdown", ""))
@@ -1105,6 +1129,7 @@ class V2PageProcessor:
                             candidate_markdown,
                             last_value,
                             candidate_source_model,
+                            self.model,
                             candidate_source_pass,
                         )
                     )
@@ -1143,7 +1168,7 @@ class V2PageProcessor:
                     [],
                     usages,
                     {evidence_id: marked_png},
-                    "gpt-5.6-terra",
+                    self.model,
                     verified_source_pass,
                 )
         relative = _parse_model_box((last_value or {}).get("box"))
@@ -1161,6 +1186,7 @@ class V2PageProcessor:
             candidate_markdown,
             last_value,
             candidate_source_model,
+            self.model,
             candidate_source_pass,
         )
         if mode == ProcessingMode.BALANCED or (
@@ -1197,6 +1223,6 @@ class V2PageProcessor:
             ["visual_disagreement"],
             usages,
             {evidence_id: marked_png},
-            "gpt-5.6-luna",
+            self.model,
             "page_draft",
         )

@@ -26,6 +26,9 @@ rem Refresh credentials from the current Windows user's environment registry.
 rem This avoids stale values inherited from a long-running Explorer process.
 for /f "tokens=1,2,*" %%A in ('reg.exe query "HKCU\Environment" /v OPENAI_API_KEY 2^>nul') do if /i "%%A"=="OPENAI_API_KEY" set "OPENAI_API_KEY=%%C"
 for /f "tokens=1,2,*" %%A in ('reg.exe query "HKCU\Environment" /v OPENAI_BASE_URL 2^>nul') do if /i "%%A"=="OPENAI_BASE_URL" set "OPENAI_BASE_URL=%%C"
+for /f "tokens=1,2,*" %%A in ('reg.exe query "HKCU\Environment" /v XAI_API_KEY 2^>nul') do if /i "%%A"=="XAI_API_KEY" set "XAI_API_KEY=%%C"
+for /f "tokens=1,2,*" %%A in ('reg.exe query "HKCU\Environment" /v GEMINI_API_KEY 2^>nul') do if /i "%%A"=="GEMINI_API_KEY" set "GEMINI_API_KEY=%%C"
+for /f "tokens=1,2,*" %%A in ('reg.exe query "HKCU\Environment" /v ANTHROPIC_API_KEY 2^>nul') do if /i "%%A"=="ANTHROPIC_API_KEY" set "ANTHROPIC_API_KEY=%%C"
 for /f "tokens=1,2,*" %%A in ('reg.exe query "HKCU\Environment" /v AGNES_API_KEY 2^>nul') do if /i "%%A"=="AGNES_API_KEY" set "AGNES_API_KEY=%%C"
 
 call :find_uv
@@ -68,11 +71,9 @@ echo [5/5] Starting Paperplane...
 echo Open http://127.0.0.1:8551 in your browser.
 echo Close this window or press Ctrl+C to stop the app.
 echo.
-if not defined OPENAI_API_KEY (
-    if not defined AGNES_API_KEY (
-        echo Note: Neither OPENAI_API_KEY nor AGNES_API_KEY is set in this terminal.
-        echo Scans and images require the key for the selected model.
-    )
+if not defined OPENAI_API_KEY if not defined XAI_API_KEY if not defined GEMINI_API_KEY if not defined ANTHROPIC_API_KEY if not defined AGNES_API_KEY (
+    echo Note: No supported model API key is set in this terminal.
+    echo Scans and images require the key for the selected model.
     echo.
 )
 

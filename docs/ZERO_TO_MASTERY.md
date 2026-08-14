@@ -4,7 +4,7 @@
 
 Double-click `Paperplane.cmd`. It installs `uv`, Python 3.12.10, locked dependencies, and
 Docling layout/table models before starting Streamlit at `http://127.0.0.1:8551`. Set
-`OPENAI_API_KEY` or `AGNES_API_KEY` for the selected scan/image model.
+the provider key documented in [MODELS.md](MODELS.md) for the selected scan/image model.
 
 ## 2. Follow the code
 
@@ -14,8 +14,9 @@ Docling layout/table models before starting Streamlit at `http://127.0.0.1:8551`
 4. Inspect validation and page classification in `paperplane/ingest.py`.
 5. Follow native conversion in `paperplane/docling_parser.py` or vision work in
    `paperplane/pipeline.py`.
-6. Read the provider boundaries in `paperplane/openai_document.py` and
-   `paperplane/agnes_document.py`.
+6. Read the model catalog and provider boundaries in `paperplane/model_catalog.py`,
+   `paperplane/openai_document.py`, `paperplane/gemini_document.py`,
+   `paperplane/anthropic_document.py`, and `paperplane/agnes_document.py`.
 7. Read coordinate alignment in `paperplane/grounding.py`.
 8. Inspect output assembly in `paperplane/contracts.py`.
 9. Follow evidence creation in `paperplane/annotated_pdf.py`.
@@ -26,9 +27,10 @@ Docling layout/table models before starting Streamlit at `http://127.0.0.1:8551`
 uploaded bytes
   -> validation and document inspection
   -> per-page native/scanned routing
-  -> local Docling conversion OR selected OpenAI/Agnes structured vision draft
+  -> local Docling conversion OR selected cloud-model structured vision draft
   -> deterministic grounding and mode-driven verification
   -> merge in source reading order
+  -> provider token aggregation and estimated model cost
   -> Markdown + hierarchical JSON + annotated evidence PDF
   -> Output/PDF/Markdown/JSON display and download
 ```
@@ -61,4 +63,5 @@ uv run pytest tests -q
 ```
 
 Continue with the full [study handbook](../Zero_to_Hero_Study_Handbook.md),
-[architecture](ARCHITECTURE.md), and [capabilities](APP_CAPABILITIES.md).
+[model catalog](MODELS.md), [architecture](ARCHITECTURE.md), and
+[capabilities](APP_CAPABILITIES.md).

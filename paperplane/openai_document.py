@@ -67,15 +67,23 @@ class OpenAIDocumentAdapter:
         *,
         api_key: str,
         base_url: str = "https://api.openai.com",
+        provider_name: str = "OpenAI",
+        explicit_prompt_cache: bool = True,
+        image_detail: bool = True,
+        minimum_reasoning_effort: Literal["none", "low"] = "none",
     ) -> None:
         self.http = http
         self.api_key = api_key
         self.base_url = base_url
+        self.provider_name = provider_name
+        self.explicit_prompt_cache = explicit_prompt_cache
+        self.image_detail = image_detail
+        self.minimum_reasoning_effort = minimum_reasoning_effort
 
     async def generate_structured(
         self,
         *,
-        model: Literal["gpt-5.6-luna", "gpt-5.6-terra"],
+        model: str,
         image: bytes | None,
         instructions: str,
         context: str | None = None,
@@ -87,6 +95,7 @@ class OpenAIDocumentAdapter:
     ) -> StructuredGeneration:
         audit_record: dict[str, Any] = {
             "model": model,
+            "provider": self.provider_name,
             "schema_name": schema_name,
             "schema_sha256": hashlib.sha256(
                 json.dumps(schema, sort_keys=True, separators=(",", ":")).encode()
@@ -100,7 +109,7 @@ class OpenAIDocumentAdapter:
         }
         if not self.api_key:
             _emit_audit({**audit_record, "status": "error", "error_type": "missing_api_key"})
-            raise OpenAIRequestError("OpenAI API key is not configured")
+            raise OpenAIRequestError(f"{self.provider_name} API key is not configured")
         encoded = base64.b64encode(image).decode("ascii") if image is not None else None
         content: list[dict[str, Any]] = [
             {
@@ -110,21 +119,24 @@ class OpenAIDocumentAdapter:
             }
         ]
         if encoded is not None:
-            content.append(
-                {
-                    "type": "input_image",
-                    "image_url": f"data:image/png;base64,{encoded}",
-                    "detail": detail,
-                }
-            )
+            image_content: dict[str, Any] = {
+                "type": "input_image",
+                "image_url": f"data:image/png;base64,{encoded}",
+            }
+            if self.image_detail:
+                image_content["detail"] = detail
+            content.append(image_content)
         if context is not None:
             content.append({"type": "input_text", "text": context})
-        payload = {
+        effective_effort = (
+            "low"
+            if reasoning_effort == "none" and self.minimum_reasoning_effort == "low"
+            else reasoning_effort
+        )
+        payload: dict[str, Any] = {
             "model": model,
             "store": False,
-            "reasoning": {"effort": reasoning_effort},
-            "prompt_cache_key": prompt_cache_key,
-            "prompt_cache_options": {"mode": "explicit", "ttl": "30m"},
+            "reasoning": {"effort": effective_effort},
             "input": [
                 {
                     "role": "user",
@@ -140,6 +152,11 @@ class OpenAIDocumentAdapter:
                 }
             },
         }
+        if self.explicit_prompt_cache:
+            payload["prompt_cache_key"] = prompt_cache_key
+            payload["prompt_cache_options"] = {"mode": "explicit", "ttl": "30m"}
+        else:
+            content[0].pop("prompt_cache_breakpoint", None)
         started = time.perf_counter()
         try:
             response = await self.http.post(
@@ -159,11 +176,12 @@ class OpenAIDocumentAdapter:
                 }
             )
             logger.warning(
-                "OpenAI document request failed for %s: %s",
+                "%s document request failed for %s: %s",
+                self.provider_name,
                 model,
                 type(exc).__name__,
             )
-            raise OpenAIRequestError("OpenAI document request failed") from exc
+            raise OpenAIRequestError(f"{self.provider_name} document request failed") from exc
 
         texts: list[str] = []
         refused = False
@@ -175,19 +193,25 @@ class OpenAIDocumentAdapter:
                     refused = True
         if refused:
             _emit_audit({**audit_record, "status": "error", "error_type": "refusal"})
-            raise OpenAIRequestError("OpenAI refused the structured document request")
+            raise OpenAIRequestError(
+                f"{self.provider_name} refused the structured document request"
+            )
         raw = "".join(texts).strip()
         if not raw:
             _emit_audit({**audit_record, "status": "error", "error_type": "empty_output"})
-            raise OpenAIRequestError("OpenAI returned no structured output")
+            raise OpenAIRequestError(f"{self.provider_name} returned no structured output")
         try:
             value = json.loads(raw)
         except (json.JSONDecodeError, TypeError) as exc:
             _emit_audit({**audit_record, "status": "error", "error_type": "invalid_json"})
-            raise OpenAIRequestError("OpenAI returned invalid structured JSON") from exc
+            raise OpenAIRequestError(
+                f"{self.provider_name} returned invalid structured JSON"
+            ) from exc
         if not isinstance(value, dict):
             _emit_audit({**audit_record, "status": "error", "error_type": "non_object"})
-            raise OpenAIRequestError("OpenAI structured output must be a JSON object")
+            raise OpenAIRequestError(
+                f"{self.provider_name} structured output must be a JSON object"
+            )
 
         usage_data = body.get("usage") or {}
         input_details = usage_data.get("input_tokens_details") or {}
@@ -199,9 +223,10 @@ class OpenAIDocumentAdapter:
         )
         latency_ms = (time.perf_counter() - started) * 1000
         logger.info(
-            "OpenAI document request completed: model=%s effort=%s detail=%s "
+            "%s document request completed: model=%s effort=%s detail=%s "
             "input_tokens=%s output_tokens=%s cached_input_tokens=%s "
             "cache_write_tokens=%s latency_ms=%.1f",
+            self.provider_name,
             model,
             reasoning_effort,
             detail,
