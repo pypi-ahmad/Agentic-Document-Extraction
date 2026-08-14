@@ -13,6 +13,16 @@ and this project aims to follow [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
+## [5.1.0] - 2026-08-15
+
+### Added
+
+- Added an executable one-file Linux launcher, Paperplane.sh, with uv/Python setup, LibreOffice checks, NVIDIA or CPU selection, Docling model preparation, and local Streamlit startup.
+- Added Linux launch documentation and CI coverage.
+
+### Fixed
+
+- Made generated handbook PDFs byte-for-byte reproducible.
 ## [5.0.3] - 2026-08-14
 
 ### Changed

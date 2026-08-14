@@ -37,7 +37,7 @@ from paperplane.outputs import (
     standalone_html,
 )
 
-APP_VERSION = "5.0.3"
+APP_VERSION = "5.1.0"
 QUALITY_LABELS = {
     "Fast": "paperplane-ade-fast-latest",
     "Balanced": "paperplane-ade-latest",
