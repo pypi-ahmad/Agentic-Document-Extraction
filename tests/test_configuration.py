@@ -1,8 +1,32 @@
+import tomllib
 from pathlib import Path
 
 from dotenv import dotenv_values
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def test_streamlit_uses_red_black_dark_theme() -> None:
+    with (ROOT / ".streamlit" / "config.toml").open("rb") as config_file:
+        config = tomllib.load(config_file)
+
+    assert config["theme"] == {
+        "base": "dark",
+        "primaryColor": "#D32F2F",
+        "backgroundColor": "#0B0B0D",
+        "secondaryBackgroundColor": "#17171A",
+        "textColor": "#F2F2F2",
+        "borderColor": "#3D2023",
+        "showWidgetBorder": True,
+        "baseRadius": "6px",
+        "buttonRadius": "6px",
+        "sidebar": {
+            "backgroundColor": "#111113",
+            "secondaryBackgroundColor": "#211517",
+            "textColor": "#F2F2F2",
+            "borderColor": "#462327",
+        },
+    }
 
 
 def test_env_example_contains_only_safe_placeholders() -> None:
