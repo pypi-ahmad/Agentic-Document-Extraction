@@ -83,6 +83,9 @@ If `--notes` is omitted, the script drafts release notes from the
 conventional-commit subjects since the last tag. **Always review the
 draft** before running with `--push`.
 
+When `[Unreleased]` already contains curated entries, those entries become the
+versioned changelog section while `--notes` supplies the GitHub release body.
+
 ### 3.3 Publish Python package (TestPyPI + PyPI)
 
 v0.6.0+ uses GitHub Actions + Trusted Publishing (OIDC).
