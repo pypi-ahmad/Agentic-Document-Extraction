@@ -1,34 +1,31 @@
 # Deployment
 
-Deploy one FastAPI process and one Next.js process. Paperplane keeps no durable application
-state, so it needs no data volume or migration step.
+Paperplane 4.1.0 supports local, single-user operation only.
 
-## Required configuration
+## Supported deployment
 
-```text
-OPENAI_API_KEY=...
-OPENAI_BASE_URL=https://api.openai.com/v1
-```
+On Windows 11, double-click `Paperplane.cmd`. It installs `uv` if needed, installs Python
+3.12.10, synchronizes `uv.lock`, downloads Docling layout/table models, and starts
+Streamlit. Later launches reuse installed tools and model weights while rechecking the
+locked environment.
 
-Recommended for any non-local deployment:
-
-```text
-API_KEY=strong-random-secret
-CORS_ORIGINS=https://paperplane.example.com
-CORS_ALLOW_CREDENTIALS=true
-RATE_LIMIT_ENABLED=true
-```
-
-Start the API:
+Developers can start the same application directly:
 
 ```powershell
-uv run uvicorn app.main:app --app-dir backend --host 0.0.0.0 --port 8000
+uv sync --locked
+uv run streamlit run streamlit_app.py
 ```
 
-Build and start the frontend with `PAPERPLANE_BACKEND_ORIGIN` pointing to the API origin.
-Place both behind TLS. Configure the proxy and client request timeout for the largest
-synchronous document you accept.
+The checked-in Streamlit configuration binds to `127.0.0.1`, enables XSRF protection,
+limits uploads to 200 MB, and disables Streamlit usage telemetry.
 
-Use `/health` for liveness and `/health/ready` for OpenAI configuration readiness. A
-restart loses no server-managed work history because the service does not create one; any
-request in flight must be retried by the caller.
+## Unsupported deployment
+
+The repository does not ship a container image, reverse-proxy configuration, public server
+profile, authentication layer, multi-user isolation, durable storage, or hosted deployment
+workflow. Do not expose the Streamlit port to an untrusted network.
+
+A future shared deployment would require explicit designs for authentication,
+authorization, TLS, data retention and deletion, concurrency, model-provider privacy,
+observability, abuse controls, and resource limits. Local configuration is not a substitute
+for those controls.

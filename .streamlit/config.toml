@@ -1,0 +1,24 @@
+[server]
+address = "127.0.0.1"
+maxUploadSize = 200
+enableXsrfProtection = true
+
+[browser]
+gatherUsageStats = false
+
+[theme]
+base = "dark"
+primaryColor = "#61AFEF"
+backgroundColor = "#1E1E1E"
+secondaryBackgroundColor = "#252526"
+textColor = "#D4D4D4"
+borderColor = "#3C3C3C"
+showWidgetBorder = true
+baseRadius = "6px"
+buttonRadius = "6px"
+
+[theme.sidebar]
+backgroundColor = "#252526"
+secondaryBackgroundColor = "#333333"
+textColor = "#D4D4D4"
+borderColor = "#3C3C3C"

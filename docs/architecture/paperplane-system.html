@@ -3,26 +3,30 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Paperplane architecture</title>
+  <title>Paperplane 4.1.0 architecture</title>
   <style>
-    :root{color-scheme:dark;--bg:#08111f;--card:#101f34;--line:#2a4568;--ink:#e8f1ff;--muted:#9db0c9;--accent:#62d5c8}
-    *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#153257,var(--bg) 55%);color:var(--ink);font:16px/1.5 system-ui,sans-serif}
-    main{max-width:1180px;margin:auto;padding:64px 24px}h1{font-size:clamp(2rem,5vw,4rem);margin:0}.lead{color:var(--muted);font-size:1.15rem}
-    .flow{display:grid;grid-template-columns:repeat(6,minmax(140px,1fr));gap:18px;margin:56px 0}.node{position:relative;min-height:130px;padding:20px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(145deg,#142942,var(--card));box-shadow:0 18px 50px #0005}.node:not(:last-child):after{content:"→";position:absolute;right:-17px;top:46px;color:var(--accent);font-size:24px}.node b{display:block;color:var(--accent);margin-bottom:8px}.node span{color:var(--muted)}
-    .note{border-left:4px solid var(--accent);padding:14px 18px;background:#0c1b2e;color:var(--muted)}code{color:#b8fff7}@media(max-width:900px){.flow{grid-template-columns:1fr}.node:not(:last-child):after{content:"↓";right:auto;left:50%;top:auto;bottom:-22px}}
+    :root{color-scheme:dark;--bg:#1e1e1e;--panel:#252526;--line:#3c3c3c;--text:#d4d4d4;--blue:#61afef;--muted:#a8b0bb}
+    *{box-sizing:border-box}body{font:16px/1.55 system-ui;margin:0;background:var(--bg);color:var(--text)}
+    main{max-width:980px;margin:auto;padding:48px 24px}h1{margin-bottom:8px}p{color:var(--muted)}
+    .flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin-top:28px}
+    .node{border:1px solid var(--line);border-radius:8px;background:var(--panel);padding:18px}
+    b{display:block;color:var(--blue);margin-bottom:5px}.boundary{margin-top:28px;border-left:4px solid var(--blue);padding:12px 18px;background:var(--panel)}
+    code{color:#dcdcaa}
   </style>
 </head>
 <body><main>
-  <h1>Paperplane architecture</h1>
-  <p class="lead">One upload, bounded processing, one grounded response.</p>
-  <section class="flow" aria-label="Request flow">
-    <div class="node"><b>1 · Browser</b><span>Select a local PDF or image.</span></div>
-    <div class="node"><b>2 · Request guard</b><span>Authenticate, throttle, and validate input limits.</span></div>
-    <div class="node"><b>3 · FastAPI</b><span><code>POST /v2/parse</code> owns the request.</span></div>
-    <div class="node"><b>4 · Render</b><span>PyMuPDF creates pages and native coordinates.</span></div>
-    <div class="node"><b>5 · Draft + verify</b><span>Luna drafts; Terra checks bounded ambiguity.</span></div>
-    <div class="node"><b>6 · Response</b><span>Grounded Markdown and hierarchical JSON.</span></div>
-  </section>
-  <p class="note">Uploads, results, jobs, and history are not retained by the application.</p>
+  <h1>Paperplane 4.1.0</h1>
+  <p>One local Streamlit process with automatic native/vision routing and no document persistence.</p>
+  <div class="flow">
+    <div class="node"><b>1 · Streamlit workspace</b><span>Upload, preview, select mode, parse, inspect, and download.</span></div>
+    <div class="node"><b>2 · In-process runtime</b><span>Reuse Docling model resources and create one short-lived OpenAI client per parse.</span></div>
+    <div class="node"><b>3 · Validate and route</b><span>Enforce limits and classify native versus scan-like PDF pages.</span></div>
+    <div class="node"><b>4 · Local Docling</b><span>Convert native PDFs and Office/OpenDocument/CSV structure.</span></div>
+    <div class="node"><b>5 · OpenAI vision</b><span>Use Luna drafts, deterministic grounding, and bounded Terra verification.</span></div>
+    <div class="node"><b>6 · Shared assembler</b><span>Validate reading-order Markdown, hierarchy, ranges, boxes, and table cells.</span></div>
+    <div class="node"><b>7 · Evidence PDF</b><span>Overlay grounded source boxes or list semantic-only Office evidence.</span></div>
+    <div class="node"><b>8 · Session result</b><span>Output, annotated PDF, Markdown, and JSON remain available for explicit download.</span></div>
+  </div>
+  <div class="boundary"><b>Trust and state boundary</b><span>Streamlit binds to <code>127.0.0.1</code>. Uploads and results live only in the current session. Scans, images, and requested figure crops go to the configured OpenAI-compatible endpoint.</span></div>
 </main></body>
 </html>

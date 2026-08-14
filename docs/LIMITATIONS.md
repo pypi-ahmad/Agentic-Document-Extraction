@@ -1,14 +1,32 @@
 # Limitations
 
-- Parsing is synchronous. Large documents can exceed reverse-proxy or client timeouts.
-- Results are not retained by the server. Refreshing the browser discards the current result.
-- There are no background jobs, resume, cancellation, shared history, or multi-worker leases.
-- OpenAI access is required for parsing; model latency, quotas, and availability apply.
-- Extraction has a provider seam but must be configured by a deployment before `/v2/extract`
-  is available.
-- Supported inputs are PDF, PNG, JPEG, WebP, and TIFF; office documents and spreadsheets
-  are not accepted directly.
-- Visual parsing can still misread tiny, rotated, handwritten, damaged, or unusual content.
-- Grounding helps review evidence but does not guarantee factual correctness.
-- The default deployment is local and single-user. Internet exposure requires TLS, an API
-  key, appropriate CORS origins, monitoring, and infrastructure-level controls.
+## Product scope
+
+- Local, single-user operation only
+- No public API, batch endpoint, background jobs, cancellation, or resume
+- No durable history, upload storage, result storage, or application database
+- No schema extraction or reusable extraction contracts
+- No authentication or multi-user isolation beyond separate Streamlit sessions
+- No Docker image, hosted deployment profile, or PyPI package
+
+## Input and runtime limits
+
+- Maximum upload: 200 MB
+- Maximum document: 500 pages or image frames
+- Maximum PDF page canvas area: 4,000,000 source-coordinate units
+- Maximum decoded image content: 40,000,000 pixels across frames
+- Synchronous processing and sequential vision pages
+- Legacy DOC/PPT/XLS, RTF, encrypted PDFs, and password-protected files unsupported
+- Local Docling conversion does not OCR scans; vision input requires `OPENAI_API_KEY`
+
+## Evidence limits
+
+- Extraction quality depends on source quality and model behavior
+- IDs are stable within one response, not guaranteed across re-parses
+- Office elements without physical geometry are `semantic_only` with null boxes
+- Figure descriptions can be unavailable when OpenAI is unconfigured or fails
+- Scans, images, and requested figure crops are sent to the configured OpenAI endpoint
+- Annotated PDFs are review aids, not independent proof of correctness
+
+Always review extracted values and source evidence before financial, legal, medical,
+safety, or other high-impact use.

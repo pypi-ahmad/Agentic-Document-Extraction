@@ -1,33 +1,62 @@
-# Paperplane from zero to mastery
+# Paperplane: zero to mastery
 
-## Mental model
+## 1. Run the app
 
-Paperplane is a synchronous transformation:
+Double-click `Paperplane.cmd`. It installs `uv`, Python 3.12.10, locked dependencies, and
+Docling layout/table models before starting Streamlit. Set `OPENAI_API_KEY` for scans,
+images, or native-document figure descriptions.
+
+## 2. Follow the code
+
+1. Start at `streamlit_app.py`.
+2. Follow `paperplane.runtime.parse_document`.
+3. Read `AgenticDocumentParser.parse` in `paperplane/parser.py`.
+4. Inspect validation and page classification in `paperplane/ingest.py`.
+5. Follow native conversion in `paperplane/docling_parser.py` or vision work in
+   `paperplane/pipeline.py`.
+6. Read coordinate alignment in `paperplane/grounding.py`.
+7. Inspect output assembly in `paperplane/contracts.py`.
+8. Follow evidence creation in `paperplane/annotated_pdf.py`.
+
+## 3. Understand the data flow
 
 ```text
-document bytes + model mode -> grounded document response
+uploaded bytes
+  -> validation and document inspection
+  -> per-page native/scanned routing
+  -> local Docling conversion OR Luna structured vision draft
+  -> deterministic grounding and optional Terra verification
+  -> merge in source reading order
+  -> Markdown + hierarchical JSON + annotated evidence PDF
+  -> Output/PDF/Markdown/JSON display and download
 ```
 
-FastAPI validates the request. PyMuPDF renders pages. Luna drafts structured content.
-Deterministic checks ground it to page coordinates. Terra verifies bounded ambiguous areas.
-The assembler returns Markdown and JSON.
+## 4. Understand the contract
 
-## Trace the code
+Physical pages are one-based and use normalized top-left-origin boxes. JSON nodes carry
+half-open Unicode Markdown ranges. Office content without trustworthy geometry is
+`semantic_only` with null boxes. IDs are stable within one response only.
 
-1. Start at `backend/app/routers/dpt_api.py::parse_document`.
-2. Follow `AgenticDocumentParser.parse` in `services/agentic/parsing.py`.
-3. Inspect `V2PageProcessor.process_page` in `services/parsing/v2_pipeline.py`.
-4. Read the output types in `services/agentic/contracts.py`.
-5. Follow the browser call in `frontend/src/lib/api.ts` and rendering in
-   `frontend/src/app/page.tsx`.
+## 5. Understand the state boundary
 
-## Exercises
+Streamlit keeps widget values, uploaded bytes, the latest result, and the annotated PDF in
+one session. The parser receives bytes and returns validated Pydantic values without saving
+either. The cached Docling converter holds model resources only.
 
-- Parse one native PDF and one scanned image; compare grounding methods.
-- Run the same input in Fast, Balanced, and Audit modes; compare warnings and usage.
-- Trace one Markdown block back to its page and bounding box.
-- Add a contract test before changing any public response field.
-- Simulate an upstream failure and confirm the API returns a safe error without credentials.
+## 6. Change the app safely
 
-Mastery means you can explain every step between upload bytes and a grounded output block,
-including where validation, model judgment, deterministic evidence, and abstention occur.
+Keep parser logic independent from Streamlit, validate input at the parser boundary, keep
+secrets and documents out of logs and source control, add focused tests, and update affected
+documentation with every code change.
+
+## 7. Verify
+
+```powershell
+uv run ruff check paperplane tests streamlit_app.py scripts
+uv run ruff format --check paperplane tests streamlit_app.py scripts
+uv run pyright
+uv run pytest tests -q
+```
+
+Continue with the full [study handbook](../Zero_to_Hero_Study_Handbook.md),
+[architecture](ARCHITECTURE.md), and [capabilities](APP_CAPABILITIES.md).

@@ -1,4 +1,3 @@
-# Dependabot weekly updates for Python and npm.
 version: 2
 updates:
   - package-ecosystem: "pip"
@@ -10,64 +9,19 @@ updates:
     groups:
       runtime:
         patterns:
-          - "fastapi"
-          - "uvicorn"
+          - "streamlit"
+          - "streamlit-pdf"
+          - "httpx"
           - "pydantic"
-          - "sqlalchemy"
-          - "aiosqlite"
-          - "langgraph"
-          - "langchain-*"
-          - "openai"
-          - "google-genai"
-          - "anthropic"
           - "pymupdf"
           - "Pillow"
-          - "python-multipart"
-          - "aiofiles"
-          - "httpx"
-          - "structlog"
-          - "slowapi"
-          - "arq"
-          - "redis"
-          - "pyjwt"
-          - "hiredis"
-      dev:
+      tooling:
         patterns:
-          - "pytest"
-          - "pytest-asyncio"
-          - "pytest-cov"
+          - "pytest*"
           - "ruff"
-          - "hypothesis"
-          - "alembic"
-      ignore:
-        - dependency-name: "alembic"
-          versions: ["<1.13"]
-
-  - package-ecosystem: "npm"
-    directory: "/frontend"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-    open-pull-requests-limit: 5
-    groups:
-      runtime:
-        patterns:
-          - "next"
-          - "react"
-          - "react-dom"
-          - "react-dropzone"
-          - "lucide-react"
-          - "clsx"
-          - "tailwind-merge"
-      dev:
-        patterns:
-          - "@types/*"
-          - "typescript"
-          - "eslint"
-          - "eslint-config-next"
-          - "tailwindcss"
-          - "postcss"
-          - "autoprefixer"
+          - "pyright"
+          - "Markdown"
+          - "reportlab"
 
   - package-ecosystem: "github-actions"
     directory: "/"

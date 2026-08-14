@@ -2,27 +2,27 @@
 
 ## Status
 
-Accepted (2026-06-22).
+Accepted (2026-06-22); reviewed for Paperplane 4.1.0 (2026-08-14).
 
 ## Context
 
-The v0.3.0 modernization touched almost every layer of the
-codebase. Future contributors (including future-us) need a place
-to read the **why** behind the choices that are not obvious from
-the code itself.
+Paperplane has changed from a multi-service application to a local Streamlit workspace.
+Future contributors need a durable record of why important boundaries exist, especially
+when removed technologies remain visible in Git history or archived plans.
 
 ## Decision
 
-We use ADRs to record every significant architectural decision. The
-format is the one Michael Nygard described in 2011: a short
-markdown file per decision, named ``NNNN-short-slug.md``, stored
-in this directory, with a `Status` header (`Accepted`,
-`Superseded`, or `Deprecated`).
+Significant architectural choices use short Markdown ADRs in this directory. Each ADR has
+Context, Decision, Consequences, and a status of Proposed, Accepted, Deprecated, or
+Superseded. New ADRs use the next free numeric prefix.
+
+An ADR describes the decision that was true at its date. When the architecture changes,
+preserve the historical reason and add an explicit supersession note or a replacement ADR;
+do not leave obsolete instructions looking current.
 
 ## Consequences
 
-- New ADRs are added to the bottom of this directory with the next
-  free number.
-- Superseded decisions are kept (renamed `NNNN-slug.md` →
-  `NNNN-slug-superseded-by-NNNN.md`) and never deleted.
-- The README in this directory points to the current set.
+- Current guides link to the active decision.
+- Historical plans identify the architecture that superseded them.
+- Code and documentation changes that alter a major boundary include an ADR review.
+- ADRs never override the current implementation, tests, or security requirements.

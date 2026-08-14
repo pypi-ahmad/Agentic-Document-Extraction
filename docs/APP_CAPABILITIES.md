@@ -1,40 +1,77 @@
 # Paperplane capabilities
 
-Paperplane turns PDFs and document images into grounded Markdown and hierarchical JSON.
+Paperplane 4.1.0 converts PDFs, images, and modern Office documents into layout-aware
+Markdown, hierarchical grounding JSON, and an annotated evidence PDF in one local
+Streamlit session.
 
-## Available
+## Inputs and routing
 
-- PDF, PNG, JPEG, WebP, and TIFF upload
-- Native PDF text and coordinate alignment
-- Headings, paragraphs, lists, tables, figures, forms, and checkboxes
-- Page, block, line, and table-cell grounding
-- Fast, Balanced, and Audit processing modes
-- Bounded Luna drafting and Terra verification
-- Partial output when some pages fail
-- Inline JSON Schema extraction with field evidence
-- Built-in `invoice-v1` extraction contract
-- Optional API-key authentication, CORS restrictions, upload limits, and rate limiting
-- Next.js visual workspace plus FastAPI/OpenAPI access
+| Input | Processing path |
+|---|---|
+| Text-native PDF page | Local Docling conversion |
+| Scanned PDF page | OpenAI vision |
+| Mixed PDF | Automatic per-page Docling/OpenAI routing |
+| PNG, JPEG, WebP, TIFF, BMP | OpenAI vision |
+| DOCX, PPTX, XLSX, ODT, ODP, ODS, CSV | Local Docling; optional OpenAI figure descriptions |
+
+Default limits are 200 MB and 500 pages or image frames. Paperplane also bounds PDF page
+canvas area and cumulative decoded image pixels. Encrypted and password-protected files are
+rejected.
+
+## Extraction and evidence
+
+- Reading-order Markdown with explicit page breaks
+- Headings, paragraphs, lists, checkboxes, forms, figures, charts, marginalia, and tables
+- HTML tables with row, column, `rowspan`, and `colspan` metadata
+- Document, page, block, atomic-line, and table-cell hierarchy
+- Exact half-open Unicode Markdown ranges
+- One-based physical pages and normalized top-left-origin boxes
+- Explicit `semantic_only` grounding when Office geometry is unavailable
+- Stable IDs within one response
+- Fast, Balanced, and Audit processing policies
+- Luna vision drafting with deterministic grounding and bounded Terra verification
+
+## User workspace
+
+- Document preview before parsing
+- Output, Annotated PDF, Markdown, and JSON result tabs
+- Page, block, engine, duration, format, and warning summaries
+- Source overlays for PDF/image evidence
+- Semantic evidence reports for Office content without trustworthy coordinates
+- Annotated PDF, Markdown, and JSON downloads
+- **New extraction** control that clears the current workspace
+
+## Runtime and setup
+
+- One local Streamlit process bound to `127.0.0.1`
+- XSRF protection enabled and Streamlit usage telemetry disabled
+- One double-click Windows launcher
+- Automatic `uv`, Python 3.12.10, locked dependency, and Docling model setup
+- Windows user environment variables with ignored `.env` and Streamlit-secret fallbacks
+- Local Docling model-resource caching without document or result caching
 
 ## Deliberately absent
 
-Paperplane does not persist uploads, results, run history, reusable schemas, reviews, or
-page checkpoints. It does not provide background jobs, polling, cancellation, resume, or
-multi-worker coordination. A parse is one request and one response.
+Paperplane has no REST API, database, accounts, authentication, background jobs, saved
+history, reusable schemas, schema extraction, queues, checkpoints, Docker deployment,
+JavaScript frontend, or package publishing.
 
-## Models and modes
+## Data lifetime
 
-| API model | Behavior |
-|---|---|
-| `paperplane-ade-fast-latest` | Fast draft with deterministic grounding |
-| `paperplane-ade-latest` | Balanced draft with adaptive verification |
-| `paperplane-ade-audit-latest` | Highest verification budget |
+The upload, latest result, and annotated PDF live in Streamlit session memory. Selecting a
+different file, starting a new extraction, closing the tab, or stopping the app releases
+that state. Downloading an artifact is the user's explicit persistence action. Installed
+dependencies and Docling model weights remain on disk; statelessness applies to document
+and result data.
 
-PyMuPDF performs deterministic rendering and geometry. OpenAI is the active inference
-provider; Paperplane does not call LandingAI ADE or claim its benchmark results.
+## Model mapping
 
-## Output contract
+| Mode | Parser model | Vision behavior |
+|---|---|---|
+| Fast | `paperplane-ade-fast-latest` | Luna draft and deterministic grounding; no Terra pass |
+| Balanced | `paperplane-ade-latest` | Terra checks only for flagged content |
+| Audit | `paperplane-ade-audit-latest` | Highest rendering, verification, and repair budget |
 
-`POST /v2/parse` returns Markdown, a document/page/block hierarchy, coordinates, grounding
-methods, page warnings, failed-page information, model usage, and request metadata. The
-result can be saved by the caller as JSON or Markdown.
+OpenAI is the vision inference provider; Docling is the local native-document engine.
+Paperplane is inspired by ADE's observable workflow, but does not call LandingAI ADE or
+claim its benchmark results.

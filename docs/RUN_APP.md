@@ -1,53 +1,50 @@
 # Run Paperplane
 
-## Fastest option on Windows
+## One-click Windows launch
 
-Set `OPENAI_API_KEY`, then double-click `Paperplane.cmd`. The launcher starts the backend
-and frontend, checks both, opens the browser, and keeps one terminal open for logs. Press
-Ctrl+C to stop.
+Double-click `Paperplane.cmd`. It:
+
+1. verifies it is beside `pyproject.toml`, `uv.lock`, and `streamlit_app.py`;
+2. installs `uv` with WinGet or the official installer when missing;
+3. installs Python 3.12.10;
+4. creates or updates `.venv` from `uv.lock`;
+5. downloads Docling layout and table models; and
+6. starts the local Streamlit app.
+
+The first run needs internet access. Later runs reuse installed tools and model weights
+while still checking the locked dependency set.
+
+## Credentials
+
+The launcher refreshes `OPENAI_API_KEY` and `OPENAI_BASE_URL` from the current Windows
+user's environment registry. It never prints or writes their values.
 
 ```powershell
-./scripts/dev.ps1 -OpenBrowser
+[Environment]::SetEnvironmentVariable("OPENAI_API_KEY", "your-key", "User")
+[Environment]::SetEnvironmentVariable("OPENAI_BASE_URL", "https://api.openai.com", "User")
 ```
 
-Optional port selection:
+Open a new terminal after changing a user variable. If user-level variables are unavailable,
+copy `.env.example` to `.env` or `.streamlit/secrets.toml.example` to
+`.streamlit/secrets.toml`. Both destination files are ignored by Git.
 
-```powershell
-./scripts/dev.ps1 -BackendPort 8010 -FrontendPort 3000 -OpenBrowser
-```
+Without a key, native PDFs and supported Office files remain available. Scans and images
+show an actionable error, and native-document figures use explicit placeholders.
 
-## Manual startup
-
-Terminal 1:
+## Terminal launch
 
 ```powershell
 uv sync --locked
-uv run uvicorn app.main:app --app-dir backend --reload --host 127.0.0.1 --port 8000
+uv run --locked streamlit run streamlit_app.py
 ```
 
-Terminal 2:
+The checked-in configuration binds to `127.0.0.1`, enables XSRF protection, and caps
+uploads at 200 MB.
 
-```powershell
-cd frontend
-npm ci
-$env:PAPERPLANE_BACKEND_ORIGIN = "http://127.0.0.1:8000"
-npm run dev
-```
+## Use and stop
 
-Open `http://127.0.0.1:3000`. API docs are at `http://127.0.0.1:8000/docs`.
+After parsing, inspect Output, Annotated PDF, Markdown, and JSON. Downloading the annotated
+PDF, Markdown, or JSON is the only application-supported persistence action.
 
-## Check and parse
-
-```powershell
-curl.exe --fail-with-body http://127.0.0.1:8000/health
-curl.exe --fail-with-body http://127.0.0.1:8000/health/ready
-curl.exe --fail-with-body -X POST http://127.0.0.1:8000/v2/parse `
-  -F "file=@sample.pdf" `
-  -F "model=paperplane-ade-latest" `
-  -o result.json
-```
-
-If `API_KEY` is configured, add `-H "X-API-Key: $env:API_KEY"`.
-
-Parsing is synchronous. Keep the request open until the response arrives. There is no job
-ID to poll and no server-side run history to recover after a restart.
+Choose **New extraction** to clear the workspace. Press Ctrl+C or close the launcher window
+to stop Streamlit and end active sessions.

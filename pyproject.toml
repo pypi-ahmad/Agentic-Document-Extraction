@@ -1,7 +1,7 @@
 [project]
 name = "agentic-document-extraction"
-version = "3.0.0"
-description = "Convert documents into grounded Markdown and JSON with OpenAI vision models."
+version = "4.1.0"
+description = "A local Streamlit app for layout-aware Markdown from PDFs, images, and Office files."
 authors = [
   { name = "Ahmad" },
 ]
@@ -12,11 +12,11 @@ keywords = [
   "document-extraction",
   "ocr",
   "markdown",
-  "fastapi",
-  "nextjs",
+  "streamlit",
   "visual-grounding",
   "openai",
   "pymupdf",
+  "docling",
 ]
 classifiers = [
   "Development Status :: 4 - Beta",
@@ -28,26 +28,15 @@ classifiers = [
   "Topic :: Scientific/Engineering :: Artificial Intelligence",
   "Topic :: Text Processing :: Markup :: Markdown",
 ]
-# Web (frontend) + Python (backend) live in one repo. We declare the Python
-# dependencies here; the Next.js app uses its own package.json and node_modules.
 dependencies = [
-  # ── Web framework ───────────────────────────────────────────────────
-  "fastapi>=0.115.0,<1.0",
-  "uvicorn[standard]>=0.30.0,<1.0",
+  "streamlit[pdf]>=1.61.1,<2",
   "pydantic>=2.0,<3.0",
-  "pydantic-settings>=2.0,<3.0",
-  "python-multipart>=0.0.9",  # FastAPI file uploads
-  "structlog>=26.1.0",
   "httpx>=0.27.0",
-  "jsonschema==4.25.1",
-  # ── OCR / Document parsing ─────────────────────────────────────────
-  "langgraph>=1.2.9,<2",
+  "python-dotenv>=1.1,<2",
   "pymupdf>=1.28,<2",
-  "pdf2image==1.17.0",
   "Pillow>=12.3.0,<13",
-  "opentelemetry-api>=1.42.1",
-  "opentelemetry-sdk>=1.42.1",
-  "opentelemetry-exporter-otlp>=1.42.1",
+  "docling>=2.66,<3",
+  "bleach>=6,<7",
 ]
 
 [project.optional-dependencies]
@@ -73,47 +62,14 @@ Repository = "https://github.com/pypi-ahmad/Agentic-Document-Extraction"
 Issues = "https://github.com/pypi-ahmad/Agentic-Document-Extraction/issues"
 Changelog = "https://github.com/pypi-ahmad/Agentic-Document-Extraction/blob/main/CHANGELOG.md"
 
-[project.scripts]
-# A convenience entry-point. Real serving is done with `uvicorn`.
-ade-info = "app.main:app"
-
-# ── Build system ─────────────────────────────────────────────────────
-# We use a flat layout (app package at the repo root) so the existing
-# `backend/app/*` structure can be kept as-is and `uv` can install the
-# project in editable mode from the root.
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-
-[tool.hatch.build.targets.wheel]
-packages = ["backend/app"]
-
-[tool.hatch.build.targets.sdist]
-include = [
-  "backend/app/**",
-  "backend/app/py.typed",
-  "README.md",
-  "LICENSE",
-  "CHANGELOG.md",
-]
-exclude = [
-  "/.uv-cache*",
-  "/.npm-cache*",
-  "/.venv",
-  "/frontend",
-  "/dist",
-  "/.tmp",
-]
-
-# ── uv: workspace-like config for the backend ────────────────────────
 [tool.uv]
-# Resolve against Python 3.12.x; the .python-version pins the exact patch.
 required-version = ">=0.5.0"
+package = false
 
 # ── Pytest ───────────────────────────────────────────────────────────
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
-testpaths = ["backend/tests"]
+testpaths = ["tests"]
 pythonpath = ["."]
 addopts = [
   "-ra",
@@ -124,7 +80,6 @@ addopts = [
 filterwarnings = [
   "error",
   "ignore::DeprecationWarning:websockets.*",
-  "ignore::DeprecationWarning:uvicorn.*",
   "ignore::DeprecationWarning:pydantic.*",
 ]
 
@@ -133,9 +88,7 @@ filterwarnings = [
 line-length = 100
 target-version = "py312"
 extend-exclude = [
-  "backend/.venv",
-  "frontend/node_modules",
-  "frontend/.next",
+  ".venv",
   "dist",
   "build",
 ]
@@ -154,15 +107,14 @@ select = [
 ]
 ignore = [
   "E501",   # line length handled by formatter
-  "B008",   # FastAPI uses function calls in argument defaults
   "B904",   # raise from inside except is noisy in pipeline code
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"backend/tests/**" = ["B", "SIM"]  # tests are allowed to be slightly looser
+"tests/**" = ["B", "SIM"]  # tests are allowed to be slightly looser
 
 [tool.ruff.lint.isort]
-known-first-party = ["app", "backend"]
+known-first-party = ["paperplane"]
 
 [tool.ruff.format]
 quote-style = "double"
@@ -171,11 +123,9 @@ docstring-code-format = true
 
 # ── Pyright (strict type-checker) ────────────────────────────────────
 [tool.pyright]
-include = ["backend/app", "scripts"]
+include = ["paperplane", "streamlit_app.py", "scripts"]
 exclude = [
-  "backend/.venv",
-  "backend/tests/_test_uploads",
-  "frontend",
+  ".venv",
 ]
 pythonVersion = "3.12"
 pythonPlatform = "Linux"
