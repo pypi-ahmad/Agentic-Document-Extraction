@@ -7,6 +7,7 @@ from zipfile import ZipFile
 from paperplane.outputs import (
     OutputArchiveEntry,
     build_output_archive,
+    paper_html_fragment,
     sanitized_html_fragment,
     standalone_html,
 )
@@ -25,6 +26,24 @@ def test_standalone_html_preserves_document_structure_and_strips_active_content(
     assert "<script" not in rendered
     assert "onclick" not in rendered
     assert "javascript:" not in rendered
+    assert 'class="paperplane-html-page"' in rendered
+    assert "background: #ffffff" in rendered
+    assert "color: #000000" in rendered
+
+
+def test_paper_html_fragment_is_scoped_responsive_and_printable() -> None:
+    rendered = paper_html_fragment("# Report\n\n`value`\n\n[Source](https://example.com)")
+
+    assert rendered.startswith("<style>")
+    assert 'class="paperplane-html-canvas"' in rendered
+    assert 'class="paperplane-html-page"' in rendered
+    assert ".paperplane-html-page" in rendered
+    assert "background: #ffffff" in rendered
+    assert "color: #000000" in rendered
+    assert "max-width: 960px" in rendered
+    assert "@media print" in rendered
+    assert "<h1>Report</h1>" in rendered
+    assert '<a href="https://example.com">Source</a>' in rendered
 
 
 def test_sanitized_html_fragment_has_no_document_level_style_or_script() -> None:

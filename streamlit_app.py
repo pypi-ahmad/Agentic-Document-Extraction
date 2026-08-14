@@ -32,8 +32,8 @@ from paperplane.ollama_document import OllamaDocumentAdapter, OllamaModel, Ollam
 from paperplane.outputs import (
     OutputArchiveEntry,
     build_output_archive,
+    paper_html_fragment,
     safe_output_stem,
-    sanitized_html_fragment,
     standalone_html,
 )
 
@@ -703,7 +703,7 @@ if html_tab.open:
     with html_tab:
         if selected_result is not None and selected_outcome is not None:
             st.caption("Sanitized standalone HTML generated from the layout-aware Markdown.")
-            st.html(sanitized_html_fragment(selected_result.markdown))
+            st.html(paper_html_fragment(selected_result.markdown))
         else:
             st.info("No HTML is available for the selected document.")
 

@@ -142,6 +142,7 @@ def test_app_parses_upload_and_exposes_downloads(monkeypatch) -> None:
     app.session_state["workspace_view"] = "HTML"
     app.run()
     assert any("Sanitized standalone HTML" in caption.value for caption in app.caption)
+    assert any("paperplane-html-page" in item.proto.body for item in app.get("html"))
 
     app.session_state["workspace_view"] = "JSON"
     app.run()

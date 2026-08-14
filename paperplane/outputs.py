@@ -53,6 +53,67 @@ _HTML_ATTRIBUTES = {
     "td": ["colspan", "rowspan"],
     "th": ["colspan", "rowspan", "scope"],
 }
+_PAPER_STYLE = """
+    .paperplane-html-canvas {
+      background: #e5e7eb;
+      box-sizing: border-box;
+      padding: clamp(.75rem, 2.5vw, 2rem);
+      width: 100%;
+    }
+    .paperplane-html-page {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      box-shadow: 0 12px 32px rgb(0 0 0 / 18%);
+      box-sizing: border-box;
+      color: #000000;
+      font: 16px/1.6 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 0 auto;
+      max-width: 960px;
+      min-height: 70vh;
+      overflow-wrap: anywhere;
+      padding: clamp(1.5rem, 5vw, 4rem);
+      width: 100%;
+    }
+    .paperplane-html-page h1,
+    .paperplane-html-page h2,
+    .paperplane-html-page h3,
+    .paperplane-html-page h4,
+    .paperplane-html-page h5,
+    .paperplane-html-page h6 { color: #000000; line-height: 1.25; }
+    .paperplane-html-page a { color: #000000; text-decoration: underline; }
+    .paperplane-html-page table {
+      border-collapse: collapse;
+      display: block;
+      max-width: 100%;
+      overflow-x: auto;
+    }
+    .paperplane-html-page th,
+    .paperplane-html-page td {
+      border: 1px solid #64748b;
+      color: #000000;
+      padding: .45rem .65rem;
+      text-align: left;
+    }
+    .paperplane-html-page th { background: #f1f5f9; }
+    .paperplane-html-page pre {
+      background: #f3f4f6;
+      border: 1px solid #d1d5db;
+      border-radius: .25rem;
+      color: #000000;
+      overflow-x: auto;
+      padding: 1rem;
+    }
+    .paperplane-html-page code { color: #000000; }
+    @media (max-width: 640px) {
+      .paperplane-html-canvas { padding: .5rem; }
+      .paperplane-html-page { min-height: 0; padding: 1.25rem; }
+    }
+    @media print {
+      @page { margin: 18mm; }
+      .paperplane-html-canvas { background: #ffffff; padding: 0; }
+      .paperplane-html-page { border: 0; box-shadow: none; max-width: none; padding: 0; }
+    }
+"""
 _WINDOWS_RESERVED_NAMES = {
     "aux",
     "clock$",
@@ -97,7 +158,7 @@ class OutputArchiveEntry:
 def standalone_html(markdown_text: str, title: str) -> str:
     """Convert untrusted layout-aware Markdown into a sanitized HTML document."""
 
-    body = sanitized_html_fragment(markdown_text)
+    body = _paper_html_body(markdown_text)
     safe_title = html.escape(title, quote=True)
     return f"""<!doctype html>
 <html lang="en">
@@ -106,13 +167,8 @@ def standalone_html(markdown_text: str, title: str) -> str:
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{safe_title}</title>
   <style>
-    body {{ color: #1f2937; font: 16px/1.6 system-ui, sans-serif; margin: 0 auto;
-      max-width: 1100px; padding: 2rem; }}
-    table {{ border-collapse: collapse; display: block; max-width: 100%; overflow-x: auto; }}
-    th, td {{ border: 1px solid #d1d5db; padding: .45rem .65rem; text-align: left; }}
-    pre {{ background: #f3f4f6; border-radius: .35rem; overflow-x: auto; padding: 1rem; }}
-    code {{ overflow-wrap: anywhere; }}
-    a {{ color: #075985; }}
+    html, body {{ background: #e5e7eb; margin: 0; min-height: 100%; }}
+{_PAPER_STYLE}
   </style>
 </head>
 <body>
@@ -120,6 +176,21 @@ def standalone_html(markdown_text: str, title: str) -> str:
 </body>
 </html>
 """
+
+
+def paper_html_fragment(markdown_text: str) -> str:
+    """Return sanitized HTML inside a responsive white paper surface."""
+
+    return f"<style>{_PAPER_STYLE}</style>{_paper_html_body(markdown_text)}"
+
+
+def _paper_html_body(markdown_text: str) -> str:
+    body = sanitized_html_fragment(markdown_text)
+    return (
+        f'<div class="paperplane-html-canvas">'
+        f'<article class="paperplane-html-page">{body}</article>'
+        "</div>"
+    )
 
 
 def sanitized_html_fragment(markdown_text: str) -> str:
