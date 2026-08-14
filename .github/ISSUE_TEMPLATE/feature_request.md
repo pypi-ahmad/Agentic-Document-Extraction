@@ -6,9 +6,8 @@ body:
   - type: markdown
     attributes:
       value: |
-        Use this template for new engines, new pipeline stages, new
-        schema field types, new review actions, or anything else that
-        changes user-visible behaviour.
+        Use this template for new inputs, output-contract changes,
+        processing behavior, evidence views, or other user-visible changes.
 
   - type: textarea
     id: problem
@@ -25,8 +24,8 @@ body:
     attributes:
       label: Proposed solution
       description: |
-        Describe the user-visible behavior, pipeline stage, API surface,
-        or artifact that would change.
+        Describe the user-visible behavior, parser stage, Streamlit workflow,
+        or downloaded artifact that would change.
     validations:
       required: true
 
@@ -42,8 +41,8 @@ body:
     attributes:
       label: Impact
       description: |
-        Who benefits? Does it need a new config flag, a new schema
-        field, a new API endpoint, a UI change?
+        Who benefits? Does it change a supported input, the Markdown/JSON
+        contract, provider usage, a UI view, or an artifact?
 
   - type: checkboxes
     id: checklist

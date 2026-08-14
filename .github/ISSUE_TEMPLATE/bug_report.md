@@ -13,8 +13,8 @@ body:
     id: version
     attributes:
       label: Affected version
-      description: "Run `curl.exe http://127.0.0.1:8000/info` and paste the `version` field."
-      placeholder: "1.0.0"
+      description: "Copy the Paperplane version shown in the Streamlit footer."
+      placeholder: "4.2.1"
     validations:
       required: true
 
@@ -32,12 +32,13 @@ body:
       label: Steps to reproduce
       description: |
         Minimal steps that trigger the bug. Include the document
-        type (PDF/PNG/JPEG/TIFF), processing mode, PaddleOCR-VL runtime
-        status, selected local/cloud reviewer, and schema fields if relevant.
+        type, selected AI model, processing mode, and whether the affected
+        PDF pages are native, scanned, or mixed.
       placeholder: |
-        1. Upload `invoice.png` (1.2 MB, 1 page).
-        2. Pick the Invoice preset, click Extract.
-        3. ...
+        1. Select GPT-5.6 Luna and Balanced mode.
+        2. Upload `invoice.png` (1.2 MB, 1 page).
+        3. Choose Parse document.
+        4. ...
     validations:
       required: true
 
@@ -60,16 +61,17 @@ body:
     attributes:
       label: Relevant logs / error output
       description: |
-        Copy from the backend log (or the response body of
-        `GET /api/extractions/{id}`). Sanitise any API keys.
+        Copy the safe UI error and relevant launcher/terminal output.
+        Remove document content, provider responses, and API keys.
 
   - type: textarea
     id: env
     attributes:
       label: Environment
       description: |
-        OS, Python version (`python -V`), `uv --version`, whether
-        Ollama / PaddleOCR are installed, any custom env vars.
+        OS, Python version (`uv run python -V`), `uv --version`, selected
+        model and mode, input type, and configured environment-variable
+        names. Never include their values.
 
   - type: checkboxes
     id: checklist
