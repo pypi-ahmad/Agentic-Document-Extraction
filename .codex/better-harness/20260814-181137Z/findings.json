@@ -1,0 +1,157 @@
+{
+  "summary": {
+    "projectName": "Paperplane",
+    "locale": "en",
+    "modelId": "agent-work-loop-v4",
+    "reportContractVersion": 25,
+    "overview": "Paperplane has clear project rules, focused parser tests, and CI gates, but the reviewed Codex window could not consistently connect the final change to a runnable check, attributable failure diagnostics, and revision-bound acceptance.",
+    "dimensions": [
+      {
+        "id": "task-understanding",
+        "label": "Task Understanding",
+        "score": 68,
+        "summary": "Project rules identify the product boundary and canonical code routes, while task-level acceptance remains only partly reviewable.",
+        "findingRefs": []
+      },
+      {
+        "id": "controlled-execution",
+        "label": "Controlled Execution",
+        "score": 46,
+        "summary": "Pinned dependencies and commands exist, but the managed environment blocked the focused parser check before pytest started.",
+        "findingRefs": [
+          "managed-environment-blocks-focused-checks"
+        ]
+      },
+      {
+        "id": "change-validation",
+        "label": "Change Validation",
+        "score": 44,
+        "summary": "Focused tests cover normal parser decisions, but final-change linkage, failure correlation, and one central recovery branch remain unresolved.",
+        "findingRefs": [
+          "failed-parse-has-no-correlation-chain",
+          "hybrid-fallback-decision-untested",
+          "handoffs-lack-final-change-verification"
+        ]
+      },
+      {
+        "id": "reliable-delivery",
+        "label": "Reliable Delivery",
+        "score": 38,
+        "summary": "CI workflows are present, but the bounded evidence contained no revision-bound acceptance, approval, rollback, or recovery result.",
+        "findingRefs": []
+      },
+      {
+        "id": "learning-capture",
+        "label": "Learning Capture",
+        "score": 42,
+        "summary": "The bounded review detected possible repeated validation friction but could not establish a stable procedure, durable owner, or later comparable outcome.",
+        "findingRefs": [
+          "recurrence-review-remains-inconclusive"
+        ]
+      }
+    ],
+    "aiAgentPractice": {
+      "inspectedSurfaces": [
+        "Rules",
+        "Workflows"
+      ],
+      "coverageRows": [
+        {
+          "surface": "Rules",
+          "scopes": [
+            "Project"
+          ],
+          "count": 1,
+          "paths": [
+            "AGENTS.md"
+          ]
+        },
+        {
+          "surface": "Workflows",
+          "scopes": [
+            "Project"
+          ],
+          "count": 3,
+          "paths": [
+            ".github/workflows/ci.yml",
+            ".github/workflows/benchmarks.yml",
+            ".github/workflows/dependency-review.yml"
+          ]
+        }
+      ]
+    },
+    "assignmentSummaries": []
+  },
+  "findings": [
+    {
+      "id": "managed-environment-blocks-focused-checks",
+      "title": "The managed environment blocks focused parser checks",
+      "severity": "Medium",
+      "reason": "The project exposes a focused parser test, but the reviewed run never reached pytest because dependency synchronization tried to repair Torch, found missing package metadata, and then could not replace a locked DLL. This leaves agents without the intended fast validation signal until the project-owned environment route can diagnose or isolate that state.",
+      "dimensionRefs": [
+        "controlled-execution"
+      ],
+      "aiFixPrompt": "/better-harness fix this issue\n\nAdd the smallest project-owned doctor or isolated verification route that detects an unusable managed environment before dependency synchronization and gives a safe recovery path without deleting an active environment.\n\n## Validation\n\n- Run the new diagnostic against the observed broken-environment condition\n- Run the documented isolated route and confirm `tests/test_parser.py` reaches pytest\n- Confirm the route does not stop or overwrite an unrelated running process",
+      "expectedArtifact": "Script",
+      "expectedOutput": [
+        "Provide one supported diagnostic and isolation route that either starts the focused parser check or reports the exact lock and safe recovery boundary."
+      ]
+    },
+    {
+      "id": "failed-parse-has-no-correlation-chain",
+      "title": "Failed document parses cannot be correlated with the promised logs",
+      "severity": "Medium",
+      "reason": "The batch runtime converts unexpected parse exceptions into a message that directs the operator to local logs, but the inspected runtime and parser owners expose neither a discoverable log sink nor a request identifier that survives into the error result. A failed hybrid parse therefore cannot be joined from trigger through decision and failure to its returned outcome.",
+      "dimensionRefs": [
+        "change-validation"
+      ],
+      "aiFixPrompt": "/better-harness fix this issue\n\nGive the unexpected parse path one privacy-safe correlation identifier and an owned local diagnostic sink, then return that identifier with the sanitized error outcome. Keep uploaded content and model output out of logs.\n\n## Validation\n\n- Add a focused test that forces an unexpected parser exception\n- Confirm the returned failure and local diagnostic record share the same identifier\n- Confirm the diagnostic record contains no document bytes, extracted text, prompt content, or secret values",
+      "expectedArtifact": "Code",
+      "expectedOutput": [
+        "Make one failed parse traceable across the runtime boundary without weakening Paperplane's local privacy contract."
+      ]
+    },
+    {
+      "id": "hybrid-fallback-decision-untested",
+      "title": "Hybrid parser fallback can change without a focused regression failure",
+      "severity": "Medium",
+      "reason": "The parser decides whether a page-processor exception fails the document or preserves available local blocks, but the inspected focused parser suite covers successful strategy and threshold decisions only. A regression in this recovery branch could silently change a usable fallback into a failed document, or the reverse.",
+      "dimensionRefs": [
+        "change-validation"
+      ],
+      "aiFixPrompt": "/better-harness fix this issue\n\nAdd focused parser tests for the page-processor exception branch, covering both preservation of available local output and failure when no valid fallback exists. Keep production behavior unchanged unless a test exposes a contract mismatch.\n\n## Validation\n\n- Run the new recovery tests in `tests/test_parser.py`\n- Run the full focused parser test file\n- Confirm both recovery outcomes assert the returned warning or exception contract",
+      "expectedArtifact": "Test",
+      "expectedOutput": [
+        "Protect both sides of the hybrid fallback decision with deterministic regression tests."
+      ]
+    },
+    {
+      "id": "handoffs-lack-final-change-verification",
+      "title": "Recent task handoffs do not retain final-change verification",
+      "severity": "Medium",
+      "reason": "Three reviewed Codex implementation episodes reached handoff with checks near the final edits, but none retained a reviewed link between the final change set and a relevant passing check; one retained a post-change lint failure. This does not prove the changes were wrong, but it prevents the harness from establishing validated closure.",
+      "dimensionRefs": [
+        "change-validation"
+      ],
+      "aiFixPrompt": "/better-harness fix this issue\n\nExtend the existing project validation guidance so a coding-agent handoff records the final revision, the smallest relevant project-owned checks run after the last edit, and each result. Reuse the commands already owned by CI and the project manifest.\n\n## Validation\n\n- Exercise the guidance on one bounded code change\n- Confirm the handoff names the final revision and post-edit check results\n- Confirm a failing final check blocks a successful-completion claim",
+      "expectedArtifact": "Rule",
+      "expectedOutput": [
+        "Make final-state verification reviewable without requiring raw session or command transcripts."
+      ]
+    },
+    {
+      "id": "recurrence-review-remains-inconclusive",
+      "title": "The reviewed window cannot classify recurring implementation friction",
+      "severity": "Low",
+      "reason": "The bounded Codex review found several plan-to-change-to-check handoffs with execution friction, but root and check portfolios were truncated and no final-change-relevant check was reviewed. The evidence cannot decide whether this is a stable reusable procedure, normal task complexity, or unrelated local failures, so Learning Capture has neither a clean no-candidate result nor a supported durable owner.",
+      "dimensionRefs": [
+        "learning-capture"
+      ],
+      "aiFixPrompt": "/better-harness review these sessions\n\nRun one bounded, privacy-safe outcome review for the emitted implementation candidates. Classify task family, final outcome, friction owner, verification boundary, and whether at least two independent episodes share a stable trigger, ordered stages, and stop condition. Do not create a Skill, Memory, Hook, or workflow unless that comparison supports one and existing coverage has been checked first.\n\n## Validation\n\n- Produce a complete recurrence decision for the displayed candidates\n- Preserve provider labels and omission counts\n- Return `defer` or `no candidate` when independence or outcome evidence remains insufficient",
+      "expectedArtifact": "Document",
+      "expectedOutput": [
+        "Resolve the current recurrence evidence gap without exposing raw prompts, session identifiers, or private paths."
+      ]
+    }
+  ]
+}
