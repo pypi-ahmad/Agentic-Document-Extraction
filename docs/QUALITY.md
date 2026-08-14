@@ -15,8 +15,10 @@ Paperplane validates structure and evidence independently of model fluency.
   and pages outside a chosen range are not inspected.
 - Classify, Split, and Section local results identify deterministic partials.
 - HTML output is allowlist-sanitized; scripts, event handlers, and unsafe URL schemes are
-  removed. Batch ZIP names are leaf-only, device-safe, and traversal-safe. The app binds to
-  localhost with XSRF protection.
+  removed. Its scoped, responsive black-on-white paper styling is shared by the in-app
+  preview and exported HTML without changing the surrounding dark app theme. Batch ZIP
+  names are leaf-only, device-safe, and traversal-safe. The app binds to localhost with
+  XSRF protection.
 
 ## Confidence
 

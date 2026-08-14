@@ -137,7 +137,8 @@ single selected-document control drives six full-width views:
 - **Output** presents the assembled result and usage summary.
 - **Annotated PDF** overlays grounded regions when source geometry is available.
 - **Markdown** exposes the reading-order document text.
-- **HTML** renders allowlist-sanitized standalone HTML.
+- **HTML** renders allowlist-sanitized content on a responsive white paper surface with
+  black text, matching the standalone download.
 - **JSON** switches between strict ADE v2-style and richer Paperplane v5 exports.
 
 Downloads always follow the selected document. The batch ZIP instead includes every
@@ -208,7 +209,9 @@ DOC/PPT/XLS files are not supported. Pages outside a chosen range are never insp
   with zero-based response-local IDs and inline grounding.
 - **Paperplane JSON:** namespaced provenance, observed words, confidence status, warnings,
   and cross-page relations around the ADE-compatible core.
-- **HTML:** sanitized standalone rendering of the layout-aware Markdown.
+- **HTML:** sanitized, print-friendly standalone rendering of the layout-aware Markdown on
+  a responsive white page with black text. The in-app preview, individual download, and
+  HTML files inside the batch ZIP share this presentation.
 - **Batch ZIP:** every successful document's available outputs in traversal-safe folders,
   plus a versioned manifest for successes and failures. Original uploads are not duplicated.
 “ADE-compatible” in v5 describes these versioned Python/Pydantic and JSON contracts plus

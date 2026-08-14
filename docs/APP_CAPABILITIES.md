@@ -43,6 +43,8 @@ drives Input preview, Output, Annotated PDF, Markdown, HTML, and JSON tabs. Sele
 downloads sit in one responsive row. The batch ZIP contains all successful documents'
 available outputs and a versioned success/failure manifest, but no original uploads.
 The checked-in Streamlit theme uses near-black surfaces, charcoal panels, and red accents.
+Within that dark workspace, HTML results use a responsive, print-friendly white paper
+surface with black text. The preview, individual HTML download, and ZIP copy match.
 
 There is no public/local HTTP API in v5. ADE compatibility refers to versioned JSON and
 Pydantic contracts and async/durable job semantics, not a client drop-in claim.
