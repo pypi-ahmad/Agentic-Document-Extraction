@@ -41,6 +41,7 @@ Parse configuration appears vertically in the sidebar. One main-canvas document 
 drives Input preview, Output, Annotated PDF, Markdown, HTML, and JSON tabs. Selected-document
 downloads sit in one responsive row. The batch ZIP contains all successful documents'
 available outputs and a versioned success/failure manifest, but no original uploads.
+The checked-in Streamlit theme uses near-black surfaces, charcoal panels, and red accents.
 
 There is no public/local HTTP API in v5. ADE compatibility refers to versioned JSON and
 Pydantic contracts and async/durable job semantics, not a client drop-in claim.
