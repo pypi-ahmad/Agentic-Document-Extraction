@@ -172,6 +172,7 @@ def update_changelog(new_version: str, notes: str, dry: bool) -> None:
     today = _dt.date.today().isoformat()
     text = CHANGELOG.read_text()
     section_header = f"## [{new_version}] - {today}"
+    promoted_existing = False
 
     if "## [Unreleased]" in text:
         # Extract existing Unreleased content.
@@ -191,21 +192,14 @@ def update_changelog(new_version: str, notes: str, dry: bool) -> None:
             )
         else:
             # Promote Unreleased content into the new dated section.
-            text = text.replace(
-                "## [Unreleased]\n",
-                "## [Unreleased]\n\n### Added\n\n### Changed\n\n### Fixed\n\n",
-                1,
+            new_block = (
+                "## [Unreleased]\n\n### Added\n\n### Changed\n\n### Fixed\n\n"
+                f"## [{new_version}] - {today}\n\n{existing}"
             )
-            # Insert the dated section between Unreleased and the rest.
-            new_block = f"## [Unreleased]\n\n## [{new_version}] - {today}\n\n{existing}\n\n"
-            text = re.sub(
-                r"## \[Unreleased\]\n+",
-                new_block,
-                text,
-                count=1,
-            )
+            text = unreleased_re.sub(new_block, text, count=1)
+            promoted_existing = True
 
-    if notes:
+    if notes and not promoted_existing:
         # Append release notes under the new version's section.
         insertion = f"\n\n### Release notes\n\n{notes.strip()}\n"
         if section_header in text:
