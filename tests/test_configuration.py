@@ -78,3 +78,14 @@ def test_linux_launcher_skips_completed_setup() -> None:
     assert "models download layout tableformer rapidocr --quiet" in launcher
     assert '"$venv_python" -m streamlit cache clear' in launcher
     assert 'exec "$venv_python" -m streamlit run workspace_app.py --server.port=8551' in launcher
+
+
+def test_workspace_exposes_shared_stop_and_clear_control() -> None:
+    workspace = (ROOT / "workspace_app.py").read_text(encoding="utf-8")
+
+    assert '"Stop and clear"' in workspace
+    assert "@st.dialog" in workspace
+    assert "st.cache_data.clear()" in workspace
+    assert "st.cache_resource.clear()" in workspace
+    assert "st.session_state.clear()" in workspace
+    assert workspace.index('with st.sidebar:') < workspace.index("navigation.run()")
