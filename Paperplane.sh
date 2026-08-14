@@ -4,6 +4,7 @@ set -Eeuo pipefail
 
 script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 cd "$script_dir"
+export UV_LINK_MODE="${UV_LINK_MODE:-copy}"
 
 fail() {
     printf '\nERROR: %s\n' "$1" >&2

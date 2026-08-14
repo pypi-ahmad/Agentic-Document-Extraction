@@ -2,6 +2,7 @@
 setlocal EnableExtensions DisableDelayedExpansion
 cd /d "%~dp0" || goto :failure
 title Paperplane
+set "UV_LINK_MODE=copy"
 
 echo.
 echo ========================================
