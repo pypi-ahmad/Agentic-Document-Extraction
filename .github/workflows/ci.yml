@@ -29,13 +29,13 @@ jobs:
             uv.lock
 
       - name: Install locked dependencies
-        run: uv sync --locked --extra test --extra lint --extra docs
+        run: uv sync --locked --extra cpu --extra test --extra lint --extra docs
 
       - name: Ruff lint
-        run: uv run --no-sync ruff check paperplane tests streamlit_app.py scripts
+        run: uv run --no-sync ruff check paperplane app_pages tests streamlit_app.py workspace_app.py scripts
 
       - name: Ruff format check
-        run: uv run --no-sync ruff format --check paperplane tests streamlit_app.py scripts
+        run: uv run --no-sync ruff format --check paperplane app_pages tests streamlit_app.py workspace_app.py scripts
 
       - name: Pyright
         run: uv run --no-sync pyright
@@ -53,11 +53,14 @@ jobs:
         run: |
           uv run --no-sync python scripts/build_handbook.py
           uv run --no-sync python scripts/build_app_guide.py
-          git diff --exit-code -- docs/APP_CAPABILITIES.html
+          git diff --exit-code -- docs/APP_CAPABILITIES.html docs/ZERO_TO_MASTERY.rich.html
+
+      - name: Validate benchmark corpus
+        run: uv run --no-sync python scripts/benchmark_report.py
 
       - name: Smoke-test Streamlit startup
         run: |
-          uv run --no-sync streamlit run streamlit_app.py \
+          uv run --no-sync streamlit run workspace_app.py \
             --server.headless=true \
             --server.address=127.0.0.1 \
             --server.port=8551 &

@@ -1,0 +1,40 @@
+{
+  "version": "paperplane-corpus-v1",
+  "documents": [
+    {
+      "id": "public-water-mass-mailing",
+      "path": "Sample-PDF/PublicWaterMassMailing.pdf",
+      "sha256": "780668c60178a66e31394f81ad09256d6a9dca31b7578eac87477e9e3fcddc0b",
+      "license": "Upstream public DocETL test asset; verify upstream terms before redistribution",
+      "tags": ["pdf", "public", "layout", "multi-page"]
+    }
+  ],
+  "engines": [
+    "docling",
+    "pdf-inspector",
+    "agnes-2.5-flash",
+    "glm-ocr:latest",
+    "AuditAid/PaddleOCR-VL-1.6-0.9B:latest",
+    "docling+cloud-ai",
+    "pdf-inspector+cloud-ai",
+    "ollama+cloud-ai"
+  ],
+  "metrics": [
+    "character_accuracy",
+    "word_accuracy",
+    "reading_order_pairwise_accuracy",
+    "table_teds",
+    "table_cell_accuracy",
+    "continuation_f1",
+    "grounding_iou",
+    "grounding_recall",
+    "citation_validity",
+    "workflow_f1",
+    "calibration_ece",
+    "calibration_brier",
+    "latency_ms",
+    "input_tokens",
+    "output_tokens",
+    "estimated_cost_usd"
+  ]
+}
