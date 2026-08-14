@@ -42,6 +42,130 @@ compatibility, or claim LandingAI accuracy parity.
 - Bootstrap missing Windows requirements once, then launch directly by double-clicking
   `Paperplane.cmd`.
 
+## Feature guide
+
+### Four explicit processing engines
+
+Paperplane never chooses an engine automatically. Activating one engine turns the other
+three off, so users always know where document content is processed.
+
+- **Docling ADE** runs local layout analysis, table recognition, reading-order recovery,
+  and OCR through Docling and RapidOCR. It accepts every supported input type and is the
+  full-layout local choice when documents should remain on the machine.
+- **PDF Inspector ADE** inspects PDFs locally for Markdown, positioned text, page geometry,
+  and OCR indicators. It accepts PDF files only.
+- **Cloud AI ADE** renders selected pages and sends them to one explicitly selected
+  multimodal provider. It is intended for scans, images, and documents where visual
+  interpretation is more important than local-only processing.
+- **Ollama ADE** sends selected pages to an installed local Ollama model. Paperplane lists
+  every installed model but enables Parse only when Ollama reports the `vision`
+  capability.
+
+For Docling, PDF Inspector, and Ollama, **Enhance with cloud AI** can pass the local result
+to a selected cloud model for refinement. Enhancement is opt-in and requires that
+provider's credential; Paperplane does not silently fall back to cloud processing.
+
+### Fast, Balanced, and Audit quality modes
+
+Cloud processing and cloud enhancement expose three inspection depths:
+
+| Mode | Behavior | Best for |
+|---|---|---|
+| Fast | 150 DPI draft, deterministic grounding, no separate verification pass | Straightforward, high-volume documents |
+| Balanced | 200 DPI draft with 300 DPI verification crops for flagged regions | Most documents |
+| Audit | 250 DPI draft, 400 DPI crops, deeper reasoning, and up to three repair rounds | Difficult scans, tables, identifiers, and ambiguous layouts |
+
+Balanced verifies only suspicious content; Audit inspects complex regions more broadly.
+These modes trade latency and provider usage for verification depth—they do not change the
+output contract.
+
+### Supported cloud models and private visual input
+
+The Cloud AI selector contains Grok 4.6, GPT-5.6 Luna, Gemini 3.5 Flash-Lite, Gemini 3.6
+Flash, Claude Sonnet 5, and Agnes 2.5 Flash. Each provider uses its native API boundary and
+only its corresponding environment variable. The UI records provider-reported input and
+output tokens and shows a configured cost estimate; that estimate is not an invoice.
+
+Agnes visual Parse and enhancement use inline PNG data URLs. Uploaded images do not need
+to be published at a public URL. All cloud models still receive the selected page content,
+so use Docling, PDF Inspector, or Ollama when content must not leave the machine.
+
+### Page selection, isolation, and document context
+
+Every uploaded file has an independent, one-based inclusive page range. Pages outside that
+range are not rendered, parsed, or added to model context. Up to 20 files can be queued in
+one batch and up to six files run concurrently, but files never share content or context.
+
+Within a single file, selected pages retain physical order. Later AI-processed pages may
+receive bounded Markdown context from earlier selected pages, improving continued tables,
+section continuity, and repeated-label handling without crossing document boundaries.
+
+### Grounded structure and document intelligence
+
+Paperplane assembles a document → page → block hierarchy containing titles, headings,
+text, lists, checkboxes, tables and cells, form fields, figures, charts, headers, and
+footers. Blocks and atomic lines carry normalized page boxes and half-open Unicode ranges
+into the final Markdown.
+
+Native PDF words and RapidOCR observations are exported only when they align exactly with
+the Markdown; missing evidence remains missing instead of being guessed. Cross-page logic
+then marks section starts, repeated marginalia, continued tables, parent/child structure,
+and page-range boundaries. Each result retains provenance, warnings, source passes,
+verification state, and raw or calibrated confidence status.
+
+### Parse workspace and red/black dark theme
+
+The checked-in Streamlit theme uses a near-black canvas, charcoal panels, red controls,
+dark-red borders, and high-contrast text. Parse configuration stays in the sidebar while a
+single selected-document control drives six full-width views:
+
+- **Input preview** shows the selected source document.
+- **Output** presents the assembled result and usage summary.
+- **Annotated PDF** overlays grounded regions when source geometry is available.
+- **Markdown** exposes the reading-order document text.
+- **HTML** renders allowlist-sanitized standalone HTML.
+- **JSON** switches between strict ADE v2-style and richer Paperplane v5 exports.
+
+Downloads always follow the selected document. The batch ZIP instead includes every
+successful document's available artifacts plus a versioned manifest describing successes,
+failures, and artifact warnings; it intentionally does not duplicate original uploads.
+
+### Cited Organize workflows
+
+The **Organize** page operates on a completed Parse result without reparsing the file:
+
+- **Classify** assigns pages to a user-provided allowed class list and returns source page
+  ranges.
+- **Split** groups classified page ranges into logical documents.
+- **Section** detects document sections and provides a downloadable `sections.json` map.
+
+These workflows use the grounded result and preserve citations. When evidence is
+insufficient or semantics are unsupported, they return explicit partial results and
+warnings rather than invoking another model or fabricating certainty.
+
+### Durable local jobs and deletion controls
+
+The **Jobs** page stores job metadata, checkpoints, source artifacts, result JSON, and
+annotated PDFs under `%LOCALAPPDATA%\Paperplane`. Retention is seven days; expired jobs are
+purged automatically. Users can inspect status, mark a pending/running job cancelled,
+delete one job and its artifact directory, or clear all retained jobs.
+
+Execution still occurs inside the Streamlit process. Closing the app stops active
+computation; retained records remain available when Paperplane is reopened. This is not a
+remote queue or multi-user database.
+
+### Transparent benchmarks and confidence calibration
+
+The **Benchmarks** page validates the version-pinned corpus manifest, document hashes,
+licenses, engine matrix, and metric list. It displays a measured result bundle only when
+one exists; missing results are never replaced with accuracy claims. Metrics cover text,
+reading order, tables, continuation, grounding, workflows, calibration, latency, tokens,
+and cost.
+
+Confidence remains explicitly raw and uncalibrated unless the engine, model, recipe
+version, and corpus hash match a checked-in calibration profile. The initial corpus is too
+small for a comparative accuracy claim, and Paperplane does not inherit LandingAI scores.
+
 ## Workspace pages
 
 | Page | Purpose |
