@@ -40,7 +40,8 @@ compatibility, or claim LandingAI accuracy parity.
 - Validate a locked benchmark manifest and publish transparent result artifacts through
   GitHub Pages without a `gh-pages` branch.
 - Bootstrap missing requirements once with `Paperplane.cmd` on Windows or `Paperplane.sh`
-  on Linux, then skip completed setup on later launches.
+  on Linux, then skip completed setup on later launches. The platform runner avoids noisy
+  Windows connection-reset tracebacks without changing Linux event-loop behavior.
 - Start every launch and parse with empty UI caches so previous results never remain in the
   output tabs.
 - Use **Stop and clear** from any page to clear Streamlit and session caches, blank every

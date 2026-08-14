@@ -13,7 +13,9 @@ Each launcher start clears Streamlit's data cache. Each **Parse files** action a
 the previous batch from every output tab before processing begins.
 On Windows, starting the launcher again safely stops an existing Paperplane process on port
 `8551` before setup. If another application owns that port, the launcher leaves it running
-and reports the conflict.
+and reports the conflict. Paperplane starts Streamlit through its platform runner, which uses
+the Windows Selector event loop to avoid harmless Proactor `WinError 10054` disconnect
+tracebacks when browser connections reset.
 
 ## Stop from the UI
 
@@ -35,7 +37,7 @@ LibreOffice first. Open `http://127.0.0.1:8551` and press Ctrl+C to stop the app
 ```powershell
 uv python install 3.12.10
 uv sync --locked --extra cpu
-uv run --locked --extra cpu streamlit run workspace_app.py --server.port=8551
+uv run --locked --extra cpu python -m paperplane.streamlit_runner run workspace_app.py --server.port=8551
 ```
 
 For Ollama ADE, start Ollama first and optionally set
