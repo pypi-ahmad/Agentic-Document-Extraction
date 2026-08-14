@@ -1,44 +1,28 @@
-# Paperplane 4.2.1
+# Paperplane 5.0.0
 
-Paperplane 4.2.1 produces ADE-inspired, context- and layout-aware Markdown, hierarchical
-grounding JSON, and an annotated evidence PDF from one local Streamlit application.
+Paperplane 5 is an ADE-inspired, private document-intelligence workspace with explicit
+engines, grounded contracts, cited workflows, and durable local jobs.
 
-## Added
+## Highlights
 
-- Local Docling conversion for native PDFs, Office/OpenDocument files, and CSV
-- Six selectable cloud vision models using verified production API IDs
-- Provider-native OpenAI/xAI Responses, Google Gemini, Anthropic Messages, and Agnes Chat
-  Completions adapters
-- Automatic per-page routing for native, scanned, and mixed PDFs
-- Shared reading-order Markdown and grounding assembly across all engines
-- HTML tables with row, column, `rowspan`, and `colspan` metadata
-- Atomic-line evidence and exact Unicode Markdown ranges
-- Explicit semantic-only geometry for Office content without physical coordinates
-- Optional native-document figure descriptions with explicit unavailable placeholders
-- Output, Annotated PDF, Markdown, and JSON result views
-- In-memory source overlays and semantic Office evidence reports
-- Annotated PDF, Markdown, and JSON downloads
-- Fast, Balanced, and Audit processing modes
-- Provider-reported token totals and an expandable estimated model-cost calculation
-- Streamlit AppTest coverage for the complete result workflow
-- One-file Windows setup and launcher with Docling layout/table model download
+- Multipage Streamlit UI: Parse, Organize, Jobs, Benchmarks.
+- Four exclusive engine toggles, all off initially: Docling, PDF Inspector, Cloud AI, and
+  Ollama; optional cloud enhancement for local engines.
+- Installed Ollama model discovery and live vision-capability checks.
+- Strict ADE v2-style Parse export plus namespaced Paperplane v5 JSON.
+- Cross-page selected-document context, section/repeated-label/continued-table relations,
+  exact native/RapidOCR word grounding, and explicit calibration state.
+- Deterministic cited Classify, Split, and Section workflows.
+- Vertical Parse controls below sidebar navigation, one shared-document selector, and
+  full-width Input preview, Output, Annotated PDF, Markdown, HTML, and JSON tabs.
+- Selected-document downloads plus a traversal-safe whole-batch ZIP with a versioned
+  success/failure manifest and no duplicated source uploads.
+- SQLite jobs, checkpoints, seven-day private artifact retention, cancellation state, and
+  deletion controls.
+- Locked benchmark manifest, metric helpers, and GitHub Pages transparency workflow with
+  no fabricated or inherited accuracy claims.
+- Agnes remains $0 in configured cost estimates, but private visual use is blocked until a
+  private-input interface exists.
 
-## Changed
-
-- The selected model's provider key is required only for scans, images, and optional figure
-  descriptions
-- Native documents can be parsed locally without an external AI provider
-- Configuration prefers user/process environment variables, then ignored local fallbacks
-- The result and uploaded bytes remain only in the current Streamlit session
-- The local Streamlit server uses `http://127.0.0.1:8551` by default
-- Releases are source-only GitHub releases
-
-## Still deliberately absent
-
-- FastAPI, REST/OpenAPI endpoints, Next.js, React, Node.js, Docker, and PyPI packaging
-- databases, persistence, jobs, queues, run history, and saved artifacts
-- schema extraction, reusable schemas, evaluation, and inactive legacy services
-- authentication, CORS configuration, rate limiting, telemetry services, and multi-user hosting
-
-See the [migration guide](MIGRATION_GUIDE.md) for the v3-to-v4 transition and
-[capabilities](APP_CAPABILITIES.md) for the current contract.
+There is no HTTP API in this release. “ADE compatible” refers to versioned data contracts
+and job semantics, not LandingAI client or model parity.
