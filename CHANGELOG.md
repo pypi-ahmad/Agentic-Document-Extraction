@@ -9,7 +9,14 @@ and this project aims to follow [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- Versioned V9 processing recipes with immutable job snapshots and V8 rollback.
+- Sanitized model-call replay manifests, content-addressed evidence, and private ZIP bundles.
+- Upload preflight findings, invoice-v1 contract preset, and additive assurance/page timelines.
+
 ### Changed
+
+- Balanced and Audit verification now use explicit per-page Terra/crop budgets.
+- Jobs with at least one successful page now assemble a warning-marked partial result.
 
 ### Fixed
 

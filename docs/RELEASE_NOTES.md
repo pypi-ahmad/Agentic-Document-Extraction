@@ -1,5 +1,8 @@
 # Paperplane v1.0.0
 
+
+> **V2 status (2026-08-14):** The active runtime is OpenAI-only and uses versioned recipes, bounded Terra verification, safe partial results, and private evidence bundles. This page retains older detail where useful; [README](../README.md) and [V2 architecture](ARCHITECTURE_V2.md) are authoritative for current behavior.
+
 Paperplane now always creates `annotated.pdf`, with type-colored bounding boxes and region labels over the selected source pages. The new Output files gallery lists every public artifact and previews PDFs, images, Markdown, text, and JSON directly in the UI; ZIP bundles remain download-only.
 
 Paperplane v1 replaces the former schema-extraction product with a focused, local, vision-first document parser. Native PDFs, scanned PDFs, and document images now become clean hierarchical Markdown, grounded context, diagnostics, and optional PDF artifacts without hosted model calls.

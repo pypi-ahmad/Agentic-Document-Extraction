@@ -1,5 +1,8 @@
 # Engines
 
+
+> **V2 status (2026-08-14):** The active runtime is OpenAI-only and uses versioned recipes, bounded Terra verification, safe partial results, and private evidence bundles. This page retains older detail where useful; [README](../README.md) and [V2 architecture](ARCHITECTURE_V2.md) are authoritative for current behavior.
+
 This document is the v0.4.0 reference for the OCR / parser
 engines that ship with the app, the VLM-as-extractor path,
 the engine deprecation policy, and the per-engine

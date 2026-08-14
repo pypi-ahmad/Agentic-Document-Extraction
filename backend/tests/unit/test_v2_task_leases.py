@@ -125,7 +125,7 @@ async def test_terminal_tasks_recompute_job_summary_when_success_finishes_after_
 
     async with sessions() as session:
         job = await session.get(ParseJob, "job")
-        assert job is not None and str(job.status) == "failed"
+        assert job is not None and str(job.status) == "completed_with_warnings"
         assert job.completed_pages == 1 and job.failed_pages == 1
         assert job.error_code == "page_task_failed"
         assert job.error_message == "1 page task failed; first failed page: 1"
@@ -188,6 +188,6 @@ async def test_concurrent_terminal_transitions_finish_the_failed_job(tmp_path) -
 
     async with sessions() as session:
         job = await session.get(ParseJob, "race-job")
-        assert job is not None and str(job.status) == "failed"
+        assert job is not None and str(job.status) == "completed_with_warnings"
         assert job.completed_pages == 1 and job.failed_pages == 1
     await engine.dispose()

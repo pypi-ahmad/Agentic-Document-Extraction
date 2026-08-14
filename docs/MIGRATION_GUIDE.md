@@ -1,5 +1,8 @@
 # Migration guide: v0.3.x → v0.4.0
 
+
+> **V2 status (2026-08-14):** The active runtime is OpenAI-only and uses versioned recipes, bounded Terra verification, safe partial results, and private evidence bundles. This page retains older detail where useful; [README](../README.md) and [V2 architecture](ARCHITECTURE_V2.md) are authoritative for current behavior.
+
 > v0.4.0 is the **quality + OCR refresh** release. It adds a
 > golden-set-driven eval layer (field F1, ECE, AUROC, Brier,
 > reliability diagrams), per-field isotonic confidence

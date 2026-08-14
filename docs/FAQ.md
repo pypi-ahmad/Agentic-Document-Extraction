@@ -1,5 +1,8 @@
 # FAQ
 
+
+> **V2 status (2026-08-14):** The active runtime is OpenAI-only and uses versioned recipes, bounded Terra verification, safe partial results, and private evidence bundles. This page retains older detail where useful; [README](../README.md) and [V2 architecture](ARCHITECTURE_V2.md) are authoritative for current behavior.
+
 > Frequently asked questions about Agentic Document Extraction v0.3.0.
 
 ### Why a LangGraph state machine for a four-step pipeline?

@@ -6,6 +6,7 @@ import pytest
 from app.services.parsing.openai_document import (
     OpenAIDocumentAdapter,
     OpenAIRequestError,
+    capture_audit_calls,
 )
 
 PAGE_SCHEMA = {
@@ -47,16 +48,18 @@ async def test_page_draft_uses_strict_cached_responses_contract() -> None:
     http = httpx.AsyncClient(transport=httpx.MockTransport(handler))
     adapter = OpenAIDocumentAdapter(http, api_key="sk-test", base_url="https://api.openai.com")
 
-    result = await adapter.generate_structured(
-        model="gpt-5.6-luna",
-        image=b"png",
-        instructions="Extract ordered grounded chunks.",
-        schema_name="page_draft",
-        schema=PAGE_SCHEMA,
-        reasoning_effort="low",
-        detail="high",
-        prompt_cache_key="page-draft:v2:shard-0",
-    )
+    calls: list[dict] = []
+    with capture_audit_calls(calls):
+        result = await adapter.generate_structured(
+            model="gpt-5.6-luna",
+            image=b"png",
+            instructions="Extract ordered grounded chunks.",
+            schema_name="page_draft",
+            schema=PAGE_SCHEMA,
+            reasoning_effort="low",
+            detail="high",
+            prompt_cache_key="page-draft:v2:shard-0",
+        )
 
     body = captured["body"]
     assert captured["url"] == "https://api.openai.com/v1/responses"
@@ -76,6 +79,11 @@ async def test_page_draft_uses_strict_cached_responses_contract() -> None:
     assert result.value == {"chunks": []}
     assert result.usage.cached_input_tokens == 1024
     assert result.usage.cache_write_tokens == 0
+    assert calls[0]["status"] == "completed"
+    assert calls[0]["value"] == {"chunks": []}
+    assert calls[0]["image_sha256"]
+    assert "sk-test" not in json.dumps(calls)
+    assert "data:image" not in json.dumps(calls)
     await http.aclose()
 
 

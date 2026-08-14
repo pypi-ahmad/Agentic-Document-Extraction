@@ -1,8 +1,10 @@
 # Paperplane: Capabilities, Pipeline, and Technical Guide
 
-Paperplane is a local-first document intelligence application that converts native or scanned PDFs into layout-aware Markdown for retrieval-augmented generation (RAG), LLM context, indexing, search, and human review.
+Paperplane converts PDFs and document images into grounded Markdown and JSON using Luna
+drafting, bounded Terra verification, deterministic PyMuPDF geometry, and auditable evidence.
 
-> Paperplane implements a LandingAI ADE-inspired visual workflow and LlamaParse-inspired Markdown reconstruction locally. It does not call either hosted service.
+> It is independently inspired by visual ADE and structured parsing concepts. It does not
+> call LandingAI or LlamaParse. OpenAI is the only model provider in the active V2 runtime.
 
 ## What the application can do
 
@@ -11,11 +13,13 @@ Paperplane is a local-first document intelligence application that converts nati
 - Recover native words and coordinates when a usable PDF text layer exists.
 - Detect headings, columns, text, lists, tables, figures, charts, headers, and footers as bounded regions.
 - Process regions independently so complex layouts are not flattened into one OCR stream.
-- Use native text, PaddleOCR, Docling, and Ollama-hosted models where appropriate.
+- Snap native PDF text exactly and use OpenAI vision for scanned or ambiguous content.
 - Reconstruct headings, paragraphs, lists, tables, figures, and multi-column reading order as Markdown.
 - Produce clean Markdown, grounded Markdown, RAG context chunks, an annotated bounding-box PDF, figure crops, layout data, and quality diagnostics.
 - Review alignment and retry failed regions through a bounded LangGraph correction loop.
-- Persist jobs, page checkpoints, artifacts, failures, cancellation, and resumable progress in SQLite.
+- Persist jobs, page checkpoints, artifacts, retries, cancellation, and safe partial progress.
+- Export tamper-evident audit manifests and private evidence/replay bundles.
+- Execute generic inline JSON Schema extraction and expose an invoice-v1 preset.
 - Expose the workflow through FastAPI, server-sent events, and a Next.js interface.
 
 ## End-to-end pipeline

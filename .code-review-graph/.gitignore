@@ -1,0 +1,4 @@
+# Track graph.db as requested; ignore only transient SQLite sidecars.
+*.db-wal
+*.db-shm
+!graph.db

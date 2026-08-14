@@ -19,14 +19,17 @@ coordinates. It does not call either vendor service or claim their benchmarks.
 - Optional schema-defined extraction with field-level evidence
 - Usage and operator-configured cost reports, including cached input tokens
 - Explicit unresolved values and human-review cases instead of unsupported guesses
+- Tamper-evident audit manifests and private replay bundles containing the source,
+  rendered pages, sanitized model-call records, outputs, and crop evidence
+- Safe partial results when at least one page succeeds after another page exhausts retries
 
 ## Processing modes
 
 | Mode | Page pass | Verification | Use when |
 |---|---|---|---|
 | Economy | 150 DPI Luna draft | Deterministic grounding only | High-volume, clean documents |
-| Balanced | 200 DPI Luna draft | Terra on uncertain crops | Default production workloads |
-| Audit | 250 DPI Luna draft | Terra high-resolution inspection | Dense tables, fine print, regulated review |
+| Balanced | 200 DPI Luna draft | At most 2 Terra calls, including 1 crop | Default production workloads |
+| Audit | 250 DPI Luna draft | At most 6 Terra calls, including 5 crops | Dense tables, fine print, regulated review |
 
 All OpenAI requests use strict Structured Outputs, `store: false`, explicit prompt-cache
 breakpoints, and a 30-minute cache retention request. Persistent page-result caching is
@@ -76,12 +79,21 @@ supports multiple workers via `FOR UPDATE SKIP LOCKED`. Generated objects are ad
 through the `ObjectStore` boundary so production deployments can provide managed,
 S3-compatible storage without changing extraction contracts.
 
-Each newly completed V2 job exposes three public artifacts: `document.md`, `document.json`,
-and `annotated.pdf`. The JSON uses `paperplane-document/v3`, stores Markdown per page with
+Each newly completed V2 job exposes `document.md`, `document.json`, `annotated.pdf`,
+`audit-manifest.json`, and `evidence-bundle.zip`. The JSON uses `paperplane-document/v3`, stores Markdown per page with
 half-open item spans, and embeds grounding, verification provenance, usage/cost, splits,
 and optional schema extraction. The original upload is previewed through the authenticated
 `GET /api/v2/jobs/{id}/source` endpoint; the annotated PDF supports inline preview and
 download from Results.
+
+The default processing recipe is `v9`. Set `V2_RECIPE_VERSION=v8` before starting the
+backend for an operator rollback to the legacy verification budget. A job snapshots its
+recipe at creation, so changing the environment never changes an in-flight run.
+
+The companion job response adds `assurance`, `timeline`, and `pages` without changing the
+synchronous `ParseResponse` or `paperplane-document/v3`. Generic strict extraction accepts
+inline JSON Schema at `POST /v2/extract`; the built-in invoice schema is available at
+`GET /v2/contracts/presets/invoice-v1`.
 
 ## Configuration
 
@@ -113,6 +125,10 @@ npm run lint
 npm test -- --run
 npm run build
 ```
+
+The suite is offline. To exercise configured models deliberately against a running local
+service, run `uv run python scripts/live_canary.py path/to/document.pdf`. The canary is
+never invoked by CI and does not print credentials.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md), [CHANGELOG.md](CHANGELOG.md), and
 [LICENSE](LICENSE).

@@ -56,6 +56,29 @@ MODEL_TO_MODE: dict[ModelAlias, str] = {
     "paperplane-ade-audit-latest": "audit",
 }
 
+INVOICE_V1_SCHEMA: dict[str, Any] = {
+    "type": "object",
+    "properties": {
+        "invoice_number": {"type": "string"},
+        "invoice_date": {"type": "string"},
+        "supplier_name": {"type": "string"},
+        "currency": {"type": "string"},
+        "subtotal": {"type": "number"},
+        "tax": {"type": "number"},
+        "total": {"type": "number"},
+    },
+    "required": [
+        "invoice_number",
+        "invoice_date",
+        "supplier_name",
+        "currency",
+        "subtotal",
+        "tax",
+        "total",
+    ],
+    "additionalProperties": False,
+}
+
 router = APIRouter(
     prefix="/v2",
     tags=["agentic-v2"],
@@ -92,6 +115,9 @@ class ParseJobResponse(BaseModel):
     source_preview_url: str
     artifacts: list[ArtifactResponse] = Field(default_factory=list)
     result: dict[str, Any] | None = None
+    assurance: dict[str, Any] = Field(default_factory=dict)
+    timeline: list[dict[str, Any]] = Field(default_factory=list)
+    pages: list[dict[str, Any]] = Field(default_factory=list)
 
 
 class ParseJobListResponse(BaseModel):
@@ -114,6 +140,15 @@ class ExtractJobResponse(BaseModel):
     model: ModelAlias
     result: dict[str, Any] | None = None
     error: dict[str, str] | None = None
+
+
+@router.get("/contracts/presets/invoice-v1")
+async def get_invoice_contract() -> dict[str, Any]:
+    return {
+        "id": "invoice-v1",
+        "description": "Grounded invoice header and total fields; absent values remain unresolved.",
+        "json_schema": INVOICE_V1_SCHEMA,
+    }
 
 
 def _error(code: str, message: str, status_code: int = 422) -> HTTPException:
@@ -216,6 +251,25 @@ def _serialize_job(job: ParseJob, *, result: dict[str, Any] | None = None) -> Pa
         )
         for item in job.artifacts
     ]
+    quality = job.quality_policy_snapshot or {}
+    page_items = [
+        {
+            "page_number": page.page_number,
+            "status": str(page.status),
+            "stage": page.stage,
+            "warnings": page.warnings,
+            "error_code": page.error_code,
+        }
+        for page in sorted(job.pages, key=lambda item: item.page_number)
+    ]
+    timeline = [
+        {
+            "page_number": page["page_number"],
+            "stage": page["stage"],
+            "status": page["status"],
+        }
+        for page in page_items
+    ]
     return ParseJobResponse(
         id=job.id,
         status=str(job.status),
@@ -235,6 +289,19 @@ def _serialize_job(job: ParseJob, *, result: dict[str, Any] | None = None) -> Pa
         source_preview_url=f"/v2/parse/jobs/{job.id}/source",
         artifacts=artifacts,
         result=result,
+        assurance={
+            "recipe_version": quality.get(
+                "recipe_version", job.settings.get("recipe_version", "v8")
+            ),
+            "audit_integrity_sha256": quality.get("audit_integrity_sha256"),
+            "partial": bool(job.failed_pages and job.completed_pages),
+            "evidence_bundle_ready": any(
+                artifact.type == "evidence_bundle" for artifact in job.artifacts
+            ),
+            "warning_count": job.warning_count,
+        },
+        timeline=timeline,
+        pages=page_items,
     )
 
 
@@ -309,6 +376,8 @@ async def _create_parse_job(*, file: UploadFile, model: ModelAlias, db: AsyncSes
             "model": model,
             "mode": MODEL_TO_MODE[model],
             "segment_documents": False,
+            "recipe_version": app_settings.v2_recipe_version,
+            "preflight_findings": list(inspected.findings),
         },
         model_name="gpt-5.6-luna",
         review_model_name="gpt-5.6-terra",

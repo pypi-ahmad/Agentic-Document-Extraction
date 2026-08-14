@@ -1,5 +1,8 @@
 # Deployment
 
+
+> **V2 status (2026-08-14):** The active runtime is OpenAI-only and uses versioned recipes, bounded Terra verification, safe partial results, and private evidence bundles. This page retains older detail where useful; [README](../README.md) and [V2 architecture](ARCHITECTURE_V2.md) are authoritative for current behavior.
+
 > **Current v1 runtime:** Paperplane is a single-workstation, single-GPU service. It processes
 > one document at a time in durable batches of at most 10 pages (verified target: 100+ page
 > PDFs; configured limit: 500 pages). PostgreSQL, Redis, multiple API workers, Kubernetes,

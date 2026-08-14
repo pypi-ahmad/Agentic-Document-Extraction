@@ -3,8 +3,12 @@
 from __future__ import annotations
 
 import base64
+import hashlib
 import json
 import time
+from collections.abc import Callable, Iterator
+from contextlib import contextmanager
+from contextvars import ContextVar
 from typing import Any, Literal
 
 import httpx
@@ -13,6 +17,25 @@ from pydantic import BaseModel, Field
 from app.logging_setup import get_logger
 
 logger = get_logger("app.parsing.openai_document")
+
+AuditSink = Callable[[dict[str, Any]], None]
+_audit_sink: ContextVar[AuditSink | None] = ContextVar("openai_audit_sink", default=None)
+
+
+@contextmanager
+def capture_audit_calls(calls: list[dict[str, Any]]) -> Iterator[None]:
+    """Capture sanitized request/response records for the current async context."""
+    token = _audit_sink.set(calls.append)
+    try:
+        yield
+    finally:
+        _audit_sink.reset(token)
+
+
+def _emit_audit(record: dict[str, Any]) -> None:
+    sink = _audit_sink.get()
+    if sink is not None:
+        sink(record)
 
 
 class OpenAIRequestError(RuntimeError):
@@ -63,7 +86,21 @@ class OpenAIDocumentAdapter:
         detail: Literal["low", "high", "original"],
         prompt_cache_key: str,
     ) -> StructuredGeneration:
+        audit_record: dict[str, Any] = {
+            "model": model,
+            "schema_name": schema_name,
+            "schema_sha256": hashlib.sha256(
+                json.dumps(schema, sort_keys=True, separators=(",", ":")).encode()
+            ).hexdigest(),
+            "instructions": instructions,
+            "context": context,
+            "reasoning_effort": reasoning_effort,
+            "detail": detail,
+            "prompt_cache_key": prompt_cache_key,
+            "image_sha256": hashlib.sha256(image).hexdigest() if image is not None else None,
+        }
         if not self.api_key:
+            _emit_audit({**audit_record, "status": "error", "error_type": "missing_api_key"})
             raise OpenAIRequestError("OpenAI API key is not configured")
         encoded = base64.b64encode(image).decode("ascii") if image is not None else None
         content: list[dict[str, Any]] = [
@@ -114,6 +151,14 @@ class OpenAIDocumentAdapter:
             response.raise_for_status()
             body = response.json()
         except (httpx.HTTPError, ValueError, TypeError) as exc:
+            _emit_audit(
+                {
+                    **audit_record,
+                    "status": "error",
+                    "error_type": type(exc).__name__,
+                    "latency_ms": (time.perf_counter() - started) * 1000,
+                }
+            )
             logger.warning("openai_document.request_failed", model=model, error=type(exc).__name__)
             raise OpenAIRequestError("OpenAI document request failed") from exc
 
@@ -126,15 +171,19 @@ class OpenAIDocumentAdapter:
                 elif content.get("type") == "refusal":
                     refused = True
         if refused:
+            _emit_audit({**audit_record, "status": "error", "error_type": "refusal"})
             raise OpenAIRequestError("OpenAI refused the structured document request")
         raw = "".join(texts).strip()
         if not raw:
+            _emit_audit({**audit_record, "status": "error", "error_type": "empty_output"})
             raise OpenAIRequestError("OpenAI returned no structured output")
         try:
             value = json.loads(raw)
         except (json.JSONDecodeError, TypeError) as exc:
+            _emit_audit({**audit_record, "status": "error", "error_type": "invalid_json"})
             raise OpenAIRequestError("OpenAI returned invalid structured JSON") from exc
         if not isinstance(value, dict):
+            _emit_audit({**audit_record, "status": "error", "error_type": "non_object"})
             raise OpenAIRequestError("OpenAI structured output must be a JSON object")
 
         usage_data = body.get("usage") or {}
@@ -156,6 +205,16 @@ class OpenAIDocumentAdapter:
             cached_input_tokens=usage.cached_input_tokens,
             cache_write_tokens=usage.cache_write_tokens,
             latency_ms=round(latency_ms, 1),
+        )
+        _emit_audit(
+            {
+                **audit_record,
+                "status": "completed",
+                "response_id": body.get("id"),
+                "value": value,
+                "usage": usage.model_dump(),
+                "latency_ms": latency_ms,
+            }
         )
         return StructuredGeneration(
             response_id=body.get("id"), value=value, usage=usage, latency_ms=latency_ms

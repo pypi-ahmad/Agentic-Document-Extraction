@@ -276,6 +276,8 @@ async def test_agentic_job_assembles_dpt_contract_trace_and_annotated_pdf() -> N
             "markdown",
             "json",
             "annotated_pdf",
+            "audit_manifest",
+            "evidence_bundle",
             "agent_trace",
         ]
 
@@ -377,6 +379,8 @@ async def test_runner_persists_page_and_assembles_auditable_artifacts() -> None:
             "markdown",
             "json",
             "annotated_pdf",
+            "audit_manifest",
+            "evidence_bundle",
         ]
     document = json.loads(store.values["jobs-v2/job/document.json"])
     assert store.values["jobs-v2/job/document.md"] == b"Invoice Number INV-42"
@@ -388,6 +392,10 @@ async def test_runner_persists_page_and_assembles_auditable_artifacts() -> None:
     assert document["extraction"]["data"] == {"invoice_number": "INV-42"}
     assert document["extraction"]["fields"]["invoice_number"]["value"] == "INV-42"
     assert document["usage"]["input_tokens"] == 120
+    audit_manifest = json.loads(store.values["jobs-v2/job/audit-manifest.json"])
+    assert audit_manifest["schema_version"] == "paperplane-audit/v1"
+    assert audit_manifest["pages"][0]["page_number"] == 1
+    assert store.values["jobs-v2/job/evidence-bundle.zip"].startswith(b"PK")
     assert any(isinstance(item, Artifact) for item in job.artifacts)
     annotated = fitz.open(stream=store.values["jobs-v2/job/annotated.pdf"], filetype="pdf")
     try:
