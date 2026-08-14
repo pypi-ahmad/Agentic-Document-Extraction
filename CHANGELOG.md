@@ -13,6 +13,12 @@ and this project aims to follow [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
+## [5.0.3] - 2026-08-14
+
+### Changed
+
+- Expanded the README with detailed explanations of every supported engine, quality mode, model path, grounding feature, workspace view, workflow, job control, benchmark, and calibration behavior.
+- Shipped and documented the red-and-black dark Streamlit theme.
 ## [5.0.2] - 2026-08-14
 
 ### Changed
