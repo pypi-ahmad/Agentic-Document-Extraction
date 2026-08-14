@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="author" content="Ahmad">
-  <meta name="description" content="A code-grounded tutorial for mastering Paperplane v5.0.0">
+  <meta name="description" content="A code-grounded tutorial for mastering Paperplane v5.0.1">
   <title>Paperplane Zero to Mastery</title>
   <style>
 @page {
@@ -166,7 +166,8 @@ zero-based and response-local in strict ADE v2 output.</p>
 <p>SQLite metadata and private artifacts live under <code>%LOCALAPPDATA%\Paperplane</code> for seven
 days. Jobs exposes status, cancellation state, per-job deletion, and clear-all. Credentials
 are never stored there. Cloud engines, including Agnes, transmit only selected pages.
-Ollama, Docling, PDF Inspector, and storage remain local.</p>
+Agnes sends page PNGs inline instead of publishing them at public URLs. Ollama, Docling,
+PDF Inspector, and storage remain local.</p>
 <h2 id="6-follow-the-code">6. Follow the code</h2>
 <ol>
 <li><code>workspace_app.py</code> — navigation.</li>
