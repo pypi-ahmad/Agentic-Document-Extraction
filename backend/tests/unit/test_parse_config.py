@@ -5,15 +5,9 @@ from pydantic import ValidationError
 
 from app.config import Settings
 
-TEST_DIR = Path(__file__).parent
-
 
 def test_parser_limits_match_product_contract() -> None:
-    settings = Settings(
-        _env_file=None,
-        upload_dir=str(TEST_DIR),
-        artifacts_dir=str(TEST_DIR),
-    )
+    settings = Settings(_env_file=None)
 
     assert settings.max_upload_size_mb == 200
     assert settings.max_document_pages == 500
@@ -63,14 +57,3 @@ def test_openai_process_environment_overrides_dotenv(
 def test_agentic_settings_reject_out_of_range_values(field: str, value: float) -> None:
     with pytest.raises(ValidationError):
         Settings(_env_file=None, **{field: value})
-
-
-def test_storage_properties_return_configured_directories() -> None:
-    settings = Settings(
-        _env_file=None,
-        upload_dir=str(TEST_DIR),
-        artifacts_dir=str(TEST_DIR),
-    )
-
-    assert settings.upload_path.is_dir()
-    assert settings.artifacts_path.is_dir()

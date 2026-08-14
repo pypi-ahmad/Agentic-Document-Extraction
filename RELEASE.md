@@ -24,7 +24,6 @@ in sync:
 - `backend/app/main.py` — `app = FastAPI(..., version=...)`
 - `backend/app/config.py` — OpenTelemetry service version
 - `frontend/package.json` and `frontend/package-lock.json`
-- `docker-compose.yml` — application image tag
 - `CHANGELOG.md` — `## [X.Y.Z] - YYYY-MM-DD`
 
 The Python `__version__` constant is intentionally not used; the

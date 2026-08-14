@@ -15,14 +15,12 @@ Checks
 from __future__ import annotations
 
 import asyncio
-import os
 import sys
 from pathlib import Path
 
 # Ensure the backend package is importable
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-os.environ.setdefault("DATABASE_URL", "sqlite+aiosqlite:///:memory:")
 
 from app.services.llm.registry import (
     get_llm_provider,

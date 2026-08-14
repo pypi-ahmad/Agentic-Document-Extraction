@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Paperplane capabilities, LangGraph pipeline, architecture, and technology stack.">
+  <meta name="description" content="Paperplane stateless document-extraction capabilities and API.">
   <title>Paperplane | Capabilities and Technical Guide</title>
   <style>
 :root{--ink:#18202b;--muted:#5f6b7a;--paper:#fff;--wash:#f3f7fb;--line:#dce5ee;--blue:#155eef;--navy:#0b1f3a;--cyan:#148c99;--radius:14px}
@@ -19,437 +19,74 @@ table{width:100%;border-collapse:collapse;display:block;overflow-x:auto;margin:1
 <body>
   <a class="skip" href="#content">Skip to content</a>
   <header class="hero"><div class="hero-inner">
-    <div class="eyebrow">Paperplane v1.0 technical guide</div>
-    <h1>From PDF pages to trustworthy Markdown</h1>
-    <p>A reader-friendly guide to what the application does, how its agentic pipeline works, and the technologies behind it.</p>
-    <div class="badges"><span class="badge">Local first</span><span class="badge">Layout aware</span><span class="badge">LangGraph</span><span class="badge">Vision + OCR</span><span class="badge">LLM-ready</span></div>
+    <div class="eyebrow">Paperplane V2 technical guide</div>
+    <h1>From document pages to grounded Markdown</h1>
+    <p>A concise guide to the synchronous parser, its evidence contract, and its security boundary.</p>
+    <div class="badges"><span class="badge">Stateless</span><span class="badge">Layout aware</span><span class="badge">Luna + Terra</span><span class="badge">Grounded JSON</span></div>
   </div></header>
   <div class="layout">
     <aside class="sidebar"><strong>On this page</strong><div class="toc">
 <ul>
-<li><a href="#paperplane-capabilities-pipeline-and-technical-guide">Paperplane: Capabilities, Pipeline, and Technical Guide</a><ul>
-<li><a href="#what-the-application-can-do">What the application can do</a></li>
-<li><a href="#end-to-end-pipeline">End-to-end pipeline</a><ul>
-<li><a href="#1-upload-and-job-creation">1. Upload and job creation</a></li>
-<li><a href="#2-ingest_and_render">2. ingest_and_render</a></li>
-<li><a href="#3-visual_segmentation">3. visual_segmentation</a></li>
-<li><a href="#4-zone_processing">4. zone_processing</a></li>
-<li><a href="#5-layout_stitching">5. layout_stitching</a></li>
-<li><a href="#6-self_reflection">6. self_reflection</a></li>
-<li><a href="#7-finalize">7. finalize</a></li>
-</ul>
-</li>
-<li><a href="#how-langgraph-is-used">How LangGraph is used</a></li>
-<li><a href="#hybrid-visual-and-structural-design">Hybrid visual and structural design</a><ul>
-<li><a href="#landingai-ade-inspired-behavior">LandingAI ADE-inspired behavior</a></li>
-<li><a href="#llamaparse-inspired-behavior">LlamaParse-inspired behavior</a></li>
-<li><a href="#local-implementation">Local implementation</a></li>
-</ul>
-</li>
-<li><a href="#models-and-parsing-engines">Models and parsing engines</a></li>
-<li><a href="#technology-stack">Technology stack</a></li>
-<li><a href="#job-lifecycle-and-durability">Job lifecycle and durability</a></li>
-<li><a href="#api-surface">API surface</a></li>
-<li><a href="#output-files-in-the-ui">Output files in the UI</a></li>
-<li><a href="#output-artifacts">Output artifacts</a></li>
-<li><a href="#good-use-cases">Good use cases</a></li>
-<li><a href="#important-boundaries">Important boundaries</a></li>
-<li><a href="#continue-reading">Continue reading</a></li>
+<li><a href="#paperplane-capabilities">Paperplane capabilities</a><ul>
+<li><a href="#available">Available</a></li>
+<li><a href="#deliberately-absent">Deliberately absent</a></li>
+<li><a href="#models-and-modes">Models and modes</a></li>
+<li><a href="#output-contract">Output contract</a></li>
 </ul>
 </li>
 </ul>
 </div>
 </aside>
-    <main id="content"><h1 id="paperplane-capabilities-pipeline-and-technical-guide">Paperplane: Capabilities, Pipeline, and Technical Guide<a class="headerlink" href="#paperplane-capabilities-pipeline-and-technical-guide" title="Permanent link">&para;</a></h1>
-<p>Paperplane converts PDFs and document images into grounded Markdown and JSON using Luna
-drafting, bounded Terra verification, deterministic PyMuPDF geometry, and auditable evidence.</p>
-<blockquote>
-<p>It is independently inspired by visual ADE and structured parsing concepts. It does not
-call LandingAI or LlamaParse. OpenAI is the only model provider in the active V2 runtime.</p>
-</blockquote>
-<h2 id="what-the-application-can-do">What the application can do<a class="headerlink" href="#what-the-application-can-do" title="Permanent link">&para;</a></h2>
+    <main id="content"><h1 id="paperplane-capabilities">Paperplane capabilities<a class="headerlink" href="#paperplane-capabilities" title="Permanent link">&para;</a></h1>
+<p>Paperplane turns PDFs and document images into grounded Markdown and hierarchical JSON.</p>
+<h2 id="available">Available<a class="headerlink" href="#available" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Accept native and scanned PDFs and enforce configurable upload limits.</li>
-<li>Render every page as a high-resolution image.</li>
-<li>Recover native words and coordinates when a usable PDF text layer exists.</li>
-<li>Detect headings, columns, text, lists, tables, figures, charts, headers, and footers as bounded regions.</li>
-<li>Process regions independently so complex layouts are not flattened into one OCR stream.</li>
-<li>Snap native PDF text exactly and use OpenAI vision for scanned or ambiguous content.</li>
-<li>Reconstruct headings, paragraphs, lists, tables, figures, and multi-column reading order as Markdown.</li>
-<li>Produce clean Markdown, grounded Markdown, RAG context chunks, an annotated bounding-box PDF, figure crops, layout data, and quality diagnostics.</li>
-<li>Review alignment and retry failed regions through a bounded LangGraph correction loop.</li>
-<li>Persist jobs, page checkpoints, artifacts, retries, cancellation, and safe partial progress.</li>
-<li>Export tamper-evident audit manifests and private evidence/replay bundles.</li>
-<li>Execute generic inline JSON Schema extraction and expose an invoice-v1 preset.</li>
-<li>Expose the workflow through FastAPI, server-sent events, and a Next.js interface.</li>
+<li>PDF, PNG, JPEG, WebP, and TIFF upload</li>
+<li>Native PDF text and coordinate alignment</li>
+<li>Headings, paragraphs, lists, tables, figures, forms, and checkboxes</li>
+<li>Page, block, line, and table-cell grounding</li>
+<li>Fast, Balanced, and Audit processing modes</li>
+<li>Bounded Luna drafting and Terra verification</li>
+<li>Partial output when some pages fail</li>
+<li>Inline JSON Schema extraction with field evidence</li>
+<li>Built-in <code>invoice-v1</code> extraction contract</li>
+<li>Optional API-key authentication, CORS restrictions, upload limits, and rate limiting</li>
+<li>Next.js visual workspace plus FastAPI/OpenAPI access</li>
 </ul>
-<h2 id="end-to-end-pipeline">End-to-end pipeline<a class="headerlink" href="#end-to-end-pipeline" title="Permanent link">&para;</a></h2>
-<pre><code class="language-text">PDF upload
-  -&gt; create durable parse job
-  -&gt; ingest_and_render
-  -&gt; visual_segmentation
-  -&gt; zone_processing
-  -&gt; layout_stitching
-  -&gt; self_reflection
-       |-- repair required and attempts remain -&gt; zone_processing
-       `-- accepted or repair limit reached ----&gt; finalize
-  -&gt; persist Markdown, context, figures, diagnostics, and status
-</code></pre>
-<h3 id="1-upload-and-job-creation">1. Upload and job creation<a class="headerlink" href="#1-upload-and-job-creation" title="Permanent link">&para;</a></h3>
-<p><code>POST /api/parse-jobs</code> validates the file, creates a database job, saves the source, and returns <code>202 Accepted</code> with a job ID. Parsing runs asynchronously. Clients can poll the job or consume its SSE stream. Default limits are 200 MB and 500 pages; oversized PDF canvases and image frame sets above the decoded-pixel budget are rejected before rendering.</p>
-<p>Reusable extraction schemas support bounded structural and scalar constraints but reject regular-expression <code>pattern</code> rules. Browser previews load text and JSON artifacts only up to 2 MB; larger artifacts remain available as downloads.</p>
-<h3 id="2-ingest_and_render">2. <code>ingest_and_render</code><a class="headerlink" href="#2-ingest_and_render" title="Permanent link">&para;</a></h3>
-<p>The parser opens the PDF with PyMuPDF, checks its page count, renders pages to PNG, and extracts native word coordinates when possible. Page images and native words remain connected to their source coordinates for later grounding.</p>
-<h3 id="3-visual_segmentation">3. <code>visual_segmentation</code><a class="headerlink" href="#3-visual_segmentation" title="Permanent link">&para;</a></h3>
-<p>Each page is treated as a visual canvas. Segmentation assigns each region a type, confidence, page number, bounding box, and preliminary reading order. Native coordinates are reused when reliable; visual analysis supplies structure for scans and complex pages.</p>
-<h3 id="4-zone_processing">4. <code>zone_processing</code><a class="headerlink" href="#4-zone_processing" title="Permanent link">&para;</a></h3>
-<p>Regions are processed independently under a configurable concurrency limit:</p>
-<ul>
-<li>text regions can use native extraction or OCR;</li>
-<li>tables can use structured parsing instead of flat OCR;</li>
-<li>figures and charts can be cropped and optionally described;</li>
-<li>repair passes target only the regions named by diagnostics.</li>
-</ul>
-<p>This crop-and-reason approach prevents a table, sidebar, or second column from contaminating nearby text.</p>
-<h3 id="5-layout_stitching">5. <code>layout_stitching</code><a class="headerlink" href="#5-layout_stitching" title="Permanent link">&para;</a></h3>
-<p>The stitcher calculates reading order, applies the marginalia policy, reconstructs Markdown hierarchy, and creates:</p>
-<ul>
-<li>clean Markdown for people and LLM input;</li>
-<li>grounded Markdown linked to source regions;</li>
-<li>structured context chunks for RAG and indexing;</li>
-<li>layout JSON for inspection;</li>
-<li>figure and chart crops.</li>
-</ul>
-<p>This stage is LlamaParse-inspired: its objective is semantic document structure, not a raw OCR token stream.</p>
-<h3 id="6-self_reflection">6. <code>self_reflection</code><a class="headerlink" href="#6-self_reflection" title="Permanent link">&para;</a></h3>
-<p>A deterministic checker looks for layout problems such as invalid regions, overlaps, missing content, broken ordering, or malformed tables. When the Ollama reviewer is available, it compares the rendered page with its reconstructed Markdown and returns page and region verdicts.</p>
-<p>Failed regions become targeted repair instructions such as <code>p3:table-2:vlm_alignment</code>. LangGraph routes state back to <code>zone_processing</code> while the repair budget remains. The default maximum is two repair passes.</p>
-<h3 id="7-finalize">7. <code>finalize</code><a class="headerlink" href="#7-finalize" title="Permanent link">&para;</a></h3>
-<p>Finalization records unresolved warnings and sets the terminal state to <code>completed</code> or <code>completed_with_warnings</code>. Artifacts and diagnostics remain available when a page needs human review.</p>
-<h2 id="how-langgraph-is-used">How LangGraph is used<a class="headerlink" href="#how-langgraph-is-used" title="Permanent link">&para;</a></h2>
-<p>Yes, Paperplane uses LangGraph. The workflow is a <code>StateGraph(ParserState)</code> in <code>backend/app/services/extraction/graph.py</code>.</p>
-<p>LangGraph provides explicit nodes and edges, typed shared state, conditional repair routing, bounded recursion, optional durable checkpoints, and a clean boundary between orchestration and parsing engines.</p>
+<h2 id="deliberately-absent">Deliberately absent<a class="headerlink" href="#deliberately-absent" title="Permanent link">&para;</a></h2>
+<p>Paperplane does not persist uploads, results, run history, reusable schemas, reviews, or
+page checkpoints. It does not provide background jobs, polling, cancellation, resume, or
+multi-worker coordination. A parse is one request and one response.</p>
+<h2 id="models-and-modes">Models and modes<a class="headerlink" href="#models-and-modes" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
-<th>State property</th>
-<th>Purpose</th>
+<th>API model</th>
+<th>Behavior</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>source_path</code>, <code>work_dir</code></td>
-<td>Source PDF and isolated artifact directory</td>
+<td><code>paperplane-ade-fast-latest</code></td>
+<td>Fast draft with deterministic grounding</td>
 </tr>
 <tr>
-<td><code>page_images</code></td>
-<td>Rendered page PNGs</td>
+<td><code>paperplane-ade-latest</code></td>
+<td>Balanced draft with adaptive verification</td>
 </tr>
 <tr>
-<td><code>native_words</code></td>
-<td>Coordinate-aware native PDF words</td>
-</tr>
-<tr>
-<td><code>zones</code></td>
-<td>Detected and processed page regions</td>
-</tr>
-<tr>
-<td><code>layout</code></td>
-<td>Document-wide structural representation</td>
-</tr>
-<tr>
-<td><code>markdown</code></td>
-<td>Clean final Markdown</td>
-</tr>
-<tr>
-<td><code>grounded_markdown</code></td>
-<td>Markdown connected to source regions</td>
-</tr>
-<tr>
-<td><code>context</code></td>
-<td>LLM/RAG-ready chunks and schema version</td>
-</tr>
-<tr>
-<td><code>reviews</code></td>
-<td>Page and region quality verdicts</td>
-</tr>
-<tr>
-<td><code>repair_issues</code>, <code>repair_count</code></td>
-<td>Targeted correction state</td>
-</tr>
-<tr>
-<td><code>warnings</code>, <code>status</code></td>
-<td>Operational and terminal outcome</td>
+<td><code>paperplane-ade-audit-latest</code></td>
+<td>Highest verification budget</td>
 </tr>
 </tbody>
 </table>
-<h2 id="hybrid-visual-and-structural-design">Hybrid visual and structural design<a class="headerlink" href="#hybrid-visual-and-structural-design" title="Permanent link">&para;</a></h2>
-<h3 id="landingai-ade-inspired-behavior">LandingAI ADE-inspired behavior<a class="headerlink" href="#landingai-ade-inspired-behavior" title="Permanent link">&para;</a></h3>
-<p>Paperplane adopts the vision-first idea that a page should be understood spatially before it is linearized. Bounding boxes, page images, crops, region-specific processing, and visual review are central to the design.</p>
-<h3 id="llamaparse-inspired-behavior">LlamaParse-inspired behavior<a class="headerlink" href="#llamaparse-inspired-behavior" title="Permanent link">&para;</a></h3>
-<p>Paperplane aims to produce clean, hierarchical, embedding-friendly Markdown: headings remain headings, tables remain tables, figures retain references, and regions follow reading order rather than raw OCR order.</p>
-<h3 id="local-implementation">Local implementation<a class="headerlink" href="#local-implementation" title="Permanent link">&para;</a></h3>
-<p>The application does not require OpenAI, Anthropic, Gemini, LandingAI, or LlamaParse credentials. Visual inference runs through local Ollama models. This improves privacy and cost control; the trade-off is that throughput and quality depend on local hardware and model availability.</p>
-<h2 id="models-and-parsing-engines">Models and parsing engines<a class="headerlink" href="#models-and-parsing-engines" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>Component</th>
-<th>Default or role</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>PyMuPDF</td>
-<td>Primary rendering and native coordinate extraction</td>
-</tr>
-<tr>
-<td>pdf2image</td>
-<td>Alternative PDF-to-image capability</td>
-</tr>
-<tr>
-<td>PaddleOCR</td>
-<td>Local OCR capability</td>
-</tr>
-<tr>
-<td>Docling</td>
-<td>Structured document and table-processing capability</td>
-</tr>
-<tr>
-<td>Ollama GLM-OCR</td>
-<td>Visual OCR for difficult crops; default <code>glm-ocr:latest</code></td>
-</tr>
-<tr>
-<td>Ollama reviewer</td>
-<td>Page/Markdown alignment review; default <code>qwen3.5:9b</code></td>
-</tr>
-</tbody>
-</table>
-<p>The reviewer is not the primary OCR engine. Its role is to judge reconstruction quality and identify regions that need another pass. A vision-capable model is recommended whenever page images are part of the review.</p>
-<h2 id="technology-stack">Technology stack<a class="headerlink" href="#technology-stack" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>Layer</th>
-<th>Technology</th>
-<th>Responsibility</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>API</td>
-<td>FastAPI</td>
-<td>Uploads, job control, diagnostics, and artifacts</td>
-</tr>
-<tr>
-<td>Orchestration</td>
-<td>LangGraph</td>
-<td>State, nodes, checkpoints, and repair routing</td>
-</tr>
-<tr>
-<td>PDF</td>
-<td>PyMuPDF, pdf2image</td>
-<td>Rendering and coordinates</td>
-</tr>
-<tr>
-<td>OCR/layout</td>
-<td>PaddleOCR, Docling</td>
-<td>OCR and structured region processing</td>
-</tr>
-<tr>
-<td>Local inference</td>
-<td>Ollama, GLM-OCR, Qwen</td>
-<td>Visual extraction and review</td>
-</tr>
-<tr>
-<td>Contracts</td>
-<td>Pydantic</td>
-<td>Validated API and internal models</td>
-</tr>
-<tr>
-<td>Persistence</td>
-<td>SQLite, async SQLAlchemy</td>
-<td>Jobs, pages, reviews, and artifact metadata</td>
-</tr>
-<tr>
-<td>Migrations</td>
-<td>Alembic</td>
-<td>Database schema evolution</td>
-</tr>
-<tr>
-<td>HTTP</td>
-<td>HTTPX</td>
-<td>Async Ollama communication</td>
-</tr>
-<tr>
-<td>Operations</td>
-<td>structlog</td>
-<td>Structured logs</td>
-</tr>
-<tr>
-<td>Frontend</td>
-<td>Next.js, React, TypeScript, Tailwind CSS</td>
-<td>Upload, progress, diagnostics, downloads</td>
-</tr>
-<tr>
-<td>Packaging</td>
-<td>uv, Hatchling</td>
-<td>Locked dependencies and Python builds</td>
-</tr>
-<tr>
-<td>Runtime</td>
-<td>Docker Compose</td>
-<td>Backend and Ollama services</td>
-</tr>
-</tbody>
-</table>
-<h2 id="job-lifecycle-and-durability">Job lifecycle and durability<a class="headerlink" href="#job-lifecycle-and-durability" title="Permanent link">&para;</a></h2>
-<pre><code class="language-text">queued -&gt; processing -&gt; reflecting -&gt; completed
-                         |            completed_with_warnings
-                         |            failed
-                         `----------&gt; cancelled
-</code></pre>
-<p>SQLite stores job and page state. LangGraph checkpoint data supports durable progress. Users can cancel active work, resume eligible jobs, or retry only failed pages. Heavy runtime objects are application-scoped rather than recreated per request.</p>
-<h2 id="api-surface">API surface<a class="headerlink" href="#api-surface" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>Method</th>
-<th>Endpoint</th>
-<th>Purpose</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>POST</code></td>
-<td><code>/api/parse-jobs</code></td>
-<td>Upload and enqueue a PDF</td>
-</tr>
-<tr>
-<td><code>GET</code></td>
-<td><code>/api/parse-jobs</code></td>
-<td>List recent jobs</td>
-</tr>
-<tr>
-<td><code>GET</code></td>
-<td><code>/api/parse-jobs/{id}</code></td>
-<td>Retrieve job, page, and artifact state</td>
-</tr>
-<tr>
-<td><code>GET</code></td>
-<td><code>/api/parse-jobs/{id}/events</code></td>
-<td>Receive SSE job snapshots</td>
-</tr>
-<tr>
-<td><code>GET</code></td>
-<td><code>/api/parse-jobs/{id}/pages/{page}/diagnostics</code></td>
-<td>Read page diagnostics</td>
-</tr>
-<tr>
-<td><code>GET</code></td>
-<td><code>/api/parse-jobs/{id}/artifacts/{type}</code></td>
-<td>Download an artifact</td>
-</tr>
-<tr>
-<td><code>GET</code></td>
-<td><code>/api/parse-jobs/{id}/figures/{region_id}</code></td>
-<td>Download a figure crop</td>
-</tr>
-<tr>
-<td><code>POST</code></td>
-<td><code>/api/parse-jobs/{id}/cancel</code></td>
-<td>Cancel queued or active work</td>
-</tr>
-<tr>
-<td><code>POST</code></td>
-<td><code>/api/parse-jobs/{id}/resume</code></td>
-<td>Resume an eligible job</td>
-</tr>
-<tr>
-<td><code>POST</code></td>
-<td><code>/api/parse-jobs/{id}/retry-failed</code></td>
-<td>Retry failed pages</td>
-</tr>
-<tr>
-<td><code>DELETE</code></td>
-<td><code>/api/parse-jobs/{id}</code></td>
-<td>Delete an inactive job and its files</td>
-</tr>
-</tbody>
-</table>
-<p>FastAPI exposes interactive OpenAPI documentation at <code>/docs</code>.</p>
-<p>Artifact responses include stable filenames, checksums, download URLs, and inline preview URLs where the MIME type is browser-readable. The UI presents every public artifact in an output gallery. PDFs, images, Markdown, text, and JSON are previewable; ZIP bundles are download-only.</p>
-<h2 id="output-files-in-the-ui">Output files in the UI<a class="headerlink" href="#output-files-in-the-ui" title="Permanent link">&para;</a></h2>
-<p>The responsive <strong>Output files</strong> gallery lists every public artifact with its filename, purpose, size, preview action, and individual download. It selects the Annotated PDF first when available, retains the existing quick Markdown preview, resets safely when users switch jobs, and collapses to a single-column viewer on smaller screens.</p>
-<h2 id="output-artifacts">Output artifacts<a class="headerlink" href="#output-artifacts" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>Artifact</th>
-<th>Intended use</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Annotated PDF (<code>grounding_pdf</code>)</td>
-<td>Required source-page overlay with type-colored boxes, region IDs, and types</td>
-</tr>
-<tr>
-<td>Clean Markdown</td>
-<td>Reading, LLM context, and general ingestion</td>
-</tr>
-<tr>
-<td>Grounded Markdown</td>
-<td>Traceable content linked to source regions</td>
-</tr>
-<tr>
-<td>Context JSON</td>
-<td>Structured chunks for RAG and vector indexing</td>
-</tr>
-<tr>
-<td>Layout JSON</td>
-<td>Debugging and downstream spatial processing</td>
-</tr>
-<tr>
-<td>Diagnostics JSON</td>
-<td>Quality status, warnings, scores, and repair evidence</td>
-</tr>
-<tr>
-<td>Figure crops</td>
-<td>Charts, diagrams, images, and multimodal retrieval</td>
-</tr>
-<tr>
-<td>Page images</td>
-<td>Visual audit and reviewer input</td>
-</tr>
-</tbody>
-</table>
-<h2 id="good-use-cases">Good use cases<a class="headerlink" href="#good-use-cases" title="Permanent link">&para;</a></h2>
-<ul>
-<li>RAG and knowledge-base ingestion;</li>
-<li>research papers and technical manuals;</li>
-<li>scanned books and archived documents;</li>
-<li>financial or operational reports;</li>
-<li>policies, contracts, and table-heavy PDFs;</li>
-<li>multi-column documents;</li>
-<li>local or privacy-sensitive document processing.</li>
-</ul>
-<h2 id="important-boundaries">Important boundaries<a class="headerlink" href="#important-boundaries" title="Permanent link">&para;</a></h2>
-<p>Paperplane supports optional schema-first field extraction in addition to faithful document reconstruction. Saved restricted Draft 2020-12 schemas can contain nested objects, arrays, and table arrays. Results preserve page, region, bounding-box, and table-cell citations; large tables are also exported as grounded JSONL. Incomplete or invalid instances remain auditable partial outputs and complete the parse with warnings.</p>
-<p>Quality depends on scan resolution, rotation, language support, local GPU capacity, model quality, and table complexity. A <code>completed_with_warnings</code> result means output was produced but one or more diagnostics should be reviewed.</p>
-<p>The default SQLite deployment is intended for local and single-worker operation. <code>job_max_concurrent</code> is limited to one; distributed workers would require a different coordination and persistence design.</p>
-<h2 id="continue-reading">Continue reading<a class="headerlink" href="#continue-reading" title="Permanent link">&para;</a></h2>
-<ul>
-<li><a href="../README.md">Project README</a> - installation and quick start</li>
-<li><a href="ARCHITECTURE.md">Architecture</a> - implementation structure</li>
-<li><a href="QUALITY.md">Quality</a> - diagnostics and quality behavior</li>
-<li><a href="LIMITATIONS.md">Limitations</a> - known constraints</li>
-<li><a href="RUNBOOK.md">Runbook</a> - operational procedures</li>
-<li><a href="how-it-works.md">How Paperplane works</a> - end-to-end processing journey</li>
-<li><a href="ZERO_TO_MASTERY.md">Zero to Mastery</a> - guided codebase tutorial and exercises</li>
-<li><a href="RUN_APP.md">Run Paperplane</a> - command-only PowerShell and Bash reference</li>
-</ul></main>
+<p>PyMuPDF performs deterministic rendering and geometry. OpenAI is the active inference
+provider; Paperplane does not call LandingAI ADE or claim its benchmark results.</p>
+<h2 id="output-contract">Output contract<a class="headerlink" href="#output-contract" title="Permanent link">&para;</a></h2>
+<p><code>POST /v2/parse</code> returns Markdown, a document/page/block hierarchy, coordinates, grounding
+methods, page warnings, failed-page information, model usage, and request metadata. The
+result can be saved by the caller as JSON or Markdown.</p></main>
   </div>
-  <footer class="footer">Paperplane v1.0 · Local-first document intelligence</footer>
+  <footer class="footer">Paperplane V2 · Stateless document extraction</footer>
 </body>
 </html>

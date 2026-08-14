@@ -1,16 +1,12 @@
-# Paperplane V2 assurance architecture
+# Paperplane V2 architecture
 
-V2 validates and preflights an upload, snapshots a versioned recipe, leases independent
-page tasks, drafts each page with Luna, and spends a bounded Terra budget only on decisions
-that need reconciliation or crop verification. V9 caps Balanced at two Terra calls/one
-crop and Audit at six Terra calls/five crops. `V2_RECIPE_VERSION=v8` is the rollback.
+V2 is the active stateless API described in [ARCHITECTURE.md](ARCHITECTURE.md).
 
-Every page writes a sanitized call record and content-addressed page/crop evidence. Final
-assembly emits the unchanged public document contract plus a tamper-evident audit manifest
-and private evidence ZIP. Credentials, request headers, and base64 image payloads are never
-recorded. If some pages exhaust retries, successful pages still assemble with explicit
-failed-page metadata; all-page failure remains terminal.
+Its stable public surface is synchronous Parse and Extract. Parse returns reading-order
+Markdown, a document/page/block hierarchy, normalized coordinates, line and cell evidence,
+warnings, and usage metadata. Fast, Balanced, and Audit aliases select bounded verification
+policies while preserving the response shape.
 
-The DPT-compatible response remains intact. Job resources add assurance state, page state,
-and a compact timeline for the UI. See [ARCHITECTURE.md](ARCHITECTURE.md) for the broader
-service layout.
+There are no V2 job resources. Clients that need queues, retention, retries across process
+restarts, or shared history should add those concerns outside Paperplane and store the
+returned contract in their own system.

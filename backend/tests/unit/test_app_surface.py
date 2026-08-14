@@ -19,13 +19,13 @@ async def test_health_and_product_info_describe_markdown_parser() -> None:
         "luna_page_draft",
         "deterministic_grounding",
         "terra_crop_verification",
-        "document_split_and_assembly",
+        "document_assembly",
     ]
     assert info.json()["models"] == {
         "draft": "gpt-5.6-luna",
         "verification": "gpt-5.6-terra",
     }
-    assert info.json()["local_ai"] is False
+    assert info.json()["persistence"] == "none"
     assert info.json()["max_document_pages"] == 500
 
 
@@ -35,7 +35,9 @@ async def test_legacy_routes_are_not_registered() -> None:
 
     assert "/api/extractions/" not in paths
     assert "/api/schemas/" not in paths
-    assert "/v2/parse/jobs" in paths
+    assert "/v2/parse" in paths
+    assert "/v2/extract" in paths
+    assert "/v2/parse/jobs" not in paths
     assert "/api/v2/jobs" not in paths
     assert "/api/parse-jobs" not in paths
     assert "/api/ollama/models" not in paths

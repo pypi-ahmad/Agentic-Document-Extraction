@@ -7,6 +7,9 @@ Backend port to use. Zero selects the first free port from 8010 through 8099.
 
 .PARAMETER FrontendPort
 Frontend port to use. Zero selects the first free port from 3000 through 3099.
+
+.PARAMETER OpenBrowser
+Opens the Paperplane frontend in the default browser after both services are ready.
 #>
 [CmdletBinding()]
 param(
@@ -14,7 +17,9 @@ param(
     [int]$BackendPort = 0,
 
     [ValidateRange(0, 65535)]
-    [int]$FrontendPort = 0
+    [int]$FrontendPort = 0,
+
+    [switch]$OpenBrowser
 )
 
 Set-StrictMode -Version Latest
@@ -131,7 +136,7 @@ function Wait-ForV2Backend {
         }
         if (
             $document.info.version -eq "2.0.0" -and
-            $document.paths.PSObject.Properties.Name -contains "/api/v2/jobs"
+            $document.paths.PSObject.Properties.Name -contains "/v2/parse"
         ) {
             return
         }
@@ -148,13 +153,13 @@ function Wait-ForFrontendProxy {
     )
 
     $deadline = [DateTimeOffset]::UtcNow.AddSeconds(60)
-    $jobsUri = "$Origin/api/v2/jobs"
+    $healthUri = "$Origin/api/health"
     while ([DateTimeOffset]::UtcNow -lt $deadline) {
         if ($Process.HasExited) {
             throw "Frontend exited during startup with code $($Process.ExitCode)."
         }
         try {
-            $response = Invoke-WebRequest -Uri $jobsUri -TimeoutSec 2 -NoProxy
+            $response = Invoke-WebRequest -Uri $healthUri -TimeoutSec 2 -NoProxy
         }
         catch {
             Start-Sleep -Milliseconds 250
@@ -245,6 +250,10 @@ try {
     Write-Host "Paperplane is ready: $frontendOrigin"
     Write-Host "Backend API docs: $backendOrigin/docs"
     Write-Host "Press Ctrl+C to stop both servers."
+
+    if ($OpenBrowser) {
+        Start-Process $frontendOrigin
+    }
 
     while ($true) {
         if ($backendProcess.HasExited) {

@@ -1,7 +1,7 @@
 """Project-wide constants.
 
 This module is the single source of truth for any string literal that
-flows through multiple layers (DB columns, API JSON, logs, UI). The
+flows through multiple layers (API JSON, logs, UI). The
 StrEnum in `app.models.enums` covers type-checked wire-format values;
 this module covers operational constants, limits, and string tags
 that don't have a small fixed set of legal values.
@@ -48,8 +48,8 @@ REQUEST_ID_MAX_LENGTH: int = 128
 
 # ── Security ─────────────────────────────────────────────────────────
 # X-Frame-Options is SAMEORIGIN, not DENY: the frontend's own document
-# preview (frontend/src/components/v2/DocumentCanvas.tsx,
-# ArtifactPreview.tsx, ArtifactGallery.tsx) iframes artifact/preview
+# preview (frontend/src/components/v2/DocumentCanvas.tsx and
+# ArtifactPreview.tsx) iframes artifact/preview
 # responses from this API. DENY blocks framing unconditionally, including
 # same-origin, and would break that feature. SAMEORIGIN still blocks
 # third-party clickjacking, which is what this header is for.
@@ -71,8 +71,7 @@ ALLOWED_MAGIC_JPEG: bytes = b"\xff\xd8\xff"
 ALLOWED_MAGIC_TIFF_LE: bytes = b"II\x2a\x00"
 ALLOWED_MAGIC_TIFF_BE: bytes = b"MM\x00\x2a"
 
-# ── Audit log ────────────────────────────────────────────────────────
-AUDIT_LOG_TABLE: str = "extraction_audit_log"
+# ── Audit events ─────────────────────────────────────────────────────
 AUDIT_EVENT_STARTED: str = "extraction.started"
 AUDIT_EVENT_OCR_COMPLETE: str = "extraction.ocr_complete"
 AUDIT_EVENT_EXTRACTED: str = "extraction.extracted"

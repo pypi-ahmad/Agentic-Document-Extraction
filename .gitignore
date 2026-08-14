@@ -51,6 +51,7 @@ env/
 
 # Test artifacts
 _test_uploads/
+/tmp/
 
 # Node
 node_modules/

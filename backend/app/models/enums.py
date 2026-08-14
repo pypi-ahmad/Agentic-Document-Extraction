@@ -1,4 +1,4 @@
-"""Stable string enums used by the parse-job API and database."""
+"""Stable string enums used by document-processing contracts."""
 
 from enum import StrEnum
 
