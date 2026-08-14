@@ -7,8 +7,7 @@
 - Retention is seven days under `%LOCALAPPDATA%\Paperplane`; this is not a multi-user
   database or remote object store.
 - PDF Inspector accepts PDF only. Legacy DOC/PPT/XLS and encrypted PDFs are unsupported.
-- Cloud engines send selected page images to their provider. Agnes private visual input is
-  disabled because the current interface requires public image URLs.
+- Cloud engines, including Agnes, send selected page images to their provider.
 - Files are context-isolated. Only selected pages inside one file share ordered context.
 - Word boxes are emitted only from native PDF text or RapidOCR word observations that align
   exactly to Markdown. Missing alignment remains missing.

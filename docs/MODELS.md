@@ -16,9 +16,8 @@ model and checks its live `vision` capability.
 does not change the endpoints for other providers.
 
 Agnes uses its current configured $0 rate, while still recording tokens and pricing
-entitlement. Its visual API requires public image URLs, so Paperplane 5 blocks private
-visual Parse/enhancement with Agnes. Text workflows and approved public benchmark assets
-remain possible.
+entitlement. Paperplane sends private visual inputs inline as PNG data URLs, enabling Parse
+and enhancement without publishing uploaded images.
 
 ## Ollama models
 

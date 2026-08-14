@@ -13,6 +13,6 @@ seven-day TTL. Deleting a job removes its artifact directory; **Clear all** remo
 retained job. Provider credentials remain in environment variables/secrets and are never
 written to job storage.
 
-Cloud AI transmits only selected pages, but that content leaves the machine. Agnes private
-visual processing is blocked in v5. Ollama, Docling, PDF Inspector, SQLite, and artifact
-storage remain local.
+Cloud AI transmits only selected pages, but that content leaves the machine. Agnes receives
+selected images inline without public hosting. Ollama, Docling, PDF Inspector, SQLite, and
+artifact storage remain local.

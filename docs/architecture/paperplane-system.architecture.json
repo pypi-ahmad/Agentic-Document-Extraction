@@ -10,7 +10,7 @@
     {"id": "contracts", "type": "service", "label": "Public contracts", "sublabel": "Strict ADE v2-style and Paperplane v5 JSON", "sources": [{"path": "paperplane/ade_contracts.py", "line": 1}]},
     {"id": "workflows", "type": "service", "label": "Cited workflows", "sublabel": "Classify, Split, Section", "sources": [{"path": "paperplane/ade_workflows.py", "line": 1}]},
     {"id": "jobs", "type": "database", "label": "Local durable jobs", "sublabel": "SQLite metadata, checkpoints, private artifacts, 7-day TTL", "sources": [{"path": "paperplane/jobs.py", "line": 1}]},
-    {"id": "providers", "type": "external", "label": "Optional cloud providers", "sublabel": "OpenAI, xAI, Google, Anthropic; Agnes text/public assets"}
+    {"id": "providers", "type": "external", "label": "Optional cloud providers", "sublabel": "OpenAI, xAI, Google, Anthropic, Agnes"}
   ],
   "edges": [
     {"from": "ui", "to": "runtime", "label": "batch + ranges + selected engine"},
