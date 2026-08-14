@@ -1,6 +1,6 @@
 # Deployment
 
-Paperplane 4.1.0 supports local, single-user operation only.
+Paperplane 4.2.0 supports local, single-user operation only.
 
 ## Supported deployment
 

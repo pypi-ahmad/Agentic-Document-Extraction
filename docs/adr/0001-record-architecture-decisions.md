@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted (2026-06-22); reviewed for Paperplane 4.1.0 (2026-08-14).
+Accepted (2026-06-22); reviewed for Paperplane 4.2.0 (2026-08-14).
 
 ## Context
 

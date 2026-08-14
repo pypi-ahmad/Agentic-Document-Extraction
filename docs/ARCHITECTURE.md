@@ -1,6 +1,6 @@
 # Architecture
 
-Paperplane 4.1.0 is one local Streamlit process. The UI calls a framework-neutral Python
+Paperplane 4.2.0 is one local Streamlit process. The UI calls a framework-neutral Python
 parser directly; there is no API server, database, worker, queue, JavaScript frontend, or
 server-side artifact store.
 

@@ -1,6 +1,6 @@
-# Migration from v3 to v4.1
+# Migration from v3 to v4.2
 
-Version 4 is a breaking simplification. Version 4.1 keeps the local boundary and expands
+Version 4 is a breaking simplification. Version 4.2 keeps the local boundary and expands
 inputs, routing, grounding, and evidence review.
 
 ## Removed in v4
@@ -46,3 +46,10 @@ and Streamlit secrets remain portable fallbacks for other machines. See the comp
 
 The previous server-side artifacts and endpoints have no one-to-one replacement. The
 current user contract is one session-local parse result and its three explicit downloads.
+
+## Added in v4.2
+
+- a fixed six-model catalog across OpenAI, xAI, Google, Anthropic, and Agnes
+- provider-native structured-output adapters
+- provider-reported token aggregation and model-cost estimates in the Streamlit UI
+- Windows user-environment credential loading with portable local examples

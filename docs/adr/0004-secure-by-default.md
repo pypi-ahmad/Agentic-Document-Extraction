@@ -3,7 +3,7 @@
 ## Status
 
 Original hosted HTTP-boundary decision superseded; local-boundary replacement accepted for
-Paperplane 4.1.0 (2026-08-14).
+Paperplane 4.2.0 (2026-08-14).
 
 ## Context
 

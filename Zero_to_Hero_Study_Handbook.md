@@ -1,6 +1,6 @@
 # Paperplane: zero-to-hero study handbook
 
-This handbook explains Paperplane 4.1.0: a local, stateless Streamlit workspace inspired by
+This handbook explains Paperplane 4.2.0: a local, stateless Streamlit workspace inspired by
 LandingAI ADE's document-to-Markdown workflow. Paperplane is an independent implementation;
 it does not call LandingAI services or claim model or benchmark parity.
 

@@ -1,5 +1,5 @@
 {
-  "name": "Paperplane 4.1.0",
+  "name": "Paperplane 4.2.0",
   "description": "Local Streamlit document extraction with Docling and six selectable cloud vision models",
   "nodes": [
     {
