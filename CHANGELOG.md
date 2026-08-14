@@ -9,6 +9,14 @@ and this project aims to follow [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+### Changed
+
+### Fixed
+
+## [3.0.0] - 2026-08-14
+
+### Added
+
 - A root-level `Paperplane.cmd` launcher for starting both services by double-click and
   opening the verified frontend in the default Windows browser.
 - Synchronous grounded Parse and Extract contracts with Fast, Balanced, and Audit modes.
@@ -30,7 +38,6 @@ and this project aims to follow [Semantic Versioning](https://semver.org/).
 
 - Preserved strict upload validation, bounded model work, API-key authentication, CORS
   restrictions, throttling, safe errors, and backend-only provider credentials.
-
 ## [2.0.0] - 2026-07-26
 
 ### Added

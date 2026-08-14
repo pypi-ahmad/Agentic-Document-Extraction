@@ -52,7 +52,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 app = FastAPI(
     title="Paperplane OpenAI Document Pipeline",
     description="Stateless grounded Luna/Terra document extraction.",
-    version="2.0.0",
+    version="3.0.0",
     lifespan=lifespan,
 )
 app.add_middleware(
