@@ -6,7 +6,7 @@ described in RELEASE.md. It enforces two things the manual flow is
 prone to forget:
 
 1. **All runtime version strings stay in sync** across Python, FastAPI,
-   telemetry, frontend metadata, Docker Compose, and the changelog.
+   telemetry, frontend metadata, and the changelog.
 2. **The tag is created from the release commit, not from a
    dirty working tree** (so the published source matches the tag).
 
@@ -53,7 +53,6 @@ CHANGELOG = REPO_ROOT / "CHANGELOG.md"
 CONFIG_PY = REPO_ROOT / "backend" / "app" / "config.py"
 FRONTEND_PACKAGE = REPO_ROOT / "frontend" / "package.json"
 FRONTEND_LOCK = REPO_ROOT / "frontend" / "package-lock.json"
-COMPOSE = REPO_ROOT / "docker-compose.yml"
 SEMVER_RE = re.compile(r"^(\d+)\.(\d+)\.(\d+)$")
 
 
@@ -150,12 +149,6 @@ def update_runtime_versions(new_version: str, dry: bool) -> None:
             r'("version"\s*:\s*")\d+\.\d+\.\d+(")',
             rf"\g<1>{new_version}\g<2>",
             2,
-        ),
-        (
-            COMPOSE,
-            r"(image:\s*local-document-markdown:)\d+\.\d+\.\d+",
-            rf"\g<1>{new_version}",
-            1,
         ),
     )
     for path, pattern, replacement, count in replacements:
@@ -328,7 +321,6 @@ def main() -> int:
     print(f"  - {CONFIG_PY.relative_to(REPO_ROOT)}")
     print(f"  - {FRONTEND_PACKAGE.relative_to(REPO_ROOT)}")
     print(f"  - {FRONTEND_LOCK.relative_to(REPO_ROOT)}")
-    print(f"  - {COMPOSE.relative_to(REPO_ROOT)}")
     print(f"  - {CHANGELOG.relative_to(REPO_ROOT)}")
     print()
     print("Notes (first 400 chars)")
@@ -361,7 +353,6 @@ def main() -> int:
             "backend/app/config.py",
             "frontend/package.json",
             "frontend/package-lock.json",
-            "docker-compose.yml",
             "CHANGELOG.md",
         )
         commit_msg = f"chore(release): {new_version}"

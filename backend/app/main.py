@@ -1,22 +1,22 @@
-"""FastAPI application for the OpenAI-only grounded document pipeline."""
+"""FastAPI application for stateless grounded document extraction."""
 
 from __future__ import annotations
 
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
+import httpx
 from fastapi import FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app.config import settings
-from app.database import close_db, init_db
 from app.logging_setup import configure_logging, get_logger
 from app.routers.dpt_api import router as dpt_api_router
-from app.routers.extraction_schemas import router as extraction_schemas_router
-from app.routers.review_cases import router as review_cases_router
 from app.security_middleware import SecurityHeadersMiddleware
-from app.services.v2_jobs import get_v2_job_queue
+from app.services.agentic.parsing import AgenticDocumentParser
+from app.services.parsing.openai_document import OpenAIDocumentAdapter
+from app.services.parsing.v2_pipeline import V2PageProcessor
 from app.telemetry import setup_telemetry, shutdown_telemetry
 
 logger = get_logger("app.main")
@@ -26,12 +26,16 @@ logger = get_logger("app.main")
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     configure_logging()
     setup_telemetry()
-    await init_db()
-    _ = settings.upload_path
-    _ = settings.artifacts_path
-    queue = get_v2_job_queue()
-    await queue.start()
-    await queue.recover()
+    http = httpx.AsyncClient(timeout=settings.openai_timeout_seconds)
+    app.state.agentic_parser = AgenticDocumentParser(
+        V2PageProcessor(
+            OpenAIDocumentAdapter(
+                http,
+                api_key=settings.openai_api_key,
+                base_url=settings.openai_base_url,
+            )
+        )
+    )
     logger.info(
         "startup.complete",
         product="paperplane-openai",
@@ -41,14 +45,13 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     try:
         yield
     finally:
-        await queue.shutdown()
-        await close_db()
+        await http.aclose()
         shutdown_telemetry()
 
 
 app = FastAPI(
     title="Paperplane OpenAI Document Pipeline",
-    description="Grounded Luna/Terra document extraction with auditable evidence.",
+    description="Stateless grounded Luna/Terra document extraction.",
     version="2.0.0",
     lifespan=lifespan,
 )
@@ -61,8 +64,6 @@ app.add_middleware(
 )
 app.add_middleware(SecurityHeadersMiddleware)
 app.include_router(dpt_api_router)
-app.include_router(extraction_schemas_router)
-app.include_router(review_cases_router)
 
 
 @app.get("/health")
@@ -72,17 +73,14 @@ async def health() -> dict[str, str]:
 
 @app.get("/health/ready", include_in_schema=False)
 async def readiness() -> Response:
-    storage_ready = settings.artifacts_path.is_dir()
-    openai_ready = bool(settings.openai_api_key)
-    ready = storage_ready and openai_ready
+    ready = bool(settings.openai_api_key)
     payload = {
         "status": "ready" if ready else "degraded",
         "checks": {
-            "storage": {"ok": storage_ready},
             "openai": {
-                "ok": openai_ready,
+                "ok": ready,
                 "models": ["gpt-5.6-luna", "gpt-5.6-terra"],
-            },
+            }
         },
     }
     return JSONResponse(payload, status_code=200 if ready else 503)
@@ -98,7 +96,7 @@ async def info() -> dict:
             "luna_page_draft",
             "deterministic_grounding",
             "terra_crop_verification",
-            "document_split_and_assembly",
+            "document_assembly",
         ],
         "supported_file_types": ["pdf", "png", "jpg", "jpeg", "webp", "tif", "tiff"],
         "max_upload_size_mb": settings.max_upload_size_mb,
@@ -107,5 +105,5 @@ async def info() -> dict:
             "draft": "gpt-5.6-luna",
             "verification": "gpt-5.6-terra",
         },
-        "local_ai": False,
+        "persistence": "none",
     }

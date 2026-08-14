@@ -43,15 +43,16 @@ async def rl_client() -> AsyncIterator[AsyncClient]:
 
 
 AUTH_HEADERS = {"X-API-Key": "test-secret-key"}
+TEST_PATH = "/v2/contracts/presets/invoice-v1"
 
 
 @pytest.mark.asyncio
 async def test_enforcement_returns_429_after_limit_exceeded(
     rate_limited_settings, rl_client
 ) -> None:
-    first = await rl_client.get("/api/extraction-schemas", headers=AUTH_HEADERS)
-    second = await rl_client.get("/api/extraction-schemas", headers=AUTH_HEADERS)
-    third = await rl_client.get("/api/extraction-schemas", headers=AUTH_HEADERS)
+    first = await rl_client.get(TEST_PATH, headers=AUTH_HEADERS)
+    second = await rl_client.get(TEST_PATH, headers=AUTH_HEADERS)
+    third = await rl_client.get(TEST_PATH, headers=AUTH_HEADERS)
 
     assert first.status_code == 200
     assert second.status_code == 200
@@ -60,9 +61,9 @@ async def test_enforcement_returns_429_after_limit_exceeded(
 
 @pytest.mark.asyncio
 async def test_response_contract(rate_limited_settings, rl_client) -> None:
-    await rl_client.get("/api/extraction-schemas", headers=AUTH_HEADERS)
-    await rl_client.get("/api/extraction-schemas", headers=AUTH_HEADERS)
-    response = await rl_client.get("/api/extraction-schemas", headers=AUTH_HEADERS)
+    await rl_client.get(TEST_PATH, headers=AUTH_HEADERS)
+    await rl_client.get(TEST_PATH, headers=AUTH_HEADERS)
+    response = await rl_client.get(TEST_PATH, headers=AUTH_HEADERS)
 
     assert response.status_code == 429
     body = response.json()
@@ -75,9 +76,9 @@ async def test_response_contract(rate_limited_settings, rl_client) -> None:
 async def test_auth_checked_before_rate_limit_and_bad_key_does_not_consume_budget(
     rate_limited_settings, rl_client
 ) -> None:
-    bad = await rl_client.get("/api/extraction-schemas", headers={"X-API-Key": "wrong-key"})
-    good_one = await rl_client.get("/api/extraction-schemas", headers=AUTH_HEADERS)
-    good_two = await rl_client.get("/api/extraction-schemas", headers=AUTH_HEADERS)
+    bad = await rl_client.get(TEST_PATH, headers={"X-API-Key": "wrong-key"})
+    good_one = await rl_client.get(TEST_PATH, headers=AUTH_HEADERS)
+    good_two = await rl_client.get(TEST_PATH, headers=AUTH_HEADERS)
 
     assert bad.status_code == 401
     assert good_one.status_code == 200
@@ -89,7 +90,7 @@ async def test_rate_limit_disabled_flag_short_circuits(rate_limited_settings, rl
     settings.rate_limit_enabled = False
 
     for _ in range(5):
-        response = await rl_client.get("/api/extraction-schemas", headers=AUTH_HEADERS)
+        response = await rl_client.get(TEST_PATH, headers=AUTH_HEADERS)
         assert response.status_code == 200
 
 
@@ -98,7 +99,7 @@ async def test_testing_flag_short_circuits(rate_limited_settings, rl_client) -> 
     settings.testing = True
 
     for _ in range(5):
-        response = await rl_client.get("/api/extraction-schemas", headers=AUTH_HEADERS)
+        response = await rl_client.get(TEST_PATH, headers=AUTH_HEADERS)
         assert response.status_code == 200
 
 
@@ -108,9 +109,9 @@ async def test_anonymous_requests_are_rate_limited_when_auth_disabled(
 ) -> None:
     settings.api_key = ""
 
-    first = await rl_client.get("/api/extraction-schemas")
-    second = await rl_client.get("/api/extraction-schemas")
-    third = await rl_client.get("/api/extraction-schemas")
+    first = await rl_client.get(TEST_PATH)
+    second = await rl_client.get(TEST_PATH)
+    third = await rl_client.get(TEST_PATH)
 
     assert first.status_code == 200
     assert second.status_code == 200

@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Paperplane — Stateless Document Extraction",
+    "subtitle": "One upload, bounded processing, one grounded response",
+    "output": "paperplane-system.html"
+  },
+  "components": [
+    {"id": "operator", "type": "external", "label": "Operator", "sublabel": "Browser and local document"},
+    {"id": "web_ui", "type": "frontend", "label": "Paperplane UI", "sublabel": "Next.js and React", "sources": [{"path": "frontend/src/app/page.tsx", "line": 1}]},
+    {"id": "guard", "type": "security", "label": "Request Guard", "sublabel": "API key, rate limit, input bounds"},
+    {"id": "api", "type": "backend", "label": "FastAPI", "sublabel": "Synchronous /v2/parse", "sources": [{"path": "backend/app/routers/dpt_api.py", "line": 1}]},
+    {"id": "parser", "type": "service", "label": "Page Processor", "sublabel": "Render, draft, ground, verify", "sources": [{"path": "backend/app/services/agentic/parsing.py", "line": 1}]},
+    {"id": "openai", "type": "external", "label": "OpenAI", "sublabel": "Luna draft and Terra verification"}
+  ],
+  "connections": [
+    {"from": "operator", "to": "web_ui", "label": "select file"},
+    {"from": "web_ui", "to": "guard", "label": "multipart request"},
+    {"from": "guard", "to": "api", "label": "validated request"},
+    {"from": "api", "to": "parser", "label": "document bytes"},
+    {"from": "parser", "to": "openai", "label": "bounded model calls"},
+    {"from": "parser", "to": "api", "label": "grounded contract"},
+    {"from": "api", "to": "web_ui", "label": "Markdown and JSON"}
+  ],
+  "notes": ["Paperplane does not retain uploads, results, jobs, or history."]
+}

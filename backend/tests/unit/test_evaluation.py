@@ -1,13 +1,3 @@
-import json
-from io import BytesIO
-from zipfile import ZipFile
-
-import pytest
-from fastapi import HTTPException
-from PIL import Image
-
-from app.models.schemas import ParseSettings
-from app.routers.evaluation_runs import _prepare_dataset
 from app.services.evaluation import GroundTruthDocument, evaluate_document
 from app.services.parsing.contracts import BoundingBox, DocumentLayout, PageLayout, Region
 from app.services.parsing.segmentation import DetectedSubDocument
@@ -169,45 +159,3 @@ def test_v2_evaluation_scores_subdocument_boundaries_and_classification() -> Non
 
     assert report.metrics["boundary_f1"] == 1
     assert report.metrics["subdocument_page_assignment_accuracy"] == 1
-
-
-def test_batch_dataset_manifest_is_validated() -> None:
-    image = BytesIO()
-    Image.new("RGB", (10, 10), "white").save(image, format="PNG")
-    gold = _gold().model_copy(update={"document_id": "report"}).model_dump_json()
-    archive = BytesIO()
-    with ZipFile(archive, "w") as bundle:
-        bundle.writestr(
-            "manifest.json",
-            json.dumps(
-                {
-                    "schema_version": "paperplane-eval-dataset/v1",
-                    "cases": [
-                        {
-                            "id": "report",
-                            "source": "documents/report.png",
-                            "labels": "labels/report.json",
-                        }
-                    ],
-                }
-            ),
-        )
-        bundle.writestr("documents/report.png", image.getvalue())
-        bundle.writestr("labels/report.json", gold)
-
-    prepared = _prepare_dataset(archive.getvalue(), ParseSettings(input_mode="scanned"))
-
-    assert prepared[0]["id"] == "report"
-    assert prepared[0]["inspected"].page_count == 1
-
-
-def test_batch_dataset_rejects_unsafe_archive_paths() -> None:
-    archive = BytesIO()
-    with ZipFile(archive, "w") as bundle:
-        bundle.writestr(
-            "manifest.json", '{"schema_version":"paperplane-eval-dataset/v1","cases":[]}'
-        )
-        bundle.writestr("../escape.txt", "bad")
-
-    with pytest.raises(HTTPException, match="unsafe path"):
-        _prepare_dataset(archive.getvalue(), ParseSettings())

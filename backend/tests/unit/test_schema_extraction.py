@@ -2,6 +2,7 @@ import json
 
 import pytest
 
+from app.services.parsing import schema_extraction
 from app.services.parsing.contracts import (
     BoundingBox,
     DocumentLayout,
@@ -11,7 +12,7 @@ from app.services.parsing.contracts import (
 )
 from app.services.parsing.schema_extraction import ExtractionScope, extract_schema_instance
 from app.services.parsing.schema_models import SchemaModelGeneration
-from app.services.parsing.structured_blocks import build_structured_document
+from app.services.parsing.structured_blocks import ContentBlock, build_structured_document
 
 SCHEMA = {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -139,6 +140,33 @@ async def test_schema_extraction_preserves_shape_and_grounding() -> None:
     assert citation.source_bbox.unit == "image_pixels"
     assert bundle.instance.validation_errors == []
     assert bundle.instance.complete is True
+
+
+@pytest.mark.asyncio
+async def test_scalar_lines_are_prepared_once_per_extraction(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _, document = _document()
+    original = schema_extraction._prepare_scalar_lines
+    calls = 0
+
+    def count_preparation(
+        blocks: list[ContentBlock],
+    ) -> list[tuple[ContentBlock, list[tuple[str, str]]]]:
+        nonlocal calls
+        calls += 1
+        return original(blocks)
+
+    monkeypatch.setattr(schema_extraction, "_prepare_scalar_lines", count_preparation)
+
+    await extract_schema_instance(
+        document,
+        SCHEMA,
+        scope=ExtractionScope(start_page=1, end_page=1),
+        processing_mode="local_only",
+    )
+
+    assert calls == 1
 
 
 @pytest.mark.asyncio

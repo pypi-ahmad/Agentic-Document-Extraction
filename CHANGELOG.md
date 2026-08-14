@@ -9,16 +9,27 @@ and this project aims to follow [Semantic Versioning](https://semver.org/).
 
 ### Added
 
-- Versioned V9 processing recipes with immutable job snapshots and V8 rollback.
-- Sanitized model-call replay manifests, content-addressed evidence, and private ZIP bundles.
-- Upload preflight findings, invoice-v1 contract preset, and additive assurance/page timelines.
+- A root-level `Paperplane.cmd` launcher for starting both services by double-click and
+  opening the verified frontend in the default Windows browser.
+- Synchronous grounded Parse and Extract contracts with Fast, Balanced, and Audit modes.
+- A focused Next.js workspace for one local upload and its Markdown or JSON response.
 
 ### Changed
 
-- Balanced and Audit verification now use explicit per-page Terra/crop budgets.
-- Jobs with at least one successful page now assemble a warning-marked partial result.
+- Parsing now completes in one `POST /v2/parse` request and returns the document directly.
+- The frontend keeps only the current result in memory.
+- Deployment now needs only FastAPI, Next.js, and OpenAI access.
 
-### Fixed
+### Removed
+
+- Application databases, migrations, background workers, queues, durable jobs, and artifacts.
+- Job polling, cancellation, resume, saved schemas, reviews, curation, and run history APIs.
+- Database and migration dependencies and the database-only Compose service.
+
+### Security
+
+- Preserved strict upload validation, bounded model work, API-key authentication, CORS
+  restrictions, throttling, safe errors, and backend-only provider credentials.
 
 ## [2.0.0] - 2026-07-26
 

@@ -86,6 +86,10 @@ class SchemaExtractionBundle:
     table_jsonl: dict[str, bytes]
 
 
+_ScalarLine = tuple[str, str]
+_ScalarBlock = tuple[ContentBlock, list[_ScalarLine]]
+
+
 async def extract_schema_instance(
     document: StructuredDocument,
     schema: dict[str, Any],
@@ -107,7 +111,7 @@ async def extract_schema_instance(
 
     _extract_object_fields(
         schema,
-        document.blocks,
+        _prepare_scalar_lines(document.blocks),
         data,
         grounding,
         confidence,
@@ -230,7 +234,7 @@ async def extract_schema_instance(
 
 def _extract_object_fields(
     schema: dict[str, Any],
-    blocks: list[ContentBlock],
+    scalar_blocks: list[_ScalarBlock],
     data: dict[str, Any],
     grounding: dict[str, list[ValueCitation]],
     confidence: dict[str, float],
@@ -244,7 +248,13 @@ def _extract_object_fields(
         if child_type == "object":
             nested: dict[str, Any] = {}
             _extract_object_fields(
-                child, blocks, nested, grounding, confidence, methods, path=child_path
+                child,
+                scalar_blocks,
+                nested,
+                grounding,
+                confidence,
+                methods,
+                path=child_path,
             )
             extracted = _get_path(nested, child_path)
             if isinstance(extracted, dict) and extracted:
@@ -256,7 +266,7 @@ def _extract_object_fields(
             items = child.get("items", {})
             if items.get("type") not in {"string", "number", "integer", "boolean"}:
                 continue
-            matches = _find_scalar_matches(name, child, blocks)
+            matches = _find_scalar_matches(name, child, scalar_blocks)
             if not matches:
                 continue
             values = [_coerce(value, items) for value, _ in matches]
@@ -271,7 +281,7 @@ def _extract_object_fields(
             continue
         if child_type not in {"string", "number", "integer", "boolean"}:
             continue
-        matches = _find_scalar_matches(name, child, blocks)
+        matches = _find_scalar_matches(name, child, scalar_blocks)
         if not matches:
             continue
         raw, block = matches[0]
@@ -285,8 +295,23 @@ def _extract_object_fields(
         methods[pointer] = "rule"
 
 
+def _prepare_scalar_lines(blocks: list[ContentBlock]) -> list[_ScalarBlock]:
+    prepared: list[_ScalarBlock] = []
+    for block in blocks:
+        if block.type in {"table", "figure", "chart", "formula"}:
+            continue
+        lines: list[_ScalarLine] = []
+        for line in block.content.splitlines() or [block.content]:
+            normalized = " ".join(line.split())
+            if normalized:
+                lines.append((normalized, normalized.casefold()))
+        if lines:
+            prepared.append((block, lines))
+    return prepared
+
+
 def _find_scalar_matches(
-    name: str, schema: dict[str, Any], blocks: list[ContentBlock]
+    name: str, schema: dict[str, Any], scalar_blocks: list[_ScalarBlock]
 ) -> list[tuple[str, ContentBlock]]:
     aliases = [name.replace("_", " "), str(schema.get("title") or "")]
     aliases.extend(str(item) for item in schema.get("x-paperplane-aliases", []))
@@ -294,12 +319,8 @@ def _find_scalar_matches(
         {item.strip().casefold() for item in aliases if item.strip()}, key=len, reverse=True
     )
     matches: list[tuple[str, ContentBlock]] = []
-    for block in blocks:
-        if block.type in {"table", "figure", "chart", "formula"}:
-            continue
-        for line in block.content.splitlines() or [block.content]:
-            normalized = " ".join(line.split())
-            folded = normalized.casefold()
+    for block, lines in scalar_blocks:
+        for normalized, folded in lines:
             for alias in aliases:
                 if alias not in folded:
                     continue

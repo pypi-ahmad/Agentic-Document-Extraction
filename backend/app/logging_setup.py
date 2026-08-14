@@ -12,8 +12,8 @@ Why structlog (vs stdlib ``logging`` only or ``loguru``):
 - First-class JSON output that matches the OTel log-signal shape.
 - Bound context (``log.bind(request_id=...)``) survives across
   loggers without leaking globals.
-- Plays nicely with stdlib ``logging`` so the third-party libs
-  (httpx, sqlalchemy, langgraph) keep working through the same sink.
+- Plays nicely with stdlib ``logging`` so third-party libraries keep
+  working through the same sink.
 """
 
 from __future__ import annotations
@@ -22,7 +22,6 @@ import logging
 import os
 import re
 import sys
-from collections.abc import MutableMapping
 from typing import Any
 
 import structlog
@@ -34,7 +33,6 @@ from app.constants import (
     LOG_FIELD_REQUEST_ID,
     REQUEST_ID_CONTEXT_KEY,
 )
-from app.utils.datetime import to_isoformat
 
 # ── Sanitisers ───────────────────────────────────────────────────────
 
@@ -62,11 +60,8 @@ def _redact_secrets(_logger: Any, _name: str, event_dict: EventDict) -> EventDic
     return event_dict
 
 
-def _inject_event_defaults(_logger: Any, _name: str, event_dict: EventDict) -> EventDict:
-    """Stamp timestamp + service name on every record."""
-    event_dict.setdefault(
-        "timestamp", to_isoformat(__import__("datetime").datetime.now(__import__("datetime").UTC))
-    )
+def _inject_service_name(_logger: Any, _name: str, event_dict: EventDict) -> EventDict:
+    """Stamp the service name on every record."""
     event_dict.setdefault("service", "agentic-document-extraction")
     return event_dict
 
@@ -85,7 +80,7 @@ def configure_logging(level: str | None = None) -> None:
         merge_contextvars,
         structlog.processors.add_log_level,
         structlog.processors.TimeStamper(fmt="iso", utc=True),
-        _inject_event_defaults,
+        _inject_service_name,
         _redact_secrets,
         structlog.processors.StackInfoRenderer(),
         structlog.processors.format_exc_info,
@@ -115,10 +110,6 @@ def configure_logging(level: str | None = None) -> None:
     # Quiet down noisy libraries by default.
     logging.getLogger("httpx").setLevel(logging.WARNING)
     logging.getLogger("httpcore").setLevel(logging.WARNING)
-    logging.getLogger("sqlalchemy.engine").setLevel(
-        logging.INFO if os.environ.get("LOG_SQL") else logging.WARNING
-    )
-
 
 # ── Helpers ──────────────────────────────────────────────────────────
 
@@ -144,14 +135,10 @@ def log_event(
     /,
     **fields: Any,
 ) -> None:
-    """Emit a structured log record.
-
-    The ``event`` is required; the ``duration_ms`` field is auto-suffixed
-    with ``_ms`` only when the call site already names it that way.
-    """
-    payload: MutableMapping[str, Any] = {**fields, "event": event}
-    if LOG_FIELD_DURATION_MS in payload and "duration_ms" in payload:
-        payload[LOG_FIELD_DURATION_MS] = payload.pop("duration_ms")
+    """Emit a structured record with canonical event and duration field ordering."""
+    payload: dict[str, Any] = {**fields, "event": event}
+    if LOG_FIELD_DURATION_MS in payload:
+        payload[LOG_FIELD_DURATION_MS] = payload.pop(LOG_FIELD_DURATION_MS)
     logger.info(event, **payload)
 
 

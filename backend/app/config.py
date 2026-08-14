@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 from typing import Literal
 
 from pydantic import Field, model_validator
@@ -12,10 +11,6 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
-    database_url: str = "sqlite+aiosqlite:///./document_parser.db"
-    upload_dir: str = "./uploads"
-    artifacts_dir: str = "./artifacts"
-    langgraph_checkpoint_path: str = "./parser_checkpoints.sqlite"
     max_upload_size_mb: int = Field(default=200, ge=1)
     max_document_pages: int = Field(default=500, ge=1)
 
@@ -51,7 +46,6 @@ class Settings(BaseSettings):
     xai_api_key: str = ""
     openai_base_url: str = "https://api.openai.com"
     openai_timeout_seconds: float = Field(default=180.0, gt=0)
-    v2_worker_count: int = Field(default=4, ge=1, le=32)
     v2_recipe_version: Literal["v8", "v9"] = "v9"
     openai_pricing_version: str = "operator-configured"
     luna_input_per_million: float = Field(default=0, ge=0)
@@ -85,18 +79,6 @@ class Settings(BaseSettings):
                 "and leave API_KEY unset if you really want a fully open, unauthenticated API."
             )
         return self
-
-    @property
-    def upload_path(self) -> Path:
-        path = Path(self.upload_dir)
-        path.mkdir(parents=True, exist_ok=True)
-        return path
-
-    @property
-    def artifacts_path(self) -> Path:
-        path = Path(self.artifacts_dir)
-        path.mkdir(parents=True, exist_ok=True)
-        return path
 
     @property
     def max_upload_bytes(self) -> int:

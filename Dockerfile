@@ -26,8 +26,6 @@ RUN uv sync --frozen --no-install-project --no-dev
 # Install the project itself in editable mode, then drop the egg-info
 # (we ship a flat source tree in the runtime image).
 COPY backend ./backend
-COPY alembic.ini ./
-COPY backend/alembic ./backend/alembic
 RUN uv sync --frozen --no-dev
 
 # ─────────────────────────────────────────────────────────────────────
@@ -58,26 +56,16 @@ WORKDIR /app
 # Copy the resolved venv and the project source from the builder.
 COPY --from=builder --chown=app:app /app/.venv /app/.venv
 COPY --from=builder --chown=app:app /app/backend /app/backend
-COPY --from=builder --chown=app:app /app/alembic.ini /app/alembic.ini
-COPY --from=builder --chown=app:app /app/backend/alembic /app/backend/alembic
 COPY --from=builder --chown=app:app /app/pyproject.toml /app/pyproject.toml
 COPY --from=builder --chown=app:app /app/uv.lock /app/uv.lock
 
-# Runtime data dirs (mounted as volumes in compose / k8s).
-RUN mkdir -p /app/data/uploads /app/data/artifacts /app/data/db \
- && chown -R app:app /app/data
-
-ENV PATH=/app/.venv/bin:$PATH \
-    UPLOAD_DIR=/app/data/uploads \
-    ARTIFACTS_DIR=/app/data/artifacts \
-    DATABASE_URL=sqlite+aiosqlite:////app/data/db/extraction.db
+ENV PATH=/app/.venv/bin:$PATH
 
 USER app
 
 EXPOSE 8000
 
-# Tini is PID 1 — it forwards SIGTERM to uvicorn so the lifespan
-# shutdown handler drains the in-process queue.
+# Tini is PID 1 and forwards SIGTERM to uvicorn.
 ENTRYPOINT ["/usr/bin/tini", "--"]
 
 # Default command: run uvicorn against the FastAPI app. The host and
