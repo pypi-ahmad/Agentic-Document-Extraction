@@ -106,13 +106,13 @@ if [[ -z "$dependencies_ready" ]]; then
     fi
 
     printf 'Synchronizing locked dependencies with the %s PyTorch backend...\n' "$torch_extra"
-    if ! "$uv_exe" sync --locked --python 3.12.10 --extra "$torch_extra"; then
+    if ! "$uv_exe" sync --locked --python 3.12.10 --extra "$torch_extra" --link-mode copy; then
         if [[ "$torch_extra" != "cu130" ]]; then
             fail "Locked dependency synchronization failed."
         fi
         printf 'CUDA dependency setup failed. Retrying with the CPU backend...\n'
         torch_extra="cpu"
-        "$uv_exe" sync --locked --python 3.12.10 --extra cpu \
+        "$uv_exe" sync --locked --python 3.12.10 --extra cpu --link-mode copy \
             || fail "Locked CPU dependency synchronization failed."
     fi
 fi
@@ -123,7 +123,7 @@ if ! "$venv_python" -c \
     "import torch.backends; from docling.datamodel.base_models import DocumentStream" \
     >/dev/null 2>&1; then
     printf 'The Torch or Docling installation is incomplete. Repairing it...\n'
-    "$uv_exe" sync --locked --python 3.12.10 --extra "$torch_extra" \
+    "$uv_exe" sync --locked --python 3.12.10 --extra "$torch_extra" --link-mode copy \
         --reinstall-package torch --reinstall-package torchvision \
         || fail "Torch and Docling repair failed."
     "$venv_python" -c \

@@ -10,6 +10,13 @@ echo   Paperplane launcher
 echo ========================================
 echo.
 
+rem A new launcher run replaces only an existing Paperplane Streamlit process.
+powershell.exe -NoProfile -Command "$connection = Get-NetTCPConnection -LocalPort 8551 -State Listen -ErrorAction SilentlyContinue | Select-Object -First 1; if (-not $connection) { exit 0 }; $owner = Get-CimInstance Win32_Process -Filter ('ProcessId = ' + $connection.OwningProcess); if ($owner.CommandLine -like '*streamlit run workspace_app.py*') { Stop-Process -Id $connection.OwningProcess -Force; Wait-Process -Id $connection.OwningProcess -ErrorAction SilentlyContinue; exit 10 }; exit 20"
+set "PORT_RESULT=%ERRORLEVEL%"
+if "%PORT_RESULT%"=="10" echo Stopped the previous Paperplane run.
+if "%PORT_RESULT%"=="20" goto :port_in_use
+if not "%PORT_RESULT%"=="0" if not "%PORT_RESULT%"=="10" goto :setup_failure
+
 if not exist "pyproject.toml" (
     echo ERROR: pyproject.toml was not found next to Paperplane.cmd.
     goto :failure
@@ -102,11 +109,11 @@ if errorlevel 1 (
 )
 
 echo Synchronizing locked dependencies with the %TORCH_EXTRA% PyTorch backend...
-"%UV_EXE%" sync --locked --python 3.12.10 --extra %TORCH_EXTRA%
+"%UV_EXE%" sync --locked --python 3.12.10 --extra %TORCH_EXTRA% --link-mode copy
 if errorlevel 1 if /i "%TORCH_EXTRA%"=="cu130" (
     echo CUDA dependency setup failed. Retrying with the CPU backend...
     set "TORCH_EXTRA=cpu"
-    "%UV_EXE%" sync --locked --python 3.12.10 --extra cpu
+    "%UV_EXE%" sync --locked --python 3.12.10 --extra cpu --link-mode copy
 )
 if errorlevel 1 goto :setup_failure
 
@@ -116,7 +123,7 @@ if not exist "%VENV_DOCLING%" goto :setup_failure
 "%VENV_PYTHON%" -c "import torch.backends; from docling.datamodel.base_models import DocumentStream" >nul 2>&1
 if not errorlevel 1 goto :runtime_ready
 echo The Torch or Docling installation is incomplete. Repairing it...
-"%UV_EXE%" sync --locked --python 3.12.10 --extra %TORCH_EXTRA% --reinstall-package torch --reinstall-package torchvision
+"%UV_EXE%" sync --locked --python 3.12.10 --extra %TORCH_EXTRA% --link-mode copy --reinstall-package torch --reinstall-package torchvision
 if errorlevel 1 goto :setup_failure
 "%VENV_PYTHON%" -c "import torch.backends; from docling.datamodel.base_models import DocumentStream" >nul 2>&1
 if errorlevel 1 goto :setup_failure
@@ -187,6 +194,12 @@ exit /b 0
 echo.
 echo ERROR: Paperplane setup failed.
 echo Review the message above, check your internet connection, and try again.
+goto :failure
+
+:port_in_use
+echo.
+echo ERROR: Port 8551 is used by another application.
+echo Stop that application, then run Paperplane again.
 goto :failure
 
 :failure

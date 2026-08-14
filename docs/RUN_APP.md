@@ -11,6 +11,9 @@ Otherwise it launches the multipage app directly at `http://127.0.0.1:8551`.
 Close the launcher window or press Ctrl+C to stop it.
 Each launcher start clears Streamlit's data cache. Each **Parse files** action also clears
 the previous batch from every output tab before processing begins.
+On Windows, starting the launcher again safely stops an existing Paperplane process on port
+`8551` before setup. If another application owns that port, the launcher leaves it running
+and reports the conflict.
 
 ## One-file Linux launch
 
