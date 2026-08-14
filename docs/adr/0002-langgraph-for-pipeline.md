@@ -2,7 +2,7 @@
 
 ## Status
 
-Original graph/queue design superseded; current decision accepted for Paperplane 4.1.0
+Original graph/queue design superseded; current decision accepted for Paperplane 4.2.0
 (2026-08-14).
 
 ## Context
