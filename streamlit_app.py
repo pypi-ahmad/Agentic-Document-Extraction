@@ -27,7 +27,7 @@ from paperplane.model_catalog import (
 )
 from paperplane.openai_document import OpenAIRequestError
 
-APP_VERSION = "4.2.0"
+APP_VERSION = "4.2.1"
 MODEL_LABELS = {
     "Fast": "paperplane-ade-fast-latest",
     "Balanced": "paperplane-ade-latest",
