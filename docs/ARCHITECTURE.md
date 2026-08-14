@@ -1,6 +1,6 @@
 # Architecture
 
-Paperplane 5.0.3 runs as one local Streamlit process with a framework-neutral Python
+Paperplane 5.1.0 runs as one local Streamlit process with a framework-neutral Python
 package. It has no JavaScript frontend or public HTTP API. SQLite stores local job metadata;
 private inputs and artifacts live in `%LOCALAPPDATA%\Paperplane` and expire after seven
 days.

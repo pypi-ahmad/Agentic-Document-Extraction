@@ -10,6 +10,13 @@ Otherwise it launches the multipage app directly at `http://127.0.0.1:8551`.
 
 Close the launcher window or press Ctrl+C to stop it.
 
+## One-file Linux launch
+
+Run `./Paperplane.sh` from the repository. It performs the same repository, Python,
+dependency, model, and provider-key checks as the Windows launcher. Ubuntu/Debian users can
+allow it to install missing LibreOffice through APT; other distributions must provide
+LibreOffice first. Open `http://127.0.0.1:8551` and press Ctrl+C to stop the app.
+
 ## Manual launch
 
 ```powershell
@@ -20,7 +27,7 @@ uv run --locked --extra cpu streamlit run workspace_app.py --server.port=8551
 
 For Ollama ADE, start Ollama first and optionally set
 `OLLAMA_BASE_URL=http://127.0.0.1:11434`. Cloud credentials are read from the current
-process/Windows user environment, an ignored `.env`, or Streamlit secrets.
+process environment, Windows user environment, an ignored `.env`, or Streamlit secrets.
 Agnes 2.5 Flash accepts selected page images inline for Parse and cloud enhancement.
 
 The pages are Parse, Organize, Jobs, and Benchmarks. Select one Parse engine before

@@ -102,4 +102,5 @@ git status --short
 ```
 
 Confirm the release notes render correctly, the tag targets the release commit, CI passes
-on `main`, and a clean checkout of the tag launches with `Paperplane.cmd`.
+on `main`, and a clean checkout of the tag launches with `Paperplane.cmd` on Windows and
+passes `bash -n Paperplane.sh` plus the Linux startup smoke test in Ubuntu CI.

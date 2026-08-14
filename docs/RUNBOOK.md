@@ -16,7 +16,9 @@ uv run --extra cpu streamlit run workspace_app.py --server.port=8551
 - Ollama: start Ollama, verify `OLLAMA_BASE_URL`, and choose a model reporting `vision`.
 - Agnes: set `AGNES_API_KEY`; private visual inputs are sent inline.
 - PDF Inspector: use PDF input only.
-- Office: rerun `Paperplane.cmd`; the launcher installs LibreOffice only when it is absent.
+- Office: rerun `Paperplane.cmd` on Windows or `Paperplane.sh` on Linux. Linux automatic
+  LibreOffice installation requires APT; otherwise install it with the distribution's
+  package manager.
 
 ## Parsing or artifact generation fails
 

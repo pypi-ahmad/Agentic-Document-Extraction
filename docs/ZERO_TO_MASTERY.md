@@ -2,9 +2,10 @@
 
 ## 1. Start
 
-Double-click `Paperplane.cmd`. It installs only missing or out-of-date Windows prerequisites
-and opens the multipage Streamlit app at `http://127.0.0.1:8551`. Once ready, later launches
-skip setup. Manual entrypoint:
+Double-click `Paperplane.cmd` on Windows or run `./Paperplane.sh` on Linux. Each launcher
+installs only missing or out-of-date supported prerequisites and opens the multipage
+Streamlit app at `http://127.0.0.1:8551`. Once ready, later launches skip setup. Manual
+entrypoint:
 
 ```powershell
 uv run --locked --extra cpu streamlit run workspace_app.py --server.port=8551

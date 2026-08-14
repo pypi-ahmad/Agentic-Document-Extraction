@@ -1,5 +1,13 @@
 # Release notes
 
+## Paperplane 5.1.0
+
+- Added executable `Paperplane.sh` for idempotent Linux setup and launch.
+- Added Ubuntu/Debian LibreOffice installation, NVIDIA detection with CPU fallback, locked
+  uv/Python synchronization, local model checks, and Streamlit startup on
+  `127.0.0.1:8551`.
+- Added Linux launcher validation to Ubuntu CI and documented supported Linux behavior.
+
 ## Paperplane 5.0.3
 
 - Expanded the README with detailed explanations of every processing engine, quality mode,

@@ -1,5 +1,5 @@
 {
-  "name": "Paperplane 5.0.3",
+  "name": "Paperplane 5.1.0",
   "description": "Private multipage Streamlit document intelligence with explicit engines and durable local jobs",
   "nodes": [
     {"id": "ui", "type": "application", "label": "Streamlit workspace", "sublabel": "Parse, Organize, Jobs, Benchmarks", "sources": [{"path": "workspace_app.py", "line": 1}]},
