@@ -9,11 +9,12 @@ process.
 
 No on Windows 11. Double-click `Paperplane.cmd`; it installs `uv`, Python 3.12.10, locked
 dependencies, and required Docling models. Initial setup requires internet access.
+The launcher opens Paperplane locally at `http://127.0.0.1:8551`.
 
 ## Does Paperplane use LandingAI ADE?
 
 No. Paperplane is inspired by ADE's observable document-output workflow, but uses its own
-Docling and OpenAI pipeline and does not claim ADE model or benchmark parity.
+Docling plus selectable OpenAI or Agnes inference and does not claim ADE model or benchmark parity.
 
 ## Does it have an API or database?
 
@@ -30,12 +31,18 @@ applies to document and result data, not runtime dependencies.
 
 ## Which credentials are required?
 
-`OPENAI_API_KEY` is required for scanned PDFs and images and enables figure descriptions in
-native documents. Native text PDFs and supported Office files can run locally without it.
+Use `OPENAI_API_KEY` for OpenAI or `AGNES_API_KEY` for Agnes 2.5 Flash. The selected key is
+required for scans, images, and figure descriptions. Native text PDFs and supported Office
+files can run locally without either key.
 `OPENAI_BASE_URL` is optional and defaults to `https://api.openai.com`.
 
 Configuration precedence is existing environment variables, `.env`, Streamlit secrets,
 then the default URL. Local credential files are ignored by Git.
+
+## Which AI model is selected by default?
+
+OpenAI Luna/Terra is the default. Choose Agnes 2.5 Flash in the **AI model** selector to
+route vision work through `agnes-2.5-flash` and `AGNES_API_KEY` instead.
 
 ## Which inputs work?
 
@@ -45,12 +52,13 @@ DOC/PPT/XLS, RTF, encrypted PDFs, and password-protected files are unsupported.
 ## What happens with a mixed PDF?
 
 Paperplane classifies each page independently. Native pages use Docling, scan-like pages
-use OpenAI vision, and results are merged into original page order.
+use the selected OpenAI or Agnes vision model, and results are merged into page order.
 
 ## What do Fast, Balanced, and Audit change?
 
-Fast uses Luna with deterministic grounding and no Terra pass. Balanced applies Terra to
-flagged content. Audit uses the highest rendering, verification, and repair budget.
+For OpenAI, Fast uses Luna without a Terra pass, Balanced applies Terra to flagged content,
+and Audit has the largest verification budget. With Agnes selected, Agnes 2.5 Flash fills
+those model-call roles while the same modes bound the amount of work.
 
 ## Which result views are available?
 

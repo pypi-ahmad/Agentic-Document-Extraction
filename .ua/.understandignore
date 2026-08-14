@@ -1,0 +1,164 @@
+# .understandignore — patterns for files/dirs to exclude from analysis
+# Syntax: same as .gitignore (globs, # comments, ! negation, trailing / for dirs)
+# Lines below are suggestions — uncomment to activate.
+# Use ! prefix to force-include something excluded by defaults.
+#
+# Built-in defaults (always excluded unless negated):
+#   node_modules/, .git/, dist/, build/, obj/, *.lock, *.min.js, etc.
+#
+
+# --- From .gitignore (uncomment to exclude) ---
+
+# *.py[cod]
+# *$py.class
+# *.so
+# *.egg-info/
+# output/
+# .tmp/
+# *.tsbuildinfo
+# .eggs/
+# *.egg
+# env/
+# .uv-cache/
+# .uv-cache-*/
+# .npm-cache-*/
+# *.swp
+# *.swo
+# .env
+# .env.local
+# .env.*.local
+# .streamlit/secrets.toml
+# *.db
+# *.db-shm
+# *.db-wal
+# *.sqlite
+# *.sqlite3
+# /backend/uploads/
+# /backend/artifacts/
+# /.cache/
+# *.sqlite-*
+# _test_uploads/
+# /tmp/
+# frontend/.next/
+# frontend/node_modules/
+# .playwright-cli/
+# .DS_Store
+# Thumbs.db
+# htmlcov/
+# .coverage
+# .coverage.*
+# coverage.xml
+# *.cover
+# .pytest_cache/
+# .mypy_cache/
+# .ruff_cache/
+# .npm-cache-local/
+# graphify-out/cache/
+# graphify-out/.chunk_*.txt
+# graphify-out/.ast_done
+# graphify-out/.graphify_*
+# graphify-out/.label_graph.py
+# graphify-out/.run_ast.py
+# pytest-cache-files-*/
+# backend/pytest-cache-files-*/
+# .env*
+# !.env.example
+# **/.venv/
+# **/venv/
+# **/__pycache__/
+# *.py[cod]
+# .pytest_cache/
+# .mypy_cache/
+# .ruff_cache/
+# .ipynb_checkpoints/
+# .uv-cache/
+# .uv_cache/
+# **/.uv-cache/
+# **/.uv_cache/
+# .hf_cache/
+# hf_cache/
+# **/.hf_cache/
+# **/hf_cache/
+# chroma_db/
+# **/chroma_db/
+# artifacts/
+# **/artifacts/
+# outputs/
+# **/outputs/
+# logs/
+# **/logs/
+# mlruns/
+# **/mlruns/
+# *.egg-info/
+# **/*.egg-info/
+# vectordb/
+# **/vectordb/
+# _embed_cache/
+# **/_embed_cache/
+# .codegraph/*.db-wal
+# .codegraph/*.db-shm
+# .codegraph/*.pid
+# .codegraph/*.log
+# .code-review-graph/*.db-wal
+# .code-review-graph/*.db-shm
+# .ua/.trash-*/
+# .ua/intermediate/
+# .ua/tmp/
+# .ua/*.log
+
+# --- Detected directories (uncomment to exclude) ---
+
+# docs/
+# scripts/
+# tests/
+
+# --- Test file patterns (uncomment to exclude) ---
+
+# JS / TS
+# *.test.*
+# *.spec.*
+# *.snap
+# C# / .NET
+# **/*Tests.cs
+# **/*Test.cs
+# **/*Fixture.cs
+# **/*.Tests.csproj
+# Java / Kotlin
+# **/src/test/**
+# **/*Test.java
+# **/*IT.java
+# **/*Spec.kt
+# Go
+# **/*_test.go
+# C++
+# **/*_test.cc
+# **/*_test.cpp
+# **/*_test.cxx
+# **/*Test.cc
+# **/*Test.cpp
+# **/*_unittest.cc
+# **/*_unittest.cpp
+# **/*_browsertest.cc
+# **/*_benchmark.cc
+# **/*Benchmark.cpp
+# Python
+# **/test_*.py
+# **/*_test.py
+# **/tests.py
+# **/conftest.py
+# Rust
+# **/tests.rs
+# **/test_*.rs
+# **/*_test.rs
+# **/bench_*.rs
+# **/*_bench.rs
+# Ruby
+# **/*_spec.rb
+# **/*_test.rb
+# **/test_*.rb
+# **/spec_helper.rb
+# **/test_helper.rb
+# **/rails_helper.rb
+# Swift
+# **/Tests/**/*.swift
+# **/Specs/**/*.swift

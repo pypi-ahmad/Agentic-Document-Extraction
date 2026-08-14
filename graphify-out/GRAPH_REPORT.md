@@ -1,52 +1,63 @@
 # Graph Report - .  (2026-08-14)
 
 ## Corpus Check
-- Corpus is ~46,726 words - fits in a single context window. You may not need a graph.
+- Corpus is ~45,196 words - fits in a single context window. You may not need a graph.
 
 ## Summary
-- 469 nodes · 1352 edges · 39 communities (19 shown, 20 thin omitted)
-- Extraction: 79% EXTRACTED · 21% INFERRED · 0% AMBIGUOUS · INFERRED: 279 edges (avg confidence: 0.54)
+- 472 nodes · 1341 edges · 50 communities (22 shown, 28 thin omitted)
+- Extraction: 79% EXTRACTED · 21% INFERRED · 0% AMBIGUOUS · INFERRED: 285 edges (avg confidence: 0.55)
 - Token cost: 0 input · 0 output
 
 ## Community Hubs (Navigation)
-- Docling Parsing Contracts
-- Pipeline Models and Policies
-- V2 Processing Interfaces
-- Grounding and Input Rendering
-- Handbook PDF Generation
-- Annotated Evidence PDF
-- OpenAI Document Adapter
-- Architecture and Output Rationale
-- Release Versioning Automation
-- Bounded Parser Tests
-- Graph-Aware Refactoring
-- Graph Debugging and Exploration
-- Extraction Engine Architecture
-- Streamlit Extraction Paths
-- HTML Guide Builder
-- MCP Graph Configuration
-- Local Deployment Security
-- Windows Setup and Recovery
-- MCP Graph Configuration
-- MCP Graph Configuration
-- MCP Graph Configuration
-- Paperplane Session Routing
+- Grounding and Processing Pipeline
+- Processing Models and Tests
+- Document Contracts and Assembly
+- Annotated PDF and Conversion
+- Handbook Generation
+- Document Ingestion
+- OpenAI API Integration
+- Release Automation
+- Parser Integration Tests
+- Refactoring and Review Graph
+- Processing Recipes
+- Graph Exploration Guidance
+- Historical Evidence Studio
+- Hybrid Extraction Architecture
+- Graph First Discovery
+- Product Capability Documentation
+- Historical Dark Theme
+- Capability Guide Builder
+- Contributor Verification Workflow
+- Cursor Graph Configuration
+- Legacy Architecture Migration
+- Secure Local Launch
+- Claude Graph Configuration
+- Root Graph Configuration
+- Qoder Graph Configuration
 - Dependency Security Automation
-- Feature Request Templates
-- Continuous Quality Gates
-- Safe Contribution Practice
-- Grounded Output Formats
-- Result Visualization Views
-- Output Contract Validation
-- PDF Latency Design
-- Dark Theme Design
-- Evidence Studio Design
+- Issue Proposal Templates
+- Local Deployment Scope
+- Processing Performance Policy
+- Shared Output Data Flow
+- Output Quality Validation
 - Session Start Hook
 - Graph Update Hook
-- Streamlit Migration Plan
-- Bug Reporting
-- Architecture Decision Records
-- Application Package
+- Streamlit Migration Delivery
+- Bug Report Template
+- Pre Commit Gates
+- Docling Input Expansion
+- Community Conduct
+- Contribution Scope
+- Architecture Decisions
+- Grounding Evidence Model
+- System Architecture Diagram
+- Release History
+- GitHub Issue Configuration
+- Project Metadata
+- Source Release Process
+- Sample Scanned Document
+- Attack Surface Controls
+- Sensitive Document Handling
 
 ## God Nodes (most connected - your core abstractions)
 1. `BoundingBox` - 78 edges
@@ -77,100 +88,111 @@
 
 ## Hyperedges (group relationships)
 - **Graph-Powered Engineering Workflow** — _claude_skills_debug_issue_skill_knowledge_graph_debugging, _claude_skills_explore_codebase_skill_graph_powered_exploration, _claude_skills_refactor_safely_skill_dependency_aware_refactoring, _claude_skills_review_changes_skill_risk_aware_code_review [EXTRACTED 1.00]
-- **Automated Quality and Security Controls** — _github_workflows_ci_yml_continuous_verification, _github_workflows_dependency_review_yml_dependency_security_review, _github_dependabot_yml_dependency_update_automation, _pre_commit_config_pre_commit_quality_gates [INFERRED 0.85]
-- **Dual Engine Document Processing** — docs_architecture_docling_path, docs_architecture_openai_vision_path, docs_architecture_shared_assembler [EXTRACTED 1.00]
-- **Local Stateless Operating Boundary** — readme_session_only_state, docs_limitations_local_single_user, docs_deployment_localhost_only [INFERRED 0.95]
-- **Paperplane v4.1 Extraction Workflow** — docs_how_it_works_automatic_routing, docs_how_it_works_grounded_output, docs_architecture_paperplane_system_evidence_pdf [EXTRACTED 1.00]
-- **Streamlit v4 Transition** — tasks_plan_streamlit_only_migration, tasks_todo_v4_completion, docs_release_notes_paperplane_v41 [EXTRACTED 1.00]
-- **Historical Frontend Plans** — docs_superpowers_plans_dark_theme, docs_superpowers_plans_evidence_studio, docs_architecture_paperplane_system_v41 [EXTRACTED 1.00]
+- **Graph-First Agent Guidance** — agents_graph_first_code_discovery, claude_graph_first_code_discovery, codebuddy_graph_first_code_discovery, _kiro_steering_code_review_graph_graph_first_code_discovery [INFERRED 0.95]
+- **Hybrid Document Extraction Pipeline** — onboarding_local_stateless_streamlit_application, docs_architecture_hybrid_document_routing, docs_engines_docling_native_engine, docs_engines_openai_vision_engine, docs_architecture_grounding_model [EXTRACTED 1.00]
+- **Local Runtime Principles** — docs_run_app_windows_launcher, docs_how_it_works_shared_output, docs_adr_0004_secure_by_default_secure_local_boundary [INFERRED 0.85]
+- **Streamlit v4 Transition** — tasks_plan_streamlit_only_migration, tasks_todo_v4_completion [EXTRACTED 1.00]
+- **Historical Frontend Experience Design** — docs_superpowers_plans_2026_07_26_dark_theme_historical_plan, docs_superpowers_plans_2026_07_26_evidence_studio_historical_plan, docs_superpowers_specs_2026_07_26_evidence_studio_design_evidence_studio_design [EXTRACTED 1.00]
 
-## Communities (39 total, 20 thin omitted)
+## Communities (50 total, 28 thin omitted)
 
-### Community 0 - "Docling Parsing Contracts"
-Cohesion: 0.06
-Nodes (67): DocItem, DoclingDocument, DocumentConverter, FigureDescriber, AgenticBlockInput, AgenticPageInput, _assemble_atomic_grounding(), assemble_parse_response() (+59 more)
-
-### Community 1 - "Pipeline Models and Policies"
+### Community 0 - "Grounding and Processing Pipeline"
 Cohesion: 0.07
-Nodes (68): _best_fallback_content(), _cache_key(), AtomicLine, GroundedChunk, Grounding, mode_policy(), ModePolicy, BaseModel (+60 more)
+Nodes (74): align_text_to_native_words(), map_crop_box_to_page(), _padded_box(), Deterministic rendering and coordinate transforms for V2 grounding., Return the exact union of a contiguous native-word match., render_crop(), RenderedCrop, _token() (+66 more)
 
-### Community 2 - "V2 Processing Interfaces"
-Cohesion: 0.12
-Nodes (54): RenderedPage, OpenAIUsage, BaseModel, StructuredGeneration, GroundingMethod, ProcessingMode, VerificationStatus, StructuredAdapter (+46 more)
+### Community 1 - "Processing Models and Tests"
+Cohesion: 0.13
+Nodes (52): RenderedPage, OpenAIUsage, BaseModel, StructuredGeneration, GroundingMethod, ProcessingMode, VerificationStatus, V2PageProcessor (+44 more)
 
-### Community 3 - "Grounding and Input Rendering"
-Cohesion: 0.11
-Nodes (33): align_text_to_native_words(), map_crop_box_to_page(), _padded_box(), Deterministic rendering and coordinate transforms for V2 grounding., Return the exact union of a contiguous native-word match., render_crop(), RenderedCrop, _token() (+25 more)
+### Community 2 - "Document Contracts and Assembly"
+Cohesion: 0.09
+Nodes (52): DocItem, DoclingDocument, FigureDescriber, AgenticBlockInput, AgenticPageInput, _assemble_atomic_grounding(), assemble_parse_response(), AtomicGrounding (+44 more)
 
-### Community 4 - "Handbook PDF Generation"
+### Community 3 - "Annotated PDF and Conversion"
+Cohesion: 0.07
+Nodes (37): Document, DocumentConverter, AnnotatedPdfArtifact, build_annotated_pdf(), _content_nodes(), _new_report_page(), _pdf_text(), _plain_excerpt() (+29 more)
+
+### Community 4 - "Handbook Generation"
 Cohesion: 0.15
 Nodes (16): BaseDocTemplate, ParagraphStyle, build(), main(), build_pdf(), _code_block(), HandbookTemplate, _inline() (+8 more)
 
-### Community 5 - "Annotated Evidence PDF"
-Cohesion: 0.17
-Nodes (19): Document, AnnotatedPdfArtifact, build_annotated_pdf(), _content_nodes(), _new_report_page(), _pdf_text(), _plain_excerpt(), _populate_semantic_report() (+11 more)
+### Community 5 - "Document Ingestion"
+Cohesion: 0.20
+Nodes (20): inspect_document(), InspectedDocument, _is_native_pdf_page(), _office_mime_type(), Page, Document validation, inspection, rendering, and native word extraction., render_page(), _image_bytes() (+12 more)
 
-### Community 6 - "OpenAI Document Adapter"
+### Community 6 - "OpenAI API Integration"
 Cohesion: 0.20
 Nodes (15): AsyncClient, capture_audit_calls(), _emit_audit(), OpenAIDocumentAdapter, OpenAIRequestError, Any, OpenAI Responses API boundary for grounded document extraction., Capture sanitized request/response records for the current async context. (+7 more)
 
-### Community 7 - "Architecture and Output Rationale"
-Cohesion: 0.18
-Nodes (14): Bounded Page Processing, Secure-by-Default Boundary, In-Memory Evidence PDF, Paperplane v4.1 System Architecture, Automatic Document Routing, Grounded Output Contract, Local Docling Conversion, OpenAI Vision Parsing (+6 more)
-
-### Community 8 - "Release Versioning Automation"
+### Community 7 - "Release Automation"
 Cohesion: 0.33
 Nodes (9): Namespace, add_changelog(), command(), current_version(), main(), next_version(), parse_args(), Path (+1 more)
 
-### Community 9 - "Bounded Parser Tests"
+### Community 8 - "Parser Integration Tests"
 Cohesion: 0.29
 Nodes (6): PageResult, BaseModel, FakeProcessor, _png(), asyncio, test_parser_returns_one_grounded_response_without_persistence()
 
-### Community 10 - "Graph-Aware Refactoring"
+### Community 9 - "Refactoring and Review Graph"
 Cohesion: 0.29
 Nodes (7): Dependency-Aware Refactoring, Risk-Aware Code Review, Dependency-Aware Refactoring, Risk-Aware Code Review, Dependency-Aware Refactoring, Risk-Aware Code Review, Graph-First Exploration Policy
 
-### Community 11 - "Graph Debugging and Exploration"
+### Community 10 - "Processing Recipes"
+Cohesion: 0.38
+Nodes (6): processing_recipe(), ProcessingRecipe, BaseModel, RecipeVersion, Versioned processing recipes with an operator rollback path., VerificationBudget
+
+### Community 11 - "Graph Exploration Guidance"
 Cohesion: 0.33
 Nodes (6): Knowledge Graph Debugging, Graph-Powered Codebase Exploration, Knowledge Graph Debugging, Graph-Powered Codebase Exploration, Knowledge Graph Debugging, Graph-Powered Codebase Exploration
 
-### Community 12 - "Extraction Engine Architecture"
+### Community 12 - "Historical Evidence Studio"
+Cohesion: 0.33
+Nodes (6): Document-First Workspace, Evidence Studio Historical Plan, Artifact Preview, Evidence Studio Historical Design, Balanced Mode, Bounded Vision Work
+
+### Community 13 - "Hybrid Extraction Architecture"
 Cohesion: 0.40
-Nodes (5): v4.1 Docling Input Expansion, Docling Engine, OpenAI Vision Engine, Source-Only Release Process, Sensitive Document Handling
+Nodes (5): Hybrid Document Routing, Docling Native Engine, OpenAI Vision Engine, Local Stateless Streamlit Application, Local Document Extraction Architecture
 
-### Community 13 - "Streamlit Extraction Paths"
+### Community 14 - "Graph First Discovery"
 Cohesion: 0.50
-Nodes (5): Docling Native-Document Path, OpenAI Vision Path, Shared Markdown and JSON Assembler, Streamlit Workspace, Semantic-Only Geometry
+Nodes (4): Graph-First Code Discovery, Graph-First Code Discovery, Graph-First Code Discovery, Graph-First Code Discovery
 
-### Community 14 - "HTML Guide Builder"
+### Community 15 - "Product Capability Documentation"
+Cohesion: 0.50
+Nodes (4): Document Capability Contract, Document Capability Contract, User Operating Guidance, Paperplane Product Overview
+
+### Community 16 - "Historical Dark Theme"
+Cohesion: 0.50
+Nodes (4): Dark Theme Historical Plan, Persisted Theme Toggle, Dark Theme Historical Design, Theme Storage Failure Handling
+
+### Community 17 - "Capability Guide Builder"
 Cohesion: 0.50
 Nodes (3): build(), Build the reader-friendly HTML capability guide from its Markdown source., Render the Markdown source with navigation and accessible page chrome.
 
-### Community 16 - "Local Deployment Security"
+### Community 18 - "Contributor Verification Workflow"
 Cohesion: 0.67
-Nodes (3): Localhost-Only Deployment, Local Single-User Boundary, v4 Simplification
+Nodes (3): Continuous Verification Workflow, Engineering Workflow, Contributor Learning Path
 
-### Community 17 - "Windows Setup and Recovery"
+### Community 20 - "Legacy Architecture Migration"
 Cohesion: 0.67
-Nodes (3): Paperplane Windows Launcher, Operational Recovery Runbook, Environment Credential Setup
+Nodes (3): Archived LangGraph Decision, v4 Simplification, Archived Hosted Operations
 
-### Community 21 - "Paperplane Session Routing"
+### Community 21 - "Secure Local Launch"
 Cohesion: 0.67
-Nodes (3): Automatic Per-Page Routing, Paperplane, Session-Only State
+Nodes (3): Secure Local Boundary, Windows Launcher, Credential Precedence
 
 ## Knowledge Gaps
-- **39 isolated node(s):** `uvx`, `crg-session-start.sh script`, `crg-update.sh script`, `uvx`, `uvx` (+34 more)
+- **46 isolated node(s):** `uvx`, `crg-session-start.sh script`, `crg-update.sh script`, `uvx`, `uvx` (+41 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **20 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **28 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `BoundingBox` connect `Pipeline Models and Policies` to `Bounded Parser Tests`, `V2 Processing Interfaces`, `Grounding and Input Rendering`?**
-  _High betweenness centrality (0.088) - this node is a cross-community bridge._
-- **Why does `V2PageProcessor` connect `V2 Processing Interfaces` to `Docling Parsing Contracts`, `Pipeline Models and Policies`?**
-  _High betweenness centrality (0.073) - this node is a cross-community bridge._
-- **Why does `DocumentInputError` connect `Grounding and Input Rendering` to `Docling Parsing Contracts`, `Pipeline Models and Policies`, `V2 Processing Interfaces`, `Annotated Evidence PDF`?**
+- **Why does `BoundingBox` connect `Grounding and Processing Pipeline` to `Processing Models and Tests`, `Document Contracts and Assembly`, `Annotated PDF and Conversion`, `Document Ingestion`, `Parser Integration Tests`?**
+  _High betweenness centrality (0.087) - this node is a cross-community bridge._
+- **Why does `V2PageProcessor` connect `Processing Models and Tests` to `Grounding and Processing Pipeline`, `Document Contracts and Assembly`, `Annotated PDF and Conversion`?**
+  _High betweenness centrality (0.072) - this node is a cross-community bridge._
+- **Why does `DocumentInputError` connect `Document Contracts and Assembly` to `Grounding and Processing Pipeline`, `Processing Models and Tests`, `Annotated PDF and Conversion`, `Document Ingestion`?**
   _High betweenness centrality (0.035) - this node is a cross-community bridge._
 - **Are the 34 inferred relationships involving `BoundingBox` (e.g. with `RenderedCrop` and `DocumentInputError`) actually correct?**
   _`BoundingBox` has 34 INFERRED edges - model-reasoned connections that need verification._

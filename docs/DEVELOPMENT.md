@@ -5,20 +5,22 @@
 ```powershell
 uv python install 3.12.10
 uv sync --locked --extra test --extra lint --extra docs
-uv run streamlit run streamlit_app.py
+uv run streamlit run streamlit_app.py --server.port=8551
 ```
 
 `Paperplane.cmd` is the end-user entry point. It installs runtime dependencies and Docling
 models; development extras remain an explicit developer installation.
 
 Configuration precedence is existing process/user environment, ignored `.env`, ignored
-Streamlit secrets, then the default OpenAI base URL. Keep only safe placeholders in
+Streamlit secrets, then the default provider base URLs. Keep only safe placeholders in
 `.env.example` and `.streamlit/secrets.toml.example`.
 
 ## Important paths
 
 - `streamlit_app.py` — complete user interface and session state
 - `paperplane/runtime.py` — parser composition and client lifetime
+- `paperplane/agnes_document.py` — Agnes 2.5 Flash provider adapter
+- `paperplane/openai_document.py` — OpenAI provider adapter
 - `paperplane/ingest.py` — validation, PDF classification, and rendering
 - `paperplane/parser.py` — automatic document routing and assembly
 - `paperplane/docling_parser.py` — local native-document conversion

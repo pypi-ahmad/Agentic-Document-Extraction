@@ -28,3 +28,17 @@ async def test_runtime_rejects_unknown_model() -> None:
             model="unknown",
             api_key="test-key",
         )
+
+
+@pytest.mark.asyncio
+async def test_runtime_names_selected_provider_key_for_pixel_input() -> None:
+    output = BytesIO()
+    Image.new("RGB", (20, 20), "white").save(output, format="PNG")
+    with pytest.raises(ValueError, match="AGNES_API_KEY"):
+        await parse_document(
+            data=output.getvalue(),
+            filename="sample.png",
+            model="paperplane-ade-latest",
+            api_key="",
+            provider="agnes",
+        )

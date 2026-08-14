@@ -24,16 +24,18 @@ For Windows users, double-click `Paperplane.cmd`. For development:
 
 ```powershell
 uv sync --locked
-uv run streamlit run streamlit_app.py
+uv run streamlit run streamlit_app.py --server.port=8551
 ```
 
-Configuration now uses `OPENAI_API_KEY` and optional `OPENAI_BASE_URL` from user/process
-environment variables, ignored `.env`, or ignored Streamlit secrets.
+Configuration uses `OPENAI_API_KEY` and optional `OPENAI_BASE_URL` for OpenAI, or
+`AGNES_API_KEY` for Agnes 2.5 Flash, from user/process environment variables, ignored
+`.env`, or ignored Streamlit secrets.
 
 ## Added in v4.1
 
 - local Docling parsing for native PDFs and modern Office/OpenDocument/CSV input
 - OpenAI vision parsing for scanned PDFs and images
+- selectable Agnes 2.5 Flash vision parsing
 - automatic per-page routing for mixed PDFs
 - shared reading-order Markdown and hierarchical grounding JSON
 - HTML tables, atomic-line evidence, and table-cell metadata

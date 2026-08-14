@@ -18,56 +18,45 @@
         "source_file": ".github/code-review-graph.instruction.md"
       },
       {
-        "id": "automated_quality_and_security",
-        "label": "Automated Quality and Security Controls",
+        "id": "graph_first_agent_guidance",
+        "label": "Graph-First Agent Guidance",
         "nodes": [
-          "_github_workflows_ci_yml_continuous_verification",
-          "_github_workflows_dependency_review_yml_dependency_security_review",
-          "_github_dependabot_yml_dependency_update_automation",
-          "_pre_commit_config_pre_commit_quality_gates"
+          "agents_graph_first_code_discovery",
+          "claude_graph_first_code_discovery",
+          "codebuddy_graph_first_code_discovery",
+          "_kiro_steering_code_review_graph_graph_first_code_discovery"
         ],
         "relation": "participate_in",
         "confidence": "INFERRED",
-        "confidence_score": 0.85,
-        "source_file": ".github/workflows/ci.yml"
+        "confidence_score": 0.95,
+        "source_file": "AGENTS.md"
       },
       {
-        "id": "paperplane_dual_engine_flow",
-        "label": "Dual Engine Document Processing",
+        "id": "hybrid_document_extraction_pipeline",
+        "label": "Hybrid Document Extraction Pipeline",
         "nodes": [
-          "docs_architecture_docling_path",
-          "docs_architecture_openai_vision_path",
-          "docs_architecture_shared_assembler"
+          "onboarding_local_stateless_streamlit_application",
+          "docs_architecture_hybrid_document_routing",
+          "docs_engines_docling_native_engine",
+          "docs_engines_openai_vision_engine",
+          "docs_architecture_grounding_model"
         ],
-        "relation": "participate_in",
+        "relation": "form",
         "confidence": "EXTRACTED",
         "confidence_score": 1.0,
         "source_file": "docs/ARCHITECTURE.md"
       },
       {
-        "id": "paperplane_local_state_boundary",
-        "label": "Local Stateless Operating Boundary",
+        "id": "paperplane_local_runtime_principles",
+        "label": "Local Runtime Principles",
         "nodes": [
-          "readme_session_only_state",
-          "docs_limitations_local_single_user",
-          "docs_deployment_localhost_only"
+          "docs_run_app_windows_launcher",
+          "docs_how_it_works_shared_output",
+          "docs_adr_0004_secure_by_default_secure_local_boundary"
         ],
         "relation": "form",
         "confidence": "INFERRED",
-        "confidence_score": 0.95,
-        "source_file": "README.md"
-      },
-      {
-        "id": "paperplane_v41_extraction_workflow",
-        "label": "Paperplane v4.1 Extraction Workflow",
-        "nodes": [
-          "docs_how_it_works_automatic_routing",
-          "docs_how_it_works_grounded_output",
-          "docs_architecture_paperplane_system_evidence_pdf"
-        ],
-        "relation": "participate_in",
-        "confidence": "EXTRACTED",
-        "confidence_score": 1.0,
+        "confidence_score": 0.85,
         "source_file": "docs/how-it-works.md"
       },
       {
@@ -75,8 +64,7 @@
         "label": "Streamlit v4 Transition",
         "nodes": [
           "tasks_plan_streamlit_only_migration",
-          "tasks_todo_v4_completion",
-          "docs_release_notes_paperplane_v41"
+          "tasks_todo_v4_completion"
         ],
         "relation": "form",
         "confidence": "EXTRACTED",
@@ -84,12 +72,12 @@
         "source_file": "tasks/plan.md"
       },
       {
-        "id": "historical_frontend_plans",
-        "label": "Historical Frontend Plans",
+        "id": "historical_frontend_experience",
+        "label": "Historical Frontend Experience Design",
         "nodes": [
-          "docs_superpowers_plans_dark_theme",
-          "docs_superpowers_plans_evidence_studio",
-          "docs_architecture_paperplane_system_v41"
+          "docs_superpowers_plans_2026_07_26_dark_theme_historical_plan",
+          "docs_superpowers_plans_2026_07_26_evidence_studio_historical_plan",
+          "docs_superpowers_specs_2026_07_26_evidence_studio_design_evidence_studio_design"
         ],
         "relation": "participate_in",
         "confidence": "EXTRACTED",
@@ -109,7 +97,7 @@
       },
       "_origin": "ast",
       "id": "cursor_mcp",
-      "community": 15,
+      "community": 19,
       "norm_label": ".cursor/mcp.json"
     },
     {
@@ -122,7 +110,7 @@
       },
       "_origin": "ast",
       "id": "cursor_mcp_mcp_server_code_review_graph",
-      "community": 15,
+      "community": 19,
       "norm_label": "code-review-graph"
     },
     {
@@ -135,7 +123,7 @@
       },
       "_origin": "ast",
       "id": "cursor_mcp_json_mcp_command_uvx",
-      "community": 15,
+      "community": 19,
       "norm_label": "uvx"
     },
     {
@@ -149,7 +137,7 @@
       },
       "_origin": "ast",
       "id": "gemini_hooks_crg_session_start",
-      "community": 32,
+      "community": 31,
       "norm_label": "crg-session-start.sh"
     },
     {
@@ -163,7 +151,7 @@
       },
       "_origin": "ast",
       "id": "gemini_hooks_crg_session_start_sh__entry",
-      "community": 32,
+      "community": 31,
       "norm_label": "crg-session-start.sh script"
     },
     {
@@ -177,7 +165,7 @@
       },
       "_origin": "ast",
       "id": "gemini_hooks_crg_update",
-      "community": 33,
+      "community": 32,
       "norm_label": "crg-update.sh"
     },
     {
@@ -191,7 +179,7 @@
       },
       "_origin": "ast",
       "id": "gemini_hooks_crg_update_sh__entry",
-      "community": 33,
+      "community": 32,
       "norm_label": "crg-update.sh script"
     },
     {
@@ -204,7 +192,7 @@
       },
       "_origin": "ast",
       "id": "kiro_settings_mcp",
-      "community": 18,
+      "community": 22,
       "norm_label": "settings/mcp.json"
     },
     {
@@ -217,7 +205,7 @@
       },
       "_origin": "ast",
       "id": "kiro_settings_mcp_mcp_server_code_review_graph",
-      "community": 18,
+      "community": 22,
       "norm_label": "code-review-graph"
     },
     {
@@ -230,7 +218,7 @@
       },
       "_origin": "ast",
       "id": "kiro_settings_mcp_json_mcp_command_uvx",
-      "community": 18,
+      "community": 22,
       "norm_label": "uvx"
     },
     {
@@ -243,7 +231,7 @@
       },
       "_origin": "ast",
       "id": "mcp",
-      "community": 19,
+      "community": 23,
       "norm_label": ".mcp.json"
     },
     {
@@ -256,7 +244,7 @@
       },
       "_origin": "ast",
       "id": "mcp_mcp_server_code_review_graph",
-      "community": 19,
+      "community": 23,
       "norm_label": "code-review-graph"
     },
     {
@@ -269,7 +257,7 @@
       },
       "_origin": "ast",
       "id": "mcp_json_mcp_command_uvx",
-      "community": 19,
+      "community": 23,
       "norm_label": "uvx"
     },
     {
@@ -282,7 +270,7 @@
       },
       "_origin": "ast",
       "id": "qoder_mcp",
-      "community": 20,
+      "community": 24,
       "norm_label": ".qoder/mcp.json"
     },
     {
@@ -295,7 +283,7 @@
       },
       "_origin": "ast",
       "id": "qoder_mcp_mcp_server_code_review_graph",
-      "community": 20,
+      "community": 24,
       "norm_label": "code-review-graph"
     },
     {
@@ -308,7 +296,7 @@
       },
       "_origin": "ast",
       "id": "qoder_mcp_json_mcp_command_uvx",
-      "community": 20,
+      "community": 24,
       "norm_label": "uvx"
     },
     {
@@ -318,7 +306,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "paperplane_init",
-      "community": 0,
+      "community": 3,
       "norm_label": "__init__.py"
     },
     {
@@ -328,7 +316,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "paperplane_init_rationale_1",
-      "community": 0,
+      "community": 3,
       "norm_label": "paperplane's framework-neutral grounded document parser."
     },
     {
@@ -338,7 +326,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "paperplane_annotated_pdf",
-      "community": 5,
+      "community": 3,
       "norm_label": "annotated_pdf.py"
     },
     {
@@ -350,7 +338,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "paperplane_annotated_pdf_annotatedpdfartifact",
-      "community": 5,
+      "community": 3,
       "norm_label": "annotatedpdfartifact"
     },
     {
@@ -361,7 +349,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_annotated_pdf_build_annotated_pdf",
-      "community": 5,
+      "community": 3,
       "norm_label": "build_annotated_pdf()"
     },
     {
@@ -372,7 +360,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_annotated_pdf_source_document",
-      "community": 5,
+      "community": 3,
       "norm_label": "_source_document()"
     },
     {
@@ -382,7 +370,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "document",
-      "community": 5,
+      "community": 3,
       "norm_label": "document"
     },
     {
@@ -393,7 +381,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_annotated_pdf_semantic_report",
-      "community": 5,
+      "community": 3,
       "norm_label": "_semantic_report()"
     },
     {
@@ -404,7 +392,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_annotated_pdf_populate_semantic_report",
-      "community": 5,
+      "community": 3,
       "norm_label": "_populate_semantic_report()"
     },
     {
@@ -415,7 +403,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_annotated_pdf_new_report_page",
-      "community": 5,
+      "community": 3,
       "norm_label": "_new_report_page()"
     },
     {
@@ -425,7 +413,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "paperplane_annotated_pdf_py_page",
-      "community": 5,
+      "community": 3,
       "norm_label": "page"
     },
     {
@@ -436,7 +424,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_annotated_pdf_content_nodes",
-      "community": 5,
+      "community": 3,
       "norm_label": "_content_nodes()"
     },
     {
@@ -447,7 +435,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_annotated_pdf_plain_excerpt",
-      "community": 5,
+      "community": 3,
       "norm_label": "_plain_excerpt()"
     },
     {
@@ -458,7 +446,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_annotated_pdf_pdf_text",
-      "community": 5,
+      "community": 3,
       "norm_label": "_pdf_text()"
     },
     {
@@ -468,7 +456,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "paperplane_annotated_pdf_rationale_1",
-      "community": 5,
+      "community": 3,
       "norm_label": "build an in-memory pdf for reviewing paperplane grounding evidence."
     },
     {
@@ -478,7 +466,7 @@
       "source_location": "L42",
       "_origin": "ast",
       "id": "paperplane_annotated_pdf_rationale_42",
-      "community": 5,
+      "community": 3,
       "norm_label": "overlay physical evidence or create an explicit semantic-only review report."
     },
     {
@@ -488,7 +476,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "paperplane_contracts",
-      "community": 0,
+      "community": 2,
       "norm_label": "contracts.py"
     },
     {
@@ -500,7 +488,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "paperplane_contracts_normalizedbox",
-      "community": 0,
+      "community": 2,
       "norm_label": "normalizedbox"
     },
     {
@@ -510,7 +498,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "paperplane_contracts_py_basemodel",
-      "community": 0,
+      "community": 2,
       "norm_label": "basemodel"
     },
     {
@@ -520,7 +508,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "paperplane_contracts_py_model_validator",
-      "community": 0,
+      "community": 3,
       "norm_label": "model_validator"
     },
     {
@@ -531,7 +519,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_contracts_normalizedbox_require_non_empty_area",
-      "community": 0,
+      "community": 3,
       "norm_label": ".require_non_empty_area()"
     },
     {
@@ -543,7 +531,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "paperplane_contracts_codepointrange",
-      "community": 0,
+      "community": 2,
       "norm_label": "codepointrange"
     },
     {
@@ -554,7 +542,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_contracts_codepointrange_require_ordered_offsets",
-      "community": 0,
+      "community": 3,
       "norm_label": ".require_ordered_offsets()"
     },
     {
@@ -566,7 +554,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "paperplane_contracts_atomicgrounding",
-      "community": 0,
+      "community": 2,
       "norm_label": "atomicgrounding"
     },
     {
@@ -578,7 +566,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "paperplane_contracts_structurenode",
-      "community": 5,
+      "community": 3,
       "norm_label": "structurenode"
     },
     {
@@ -589,7 +577,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_contracts_structurenode_validate_node_shape",
-      "community": 0,
+      "community": 3,
       "norm_label": ".validate_node_shape()"
     },
     {
@@ -601,7 +589,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "paperplane_contracts_parsemetadata",
-      "community": 0,
+      "community": 2,
       "norm_label": "parsemetadata"
     },
     {
@@ -613,7 +601,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "paperplane_contracts_parseresponse",
-      "community": 0,
+      "community": 3,
       "norm_label": "parseresponse"
     },
     {
@@ -624,7 +612,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_contracts_parseresponse_validate_grounded_document",
-      "community": 0,
+      "community": 3,
       "norm_label": ".validate_grounded_document()"
     },
     {
@@ -635,7 +623,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_contracts_parseresponse_validate_block",
-      "community": 0,
+      "community": 3,
       "norm_label": "._validate_block()"
     },
     {
@@ -646,7 +634,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_contracts_parseresponse_validate_ranges",
-      "community": 0,
+      "community": 3,
       "norm_label": "._validate_ranges()"
     },
     {
@@ -658,7 +646,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "paperplane_contracts_atomiclineinput",
-      "community": 0,
+      "community": 2,
       "norm_label": "atomiclineinput"
     },
     {
@@ -670,7 +658,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "paperplane_contracts_agenticblockinput",
-      "community": 0,
+      "community": 2,
       "norm_label": "agenticblockinput"
     },
     {
@@ -681,7 +669,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_contracts_agenticblockinput_validate_input_shape",
-      "community": 0,
+      "community": 3,
       "norm_label": ".validate_input_shape()"
     },
     {
@@ -693,7 +681,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "paperplane_contracts_agenticpageinput",
-      "community": 0,
+      "community": 2,
       "norm_label": "agenticpageinput"
     },
     {
@@ -704,7 +692,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_contracts_find_sequential",
-      "community": 0,
+      "community": 2,
       "norm_label": "_find_sequential()"
     },
     {
@@ -715,7 +703,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_contracts_find_table_cell",
-      "community": 0,
+      "community": 2,
       "norm_label": "_find_table_cell()"
     },
     {
@@ -726,7 +714,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_contracts_assemble_parse_response",
-      "community": 0,
+      "community": 2,
       "norm_label": "assemble_parse_response()"
     },
     {
@@ -737,7 +725,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_contracts_assemble_atomic_grounding",
-      "community": 0,
+      "community": 2,
       "norm_label": "_assemble_atomic_grounding()"
     },
     {
@@ -747,7 +735,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "paperplane_contracts_rationale_1",
-      "community": 0,
+      "community": 2,
       "norm_label": "grounded parse contracts and deterministic response assembly."
     },
     {
@@ -757,7 +745,7 @@
       "source_location": "L38",
       "_origin": "ast",
       "id": "paperplane_contracts_rationale_38",
-      "community": 0,
+      "community": 2,
       "norm_label": "a document-relative bounding box with coordinates in the [0, 1] interval."
     },
     {
@@ -767,7 +755,7 @@
       "source_location": "L53",
       "_origin": "ast",
       "id": "paperplane_contracts_rationale_53",
-      "community": 0,
+      "community": 2,
       "norm_label": "half-open unicode code-point offsets into document markdown."
     },
     {
@@ -777,7 +765,7 @@
       "source_location": "L66",
       "_origin": "ast",
       "id": "paperplane_contracts_rationale_66",
-      "community": 0,
+      "community": 2,
       "norm_label": "one visual line grounded against a parent block's markdown range."
     },
     {
@@ -787,7 +775,7 @@
       "source_location": "L74",
       "_origin": "ast",
       "id": "paperplane_contracts_rationale_74",
-      "community": 5,
+      "community": 3,
       "norm_label": "document hierarchy node, ordered as document \u2192 page \u2192 block \u2192 table cell."
     },
     {
@@ -797,7 +785,7 @@
       "source_location": "L209",
       "_origin": "ast",
       "id": "paperplane_contracts_rationale_209",
-      "community": 0,
+      "community": 2,
       "norm_label": "deterministic assembler input from a page agent; it is not an api contract."
     },
     {
@@ -807,7 +795,7 @@
       "source_location": "L257",
       "_origin": "ast",
       "id": "paperplane_contracts_rationale_257",
-      "community": 0,
+      "community": 2,
       "norm_label": "locate visible cell text without accidentally grounding it inside an html tag."
     },
     {
@@ -817,7 +805,7 @@
       "source_location": "L284",
       "_origin": "ast",
       "id": "paperplane_contracts_rationale_284",
-      "community": 0,
+      "community": 2,
       "norm_label": "assemble page-agent observations into globally grounded markdown without model..."
     },
     {
@@ -827,7 +815,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "paperplane_docling_parser",
-      "community": 0,
+      "community": 2,
       "norm_label": "docling_parser.py"
     },
     {
@@ -839,7 +827,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "paperplane_docling_parser_doclingparseresult",
-      "community": 0,
+      "community": 2,
       "norm_label": "doclingparseresult"
     },
     {
@@ -850,7 +838,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_docling_parser_create_docling_converter",
-      "community": 0,
+      "community": 3,
       "norm_label": "create_docling_converter()"
     },
     {
@@ -860,7 +848,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "documentconverter",
-      "community": 0,
+      "community": 3,
       "norm_label": "documentconverter"
     },
     {
@@ -872,7 +860,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "paperplane_docling_parser_doclingdocumentparser",
-      "community": 0,
+      "community": 2,
       "norm_label": "doclingdocumentparser"
     },
     {
@@ -883,7 +871,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_docling_parser_doclingdocumentparser_init",
-      "community": 0,
+      "community": 3,
       "norm_label": ".__init__()"
     },
     {
@@ -894,7 +882,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_docling_parser_doclingdocumentparser_parse",
-      "community": 0,
+      "community": 2,
       "norm_label": ".parse()"
     },
     {
@@ -904,7 +892,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "figuredescriber",
-      "community": 0,
+      "community": 2,
       "norm_label": "figuredescriber"
     },
     {
@@ -915,7 +903,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_docling_parser_doclingdocumentparser_blocks_for_page",
-      "community": 0,
+      "community": 2,
       "norm_label": "._blocks_for_page()"
     },
     {
@@ -925,7 +913,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "doclingdocument",
-      "community": 0,
+      "community": 2,
       "norm_label": "doclingdocument"
     },
     {
@@ -936,7 +924,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_docling_parser_doclingdocumentparser_figure_markdown",
-      "community": 0,
+      "community": 2,
       "norm_label": "._figure_markdown()"
     },
     {
@@ -946,7 +934,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "pictureitem",
-      "community": 0,
+      "community": 2,
       "norm_label": "pictureitem"
     },
     {
@@ -957,7 +945,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_docling_parser_semantic_role",
-      "community": 0,
+      "community": 2,
       "norm_label": "_semantic_role()"
     },
     {
@@ -967,7 +955,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "docitem",
-      "community": 0,
+      "community": 2,
       "norm_label": "docitem"
     },
     {
@@ -978,7 +966,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_docling_parser_items_box",
-      "community": 0,
+      "community": 2,
       "norm_label": "_items_box()"
     },
     {
@@ -989,7 +977,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_docling_parser_normalized_docling_box",
-      "community": 0,
+      "community": 2,
       "norm_label": "_normalized_docling_box()"
     },
     {
@@ -999,7 +987,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "paperplane_docling_parser_py_any",
-      "community": 0,
+      "community": 2,
       "norm_label": "any"
     },
     {
@@ -1010,7 +998,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_docling_parser_table_cells",
-      "community": 0,
+      "community": 2,
       "norm_label": "_table_cells()"
     },
     {
@@ -1020,7 +1008,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "tableitem",
-      "community": 0,
+      "community": 2,
       "norm_label": "tableitem"
     },
     {
@@ -1031,7 +1019,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_docling_parser_atomic_lines",
-      "community": 0,
+      "community": 2,
       "norm_label": "_atomic_lines()"
     },
     {
@@ -1041,7 +1029,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "paperplane_docling_parser_rationale_1",
-      "community": 0,
+      "community": 2,
       "norm_label": "local docling conversion into paperplane's deterministic parse inputs."
     },
     {
@@ -1051,7 +1039,7 @@
       "source_location": "L60",
       "_origin": "ast",
       "id": "paperplane_docling_parser_rationale_60",
-      "community": 0,
+      "community": 3,
       "norm_label": "create the local converter with ocr and remote plugins disabled."
     },
     {
@@ -1061,7 +1049,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "paperplane_grounding",
-      "community": 3,
+      "community": 0,
       "norm_label": "grounding.py"
     },
     {
@@ -1073,7 +1061,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "paperplane_grounding_renderedcrop",
-      "community": 3,
+      "community": 0,
       "norm_label": "renderedcrop"
     },
     {
@@ -1084,7 +1072,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_grounding_token",
-      "community": 3,
+      "community": 0,
       "norm_label": "_token()"
     },
     {
@@ -1095,7 +1083,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_grounding_align_text_to_native_words",
-      "community": 3,
+      "community": 0,
       "norm_label": "align_text_to_native_words()"
     },
     {
@@ -1106,7 +1094,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_grounding_map_crop_box_to_page",
-      "community": 3,
+      "community": 0,
       "norm_label": "map_crop_box_to_page()"
     },
     {
@@ -1117,7 +1105,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_grounding_padded_box",
-      "community": 3,
+      "community": 0,
       "norm_label": "_padded_box()"
     },
     {
@@ -1128,7 +1116,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_grounding_render_crop",
-      "community": 3,
+      "community": 0,
       "norm_label": "render_crop()"
     },
     {
@@ -1138,7 +1126,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "paperplane_grounding_rationale_1",
-      "community": 3,
+      "community": 0,
       "norm_label": "deterministic rendering and coordinate transforms for v2 grounding."
     },
     {
@@ -1148,7 +1136,7 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "paperplane_grounding_rationale_31",
-      "community": 3,
+      "community": 0,
       "norm_label": "return the exact union of a contiguous native-word match."
     },
     {
@@ -1158,7 +1146,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "paperplane_ingest",
-      "community": 3,
+      "community": 5,
       "norm_label": "ingest.py"
     },
     {
@@ -1170,7 +1158,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "paperplane_ingest_documentinputerror",
-      "community": 3,
+      "community": 2,
       "norm_label": "documentinputerror"
     },
     {
@@ -1180,7 +1168,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "valueerror",
-      "community": 0,
+      "community": 3,
       "norm_label": "valueerror"
     },
     {
@@ -1191,7 +1179,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_ingest_documentinputerror_init",
-      "community": 3,
+      "community": 2,
       "norm_label": ".__init__()"
     },
     {
@@ -1203,7 +1191,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "paperplane_ingest_inspecteddocument",
-      "community": 3,
+      "community": 5,
       "norm_label": "inspecteddocument"
     },
     {
@@ -1215,7 +1203,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "paperplane_ingest_renderedpage",
-      "community": 2,
+      "community": 1,
       "norm_label": "renderedpage"
     },
     {
@@ -1226,7 +1214,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_ingest_inspect_document",
-      "community": 3,
+      "community": 5,
       "norm_label": "inspect_document()"
     },
     {
@@ -1237,7 +1225,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_ingest_is_native_pdf_page",
-      "community": 3,
+      "community": 5,
       "norm_label": "_is_native_pdf_page()"
     },
     {
@@ -1247,7 +1235,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "paperplane_ingest_py_page",
-      "community": 3,
+      "community": 5,
       "norm_label": "page"
     },
     {
@@ -1258,7 +1246,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_ingest_office_mime_type",
-      "community": 3,
+      "community": 5,
       "norm_label": "_office_mime_type()"
     },
     {
@@ -1269,7 +1257,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_ingest_render_page",
-      "community": 3,
+      "community": 5,
       "norm_label": "render_page()"
     },
     {
@@ -1279,7 +1267,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "paperplane_ingest_rationale_1",
-      "community": 3,
+      "community": 5,
       "norm_label": "document validation, inspection, rendering, and native word extraction."
     },
     {
@@ -1355,7 +1343,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "paperplane_openai_document_openaiusage",
-      "community": 2,
+      "community": 1,
       "norm_label": "openaiusage"
     },
     {
@@ -1365,7 +1353,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "paperplane_openai_document_py_basemodel",
-      "community": 2,
+      "community": 1,
       "norm_label": "basemodel"
     },
     {
@@ -1377,7 +1365,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "paperplane_openai_document_structuredgeneration",
-      "community": 2,
+      "community": 1,
       "norm_label": "structuredgeneration"
     },
     {
@@ -1462,7 +1450,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "paperplane_parser",
-      "community": 0,
+      "community": 2,
       "norm_label": "parser.py"
     },
     {
@@ -1473,7 +1461,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_parser_normalised_box",
-      "community": 0,
+      "community": 2,
       "norm_label": "_normalised_box()"
     },
     {
@@ -1483,7 +1471,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "paperplane_parser_py_any",
-      "community": 0,
+      "community": 2,
       "norm_label": "any"
     },
     {
@@ -1494,7 +1482,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_parser_atomic_lines",
-      "community": 0,
+      "community": 2,
       "norm_label": "_atomic_lines()"
     },
     {
@@ -1505,7 +1493,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_parser_agentic_page",
-      "community": 0,
+      "community": 2,
       "norm_label": "_agentic_page()"
     },
     {
@@ -1517,7 +1505,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "paperplane_parser_agenticdocumentparser",
-      "community": 0,
+      "community": 2,
       "norm_label": "agenticdocumentparser"
     },
     {
@@ -1528,7 +1516,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_parser_agenticdocumentparser_init",
-      "community": 0,
+      "community": 2,
       "norm_label": ".__init__()"
     },
     {
@@ -1538,7 +1526,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "paperplane_parser_py_recipeversion",
-      "community": 0,
+      "community": 2,
       "norm_label": "recipeversion"
     },
     {
@@ -1549,7 +1537,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_parser_agenticdocumentparser_parse",
-      "community": 0,
+      "community": 2,
       "norm_label": ".parse()"
     },
     {
@@ -1559,7 +1547,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "paperplane_parser_rationale_1",
-      "community": 0,
+      "community": 2,
       "norm_label": "stateless orchestration for one document parse request."
     },
     {
@@ -1569,7 +1557,7 @@
       "source_location": "L145",
       "_origin": "ast",
       "id": "paperplane_parser_rationale_145",
-      "community": 0,
+      "community": 2,
       "norm_label": "process every page immediately and return one grounded response."
     },
     {
@@ -1579,7 +1567,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "paperplane_pipeline",
-      "community": 1,
+      "community": 0,
       "norm_label": "pipeline.py"
     },
     {
@@ -1591,7 +1579,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "paperplane_pipeline_structuredadapter",
-      "community": 2,
+      "community": 0,
       "norm_label": "structuredadapter"
     },
     {
@@ -1601,7 +1589,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "protocol",
-      "community": 2,
+      "community": 0,
       "norm_label": "protocol"
     },
     {
@@ -1612,7 +1600,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_pipeline_structuredadapter_generate_structured",
-      "community": 1,
+      "community": 0,
       "norm_label": ".generate_structured()"
     },
     {
@@ -1622,7 +1610,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "paperplane_pipeline_py_any",
-      "community": 1,
+      "community": 0,
       "norm_label": "any"
     },
     {
@@ -1634,7 +1622,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "paperplane_pipeline_pageresult",
-      "community": 9,
+      "community": 8,
       "norm_label": "pageresult"
     },
     {
@@ -1644,7 +1632,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "paperplane_pipeline_py_basemodel",
-      "community": 9,
+      "community": 8,
       "norm_label": "basemodel"
     },
     {
@@ -1655,7 +1643,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_pipeline_cache_key",
-      "community": 1,
+      "community": 0,
       "norm_label": "_cache_key()"
     },
     {
@@ -1666,7 +1654,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_pipeline_is_semantic_visual_markdown",
-      "community": 1,
+      "community": 0,
       "norm_label": "_is_semantic_visual_markdown()"
     },
     {
@@ -1677,7 +1665,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_pipeline_visual_placeholder",
-      "community": 1,
+      "community": 0,
       "norm_label": "_visual_placeholder()"
     },
     {
@@ -1688,7 +1676,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_pipeline_raw_chunks_agree",
-      "community": 1,
+      "community": 0,
       "norm_label": "_raw_chunks_agree()"
     },
     {
@@ -1699,7 +1687,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_pipeline_merge_reconciled_chunks",
-      "community": 1,
+      "community": 0,
       "norm_label": "_merge_reconciled_chunks()"
     },
     {
@@ -1710,7 +1698,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_pipeline_spatial_reading_key",
-      "community": 1,
+      "community": 0,
       "norm_label": "_spatial_reading_key()"
     },
     {
@@ -1721,7 +1709,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_pipeline_needs_figure_reconciliation",
-      "community": 1,
+      "community": 0,
       "norm_label": "_needs_figure_reconciliation()"
     },
     {
@@ -1732,7 +1720,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_pipeline_merge_figure_groups",
-      "community": 1,
+      "community": 0,
       "norm_label": "_merge_figure_groups()"
     },
     {
@@ -1743,7 +1731,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_pipeline_parse_model_box",
-      "community": 1,
+      "community": 0,
       "norm_label": "_parse_model_box()"
     },
     {
@@ -1754,7 +1742,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_pipeline_parse_atomic_lines",
-      "community": 1,
+      "community": 0,
       "norm_label": "_parse_atomic_lines()"
     },
     {
@@ -1765,7 +1753,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_pipeline_source_unit",
-      "community": 1,
+      "community": 0,
       "norm_label": "_source_unit()"
     },
     {
@@ -1776,7 +1764,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_pipeline_is_scan_like",
-      "community": 1,
+      "community": 0,
       "norm_label": "_is_scan_like()"
     },
     {
@@ -1787,7 +1775,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_pipeline_fallback_content",
-      "community": 1,
+      "community": 0,
       "norm_label": "_fallback_content()"
     },
     {
@@ -1798,7 +1786,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_pipeline_best_fallback_content",
-      "community": 1,
+      "community": 0,
       "norm_label": "_best_fallback_content()"
     },
     {
@@ -1809,7 +1797,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_pipeline_source_box",
-      "community": 1,
+      "community": 0,
       "norm_label": "_source_box()"
     },
     {
@@ -1821,7 +1809,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "paperplane_pipeline_v2pageprocessor",
-      "community": 2,
+      "community": 1,
       "norm_label": "v2pageprocessor"
     },
     {
@@ -1832,7 +1820,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_pipeline_v2pageprocessor_init",
-      "community": 2,
+      "community": 0,
       "norm_label": ".__init__()"
     },
     {
@@ -1843,7 +1831,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_pipeline_v2pageprocessor_describe_figure",
-      "community": 1,
+      "community": 0,
       "norm_label": ".describe_figure()"
     },
     {
@@ -1854,7 +1842,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_pipeline_v2pageprocessor_process_page",
-      "community": 1,
+      "community": 0,
       "norm_label": ".process_page()"
     },
     {
@@ -1864,7 +1852,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "paperplane_pipeline_py_recipeversion",
-      "community": 1,
+      "community": 0,
       "norm_label": "recipeversion"
     },
     {
@@ -1875,7 +1863,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_pipeline_v2pageprocessor_verify_crop",
-      "community": 1,
+      "community": 0,
       "norm_label": "._verify_crop()"
     },
     {
@@ -1885,7 +1873,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "paperplane_pipeline_rationale_1",
-      "community": 1,
+      "community": 0,
       "norm_label": "bounded evidence-first page processing for the openai v2 pipeline."
     },
     {
@@ -1895,7 +1883,7 @@
       "source_location": "L368",
       "_origin": "ast",
       "id": "paperplane_pipeline_rationale_368",
-      "community": 1,
+      "community": 0,
       "norm_label": "accept normalized boxes and the known 0-1000 model output convention."
     },
     {
@@ -1905,7 +1893,7 @@
       "source_location": "L461",
       "_origin": "ast",
       "id": "paperplane_pipeline_rationale_461",
-      "community": 1,
+      "community": 0,
       "norm_label": "describe one trusted docling figure crop without re-parsing its page."
     },
     {
@@ -1915,7 +1903,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "paperplane_pipeline_contracts",
-      "community": 1,
+      "community": 0,
       "norm_label": "pipeline_contracts.py"
     },
     {
@@ -1927,7 +1915,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "paperplane_pipeline_contracts_processingmode",
-      "community": 2,
+      "community": 1,
       "norm_label": "processingmode"
     },
     {
@@ -1937,7 +1925,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "strenum",
-      "community": 2,
+      "community": 1,
       "norm_label": "strenum"
     },
     {
@@ -1949,7 +1937,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "paperplane_pipeline_contracts_groundingmethod",
-      "community": 2,
+      "community": 1,
       "norm_label": "groundingmethod"
     },
     {
@@ -1961,7 +1949,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "paperplane_pipeline_contracts_verificationstatus",
-      "community": 2,
+      "community": 1,
       "norm_label": "verificationstatus"
     },
     {
@@ -1973,7 +1961,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "paperplane_pipeline_contracts_modepolicy",
-      "community": 1,
+      "community": 0,
       "norm_label": "modepolicy"
     },
     {
@@ -1983,7 +1971,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "paperplane_pipeline_contracts_py_basemodel",
-      "community": 1,
+      "community": 0,
       "norm_label": "basemodel"
     },
     {
@@ -1994,7 +1982,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_pipeline_contracts_mode_policy",
-      "community": 1,
+      "community": 0,
       "norm_label": "mode_policy()"
     },
     {
@@ -2006,7 +1994,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "paperplane_pipeline_contracts_grounding",
-      "community": 1,
+      "community": 0,
       "norm_label": "grounding"
     },
     {
@@ -2018,7 +2006,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "paperplane_pipeline_contracts_atomicline",
-      "community": 1,
+      "community": 0,
       "norm_label": "atomicline"
     },
     {
@@ -2030,7 +2018,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "paperplane_pipeline_contracts_groundedchunk",
-      "community": 1,
+      "community": 0,
       "norm_label": "groundedchunk"
     },
     {
@@ -2040,7 +2028,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "paperplane_pipeline_contracts_py_model_validator",
-      "community": 1,
+      "community": 3,
       "norm_label": "model_validator"
     },
     {
@@ -2051,7 +2039,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_pipeline_contracts_groundedchunk_require_evidence_for_verified_content",
-      "community": 1,
+      "community": 3,
       "norm_label": ".require_evidence_for_verified_content()"
     },
     {
@@ -2061,7 +2049,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "paperplane_pipeline_contracts_rationale_1",
-      "community": 1,
+      "community": 0,
       "norm_label": "grounded contracts used by the openai page pipeline."
     },
     {
@@ -2071,7 +2059,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "paperplane_recipe",
-      "community": 1,
+      "community": 10,
       "norm_label": "recipe.py"
     },
     {
@@ -2083,7 +2071,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "paperplane_recipe_verificationbudget",
-      "community": 1,
+      "community": 10,
       "norm_label": "verificationbudget"
     },
     {
@@ -2093,7 +2081,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "paperplane_recipe_py_basemodel",
-      "community": 1,
+      "community": 10,
       "norm_label": "basemodel"
     },
     {
@@ -2105,7 +2093,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "paperplane_recipe_processingrecipe",
-      "community": 1,
+      "community": 10,
       "norm_label": "processingrecipe"
     },
     {
@@ -2116,7 +2104,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_recipe_processing_recipe",
-      "community": 1,
+      "community": 10,
       "norm_label": "processing_recipe()"
     },
     {
@@ -2126,7 +2114,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "paperplane_recipe_py_recipeversion",
-      "community": 1,
+      "community": 10,
       "norm_label": "recipeversion"
     },
     {
@@ -2136,7 +2124,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "paperplane_recipe_rationale_1",
-      "community": 1,
+      "community": 10,
       "norm_label": "versioned processing recipes with an operator rollback path."
     },
     {
@@ -2146,7 +2134,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "paperplane_reconciliation",
-      "community": 1,
+      "community": 0,
       "norm_label": "reconciliation.py"
     },
     {
@@ -2158,7 +2146,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "paperplane_reconciliation_pagequalityassessment",
-      "community": 1,
+      "community": 0,
       "norm_label": "pagequalityassessment"
     },
     {
@@ -2169,7 +2157,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_reconciliation_normalize_extracted_text",
-      "community": 1,
+      "community": 0,
       "norm_label": "normalize_extracted_text()"
     },
     {
@@ -2180,7 +2168,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_reconciliation_extract_critical_tokens",
-      "community": 1,
+      "community": 0,
       "norm_label": "extract_critical_tokens()"
     },
     {
@@ -2191,7 +2179,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_reconciliation_requires_precision_verification",
-      "community": 1,
+      "community": 0,
       "norm_label": "requires_precision_verification()"
     },
     {
@@ -2202,7 +2190,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_reconciliation_clean_repeated_labels",
-      "community": 1,
+      "community": 0,
       "norm_label": "clean_repeated_labels()"
     },
     {
@@ -2213,7 +2201,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_reconciliation_normalized_key",
-      "community": 1,
+      "community": 0,
       "norm_label": "normalized_key()"
     },
     {
@@ -2224,7 +2212,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_reconciliation_overlap_over_smaller_area",
-      "community": 1,
+      "community": 0,
       "norm_label": "overlap_over_smaller_area()"
     },
     {
@@ -2235,7 +2223,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_reconciliation_assess_page_quality",
-      "community": 1,
+      "community": 0,
       "norm_label": "assess_page_quality()"
     },
     {
@@ -2246,7 +2234,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_reconciliation_uncovered_ink_ratio",
-      "community": 1,
+      "community": 0,
       "norm_label": "_uncovered_ink_ratio()"
     },
     {
@@ -2257,7 +2245,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_reconciliation_suppress_duplicate_chunks",
-      "community": 1,
+      "community": 0,
       "norm_label": "suppress_duplicate_chunks()"
     },
     {
@@ -2267,7 +2255,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "paperplane_reconciliation_rationale_1",
-      "community": 1,
+      "community": 0,
       "norm_label": "deterministic quality gates and reconciliation helpers for v2 page drafts."
     },
     {
@@ -2277,7 +2265,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "paperplane_runtime",
-      "community": 0,
+      "community": 3,
       "norm_label": "runtime.py"
     },
     {
@@ -2288,7 +2276,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_runtime_get_docling_parser",
-      "community": 0,
+      "community": 3,
       "norm_label": "get_docling_parser()"
     },
     {
@@ -2299,7 +2287,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_runtime_parse_document",
-      "community": 0,
+      "community": 3,
       "norm_label": "parse_document()"
     },
     {
@@ -2309,7 +2297,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "paperplane_runtime_rationale_1",
-      "community": 0,
+      "community": 3,
       "norm_label": "short-lived runtime composition for one local parse operation."
     },
     {
@@ -2319,7 +2307,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "paperplane_runtime_rationale_21",
-      "community": 0,
+      "community": 3,
       "norm_label": "reuse docling's heavyweight converter and loaded models across streamlit reruns."
     },
     {
@@ -2329,7 +2317,7 @@
       "source_location": "L34",
       "_origin": "ast",
       "id": "paperplane_runtime_rationale_34",
-      "community": 0,
+      "community": 3,
       "norm_label": "parse one document without retaining a client, upload, or result."
     },
     {
@@ -2339,7 +2327,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "paperplane_types",
-      "community": 1,
+      "community": 0,
       "norm_label": "types.py"
     },
     {
@@ -2351,7 +2339,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "paperplane_types_boundingbox",
-      "community": 1,
+      "community": 0,
       "norm_label": "boundingbox"
     },
     {
@@ -2361,7 +2349,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "paperplane_types_py_basemodel",
-      "community": 1,
+      "community": 0,
       "norm_label": "basemodel"
     },
     {
@@ -2371,7 +2359,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "paperplane_types_py_model_validator",
-      "community": 1,
+      "community": 3,
       "norm_label": "model_validator"
     },
     {
@@ -2382,7 +2370,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "paperplane_types_boundingbox_validate_edges",
-      "community": 1,
+      "community": 3,
       "norm_label": ".validate_edges()"
     },
     {
@@ -2394,7 +2382,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "paperplane_types_nativeword",
-      "community": 2,
+      "community": 1,
       "norm_label": "nativeword"
     },
     {
@@ -2404,7 +2392,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "paperplane_types_rationale_1",
-      "community": 1,
+      "community": 0,
       "norm_label": "normalized document geometry used by the parsing pipeline."
     },
     {
@@ -2417,7 +2405,7 @@
       "version": "4.1.0",
       "_origin": "ast",
       "id": "pkg_agentic_document_extraction",
-      "community": 38,
+      "community": 45,
       "norm_label": "agentic-document-extraction"
     },
     {
@@ -2427,7 +2415,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "scripts_build_app_guide",
-      "community": 14,
+      "community": 17,
       "norm_label": "build_app_guide.py"
     },
     {
@@ -2438,7 +2426,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "scripts_build_app_guide_build",
-      "community": 14,
+      "community": 17,
       "norm_label": "build()"
     },
     {
@@ -2448,7 +2436,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "scripts_build_app_guide_rationale_1",
-      "community": 14,
+      "community": 17,
       "norm_label": "build the reader-friendly html capability guide from its markdown source."
     },
     {
@@ -2458,7 +2446,7 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "scripts_build_app_guide_rationale_24",
-      "community": 14,
+      "community": 17,
       "norm_label": "render the markdown source with navigation and accessible page chrome."
     },
     {
@@ -2727,7 +2715,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "scripts_release",
-      "community": 8,
+      "community": 7,
       "norm_label": "release.py"
     },
     {
@@ -2738,7 +2726,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "scripts_release_command",
-      "community": 8,
+      "community": 7,
       "norm_label": "command()"
     },
     {
@@ -2749,7 +2737,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "scripts_release_current_version",
-      "community": 8,
+      "community": 7,
       "norm_label": "current_version()"
     },
     {
@@ -2760,7 +2748,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "scripts_release_next_version",
-      "community": 8,
+      "community": 7,
       "norm_label": "next_version()"
     },
     {
@@ -2771,7 +2759,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "scripts_release_replace_version",
-      "community": 8,
+      "community": 7,
       "norm_label": "replace_version()"
     },
     {
@@ -2781,7 +2769,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "scripts_release_py_path",
-      "community": 8,
+      "community": 7,
       "norm_label": "path"
     },
     {
@@ -2792,7 +2780,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "scripts_release_add_changelog",
-      "community": 8,
+      "community": 7,
       "norm_label": "add_changelog()"
     },
     {
@@ -2803,7 +2791,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "scripts_release_parse_args",
-      "community": 8,
+      "community": 7,
       "norm_label": "parse_args()"
     },
     {
@@ -2813,7 +2801,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "namespace",
-      "community": 8,
+      "community": 7,
       "norm_label": "namespace"
     },
     {
@@ -2824,7 +2812,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "scripts_release_main",
-      "community": 8,
+      "community": 7,
       "norm_label": "main()"
     },
     {
@@ -2834,7 +2822,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "streamlit_app",
-      "community": 5,
+      "community": 3,
       "norm_label": "streamlit_app.py"
     },
     {
@@ -2845,7 +2833,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "streamlit_app_secret",
-      "community": 5,
+      "community": 3,
       "norm_label": "_secret()"
     },
     {
@@ -2856,7 +2844,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "streamlit_app_setting",
-      "community": 5,
+      "community": 3,
       "norm_label": "_setting()"
     },
     {
@@ -2867,7 +2855,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "streamlit_app_count_blocks",
-      "community": 5,
+      "community": 3,
       "norm_label": "_count_blocks()"
     },
     {
@@ -2878,7 +2866,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "streamlit_app_clear_workspace",
-      "community": 5,
+      "community": 3,
       "norm_label": "_clear_workspace()"
     },
     {
@@ -2889,7 +2877,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "streamlit_app_safe_rendered_markdown",
-      "community": 5,
+      "community": 3,
       "norm_label": "_safe_rendered_markdown()"
     },
     {
@@ -2899,7 +2887,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "streamlit_app_rationale_1",
-      "community": 5,
+      "community": 3,
       "norm_label": "paperplane's local streamlit workspace."
     },
     {
@@ -2909,7 +2897,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_test_annotated_pdf",
-      "community": 0,
+      "community": 2,
       "norm_label": "test_annotated_pdf.py"
     },
     {
@@ -2920,7 +2908,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_annotated_pdf_grounded_response",
-      "community": 0,
+      "community": 2,
       "norm_label": "_grounded_response()"
     },
     {
@@ -2931,7 +2919,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_annotated_pdf_pdf",
-      "community": 0,
+      "community": 2,
       "norm_label": "_pdf()"
     },
     {
@@ -2942,7 +2930,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_annotated_pdf_test_build_annotated_pdf_overlays_grounded_source",
-      "community": 0,
+      "community": 2,
       "norm_label": "test_build_annotated_pdf_overlays_grounded_source()"
     },
     {
@@ -2953,7 +2941,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_annotated_pdf_test_build_annotated_pdf_converts_image_to_reviewable_pdf",
-      "community": 0,
+      "community": 2,
       "norm_label": "test_build_annotated_pdf_converts_image_to_reviewable_pdf()"
     },
     {
@@ -2964,7 +2952,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_annotated_pdf_test_build_annotated_pdf_reports_semantic_only_office_blocks",
-      "community": 0,
+      "community": 2,
       "norm_label": "test_build_annotated_pdf_reports_semantic_only_office_blocks()"
     },
     {
@@ -2974,7 +2962,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_test_configuration",
-      "community": 35,
+      "community": 34,
       "norm_label": "test_configuration.py"
     },
     {
@@ -2985,7 +2973,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_configuration_test_env_example_contains_only_safe_placeholders",
-      "community": 35,
+      "community": 34,
       "norm_label": "test_env_example_contains_only_safe_placeholders()"
     },
     {
@@ -2995,7 +2983,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_test_contracts",
-      "community": 0,
+      "community": 2,
       "norm_label": "test_contracts.py"
     },
     {
@@ -3006,7 +2994,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_contracts_box",
-      "community": 0,
+      "community": 2,
       "norm_label": "_box()"
     },
     {
@@ -3017,7 +3005,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_contracts_test_assembler_creates_global_unicode_ranges_and_stable_structure_ids",
-      "community": 0,
+      "community": 2,
       "norm_label": "test_assembler_creates_global_unicode_ranges_and_stable_structure_ids()"
     },
     {
@@ -3028,7 +3016,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_contracts_test_parse_contract_rejects_overlapping_atomic_grounding_ranges",
-      "community": 0,
+      "community": 2,
       "norm_label": "test_parse_contract_rejects_overlapping_atomic_grounding_ranges()"
     },
     {
@@ -3038,7 +3026,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_test_docling_parser",
-      "community": 0,
+      "community": 3,
       "norm_label": "test_docling_parser.py"
     },
     {
@@ -3049,7 +3037,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_docling_parser_test_docling_converter_supports_native_formats_without_torch_compilation",
-      "community": 0,
+      "community": 3,
       "norm_label": "test_docling_converter_supports_native_formats_without_torch_compilation()"
     },
     {
@@ -3059,7 +3047,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_test_grounding",
-      "community": 3,
+      "community": 0,
       "norm_label": "test_grounding.py"
     },
     {
@@ -3070,7 +3058,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_grounding_pdf_bytes",
-      "community": 3,
+      "community": 0,
       "norm_label": "_pdf_bytes()"
     },
     {
@@ -3081,7 +3069,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_grounding_test_native_text_alignment_returns_exact_union_box",
-      "community": 3,
+      "community": 0,
       "norm_label": "test_native_text_alignment_returns_exact_union_box()"
     },
     {
@@ -3092,7 +3080,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_grounding_test_crop_relative_box_maps_back_to_page_coordinates",
-      "community": 3,
+      "community": 0,
       "norm_label": "test_crop_relative_box_maps_back_to_page_coordinates()"
     },
     {
@@ -3103,7 +3091,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_grounding_test_render_crop_preserves_pdf_coordinate_audit_trail",
-      "community": 3,
+      "community": 0,
       "norm_label": "test_render_crop_preserves_pdf_coordinate_audit_trail()"
     },
     {
@@ -3113,7 +3101,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_test_ingest",
-      "community": 3,
+      "community": 5,
       "norm_label": "test_ingest.py"
     },
     {
@@ -3124,7 +3112,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_ingest_pdf_bytes",
-      "community": 3,
+      "community": 5,
       "norm_label": "_pdf_bytes()"
     },
     {
@@ -3135,7 +3123,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_ingest_image_bytes",
-      "community": 3,
+      "community": 5,
       "norm_label": "_image_bytes()"
     },
     {
@@ -3146,7 +3134,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_ingest_test_inspect_pdf_reports_page_count_and_mime",
-      "community": 3,
+      "community": 5,
       "norm_label": "test_inspect_pdf_reports_page_count_and_mime()"
     },
     {
@@ -3157,7 +3145,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_ingest_test_inspect_routes_mixed_pdf_pages_independently",
-      "community": 3,
+      "community": 5,
       "norm_label": "test_inspect_routes_mixed_pdf_pages_independently()"
     },
     {
@@ -3168,7 +3156,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_ingest_test_inspect_keeps_short_selectable_pdf_text_on_local_path",
-      "community": 3,
+      "community": 5,
       "norm_label": "test_inspect_keeps_short_selectable_pdf_text_on_local_path()"
     },
     {
@@ -3179,7 +3167,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_ingest_test_inspect_accepts_modern_office_input_for_local_conversion",
-      "community": 3,
+      "community": 5,
       "norm_label": "test_inspect_accepts_modern_office_input_for_local_conversion()"
     },
     {
@@ -3190,7 +3178,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_ingest_test_inspect_rejects_oversized_or_unsupported_input",
-      "community": 3,
+      "community": 5,
       "norm_label": "test_inspect_rejects_oversized_or_unsupported_input()"
     },
     {
@@ -3201,7 +3189,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_ingest_test_inspect_rejects_pdf_canvas_that_would_exhaust_renderer",
-      "community": 3,
+      "community": 5,
       "norm_label": "test_inspect_rejects_pdf_canvas_that_would_exhaust_renderer()"
     },
     {
@@ -3212,7 +3200,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_ingest_test_inspect_rejects_multiframe_image_over_total_pixel_budget",
-      "community": 3,
+      "community": 5,
       "norm_label": "test_inspect_rejects_multiframe_image_over_total_pixel_budget()"
     },
     {
@@ -3223,7 +3211,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_ingest_test_inspect_and_render_multiframe_tiff",
-      "community": 3,
+      "community": 5,
       "norm_label": "test_inspect_and_render_multiframe_tiff()"
     },
     {
@@ -3234,7 +3222,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_ingest_test_render_pdf_page_extracts_normalized_native_words",
-      "community": 3,
+      "community": 5,
       "norm_label": "test_render_pdf_page_extracts_normalized_native_words()"
     },
     {
@@ -3245,7 +3233,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_ingest_test_render_image_behaves_as_one_page_document",
-      "community": 3,
+      "community": 5,
       "norm_label": "test_render_image_behaves_as_one_page_document()"
     },
     {
@@ -3256,7 +3244,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_ingest_test_inspect_and_render_webp",
-      "community": 3,
+      "community": 5,
       "norm_label": "test_inspect_and_render_webp()"
     },
     {
@@ -3330,7 +3318,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_test_parser",
-      "community": 9,
+      "community": 8,
       "norm_label": "test_parser.py"
     },
     {
@@ -3341,7 +3329,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_parser_png",
-      "community": 9,
+      "community": 8,
       "norm_label": "_png()"
     },
     {
@@ -3353,7 +3341,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "tests_test_parser_fakeprocessor",
-      "community": 9,
+      "community": 8,
       "norm_label": "fakeprocessor"
     },
     {
@@ -3364,7 +3352,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_parser_fakeprocessor_init",
-      "community": 9,
+      "community": 8,
       "norm_label": ".__init__()"
     },
     {
@@ -3375,7 +3363,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_parser_fakeprocessor_process_page",
-      "community": 9,
+      "community": 8,
       "norm_label": ".process_page()"
     },
     {
@@ -3385,7 +3373,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "tests_test_parser_py_asyncio",
-      "community": 9,
+      "community": 8,
       "norm_label": "asyncio"
     },
     {
@@ -3396,7 +3384,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_parser_test_parser_returns_one_grounded_response_without_persistence",
-      "community": 9,
+      "community": 8,
       "norm_label": "test_parser_returns_one_grounded_response_without_persistence()"
     },
     {
@@ -3407,7 +3395,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_parser_test_parser_limits_remain_bounded",
-      "community": 9,
+      "community": 8,
       "norm_label": "test_parser_limits_remain_bounded()"
     },
     {
@@ -3417,7 +3405,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_test_pipeline",
-      "community": 2,
+      "community": 1,
       "norm_label": "test_pipeline.py"
     },
     {
@@ -3428,7 +3416,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_png",
-      "community": 2,
+      "community": 1,
       "norm_label": "_png()"
     },
     {
@@ -3439,7 +3427,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_generation",
-      "community": 2,
+      "community": 1,
       "norm_label": "_generation()"
     },
     {
@@ -3450,7 +3438,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_test_figure_specialist_ignores_multiple_tiny_decorative_regions",
-      "community": 1,
+      "community": 0,
       "norm_label": "test_figure_specialist_ignores_multiple_tiny_decorative_regions()"
     },
     {
@@ -3462,7 +3450,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_exacttextadapter",
-      "community": 2,
+      "community": 1,
       "norm_label": "_exacttextadapter"
     },
     {
@@ -3473,7 +3461,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_exacttextadapter_generate_structured",
-      "community": 2,
+      "community": 1,
       "norm_label": ".generate_structured()"
     },
     {
@@ -3485,7 +3473,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_verifiedscanadapter",
-      "community": 2,
+      "community": 1,
       "norm_label": "_verifiedscanadapter"
     },
     {
@@ -3496,7 +3484,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_verifiedscanadapter_generate_structured",
-      "community": 2,
+      "community": 1,
       "norm_label": ".generate_structured()"
     },
     {
@@ -3508,7 +3496,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_disagreeingadapter",
-      "community": 2,
+      "community": 1,
       "norm_label": "_disagreeingadapter"
     },
     {
@@ -3519,7 +3507,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_disagreeingadapter_generate_structured",
-      "community": 2,
+      "community": 1,
       "norm_label": ".generate_structured()"
     },
     {
@@ -3531,7 +3519,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_correctingadapter",
-      "community": 2,
+      "community": 1,
       "norm_label": "_correctingadapter"
     },
     {
@@ -3542,7 +3530,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_correctingadapter_generate_structured",
-      "community": 2,
+      "community": 1,
       "norm_label": ".generate_structured()"
     },
     {
@@ -3554,7 +3542,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_thousandscaleterraadapter",
-      "community": 2,
+      "community": 1,
       "norm_label": "_thousandscaleterraadapter"
     },
     {
@@ -3565,7 +3553,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_thousandscaleterraadapter_generate_structured",
-      "community": 2,
+      "community": 1,
       "norm_label": ".generate_structured()"
     },
     {
@@ -3577,7 +3565,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_invalidterraboxadapter",
-      "community": 2,
+      "community": 1,
       "norm_label": "_invalidterraboxadapter"
     },
     {
@@ -3588,7 +3576,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_invalidterraboxadapter_generate_structured",
-      "community": 2,
+      "community": 1,
       "norm_label": ".generate_structured()"
     },
     {
@@ -3600,7 +3588,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_invalidlunaboxadapter",
-      "community": 2,
+      "community": 1,
       "norm_label": "_invalidlunaboxadapter"
     },
     {
@@ -3611,7 +3599,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_invalidlunaboxadapter_generate_structured",
-      "community": 2,
+      "community": 1,
       "norm_label": ".generate_structured()"
     },
     {
@@ -3623,7 +3611,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_hugelunaboxadapter",
-      "community": 2,
+      "community": 1,
       "norm_label": "_hugelunaboxadapter"
     },
     {
@@ -3634,7 +3622,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_hugelunaboxadapter_generate_structured",
-      "community": 2,
+      "community": 1,
       "norm_label": ".generate_structured()"
     },
     {
@@ -3646,7 +3634,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_exacttextwithinvalidlunaboxadapter",
-      "community": 2,
+      "community": 1,
       "norm_label": "_exacttextwithinvalidlunaboxadapter"
     },
     {
@@ -3657,7 +3645,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_exacttextwithinvalidlunaboxadapter_generate_structured",
-      "community": 2,
+      "community": 1,
       "norm_label": ".generate_structured()"
     },
     {
@@ -3669,7 +3657,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_emptydraftrecoveredbyterraadapter",
-      "community": 2,
+      "community": 1,
       "norm_label": "_emptydraftrecoveredbyterraadapter"
     },
     {
@@ -3680,7 +3668,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_emptydraftrecoveredbyterraadapter_generate_structured",
-      "community": 2,
+      "community": 1,
       "norm_label": ".generate_structured()"
     },
     {
@@ -3692,7 +3680,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_terraonlyfallbackadapter",
-      "community": 2,
+      "community": 1,
       "norm_label": "_terraonlyfallbackadapter"
     },
     {
@@ -3703,7 +3691,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_terraonlyfallbackadapter_generate_structured",
-      "community": 2,
+      "community": 1,
       "norm_label": ".generate_structured()"
     },
     {
@@ -3715,7 +3703,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_emptyfigureadapter",
-      "community": 2,
+      "community": 1,
       "norm_label": "_emptyfigureadapter"
     },
     {
@@ -3726,7 +3714,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_emptyfigureadapter_generate_structured",
-      "community": 2,
+      "community": 1,
       "norm_label": ".generate_structured()"
     },
     {
@@ -3738,7 +3726,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_reconciliationomitsdraftregionadapter",
-      "community": 2,
+      "community": 1,
       "norm_label": "_reconciliationomitsdraftregionadapter"
     },
     {
@@ -3749,7 +3737,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_reconciliationomitsdraftregionadapter_generate_structured",
-      "community": 2,
+      "community": 1,
       "norm_label": ".generate_structured()"
     },
     {
@@ -3761,7 +3749,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_capturingadapter",
-      "community": 2,
+      "community": 1,
       "norm_label": "_capturingadapter"
     },
     {
@@ -3772,7 +3760,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_capturingadapter_init",
-      "community": 2,
+      "community": 1,
       "norm_label": ".__init__()"
     },
     {
@@ -3783,7 +3771,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_capturingadapter_generate_structured",
-      "community": 2,
+      "community": 1,
       "norm_label": ".generate_structured()"
     },
     {
@@ -3795,7 +3783,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_capturingdisagreeingadapter",
-      "community": 2,
+      "community": 1,
       "norm_label": "_capturingdisagreeingadapter"
     },
     {
@@ -3806,7 +3794,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_capturingdisagreeingadapter_init",
-      "community": 2,
+      "community": 1,
       "norm_label": ".__init__()"
     },
     {
@@ -3817,7 +3805,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_capturingdisagreeingadapter_generate_structured",
-      "community": 2,
+      "community": 1,
       "norm_label": ".generate_structured()"
     },
     {
@@ -3829,7 +3817,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_precisionidentifieradapter",
-      "community": 2,
+      "community": 1,
       "norm_label": "_precisionidentifieradapter"
     },
     {
@@ -3840,7 +3828,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_precisionidentifieradapter_init",
-      "community": 2,
+      "community": 1,
       "norm_label": ".__init__()"
     },
     {
@@ -3851,7 +3839,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_precisionidentifieradapter_generate_structured",
-      "community": 2,
+      "community": 1,
       "norm_label": ".generate_structured()"
     },
     {
@@ -3863,7 +3851,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_groupedfigureadapter",
-      "community": 2,
+      "community": 1,
       "norm_label": "_groupedfigureadapter"
     },
     {
@@ -3874,7 +3862,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_groupedfigureadapter_init",
-      "community": 2,
+      "community": 1,
       "norm_label": ".__init__()"
     },
     {
@@ -3885,7 +3873,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_groupedfigureadapter_generate_structured",
-      "community": 2,
+      "community": 1,
       "norm_label": ".generate_structured()"
     },
     {
@@ -3897,7 +3885,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_parentchainadapter",
-      "community": 2,
+      "community": 1,
       "norm_label": "_parentchainadapter"
     },
     {
@@ -3908,7 +3896,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_parentchainadapter_generate_structured",
-      "community": 2,
+      "community": 1,
       "norm_label": ".generate_structured()"
     },
     {
@@ -3920,7 +3908,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_malformedfigureadapter",
-      "community": 2,
+      "community": 1,
       "norm_label": "_malformedfigureadapter"
     },
     {
@@ -3931,7 +3919,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_malformedfigureadapter_generate_structured",
-      "community": 2,
+      "community": 1,
       "norm_label": ".generate_structured()"
     },
     {
@@ -3942,7 +3930,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_test_reconciliation_uses_luna_as_reading_order_spine_and_remaps_parents",
-      "community": 1,
+      "community": 0,
       "norm_label": "test_reconciliation_uses_luna_as_reading_order_spine_and_remaps_parents()"
     },
     {
@@ -3953,7 +3941,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_test_chunk_agreement_rejects_critical_identifier_mismatch",
-      "community": 1,
+      "community": 0,
       "norm_label": "test_chunk_agreement_rejects_critical_identifier_mismatch()"
     },
     {
@@ -3964,7 +3952,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_test_page_markdown_includes_parented_chunks_in_reading_order",
-      "community": 2,
+      "community": 1,
       "norm_label": "test_page_markdown_includes_parented_chunks_in_reading_order()"
     },
     {
@@ -3975,7 +3963,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_test_malformed_figure_markdown_becomes_unresolved_semantic_placeholder",
-      "community": 2,
+      "community": 1,
       "norm_label": "test_malformed_figure_markdown_becomes_unresolved_semantic_placeholder()"
     },
     {
@@ -3986,7 +3974,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_test_native_text_is_grounded_exactly_without_terra",
-      "community": 2,
+      "community": 1,
       "norm_label": "test_native_text_is_grounded_exactly_without_terra()"
     },
     {
@@ -3997,7 +3985,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_test_scanned_table_is_verified_by_full_page_reconciliation",
-      "community": 2,
+      "community": 1,
       "norm_label": "test_scanned_table_is_verified_by_full_page_reconciliation()"
     },
     {
@@ -4008,7 +3996,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_test_balanced_disagreement_preserves_the_luna_candidate",
-      "community": 2,
+      "community": 1,
       "norm_label": "test_balanced_disagreement_preserves_the_luna_candidate()"
     },
     {
@@ -4019,7 +4007,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_test_audit_uses_full_page_reconciliation_for_ordinary_disagreement",
-      "community": 2,
+      "community": 1,
       "norm_label": "test_audit_uses_full_page_reconciliation_for_ordinary_disagreement()"
     },
     {
@@ -4030,7 +4018,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_test_verified_terra_correction_replaces_luna_text_and_markdown",
-      "community": 2,
+      "community": 1,
       "norm_label": "test_verified_terra_correction_replaces_luna_text_and_markdown()"
     },
     {
@@ -4041,7 +4029,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_test_terra_thousand_scale_page_box_is_normalized",
-      "community": 2,
+      "community": 1,
       "norm_label": "test_terra_thousand_scale_page_box_is_normalized()"
     },
     {
@@ -4052,7 +4040,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_test_balanced_invalid_terra_box_preserves_luna_at_the_draft_page_box",
-      "community": 2,
+      "community": 1,
       "norm_label": "test_balanced_invalid_terra_box_preserves_luna_at_the_draft_page_box()"
     },
     {
@@ -4063,7 +4051,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_test_invalid_scanned_luna_box_preserves_content_without_false_grounding",
-      "community": 2,
+      "community": 1,
       "norm_label": "test_invalid_scanned_luna_box_preserves_content_without_false_grounding()"
     },
     {
@@ -4074,7 +4062,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_test_invalid_digital_audit_box_keeps_strict_abstention_out_of_markdown",
-      "community": 2,
+      "community": 1,
       "norm_label": "test_invalid_digital_audit_box_keeps_strict_abstention_out_of_markdown()"
     },
     {
@@ -4085,7 +4073,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_test_empty_scanned_draft_uses_full_page_terra_recovery",
-      "community": 2,
+      "community": 1,
       "norm_label": "test_empty_scanned_draft_uses_full_page_terra_recovery()"
     },
     {
@@ -4096,7 +4084,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_test_scanned_audit_uses_terra_fallback_when_luna_is_empty",
-      "community": 2,
+      "community": 1,
       "norm_label": "test_scanned_audit_uses_terra_fallback_when_luna_is_empty()"
     },
     {
@@ -4107,7 +4095,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_test_empty_figure_gets_semantic_placeholder_not_warning_admonition",
-      "community": 2,
+      "community": 1,
       "norm_label": "test_empty_figure_gets_semantic_placeholder_not_warning_admonition()"
     },
     {
@@ -4118,7 +4106,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_test_reconciliation_preserves_draft_regions_that_terra_omits",
-      "community": 2,
+      "community": 1,
       "norm_label": "test_reconciliation_preserves_draft_regions_that_terra_omits()"
     },
     {
@@ -4129,7 +4117,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_test_unrepresentable_scanned_luna_box_preserves_candidate_text",
-      "community": 2,
+      "community": 1,
       "norm_label": "test_unrepresentable_scanned_luna_box_preserves_candidate_text()"
     },
     {
@@ -4140,7 +4128,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_test_exact_native_text_bypasses_an_invalid_luna_box",
-      "community": 2,
+      "community": 1,
       "norm_label": "test_exact_native_text_bypasses_an_invalid_luna_box()"
     },
     {
@@ -4151,7 +4139,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_test_page_reconciliation_uses_v8_prompt_cache_key",
-      "community": 2,
+      "community": 1,
       "norm_label": "test_page_reconciliation_uses_v8_prompt_cache_key()"
     },
     {
@@ -4162,7 +4150,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_test_disagreement_runs_one_targeted_crop_after_page_reconciliation",
-      "community": 2,
+      "community": 1,
       "norm_label": "test_disagreement_runs_one_targeted_crop_after_page_reconciliation()"
     },
     {
@@ -4173,7 +4161,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_test_audit_identifier_chunk_is_crop_verified_even_when_page_models_agree",
-      "community": 2,
+      "community": 1,
       "norm_label": "test_audit_identifier_chunk_is_crop_verified_even_when_page_models_agree()"
     },
     {
@@ -4184,7 +4172,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_test_audit_groups_connected_figures_and_keeps_them_at_the_luna_anchor",
-      "community": 2,
+      "community": 1,
       "norm_label": "test_audit_groups_connected_figures_and_keeps_them_at_the_luna_anchor()"
     },
     {
@@ -4194,7 +4182,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_test_pipeline_contracts",
-      "community": 1,
+      "community": 0,
       "norm_label": "test_pipeline_contracts.py"
     },
     {
@@ -4205,7 +4193,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_contracts_test_processing_modes_have_distinct_budgets",
-      "community": 1,
+      "community": 0,
       "norm_label": "test_processing_modes_have_distinct_budgets()"
     },
     {
@@ -4216,7 +4204,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_pipeline_contracts_test_verified_chunk_requires_grounding",
-      "community": 1,
+      "community": 0,
       "norm_label": "test_verified_chunk_requires_grounding()"
     },
     {
@@ -4226,7 +4214,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_test_reconciliation",
-      "community": 1,
+      "community": 0,
       "norm_label": "test_reconciliation.py"
     },
     {
@@ -4237,7 +4225,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_reconciliation_chunk",
-      "community": 1,
+      "community": 0,
       "norm_label": "_chunk()"
     },
     {
@@ -4248,7 +4236,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_reconciliation_test_normalizer_preserves_digit_hyphens_but_joins_word_fragments",
-      "community": 1,
+      "community": 0,
       "norm_label": "test_normalizer_preserves_digit_hyphens_but_joins_word_fragments()"
     },
     {
@@ -4259,7 +4247,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_reconciliation_test_normalizer_removes_hidden_unicode_formatting_characters",
-      "community": 1,
+      "community": 0,
       "norm_label": "test_normalizer_removes_hidden_unicode_formatting_characters()"
     },
     {
@@ -4270,7 +4258,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_reconciliation_test_repeated_label_cleanup_is_exact_and_local",
-      "community": 1,
+      "community": 0,
       "norm_label": "test_repeated_label_cleanup_is_exact_and_local()"
     },
     {
@@ -4281,7 +4269,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_reconciliation_test_repeated_label_cleanup_normalizes_basic_block_html_to_markdown",
-      "community": 1,
+      "community": 0,
       "norm_label": "test_repeated_label_cleanup_normalizes_basic_block_html_to_markdown()"
     },
     {
@@ -4292,7 +4280,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_reconciliation_test_precision_verification_detects_identifiers_and_dense_regions",
-      "community": 1,
+      "community": 0,
       "norm_label": "test_precision_verification_detects_identifiers_and_dense_regions()"
     },
     {
@@ -4303,7 +4291,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_reconciliation_test_overlap_uses_intersection_over_smaller_area",
-      "community": 1,
+      "community": 0,
       "norm_label": "test_overlap_uses_intersection_over_smaller_area()"
     },
     {
@@ -4314,7 +4302,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_reconciliation_test_quality_gate_flags_overlaps_and_uncovered_ink",
-      "community": 1,
+      "community": 0,
       "norm_label": "test_quality_gate_flags_overlaps_and_uncovered_ink()"
     },
     {
@@ -4325,7 +4313,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_reconciliation_test_quality_gate_detects_duplicate_text_inside_parent_hierarchy",
-      "community": 1,
+      "community": 0,
       "norm_label": "test_quality_gate_detects_duplicate_text_inside_parent_hierarchy()"
     },
     {
@@ -4336,7 +4324,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_reconciliation_test_duplicate_suppression_prefers_verified_then_longer",
-      "community": 1,
+      "community": 0,
       "norm_label": "test_duplicate_suppression_prefers_verified_then_longer()"
     },
     {
@@ -4347,7 +4335,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_reconciliation_test_duplicate_suppression_keeps_long_recovered_content_containing_short_text",
-      "community": 1,
+      "community": 0,
       "norm_label": "test_duplicate_suppression_keeps_long_recovered_content_containing_short_text()"
     },
     {
@@ -4358,7 +4346,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_reconciliation_test_duplicate_suppression_collapses_same_region_across_semantic_types",
-      "community": 1,
+      "community": 0,
       "norm_label": "test_duplicate_suppression_collapses_same_region_across_semantic_types()"
     },
     {
@@ -4369,7 +4357,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_reconciliation_test_duplicate_suppression_keeps_verified_longer_contained_content",
-      "community": 1,
+      "community": 0,
       "norm_label": "test_duplicate_suppression_keeps_verified_longer_contained_content()"
     },
     {
@@ -4380,7 +4368,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_reconciliation_test_contained_duplicate_prefers_more_tokens_over_more_characters",
-      "community": 1,
+      "community": 0,
       "norm_label": "test_contained_duplicate_prefers_more_tokens_over_more_characters()"
     },
     {
@@ -4390,7 +4378,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_test_runtime",
-      "community": 0,
+      "community": 3,
       "norm_label": "test_runtime.py"
     },
     {
@@ -4400,7 +4388,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "tests_test_runtime_py_asyncio",
-      "community": 0,
+      "community": 3,
       "norm_label": "asyncio"
     },
     {
@@ -4411,7 +4399,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_runtime_test_runtime_requires_key_only_for_pixel_based_input",
-      "community": 0,
+      "community": 3,
       "norm_label": "test_runtime_requires_key_only_for_pixel_based_input()"
     },
     {
@@ -4422,7 +4410,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_runtime_test_runtime_rejects_unknown_model",
-      "community": 0,
+      "community": 3,
       "norm_label": "test_runtime_rejects_unknown_model()"
     },
     {
@@ -4432,7 +4420,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_test_streamlit_app",
-      "community": 0,
+      "community": 2,
       "norm_label": "test_streamlit_app.py"
     },
     {
@@ -4443,7 +4431,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_streamlit_app_png",
-      "community": 0,
+      "community": 2,
       "norm_label": "_png()"
     },
     {
@@ -4454,7 +4442,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_streamlit_app_test_app_explains_missing_api_key",
-      "community": 0,
+      "community": 2,
       "norm_label": "test_app_explains_missing_api_key()"
     },
     {
@@ -4465,7 +4453,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_streamlit_app_test_app_allows_local_document_upload_without_api_key",
-      "community": 0,
+      "community": 2,
       "norm_label": "test_app_allows_local_document_upload_without_api_key()"
     },
     {
@@ -4476,7 +4464,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "tests_test_streamlit_app_test_app_parses_upload_and_exposes_downloads",
-      "community": 0,
+      "community": 2,
       "norm_label": "test_app_parses_upload_and_exposes_downloads()"
     },
     {
@@ -4516,7 +4504,7 @@
       "author": null,
       "contributor": null,
       "id": "_claude_skills_refactor_safely_skill_dependency_aware_refactoring",
-      "community": 10,
+      "community": 9,
       "norm_label": "dependency-aware refactoring"
     },
     {
@@ -4529,7 +4517,7 @@
       "author": null,
       "contributor": null,
       "id": "_claude_skills_review_changes_skill_risk_aware_code_review",
-      "community": 10,
+      "community": 9,
       "norm_label": "risk-aware code review"
     },
     {
@@ -4568,7 +4556,7 @@
       "author": null,
       "contributor": null,
       "id": "_codebuddy_skills_refactor_safely_skill_dependency_aware_refactoring",
-      "community": 10,
+      "community": 9,
       "norm_label": "dependency-aware refactoring"
     },
     {
@@ -4581,7 +4569,7 @@
       "author": null,
       "contributor": null,
       "id": "_codebuddy_skills_review_changes_skill_risk_aware_code_review",
-      "community": 10,
+      "community": 9,
       "norm_label": "risk-aware code review"
     },
     {
@@ -4620,7 +4608,7 @@
       "author": null,
       "contributor": null,
       "id": "_gemini_skills_refactor_safely_skill_dependency_aware_refactoring",
-      "community": 10,
+      "community": 9,
       "norm_label": "dependency-aware refactoring"
     },
     {
@@ -4633,7 +4621,7 @@
       "author": null,
       "contributor": null,
       "id": "_gemini_skills_review_changes_skill_risk_aware_code_review",
-      "community": 10,
+      "community": 9,
       "norm_label": "risk-aware code review"
     },
     {
@@ -4646,7 +4634,7 @@
       "author": null,
       "contributor": null,
       "id": "_github_issue_template_bug_report_bug_reproduction",
-      "community": 36,
+      "community": 35,
       "norm_label": "bug reproduction report"
     },
     {
@@ -4659,7 +4647,7 @@
       "author": null,
       "contributor": null,
       "id": "_github_issue_template_feature_request_feature_proposal",
-      "community": 23,
+      "community": 26,
       "norm_label": "feature proposal"
     },
     {
@@ -4672,7 +4660,7 @@
       "author": null,
       "contributor": null,
       "id": "_github_issue_template_provider_request_integration_request",
-      "community": 23,
+      "community": 26,
       "norm_label": "recognition integration request"
     },
     {
@@ -4685,8 +4673,21 @@
       "author": null,
       "contributor": null,
       "id": "_github_code_review_graph_instruction_graph_first_policy",
-      "community": 10,
+      "community": 9,
       "norm_label": "graph-first exploration policy"
+    },
+    {
+      "label": "Dependency Update Automation",
+      "file_type": "document",
+      "source_file": ".github/dependabot.yml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "_github_dependabot_yml_dependency_update_automation",
+      "community": 25,
+      "norm_label": "dependency update automation"
     },
     {
       "label": "Continuous Verification Workflow",
@@ -4698,7 +4699,7 @@
       "author": null,
       "contributor": null,
       "id": "_github_workflows_ci_yml_continuous_verification",
-      "community": 24,
+      "community": 18,
       "norm_label": "continuous verification workflow"
     },
     {
@@ -4711,21 +4712,21 @@
       "author": null,
       "contributor": null,
       "id": "_github_workflows_dependency_review_yml_dependency_security_review",
-      "community": 22,
+      "community": 25,
       "norm_label": "dependency security review"
     },
     {
-      "label": "Dependency Update Automation",
-      "file_type": "document",
-      "source_file": ".github/dependabot.yml",
+      "label": "Graph-First Code Discovery",
+      "file_type": "rationale",
+      "source_file": ".kiro/steering/code-review-graph.md",
       "source_location": null,
       "source_url": null,
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "_github_dependabot_yml_dependency_update_automation",
-      "community": 22,
-      "norm_label": "dependency update automation"
+      "id": "_kiro_steering_code_review_graph_graph_first_code_discovery",
+      "community": 14,
+      "norm_label": "graph-first code discovery"
     },
     {
       "label": "Pre-Commit Quality Gates",
@@ -4737,294 +4738,21 @@
       "author": null,
       "contributor": null,
       "id": "_pre_commit_config_pre_commit_quality_gates",
-      "community": 24,
+      "community": 36,
       "norm_label": "pre-commit quality gates"
     },
     {
-      "label": "Paperplane",
-      "file_type": "concept",
-      "source_file": "README.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "readme_paperplane",
-      "community": 21,
-      "norm_label": "paperplane"
-    },
-    {
-      "label": "Automatic Per-Page Routing",
+      "label": "Graph-First Code Discovery",
       "file_type": "rationale",
-      "source_file": "README.md",
+      "source_file": "AGENTS.md",
       "source_location": null,
       "source_url": null,
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "readme_automatic_routing",
-      "community": 21,
-      "norm_label": "automatic per-page routing"
-    },
-    {
-      "label": "Session-Only State",
-      "file_type": "rationale",
-      "source_file": "README.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "readme_session_only_state",
-      "community": 21,
-      "norm_label": "session-only state"
-    },
-    {
-      "label": "Streamlit Workspace",
-      "file_type": "concept",
-      "source_file": "docs/ARCHITECTURE.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "docs_architecture_streamlit_workspace",
-      "community": 13,
-      "norm_label": "streamlit workspace"
-    },
-    {
-      "label": "Docling Native-Document Path",
-      "file_type": "rationale",
-      "source_file": "docs/ARCHITECTURE.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "docs_architecture_docling_path",
-      "community": 13,
-      "norm_label": "docling native-document path"
-    },
-    {
-      "label": "OpenAI Vision Path",
-      "file_type": "rationale",
-      "source_file": "docs/ARCHITECTURE.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "docs_architecture_openai_vision_path",
-      "community": 13,
-      "norm_label": "openai vision path"
-    },
-    {
-      "label": "Shared Markdown and JSON Assembler",
-      "file_type": "rationale",
-      "source_file": "docs/ARCHITECTURE.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "docs_architecture_shared_assembler",
-      "community": 13,
-      "norm_label": "shared markdown and json assembler"
-    },
-    {
-      "label": "Layout-Aware Markdown",
-      "file_type": "concept",
-      "source_file": "docs/APP_CAPABILITIES.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "docs_app_capabilities_layout_aware_markdown",
-      "community": 26,
-      "norm_label": "layout-aware markdown"
-    },
-    {
-      "label": "Hierarchical Grounding JSON",
-      "file_type": "concept",
-      "source_file": "docs/APP_CAPABILITIES.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "docs_app_capabilities_grounding_json",
-      "community": 26,
-      "norm_label": "hierarchical grounding json"
-    },
-    {
-      "label": "Four Result Views",
-      "file_type": "rationale",
-      "source_file": "docs/APP_CAPABILITIES.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "docs_app_capabilities_result_views",
-      "community": 27,
-      "norm_label": "four result views"
-    },
-    {
-      "label": "Docling Engine",
-      "file_type": "concept",
-      "source_file": "docs/ENGINES.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "docs_engines_docling",
-      "community": 12,
-      "norm_label": "docling engine"
-    },
-    {
-      "label": "OpenAI Vision Engine",
-      "file_type": "concept",
-      "source_file": "docs/ENGINES.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "docs_engines_openai_vision",
-      "community": 12,
-      "norm_label": "openai vision engine"
-    },
-    {
-      "label": "Output Validation",
-      "file_type": "rationale",
-      "source_file": "docs/QUALITY.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "docs_quality_output_validation",
-      "community": 28,
-      "norm_label": "output validation"
-    },
-    {
-      "label": "Local Single-User Boundary",
-      "file_type": "rationale",
-      "source_file": "docs/LIMITATIONS.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "docs_limitations_local_single_user",
-      "community": 16,
-      "norm_label": "local single-user boundary"
-    },
-    {
-      "label": "Annotated PDF",
-      "file_type": "concept",
-      "source_file": "docs/FAQ.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "docs_faq_annotated_pdf",
-      "community": 27,
-      "norm_label": "annotated pdf"
-    },
-    {
-      "label": "Safe Change Practice",
-      "file_type": "rationale",
-      "source_file": "docs/DEVELOPMENT.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "docs_development_safe_change_practice",
-      "community": 25,
-      "norm_label": "safe change practice"
-    },
-    {
-      "label": "Localhost-Only Deployment",
-      "file_type": "rationale",
-      "source_file": "docs/DEPLOYMENT.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "docs_deployment_localhost_only",
-      "community": 16,
-      "norm_label": "localhost-only deployment"
-    },
-    {
-      "label": "v4 Simplification",
-      "file_type": "rationale",
-      "source_file": "docs/MIGRATION_GUIDE.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "docs_migration_guide_v4_simplification",
-      "community": 16,
-      "norm_label": "v4 simplification"
-    },
-    {
-      "label": "Sensitive Document Handling",
-      "file_type": "rationale",
-      "source_file": "SECURITY.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "security_sensitive_document_handling",
-      "community": 12,
-      "norm_label": "sensitive document handling"
-    },
-    {
-      "label": "Local Stateless Contribution Scope",
-      "file_type": "rationale",
-      "source_file": "CONTRIBUTING.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "contributing_local_stateless_scope",
-      "community": 25,
-      "norm_label": "local stateless contribution scope"
-    },
-    {
-      "label": "Document Output Contract",
-      "file_type": "concept",
-      "source_file": "Zero_to_Hero_Study_Handbook.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "zero_to_hero_study_handbook_output_contract",
-      "community": 28,
-      "norm_label": "document output contract"
-    },
-    {
-      "label": "Semantic-Only Geometry",
-      "file_type": "rationale",
-      "source_file": "Zero_to_Hero_Study_Handbook.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "zero_to_hero_study_handbook_semantic_only_geometry",
-      "community": 13,
-      "norm_label": "semantic-only geometry"
+      "id": "agents_graph_first_code_discovery",
+      "community": 14,
+      "norm_label": "graph-first code discovery"
     },
     {
       "label": "v4.1 Docling Input Expansion",
@@ -5036,11 +4764,102 @@
       "author": null,
       "contributor": null,
       "id": "changelog_v41_docling_expansion",
-      "community": 12,
+      "community": 37,
       "norm_label": "v4.1 docling input expansion"
     },
     {
-      "label": "Source-Only Release Process",
+      "label": "Graph-First Code Discovery",
+      "file_type": "rationale",
+      "source_file": "CLAUDE.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "claude_graph_first_code_discovery",
+      "community": 14,
+      "norm_label": "graph-first code discovery"
+    },
+    {
+      "label": "Graph-First Code Discovery",
+      "file_type": "rationale",
+      "source_file": "CODEBUDDY.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "codebuddy_graph_first_code_discovery",
+      "community": 14,
+      "norm_label": "graph-first code discovery"
+    },
+    {
+      "label": "Community Standards",
+      "file_type": "document",
+      "source_file": "CODE_OF_CONDUCT.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "code_of_conduct_community_standards",
+      "community": 38,
+      "norm_label": "community standards"
+    },
+    {
+      "label": "Local Stateless Contribution Scope",
+      "file_type": "rationale",
+      "source_file": "CONTRIBUTING.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "contributing_local_stateless_scope",
+      "community": 39,
+      "norm_label": "local stateless contribution scope"
+    },
+    {
+      "label": "Local Stateless Streamlit Application",
+      "file_type": "concept",
+      "source_file": "ONBOARDING.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "onboarding_local_stateless_streamlit_application",
+      "community": 13,
+      "norm_label": "local stateless streamlit application"
+    },
+    {
+      "label": "Local Document Extraction Architecture",
+      "file_type": "concept",
+      "source_file": "QODER.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "qoder_local_document_extraction_architecture",
+      "community": 13,
+      "norm_label": "local document extraction architecture"
+    },
+    {
+      "label": "Paperplane Product Overview",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "readme_paperplane_product_overview",
+      "community": 15,
+      "norm_label": "paperplane product overview"
+    },
+    {
+      "label": "Source-Only GitHub Releases",
       "file_type": "rationale",
       "source_file": "RELEASE.md",
       "source_location": null,
@@ -5048,12 +4867,194 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "release_source_only_release_process",
-      "community": 12,
-      "norm_label": "source-only release process"
+      "id": "release_source_only_github_releases",
+      "community": 46,
+      "norm_label": "source-only github releases"
     },
     {
-      "label": "Paperplane 4.1.0",
+      "label": "Sensitive Document Handling",
+      "file_type": "rationale",
+      "source_file": "SECURITY.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "security_sensitive_document_handling",
+      "community": 49,
+      "norm_label": "sensitive document handling"
+    },
+    {
+      "label": "Contributor Learning Path",
+      "file_type": "document",
+      "source_file": "Zero_to_Hero_Study_Handbook.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "zero_to_hero_study_handbook_contributor_learning_path",
+      "community": 18,
+      "norm_label": "contributor learning path"
+    },
+    {
+      "label": "Document Capability Contract",
+      "file_type": "document",
+      "source_file": "docs/APP_CAPABILITIES.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "docs_app_capabilities_html_document_capability_contract",
+      "community": 15,
+      "norm_label": "document capability contract"
+    },
+    {
+      "label": "Document Capability Contract",
+      "file_type": "document",
+      "source_file": "docs/APP_CAPABILITIES.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "docs_app_capabilities_document_capability_contract",
+      "community": 15,
+      "norm_label": "document capability contract"
+    },
+    {
+      "label": "Hybrid Document Routing",
+      "file_type": "concept",
+      "source_file": "docs/ARCHITECTURE.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "docs_architecture_hybrid_document_routing",
+      "community": 13,
+      "norm_label": "hybrid document routing"
+    },
+    {
+      "label": "Grounding Model",
+      "file_type": "concept",
+      "source_file": "docs/ARCHITECTURE.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "docs_architecture_grounding_model",
+      "community": 41,
+      "norm_label": "grounding model"
+    },
+    {
+      "label": "Local Single-User Deployment",
+      "file_type": "rationale",
+      "source_file": "docs/DEPLOYMENT.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "docs_deployment_local_single_user_deployment",
+      "community": 27,
+      "norm_label": "local single-user deployment"
+    },
+    {
+      "label": "Engineering Workflow",
+      "file_type": "document",
+      "source_file": "docs/DEVELOPMENT.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "docs_development_engineering_workflow",
+      "community": 18,
+      "norm_label": "engineering workflow"
+    },
+    {
+      "label": "Docling Native Engine",
+      "file_type": "concept",
+      "source_file": "docs/ENGINES.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "docs_engines_docling_native_engine",
+      "community": 13,
+      "norm_label": "docling native engine"
+    },
+    {
+      "label": "OpenAI Vision Engine",
+      "file_type": "concept",
+      "source_file": "docs/ENGINES.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "docs_engines_openai_vision_engine",
+      "community": 13,
+      "norm_label": "openai vision engine"
+    },
+    {
+      "label": "User Operating Guidance",
+      "file_type": "document",
+      "source_file": "docs/FAQ.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "docs_faq_user_operating_guidance",
+      "community": 15,
+      "norm_label": "user operating guidance"
+    },
+    {
+      "label": "Product Scope Limits",
+      "file_type": "rationale",
+      "source_file": "docs/LIMITATIONS.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "docs_limitations_product_scope_limits",
+      "community": 27,
+      "norm_label": "product scope limits"
+    },
+    {
+      "label": "v4 Simplification",
+      "file_type": "rationale",
+      "source_file": "docs/MIGRATION_GUIDE.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "docs_migration_guide_v4_simplification",
+      "community": 20,
+      "norm_label": "v4 simplification"
+    },
+    {
+      "label": "Output Validation",
+      "file_type": "rationale",
+      "source_file": "docs/QUALITY.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "docs_quality_output_validation",
+      "community": 30,
+      "norm_label": "output validation"
+    },
+    {
+      "label": "Release History",
       "file_type": "document",
       "source_file": "docs/RELEASE_NOTES.md",
       "source_location": null,
@@ -5061,64 +5062,25 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "docs_release_notes_paperplane_v41",
-      "community": 7,
-      "norm_label": "paperplane 4.1.0"
+      "id": "docs_release_notes_release_history",
+      "community": 43,
+      "norm_label": "release history"
     },
     {
-      "label": "Local Docling Conversion",
-      "file_type": "concept",
-      "source_file": "docs/RELEASE_NOTES.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "docs_release_notes_docling_conversion",
-      "community": 7,
-      "norm_label": "local docling conversion"
-    },
-    {
-      "label": "OpenAI Vision Parsing",
-      "file_type": "concept",
-      "source_file": "docs/RELEASE_NOTES.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "docs_release_notes_openai_vision",
-      "community": 7,
-      "norm_label": "openai vision parsing"
-    },
-    {
-      "label": "Session-Only State",
-      "file_type": "concept",
-      "source_file": "docs/RELEASE_NOTES.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "docs_release_notes_session_only_state",
-      "community": 7,
-      "norm_label": "session-only state"
-    },
-    {
-      "label": "Operational Recovery Runbook",
-      "file_type": "document",
+      "label": "Archived Hosted Operations",
+      "file_type": "rationale",
       "source_file": "docs/RUNBOOK.md",
       "source_location": null,
       "source_url": null,
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "docs_runbook_operational_recovery",
-      "community": 17,
-      "norm_label": "operational recovery runbook"
+      "id": "docs_runbook_archived_operations",
+      "community": 20,
+      "norm_label": "archived hosted operations"
     },
     {
-      "label": "Paperplane Windows Launcher",
+      "label": "Windows Launcher",
       "file_type": "concept",
       "source_file": "docs/RUN_APP.md",
       "source_location": null,
@@ -5126,25 +5088,25 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "docs_run_app_paperplane_launcher",
-      "community": 17,
-      "norm_label": "paperplane windows launcher"
+      "id": "docs_run_app_windows_launcher",
+      "community": 21,
+      "norm_label": "windows launcher"
     },
     {
-      "label": "Environment Credential Setup",
-      "file_type": "concept",
+      "label": "Credential Precedence",
+      "file_type": "rationale",
       "source_file": "docs/SETUP.md",
       "source_location": null,
       "source_url": null,
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "docs_setup_environment_credentials",
-      "community": 17,
-      "norm_label": "environment credential setup"
+      "id": "docs_setup_credential_precedence",
+      "community": 21,
+      "norm_label": "credential precedence"
     },
     {
-      "label": "Parser Data Flow",
+      "label": "Document Processing Data Flow",
       "file_type": "concept",
       "source_file": "docs/ZERO_TO_MASTERY.md",
       "source_location": null,
@@ -5152,38 +5114,12 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "docs_zero_to_mastery_parser_data_flow",
-      "community": 7,
-      "norm_label": "parser data flow"
+      "id": "docs_zero_to_mastery_data_flow",
+      "community": 29,
+      "norm_label": "document processing data flow"
     },
     {
-      "label": "Automatic Document Routing",
-      "file_type": "concept",
-      "source_file": "docs/how-it-works.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "docs_how_it_works_automatic_routing",
-      "community": 7,
-      "norm_label": "automatic document routing"
-    },
-    {
-      "label": "Grounded Output Contract",
-      "file_type": "concept",
-      "source_file": "docs/how-it-works.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "docs_how_it_works_grounded_output",
-      "community": 7,
-      "norm_label": "grounded output contract"
-    },
-    {
-      "label": "Architecture Decision Records",
+      "label": "Architecture Decision Record",
       "file_type": "concept",
       "source_file": "docs/adr/0001-record-architecture-decisions.md",
       "source_location": null,
@@ -5191,12 +5127,12 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "docs_adr_0001_architecture_decisions",
-      "community": 37,
-      "norm_label": "architecture decision records"
+      "id": "docs_adr_0001_record_architecture_decisions_architecture_decision_record",
+      "community": 40,
+      "norm_label": "architecture decision record"
     },
     {
-      "label": "Bounded Page Processing",
+      "label": "Archived LangGraph Decision",
       "file_type": "rationale",
       "source_file": "docs/adr/0002-langgraph-for-pipeline.md",
       "source_location": null,
@@ -5204,12 +5140,12 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "docs_adr_0002_bounded_page_processing",
-      "community": 7,
-      "norm_label": "bounded page processing"
+      "id": "docs_adr_0002_langgraph_for_pipeline_archived_langgraph_decision",
+      "community": 20,
+      "norm_label": "archived langgraph decision"
     },
     {
-      "label": "Secure-by-Default Boundary",
+      "label": "Secure Local Boundary",
       "file_type": "rationale",
       "source_file": "docs/adr/0004-secure-by-default.md",
       "source_location": null,
@@ -5217,25 +5153,12 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "docs_adr_0004_secure_by_default",
-      "community": 7,
-      "norm_label": "secure-by-default boundary"
+      "id": "docs_adr_0004_secure_by_default_secure_local_boundary",
+      "community": 21,
+      "norm_label": "secure local boundary"
     },
     {
-      "label": "Paperplane v4.1 System Architecture",
-      "file_type": "document",
-      "source_file": "docs/architecture/paperplane-system.html",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "docs_architecture_paperplane_system_v41",
-      "community": 7,
-      "norm_label": "paperplane v4.1 system architecture"
-    },
-    {
-      "label": "In-Memory Evidence PDF",
+      "label": "Paperplane System Diagram",
       "file_type": "concept",
       "source_file": "docs/architecture/paperplane-system.html",
       "source_location": null,
@@ -5243,9 +5166,61 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "docs_architecture_paperplane_system_evidence_pdf",
-      "community": 7,
-      "norm_label": "in-memory evidence pdf"
+      "id": "docs_architecture_paperplane_system_system_diagram",
+      "community": 42,
+      "norm_label": "paperplane system diagram"
+    },
+    {
+      "label": "Processing Mode Policy",
+      "file_type": "rationale",
+      "source_file": "docs/how-it-works.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "docs_how_it_works_mode_policy",
+      "community": 28,
+      "norm_label": "processing mode policy"
+    },
+    {
+      "label": "Shared Output Contract",
+      "file_type": "concept",
+      "source_file": "docs/how-it-works.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "docs_how_it_works_shared_output",
+      "community": 29,
+      "norm_label": "shared output contract"
+    },
+    {
+      "label": "Current Performance Guidance",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/2026-07-27-balanced-pdf-latency.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "docs_superpowers_plans_2026_07_27_balanced_pdf_latency_current_performance_guidance",
+      "community": 28,
+      "norm_label": "current performance guidance"
+    },
+    {
+      "label": "v4.1 Output Quality Result",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/2026-07-27-v2-output-quality.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "docs_superpowers_plans_2026_07_27_v2_output_quality_current_v41_result",
+      "community": 30,
+      "norm_label": "v4.1 output quality result"
     },
     {
       "label": "Local Attack Surface Controls",
@@ -5257,7 +5232,7 @@
       "author": null,
       "contributor": null,
       "id": "security_best_practices_report_local_attack_surface",
-      "community": 7,
+      "community": 48,
       "norm_label": "local attack surface controls"
     },
     {
@@ -5270,7 +5245,7 @@
       "author": null,
       "contributor": null,
       "id": "tasks_plan_streamlit_only_migration",
-      "community": 34,
+      "community": 33,
       "norm_label": "streamlit-only migration plan"
     },
     {
@@ -5283,99 +5258,8 @@
       "author": null,
       "contributor": null,
       "id": "tasks_todo_v4_completion",
-      "community": 34,
+      "community": 33,
       "norm_label": "paperplane v4 completion checklist"
-    },
-    {
-      "label": "Dark Theme Historical Plan",
-      "file_type": "document",
-      "source_file": "docs/superpowers/plans/2026-07-26-dark-theme.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "docs_superpowers_plans_dark_theme",
-      "community": 30,
-      "norm_label": "dark theme historical plan"
-    },
-    {
-      "label": "Evidence Studio Historical Plan",
-      "file_type": "document",
-      "source_file": "docs/superpowers/plans/2026-07-26-evidence-studio.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "docs_superpowers_plans_evidence_studio",
-      "community": 31,
-      "norm_label": "evidence studio historical plan"
-    },
-    {
-      "label": "Balanced PDF Latency Historical Plan",
-      "file_type": "document",
-      "source_file": "docs/superpowers/plans/2026-07-27-balanced-pdf-latency.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "docs_superpowers_plans_balanced_pdf_latency",
-      "community": 29,
-      "norm_label": "balanced pdf latency historical plan"
-    },
-    {
-      "label": "V2 Output Quality Historical Plan",
-      "file_type": "document",
-      "source_file": "docs/superpowers/plans/2026-07-27-v2-output-quality.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "docs_superpowers_plans_v2_output_quality",
-      "community": 7,
-      "norm_label": "v2 output quality historical plan"
-    },
-    {
-      "label": "Dark Theme Historical Design",
-      "file_type": "document",
-      "source_file": "docs/superpowers/specs/2026-07-26-dark-theme-design.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "docs_superpowers_specs_dark_theme",
-      "community": 30,
-      "norm_label": "dark theme historical design"
-    },
-    {
-      "label": "Evidence Studio Historical Design",
-      "file_type": "document",
-      "source_file": "docs/superpowers/specs/2026-07-26-evidence-studio-design.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "docs_superpowers_specs_evidence_studio",
-      "community": 31,
-      "norm_label": "evidence studio historical design"
-    },
-    {
-      "label": "Balanced PDF Latency Historical Design",
-      "file_type": "document",
-      "source_file": "docs/superpowers/specs/2026-07-27-balanced-pdf-latency-design.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "docs_superpowers_specs_balanced_pdf_latency",
-      "community": 29,
-      "norm_label": "balanced pdf latency historical design"
     },
     {
       "label": "Public Water Mass Mailing Scanned PDF",
@@ -5387,8 +5271,151 @@
       "author": null,
       "contributor": null,
       "id": "sample_pdf_publicwatermassmailing_scanned_sample",
-      "community": 7,
+      "community": 47,
       "norm_label": "public water mass mailing scanned pdf"
+    },
+    {
+      "label": "GitHub Issue Configuration",
+      "file_type": "document",
+      "source_file": ".github/ISSUE_TEMPLATE/config.yml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "github_issue_template_config_issue_configuration",
+      "community": 44,
+      "norm_label": "github issue configuration"
+    },
+    {
+      "label": "Dark Theme Historical Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-07-26-dark-theme.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "docs_superpowers_plans_2026_07_26_dark_theme_historical_plan",
+      "community": 16,
+      "norm_label": "dark theme historical plan"
+    },
+    {
+      "label": "Persisted Theme Toggle",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/2026-07-26-dark-theme.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "docs_superpowers_plans_2026_07_26_dark_theme_theme_toggle",
+      "community": 16,
+      "norm_label": "persisted theme toggle"
+    },
+    {
+      "label": "Evidence Studio Historical Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-07-26-evidence-studio.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "docs_superpowers_plans_2026_07_26_evidence_studio_historical_plan",
+      "community": 12,
+      "norm_label": "evidence studio historical plan"
+    },
+    {
+      "label": "Document-First Workspace",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/2026-07-26-evidence-studio.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "docs_superpowers_plans_2026_07_26_evidence_studio_document_first_workspace",
+      "community": 12,
+      "norm_label": "document-first workspace"
+    },
+    {
+      "label": "Dark Theme Historical Design",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-07-26-dark-theme-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "docs_superpowers_specs_2026_07_26_dark_theme_design_dark_theme_design",
+      "community": 16,
+      "norm_label": "dark theme historical design"
+    },
+    {
+      "label": "Theme Storage Failure Handling",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/specs/2026-07-26-dark-theme-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "docs_superpowers_specs_2026_07_26_dark_theme_design_storage_failure_handling",
+      "community": 16,
+      "norm_label": "theme storage failure handling"
+    },
+    {
+      "label": "Evidence Studio Historical Design",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-07-26-evidence-studio-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "docs_superpowers_specs_2026_07_26_evidence_studio_design_evidence_studio_design",
+      "community": 12,
+      "norm_label": "evidence studio historical design"
+    },
+    {
+      "label": "Artifact Preview",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-07-26-evidence-studio-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "docs_superpowers_specs_2026_07_26_evidence_studio_design_artifact_preview",
+      "community": 12,
+      "norm_label": "artifact preview"
+    },
+    {
+      "label": "Balanced Mode",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-07-27-balanced-pdf-latency-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "docs_superpowers_specs_2026_07_27_balanced_pdf_latency_design_balanced_mode",
+      "community": 12,
+      "norm_label": "balanced mode"
+    },
+    {
+      "label": "Bounded Vision Work",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/specs/2026-07-27-balanced-pdf-latency-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "docs_superpowers_specs_2026_07_27_balanced_pdf_latency_design_bounded_vision_work",
+      "community": 12,
+      "norm_label": "bounded vision work"
     }
   ],
   "links": [
@@ -20512,16 +20539,6 @@
     {
       "relation": "conceptually_related_to",
       "confidence": "INFERRED",
-      "confidence_score": 0.85,
-      "source_file": ".github/workflows/ci.yml",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "_github_workflows_ci_yml_continuous_verification",
-      "target": "_pre_commit_config_pre_commit_quality_gates"
-    },
-    {
-      "relation": "conceptually_related_to",
-      "confidence": "INFERRED",
       "confidence_score": 0.75,
       "source_file": ".github/workflows/dependency-review.yml",
       "source_location": null,
@@ -20530,154 +20547,144 @@
       "target": "_github_dependabot_yml_dependency_update_automation"
     },
     {
-      "relation": "implements",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "README.md",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/DEVELOPMENT.md",
       "source_location": null,
       "weight": 1.0,
-      "source": "readme_paperplane",
-      "target": "readme_automatic_routing"
-    },
-    {
-      "relation": "implements",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "README.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "readme_paperplane",
-      "target": "readme_session_only_state"
-    },
-    {
-      "relation": "implements",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "docs/ARCHITECTURE.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "docs_architecture_streamlit_workspace",
-      "target": "docs_architecture_docling_path"
-    },
-    {
-      "relation": "implements",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "docs/ARCHITECTURE.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "docs_architecture_streamlit_workspace",
-      "target": "docs_architecture_openai_vision_path"
-    },
-    {
-      "relation": "shares_data_with",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "docs/ARCHITECTURE.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "docs_architecture_docling_path",
-      "target": "docs_architecture_shared_assembler"
+      "source": "docs_development_engineering_workflow",
+      "target": "_github_workflows_ci_yml_continuous_verification"
     },
     {
       "relation": "semantically_similar_to",
       "confidence": "INFERRED",
       "confidence_score": 0.95,
-      "source_file": "Zero_to_Hero_Study_Handbook.md",
-      "source_location": null,
-      "weight": 0.95,
-      "source": "zero_to_hero_study_handbook_semantic_only_geometry",
-      "target": "docs_architecture_docling_path"
-    },
-    {
-      "relation": "shares_data_with",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "docs/ARCHITECTURE.md",
+      "source_file": ".kiro/steering/code-review-graph.md",
       "source_location": null,
       "weight": 1.0,
-      "source": "docs_architecture_openai_vision_path",
-      "target": "docs_architecture_shared_assembler"
+      "source": "_kiro_steering_code_review_graph_graph_first_code_discovery",
+      "target": "agents_graph_first_code_discovery"
+    },
+    {
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "CLAUDE.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "claude_graph_first_code_discovery",
+      "target": "agents_graph_first_code_discovery"
+    },
+    {
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "CODEBUDDY.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "codebuddy_graph_first_code_discovery",
+      "target": "agents_graph_first_code_discovery"
     },
     {
       "relation": "conceptually_related_to",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "docs/APP_CAPABILITIES.md",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "ONBOARDING.md",
       "source_location": null,
       "weight": 1.0,
-      "source": "docs_app_capabilities_layout_aware_markdown",
-      "target": "docs_app_capabilities_grounding_json"
+      "source": "onboarding_local_stateless_streamlit_application",
+      "target": "docs_architecture_hybrid_document_routing"
+    },
+    {
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "QODER.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "qoder_local_document_extraction_architecture",
+      "target": "docs_architecture_hybrid_document_routing"
     },
     {
       "relation": "references",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
+      "source_file": "README.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "readme_paperplane_product_overview",
+      "target": "docs_app_capabilities_document_capability_contract"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "Zero_to_Hero_Study_Handbook.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "zero_to_hero_study_handbook_contributor_learning_path",
+      "target": "docs_development_engineering_workflow"
+    },
+    {
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/APP_CAPABILITIES.html",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "docs_app_capabilities_document_capability_contract",
+      "target": "docs_app_capabilities_html_document_capability_contract"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
       "source_file": "docs/FAQ.md",
       "source_location": null,
       "weight": 1.0,
-      "source": "docs_app_capabilities_result_views",
-      "target": "docs_faq_annotated_pdf"
+      "source": "docs_faq_user_operating_guidance",
+      "target": "docs_app_capabilities_document_capability_contract"
     },
     {
-      "relation": "references",
+      "relation": "implements",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "CHANGELOG.md",
+      "source_file": "docs/ARCHITECTURE.md",
       "source_location": null,
       "weight": 1.0,
-      "source": "changelog_v41_docling_expansion",
-      "target": "docs_engines_docling"
+      "source": "docs_architecture_hybrid_document_routing",
+      "target": "docs_engines_docling_native_engine"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARCHITECTURE.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "docs_architecture_hybrid_document_routing",
+      "target": "docs_engines_openai_vision_engine"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/DEPLOYMENT.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "docs_deployment_local_single_user_deployment",
+      "target": "docs_limitations_product_scope_limits"
     },
     {
       "relation": "conceptually_related_to",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "docs/ENGINES.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "docs_engines_docling",
-      "target": "docs_engines_openai_vision"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "SECURITY.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "security_sensitive_document_handling",
-      "target": "docs_engines_openai_vision"
-    },
-    {
-      "relation": "semantically_similar_to",
       "confidence": "INFERRED",
       "confidence_score": 0.85,
-      "source_file": "docs/QUALITY.md",
+      "source_file": "docs/adr/0002-langgraph-for-pipeline.md",
       "source_location": null,
       "weight": 0.85,
-      "source": "docs_quality_output_validation",
-      "target": "zero_to_hero_study_handbook_output_contract"
-    },
-    {
-      "relation": "semantically_similar_to",
-      "confidence": "INFERRED",
-      "confidence_score": 0.95,
-      "source_file": "docs/LIMITATIONS.md",
-      "source_location": null,
-      "weight": 0.95,
-      "source": "docs_limitations_local_single_user",
-      "target": "docs_deployment_localhost_only"
-    },
-    {
-      "relation": "semantically_similar_to",
-      "confidence": "INFERRED",
-      "confidence_score": 0.95,
-      "source_file": "docs/DEVELOPMENT.md",
-      "source_location": null,
-      "weight": 0.95,
-      "source": "docs_development_safe_change_practice",
-      "target": "contributing_local_stateless_scope"
+      "source": "docs_adr_0002_langgraph_for_pipeline_archived_langgraph_decision",
+      "target": "docs_migration_guide_v4_simplification"
     },
     {
       "relation": "conceptually_related_to",
@@ -20687,197 +20694,57 @@
       "source_location": null,
       "weight": 1.0,
       "source": "docs_migration_guide_v4_simplification",
-      "target": "docs_deployment_localhost_only"
+      "target": "docs_runbook_archived_operations"
     },
     {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "RELEASE.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "release_source_only_release_process",
-      "target": "changelog_v41_docling_expansion"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "docs/RELEASE_NOTES.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "docs_release_notes_paperplane_v41",
-      "target": "docs_release_notes_docling_conversion"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "docs/RELEASE_NOTES.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "docs_release_notes_paperplane_v41",
-      "target": "docs_release_notes_openai_vision"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "docs/RELEASE_NOTES.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "docs_release_notes_paperplane_v41",
-      "target": "docs_release_notes_session_only_state"
-    },
-    {
-      "relation": "conceptually_related_to",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "docs/how-it-works.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "docs_how_it_works_automatic_routing",
-      "target": "docs_release_notes_docling_conversion"
-    },
-    {
-      "relation": "conceptually_related_to",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "docs/how-it-works.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "docs_how_it_works_automatic_routing",
-      "target": "docs_release_notes_openai_vision"
-    },
-    {
-      "relation": "conceptually_related_to",
+      "relation": "semantically_similar_to",
       "confidence": "INFERRED",
-      "confidence_score": 0.85,
-      "source_file": "Sample-PDF/PublicWaterMassMailing.pdf",
+      "confidence_score": 0.95,
+      "source_file": "docs/QUALITY.md",
       "source_location": null,
-      "weight": 1.0,
-      "source": "sample_pdf_publicwatermassmailing_scanned_sample",
-      "target": "docs_release_notes_openai_vision"
-    },
-    {
-      "relation": "rationale_for",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "security_best_practices_report.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "security_best_practices_report_local_attack_surface",
-      "target": "docs_release_notes_session_only_state"
+      "weight": 0.95,
+      "source": "docs_quality_output_validation",
+      "target": "docs_superpowers_plans_2026_07_27_v2_output_quality_current_v41_result"
     },
     {
       "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "docs/RUNBOOK.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "docs_runbook_operational_recovery",
-      "target": "docs_setup_environment_credentials"
-    },
-    {
-      "relation": "conceptually_related_to",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "docs/RUN_APP.md",
       "source_location": null,
       "weight": 1.0,
-      "source": "docs_run_app_paperplane_launcher",
-      "target": "docs_setup_environment_credentials"
-    },
-    {
-      "relation": "rationale_for",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "docs/adr/0002-langgraph-for-pipeline.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "docs_adr_0002_bounded_page_processing",
-      "target": "docs_zero_to_mastery_parser_data_flow"
+      "source": "docs_run_app_windows_launcher",
+      "target": "docs_setup_credential_precedence"
     },
     {
       "relation": "conceptually_related_to",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "docs/ZERO_TO_MASTERY.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "docs_zero_to_mastery_parser_data_flow",
-      "target": "docs_how_it_works_automatic_routing"
-    },
-    {
-      "relation": "conceptually_related_to",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "docs/ZERO_TO_MASTERY.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "docs_zero_to_mastery_parser_data_flow",
-      "target": "docs_how_it_works_grounded_output"
-    },
-    {
-      "relation": "implements",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "docs/architecture/paperplane-system.html",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "docs_architecture_paperplane_system_v41",
-      "target": "docs_how_it_works_automatic_routing"
-    },
-    {
-      "relation": "implements",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "docs/architecture/paperplane-system.html",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "docs_architecture_paperplane_system_v41",
-      "target": "docs_how_it_works_grounded_output"
-    },
-    {
-      "relation": "shares_data_with",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "docs/how-it-works.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "docs_how_it_works_grounded_output",
-      "target": "docs_architecture_paperplane_system_evidence_pdf"
-    },
-    {
-      "relation": "semantically_similar_to",
-      "confidence": "INFERRED",
-      "confidence_score": 0.75,
-      "source_file": "docs/superpowers/plans/2026-07-27-v2-output-quality.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "docs_superpowers_plans_v2_output_quality",
-      "target": "docs_how_it_works_grounded_output"
-    },
-    {
-      "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "docs/adr/0004-secure-by-default.md",
       "source_location": null,
       "weight": 1.0,
-      "source": "docs_adr_0004_secure_by_default",
-      "target": "security_best_practices_report_local_attack_surface"
+      "source": "docs_adr_0004_secure_by_default_secure_local_boundary",
+      "target": "docs_setup_credential_precedence"
     },
     {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "docs/architecture/paperplane-system.html",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/ZERO_TO_MASTERY.md",
       "source_location": null,
-      "weight": 1.0,
-      "source": "docs_architecture_paperplane_system_v41",
-      "target": "docs_architecture_paperplane_system_evidence_pdf"
+      "weight": 0.95,
+      "source": "docs_zero_to_mastery_data_flow",
+      "target": "docs_how_it_works_shared_output"
+    },
+    {
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/how-it-works.md",
+      "source_location": null,
+      "weight": 0.85,
+      "source": "docs_how_it_works_mode_policy",
+      "target": "docs_superpowers_plans_2026_07_27_balanced_pdf_latency_current_performance_guidance"
     },
     {
       "relation": "references",
@@ -20896,8 +20763,18 @@
       "source_file": "docs/superpowers/plans/2026-07-26-dark-theme.md",
       "source_location": null,
       "weight": 1.0,
-      "source": "docs_superpowers_plans_dark_theme",
-      "target": "docs_superpowers_specs_dark_theme"
+      "source": "docs_superpowers_plans_2026_07_26_dark_theme_historical_plan",
+      "target": "docs_superpowers_plans_2026_07_26_dark_theme_theme_toggle"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-26-dark-theme.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "docs_superpowers_plans_2026_07_26_dark_theme_historical_plan",
+      "target": "docs_superpowers_specs_2026_07_26_dark_theme_design_dark_theme_design"
     },
     {
       "relation": "references",
@@ -20906,18 +20783,58 @@
       "source_file": "docs/superpowers/plans/2026-07-26-evidence-studio.md",
       "source_location": null,
       "weight": 1.0,
-      "source": "docs_superpowers_plans_evidence_studio",
-      "target": "docs_superpowers_specs_evidence_studio"
+      "source": "docs_superpowers_plans_2026_07_26_evidence_studio_historical_plan",
+      "target": "docs_superpowers_plans_2026_07_26_evidence_studio_document_first_workspace"
     },
     {
       "relation": "references",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "docs/superpowers/plans/2026-07-27-balanced-pdf-latency.md",
+      "source_file": "docs/superpowers/plans/2026-07-26-evidence-studio.md",
       "source_location": null,
       "weight": 1.0,
-      "source": "docs_superpowers_plans_balanced_pdf_latency",
-      "target": "docs_superpowers_specs_balanced_pdf_latency"
+      "source": "docs_superpowers_plans_2026_07_26_evidence_studio_historical_plan",
+      "target": "docs_superpowers_specs_2026_07_26_evidence_studio_design_evidence_studio_design"
+    },
+    {
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.65,
+      "source_file": "docs/superpowers/specs/2026-07-27-balanced-pdf-latency-design.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "docs_superpowers_specs_2026_07_27_balanced_pdf_latency_design_bounded_vision_work",
+      "target": "docs_superpowers_plans_2026_07_26_evidence_studio_document_first_workspace"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-07-26-dark-theme-design.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "docs_superpowers_specs_2026_07_26_dark_theme_design_dark_theme_design",
+      "target": "docs_superpowers_specs_2026_07_26_dark_theme_design_storage_failure_handling"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-07-26-evidence-studio-design.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "docs_superpowers_specs_2026_07_26_evidence_studio_design_evidence_studio_design",
+      "target": "docs_superpowers_specs_2026_07_26_evidence_studio_design_artifact_preview"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-07-27-balanced-pdf-latency-design.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "docs_superpowers_specs_2026_07_27_balanced_pdf_latency_design_balanced_mode",
+      "target": "docs_superpowers_specs_2026_07_27_balanced_pdf_latency_design_bounded_vision_work"
     }
   ],
   "hyperedges": [
@@ -20936,56 +20853,45 @@
       "source_file": ".github/code-review-graph.instruction.md"
     },
     {
-      "id": "automated_quality_and_security",
-      "label": "Automated Quality and Security Controls",
+      "id": "graph_first_agent_guidance",
+      "label": "Graph-First Agent Guidance",
       "nodes": [
-        "_github_workflows_ci_yml_continuous_verification",
-        "_github_workflows_dependency_review_yml_dependency_security_review",
-        "_github_dependabot_yml_dependency_update_automation",
-        "_pre_commit_config_pre_commit_quality_gates"
+        "agents_graph_first_code_discovery",
+        "claude_graph_first_code_discovery",
+        "codebuddy_graph_first_code_discovery",
+        "_kiro_steering_code_review_graph_graph_first_code_discovery"
       ],
       "relation": "participate_in",
       "confidence": "INFERRED",
-      "confidence_score": 0.85,
-      "source_file": ".github/workflows/ci.yml"
+      "confidence_score": 0.95,
+      "source_file": "AGENTS.md"
     },
     {
-      "id": "paperplane_dual_engine_flow",
-      "label": "Dual Engine Document Processing",
+      "id": "hybrid_document_extraction_pipeline",
+      "label": "Hybrid Document Extraction Pipeline",
       "nodes": [
-        "docs_architecture_docling_path",
-        "docs_architecture_openai_vision_path",
-        "docs_architecture_shared_assembler"
+        "onboarding_local_stateless_streamlit_application",
+        "docs_architecture_hybrid_document_routing",
+        "docs_engines_docling_native_engine",
+        "docs_engines_openai_vision_engine",
+        "docs_architecture_grounding_model"
       ],
-      "relation": "participate_in",
+      "relation": "form",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "docs/ARCHITECTURE.md"
     },
     {
-      "id": "paperplane_local_state_boundary",
-      "label": "Local Stateless Operating Boundary",
+      "id": "paperplane_local_runtime_principles",
+      "label": "Local Runtime Principles",
       "nodes": [
-        "readme_session_only_state",
-        "docs_limitations_local_single_user",
-        "docs_deployment_localhost_only"
+        "docs_run_app_windows_launcher",
+        "docs_how_it_works_shared_output",
+        "docs_adr_0004_secure_by_default_secure_local_boundary"
       ],
       "relation": "form",
       "confidence": "INFERRED",
-      "confidence_score": 0.95,
-      "source_file": "README.md"
-    },
-    {
-      "id": "paperplane_v41_extraction_workflow",
-      "label": "Paperplane v4.1 Extraction Workflow",
-      "nodes": [
-        "docs_how_it_works_automatic_routing",
-        "docs_how_it_works_grounded_output",
-        "docs_architecture_paperplane_system_evidence_pdf"
-      ],
-      "relation": "participate_in",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
+      "confidence_score": 0.85,
       "source_file": "docs/how-it-works.md"
     },
     {
@@ -20993,8 +20899,7 @@
       "label": "Streamlit v4 Transition",
       "nodes": [
         "tasks_plan_streamlit_only_migration",
-        "tasks_todo_v4_completion",
-        "docs_release_notes_paperplane_v41"
+        "tasks_todo_v4_completion"
       ],
       "relation": "form",
       "confidence": "EXTRACTED",
@@ -21002,12 +20907,12 @@
       "source_file": "tasks/plan.md"
     },
     {
-      "id": "historical_frontend_plans",
-      "label": "Historical Frontend Plans",
+      "id": "historical_frontend_experience",
+      "label": "Historical Frontend Experience Design",
       "nodes": [
-        "docs_superpowers_plans_dark_theme",
-        "docs_superpowers_plans_evidence_studio",
-        "docs_architecture_paperplane_system_v41"
+        "docs_superpowers_plans_2026_07_26_dark_theme_historical_plan",
+        "docs_superpowers_plans_2026_07_26_evidence_studio_historical_plan",
+        "docs_superpowers_specs_2026_07_26_evidence_studio_design_evidence_studio_design"
       ],
       "relation": "participate_in",
       "confidence": "EXTRACTED",
@@ -21015,5 +20920,5 @@
       "source_file": "docs/superpowers/plans/2026-07-26-evidence-studio.md"
     }
   ],
-  "built_at_commit": "cdd1906c342a50347b5e4d7af0f5689276afb688"
+  "built_at_commit": "d84f6aa77ffc59e300ba40210be41905da6aadda"
 }

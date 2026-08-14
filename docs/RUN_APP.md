@@ -9,33 +9,36 @@ Double-click `Paperplane.cmd`. It:
 3. installs Python 3.12.10;
 4. creates or updates `.venv` from `uv.lock`;
 5. downloads Docling layout and table models; and
-6. starts the local Streamlit app.
+6. starts the local Streamlit app at `http://127.0.0.1:8551`.
 
 The first run needs internet access. Later runs reuse installed tools and model weights
 while still checking the locked dependency set.
 
 ## Credentials
 
-The launcher refreshes `OPENAI_API_KEY` and `OPENAI_BASE_URL` from the current Windows
-user's environment registry. It never prints or writes their values.
+The launcher refreshes `OPENAI_API_KEY`, `OPENAI_BASE_URL`, and `AGNES_API_KEY` from the
+current Windows user's environment registry. It never prints or writes their values.
 
 ```powershell
 [Environment]::SetEnvironmentVariable("OPENAI_API_KEY", "your-key", "User")
 [Environment]::SetEnvironmentVariable("OPENAI_BASE_URL", "https://api.openai.com", "User")
+[Environment]::SetEnvironmentVariable("AGNES_API_KEY", "your-key", "User")
 ```
 
 Open a new terminal after changing a user variable. If user-level variables are unavailable,
 copy `.env.example` to `.env` or `.streamlit/secrets.toml.example` to
 `.streamlit/secrets.toml`. Both destination files are ignored by Git.
 
-Without a key, native PDFs and supported Office files remain available. Scans and images
-show an actionable error, and native-document figures use explicit placeholders.
+Without the key for the selected model, native PDFs and supported Office files remain
+available. Scans and images show an actionable error, and figures use placeholders.
+
+The AI selector defaults to OpenAI. Choose **Agnes 2.5 Flash** to use `AGNES_API_KEY`.
 
 ## Terminal launch
 
 ```powershell
 uv sync --locked
-uv run --locked streamlit run streamlit_app.py
+uv run --locked streamlit run streamlit_app.py --server.port=8551
 ```
 
 The checked-in configuration binds to `127.0.0.1`, enables XSRF protection, and caps

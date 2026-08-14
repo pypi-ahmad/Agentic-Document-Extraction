@@ -10,6 +10,8 @@ Read the [README](README.md), [architecture](docs/ARCHITECTURE.md), and
 - Use conventional commit subjects.
 - Add tests for observable behavior changes.
 - Never commit API keys, `.streamlit/secrets.toml`, uploads, or results.
+- Preserve both provider paths: OpenAI uses `OPENAI_API_KEY` and optional
+  `OPENAI_BASE_URL`; Agnes 2.5 Flash uses `AGNES_API_KEY`.
 - Update affected documentation in the same change.
 
 ## Local setup
@@ -17,6 +19,7 @@ Read the [README](README.md), [architecture](docs/ARCHITECTURE.md), and
 ```powershell
 uv python install 3.12.10
 uv sync --locked --extra test --extra lint --extra docs
+uv run streamlit run streamlit_app.py --server.port=8551
 ```
 
 Before opening a pull request:

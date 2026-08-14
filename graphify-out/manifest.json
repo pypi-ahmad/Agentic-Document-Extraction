@@ -55,9 +55,9 @@
     "semantic_hash": "41b1d39916ee45dd31f96d0ae9bd6cef"
   },
   "docs/architecture/paperplane-system.architecture.json": {
-    "mtime": 1786709187.8357782,
-    "ast_hash": "5aae20e46754e6d81b4e9b60ea4503f4",
-    "semantic_hash": "5aae20e46754e6d81b4e9b60ea4503f4"
+    "mtime": 1786713882.989444,
+    "ast_hash": "f35d6b91c5883619029675f27c7f616d",
+    "semantic_hash": "f35d6b91c5883619029675f27c7f616d"
   },
   "ownership-map-out/cochange.graph.json": {
     "mtime": 1786688014.263258,
@@ -330,9 +330,9 @@
     "semantic_hash": "28e28e390d28ce80cfd5dc7b35fcefc3"
   },
   ".github/workflows/ci.yml": {
-    "mtime": 1786709072.8652003,
-    "ast_hash": "f3f16de06256855ccdd2387fb1d5c669",
-    "semantic_hash": "f3f16de06256855ccdd2387fb1d5c669"
+    "mtime": 1786713965.2459369,
+    "ast_hash": "50217d78ed1d8a10eef961c888f07dd7",
+    "semantic_hash": "50217d78ed1d8a10eef961c888f07dd7"
   },
   ".github/workflows/dependency-review.yml": {
     "mtime": 1786688014.1287599,
@@ -380,24 +380,24 @@
     "semantic_hash": "89b0f72a635fc514fba55a2378f26025"
   },
   "ONBOARDING.md": {
-    "mtime": 1786688014.1367962,
-    "ast_hash": "7345369db87f4353b9bfb5b492da213b",
-    "semantic_hash": "7345369db87f4353b9bfb5b492da213b"
+    "mtime": 1786713607.0871432,
+    "ast_hash": "20f8f29b5f1b8a34a63aa4225047e753",
+    "semantic_hash": "20f8f29b5f1b8a34a63aa4225047e753"
   },
   "QODER.md": {
-    "mtime": 1786688014.1367962,
-    "ast_hash": "ea01605b1dac9493500bb8d86594916f",
-    "semantic_hash": "ea01605b1dac9493500bb8d86594916f"
+    "mtime": 1786713607.088134,
+    "ast_hash": "986511a4e26687406a129c0a49565f2d",
+    "semantic_hash": "986511a4e26687406a129c0a49565f2d"
   },
   "README.md": {
-    "mtime": 1786712996.5734417,
-    "ast_hash": "ef0572067583ad18e24d42888211cd24",
-    "semantic_hash": "ef0572067583ad18e24d42888211cd24"
+    "mtime": 1786713607.0901449,
+    "ast_hash": "e09e66eef0d8e2008ccfe201b953205b",
+    "semantic_hash": "e09e66eef0d8e2008ccfe201b953205b"
   },
   "RELEASE.md": {
-    "mtime": 1786712228.780258,
-    "ast_hash": "ef2dd31ce7a905a1a183c176eac1eb0e",
-    "semantic_hash": "ef2dd31ce7a905a1a183c176eac1eb0e"
+    "mtime": 1786713550.1849663,
+    "ast_hash": "ee2f8c3fedc7b41caaf56bd2f97362c7",
+    "semantic_hash": "ee2f8c3fedc7b41caaf56bd2f97362c7"
   },
   "SECURITY.md": {
     "mtime": 1786713001.7854373,
@@ -405,144 +405,144 @@
     "semantic_hash": "68a7bf22656e9cec9b182b9c4913d178"
   },
   "Zero_to_Hero_Study_Handbook.md": {
-    "mtime": 1786713011.3526924,
-    "ast_hash": "788604d7531a823327ee558bbd6c3a82",
-    "semantic_hash": "788604d7531a823327ee558bbd6c3a82"
+    "mtime": 1786713675.1636882,
+    "ast_hash": "95e2f9bb6adfeb2ba3d13ced84e3e364",
+    "semantic_hash": "95e2f9bb6adfeb2ba3d13ced84e3e364"
   },
   "docs/APP_CAPABILITIES.html": {
-    "mtime": 1786713064.5305922,
-    "ast_hash": "a6286ccd04c3539de0a991f3b60172be",
-    "semantic_hash": "a6286ccd04c3539de0a991f3b60172be"
+    "mtime": 1786713914.2975452,
+    "ast_hash": "9cfa1a46d8ef5a160a38b648521a10aa",
+    "semantic_hash": "9cfa1a46d8ef5a160a38b648521a10aa"
   },
   "docs/APP_CAPABILITIES.md": {
-    "mtime": 1786712996.5754135,
-    "ast_hash": "9b818ce80a53216403309c46c265cea9",
-    "semantic_hash": "9b818ce80a53216403309c46c265cea9"
+    "mtime": 1786713791.759693,
+    "ast_hash": "c3df09b8e4989d4bc057c5d3d841f550",
+    "semantic_hash": "c3df09b8e4989d4bc057c5d3d841f550"
   },
   "docs/ARCHITECTURE.md": {
-    "mtime": 1786712996.576885,
-    "ast_hash": "4746784395e44c7a7807075e702dd925",
-    "semantic_hash": "4746784395e44c7a7807075e702dd925"
+    "mtime": 1786713791.7718368,
+    "ast_hash": "8b3166b996bbf55dd9016a8ba449bc4b",
+    "semantic_hash": "8b3166b996bbf55dd9016a8ba449bc4b"
   },
   "docs/DEPLOYMENT.md": {
-    "mtime": 1786712132.460322,
-    "ast_hash": "d5c6b1191ef71934bd4903b8aba1bfa1",
-    "semantic_hash": "d5c6b1191ef71934bd4903b8aba1bfa1"
+    "mtime": 1786713791.7728488,
+    "ast_hash": "d99092a12753e8cfcf7336eb97c4eba8",
+    "semantic_hash": "d99092a12753e8cfcf7336eb97c4eba8"
   },
   "docs/DEVELOPMENT.md": {
-    "mtime": 1786713001.7793493,
-    "ast_hash": "77e100c369e28e7e285bd9b1efc9a31d",
-    "semantic_hash": "77e100c369e28e7e285bd9b1efc9a31d"
+    "mtime": 1786713791.773921,
+    "ast_hash": "7903b6d645b395785e682aaa7b70566b",
+    "semantic_hash": "7903b6d645b395785e682aaa7b70566b"
   },
   "docs/ENGINES.md": {
-    "mtime": 1786712115.0656137,
-    "ast_hash": "866824ed4465c7e1712071499107e951",
-    "semantic_hash": "866824ed4465c7e1712071499107e951"
+    "mtime": 1786713811.4468555,
+    "ast_hash": "5e27bdd4910ed157b9f7229a4352017f",
+    "semantic_hash": "5e27bdd4910ed157b9f7229a4352017f"
   },
   "docs/FAQ.md": {
-    "mtime": 1786712996.5784633,
-    "ast_hash": "789b24d0540bcb361b34e0eb3513e381",
-    "semantic_hash": "789b24d0540bcb361b34e0eb3513e381"
+    "mtime": 1786713811.448379,
+    "ast_hash": "7635a58fe5cc5ba9b5b8e4458db8e3ab",
+    "semantic_hash": "7635a58fe5cc5ba9b5b8e4458db8e3ab"
   },
   "docs/LIMITATIONS.md": {
-    "mtime": 1786712996.5794883,
-    "ast_hash": "b77c1636469c1ee99d69214a9d7cbb88",
-    "semantic_hash": "b77c1636469c1ee99d69214a9d7cbb88"
+    "mtime": 1786713811.4499257,
+    "ast_hash": "b7542b3a8d0f42b67c4cc17ba81dc6b4",
+    "semantic_hash": "b7542b3a8d0f42b67c4cc17ba81dc6b4"
   },
   "docs/MIGRATION_GUIDE.md": {
-    "mtime": 1786712228.7812564,
-    "ast_hash": "f114f677cd9801bc650bbcb094546e9a",
-    "semantic_hash": "f114f677cd9801bc650bbcb094546e9a"
+    "mtime": 1786713811.4514487,
+    "ast_hash": "1a5d0fb477d1f6d2e8abfe5155ddc1c1",
+    "semantic_hash": "1a5d0fb477d1f6d2e8abfe5155ddc1c1"
   },
   "docs/QUALITY.md": {
-    "mtime": 1786713036.8962495,
-    "ast_hash": "d3726997043e556684c90040aa17c3b2",
-    "semantic_hash": "d3726997043e556684c90040aa17c3b2"
+    "mtime": 1786713833.6034646,
+    "ast_hash": "f53fe2426e6332dfdbfe533e97ef90d7",
+    "semantic_hash": "f53fe2426e6332dfdbfe533e97ef90d7"
   },
   "docs/RELEASE_NOTES.md": {
-    "mtime": 1786713001.7813718,
-    "ast_hash": "74dfa95b6ed021a5cb7a30ecd26bf662",
-    "semantic_hash": "74dfa95b6ed021a5cb7a30ecd26bf662"
+    "mtime": 1786713833.6039698,
+    "ast_hash": "28dc2d664f480062af8ce9feb18e4e83",
+    "semantic_hash": "28dc2d664f480062af8ce9feb18e4e83"
   },
   "docs/RUNBOOK.md": {
-    "mtime": 1786713014.3036516,
-    "ast_hash": "131f97e031e1e3343549ae30452156ca",
-    "semantic_hash": "131f97e031e1e3343549ae30452156ca"
+    "mtime": 1786713833.6059783,
+    "ast_hash": "5b9e40a1d8a9739afdb2e26a798f8cee",
+    "semantic_hash": "5b9e40a1d8a9739afdb2e26a798f8cee"
   },
   "docs/RUN_APP.md": {
-    "mtime": 1786713001.7803586,
-    "ast_hash": "a33e2af1ef0834f184348bbbd691ef6b",
-    "semantic_hash": "a33e2af1ef0834f184348bbbd691ef6b"
+    "mtime": 1786713833.6049788,
+    "ast_hash": "7d4e3a205a72212e4b8053bf361a2f2f",
+    "semantic_hash": "7d4e3a205a72212e4b8053bf361a2f2f"
   },
   "docs/SETUP.md": {
-    "mtime": 1786712586.1083066,
-    "ast_hash": "3a8367d20573117e0aff94ebe2e7f1a2",
-    "semantic_hash": "3a8367d20573117e0aff94ebe2e7f1a2"
+    "mtime": 1786713833.6069798,
+    "ast_hash": "25ea86074af12f3ff6e25438b74bbd6e",
+    "semantic_hash": "25ea86074af12f3ff6e25438b74bbd6e"
   },
   "docs/ZERO_TO_MASTERY.md": {
-    "mtime": 1786713011.3540833,
-    "ast_hash": "558042c1c48762b2458abdda6af89b31",
-    "semantic_hash": "558042c1c48762b2458abdda6af89b31"
+    "mtime": 1786713833.6084888,
+    "ast_hash": "9a5efc551360dcafa432d577b2848514",
+    "semantic_hash": "9a5efc551360dcafa432d577b2848514"
   },
   "docs/adr/0001-record-architecture-decisions.md": {
-    "mtime": 1786688014.2437415,
-    "ast_hash": "8dab9436aa0d1d21ae5b975b4d6e4765",
-    "semantic_hash": "8dab9436aa0d1d21ae5b975b4d6e4765"
+    "mtime": 1786713845.059765,
+    "ast_hash": "f9988b0bd650c9f2c857b400b9451f2e",
+    "semantic_hash": "f9988b0bd650c9f2c857b400b9451f2e"
   },
   "docs/adr/0002-langgraph-for-pipeline.md": {
-    "mtime": 1786709197.6148555,
-    "ast_hash": "62e9e75a6173c04002d229d1bcbfb1e0",
-    "semantic_hash": "62e9e75a6173c04002d229d1bcbfb1e0"
+    "mtime": 1786713845.0608017,
+    "ast_hash": "02f060dbcbf7ff3d695e3cf00743086e",
+    "semantic_hash": "02f060dbcbf7ff3d695e3cf00743086e"
   },
   "docs/adr/0004-secure-by-default.md": {
-    "mtime": 1786709197.6158552,
-    "ast_hash": "4d74f89cde16d683b7cb2aa85ab96ce2",
-    "semantic_hash": "4d74f89cde16d683b7cb2aa85ab96ce2"
+    "mtime": 1786713845.0618331,
+    "ast_hash": "ae74226c2fe54e5b60b1db9e80f01338",
+    "semantic_hash": "ae74226c2fe54e5b60b1db9e80f01338"
   },
   "docs/architecture/paperplane-system.html": {
-    "mtime": 1786713001.787539,
-    "ast_hash": "a507b5b7bb544037d90cacb39ecf6f76",
-    "semantic_hash": "a507b5b7bb544037d90cacb39ecf6f76"
+    "mtime": 1786713882.99044,
+    "ast_hash": "669a6fc0e71d65fe6411c6ae1a897c54",
+    "semantic_hash": "669a6fc0e71d65fe6411c6ae1a897c54"
   },
   "docs/how-it-works.md": {
-    "mtime": 1786712996.5779493,
-    "ast_hash": "878a27d204ebe7e3270d3f3cd06977f9",
-    "semantic_hash": "878a27d204ebe7e3270d3f3cd06977f9"
+    "mtime": 1786713811.4494083,
+    "ast_hash": "ec83633e1e7427749e8a521bbf1af9df",
+    "semantic_hash": "ec83633e1e7427749e8a521bbf1af9df"
   },
   "docs/superpowers/plans/2026-07-26-dark-theme.md": {
-    "mtime": 1786709197.6099122,
-    "ast_hash": "1a230145a465609302a96fd2173869ce",
-    "semantic_hash": "1a230145a465609302a96fd2173869ce"
+    "mtime": 1786713864.896031,
+    "ast_hash": "ce6d3f23cb6d4a1444342ddd1788e985",
+    "semantic_hash": "ce6d3f23cb6d4a1444342ddd1788e985"
   },
   "docs/superpowers/plans/2026-07-26-evidence-studio.md": {
-    "mtime": 1786709197.6108475,
-    "ast_hash": "09f471f0d0845a186f500e4cc079861a",
-    "semantic_hash": "09f471f0d0845a186f500e4cc079861a"
+    "mtime": 1786713864.897037,
+    "ast_hash": "9386cd93b207038562c0fed198b1c251",
+    "semantic_hash": "9386cd93b207038562c0fed198b1c251"
   },
   "docs/superpowers/plans/2026-07-27-balanced-pdf-latency.md": {
-    "mtime": 1786709197.6118543,
-    "ast_hash": "0c5d96fb3eb8999840fd0959f440e4a5",
-    "semantic_hash": "0c5d96fb3eb8999840fd0959f440e4a5"
+    "mtime": 1786713864.898543,
+    "ast_hash": "db88d99a49c5efc38a55b5637549c755",
+    "semantic_hash": "db88d99a49c5efc38a55b5637549c755"
   },
   "docs/superpowers/plans/2026-07-27-v2-output-quality.md": {
-    "mtime": 1786709197.6128552,
-    "ast_hash": "f698e1cd5ee86273c2d79f1888d23a15",
-    "semantic_hash": "f698e1cd5ee86273c2d79f1888d23a15"
+    "mtime": 1786713864.899549,
+    "ast_hash": "dd63b1997e5e62de5583d1afe682faa3",
+    "semantic_hash": "dd63b1997e5e62de5583d1afe682faa3"
   },
   "docs/superpowers/specs/2026-07-26-dark-theme-design.md": {
-    "mtime": 1786709197.6128552,
-    "ast_hash": "9630f825b7b24ca8ff0e8af041d45d02",
-    "semantic_hash": "9630f825b7b24ca8ff0e8af041d45d02"
+    "mtime": 1786713864.9005482,
+    "ast_hash": "fd60ce5cf7a7e96b5542f95d0ed92cd6",
+    "semantic_hash": "fd60ce5cf7a7e96b5542f95d0ed92cd6"
   },
   "docs/superpowers/specs/2026-07-26-evidence-studio-design.md": {
-    "mtime": 1786709197.613855,
-    "ast_hash": "309a3733fa4c5284d990819a685f2d2f",
-    "semantic_hash": "309a3733fa4c5284d990819a685f2d2f"
+    "mtime": 1786713864.901548,
+    "ast_hash": "6c76043feb89dd265d82b55f0c9bb2ec",
+    "semantic_hash": "6c76043feb89dd265d82b55f0c9bb2ec"
   },
   "docs/superpowers/specs/2026-07-27-balanced-pdf-latency-design.md": {
-    "mtime": 1786709197.6148555,
-    "ast_hash": "88dffed3bff3fd330cc50b8b5d00d774",
-    "semantic_hash": "88dffed3bff3fd330cc50b8b5d00d774"
+    "mtime": 1786713864.9025471,
+    "ast_hash": "3f135b0de9b99a9ea42a65b4367ad52b",
+    "semantic_hash": "3f135b0de9b99a9ea42a65b4367ad52b"
   },
   "security_best_practices_report.md": {
     "mtime": 1786713014.3019986,

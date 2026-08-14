@@ -26,6 +26,7 @@ rem Refresh credentials from the current Windows user's environment registry.
 rem This avoids stale values inherited from a long-running Explorer process.
 for /f "tokens=1,2,*" %%A in ('reg.exe query "HKCU\Environment" /v OPENAI_API_KEY 2^>nul') do if /i "%%A"=="OPENAI_API_KEY" set "OPENAI_API_KEY=%%C"
 for /f "tokens=1,2,*" %%A in ('reg.exe query "HKCU\Environment" /v OPENAI_BASE_URL 2^>nul') do if /i "%%A"=="OPENAI_BASE_URL" set "OPENAI_BASE_URL=%%C"
+for /f "tokens=1,2,*" %%A in ('reg.exe query "HKCU\Environment" /v AGNES_API_KEY 2^>nul') do if /i "%%A"=="AGNES_API_KEY" set "AGNES_API_KEY=%%C"
 
 call :find_uv
 if not defined UV_EXE (
@@ -64,15 +65,18 @@ echo [4/5] Downloading local document-layout models if needed...
 if errorlevel 1 goto :setup_failure
 
 echo [5/5] Starting Paperplane...
+echo Open http://127.0.0.1:8551 in your browser.
 echo Close this window or press Ctrl+C to stop the app.
 echo.
 if not defined OPENAI_API_KEY (
-    echo Note: OPENAI_API_KEY is not set in this terminal.
-    echo Scans and images require it; native PDFs and Office files can run locally.
+    if not defined AGNES_API_KEY (
+        echo Note: Neither OPENAI_API_KEY nor AGNES_API_KEY is set in this terminal.
+        echo Scans and images require the key for the selected model.
+    )
     echo.
 )
 
-"%UV_EXE%" run --locked --python 3.12.10 streamlit run streamlit_app.py
+"%UV_EXE%" run --locked --python 3.12.10 streamlit run streamlit_app.py --server.port=8551
 set "PAPERPLANE_EXIT=%ERRORLEVEL%"
 if not "%PAPERPLANE_EXIT%"=="0" (
     echo.

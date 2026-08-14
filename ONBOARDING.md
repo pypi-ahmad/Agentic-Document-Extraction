@@ -13,20 +13,22 @@ Docker runtime, account system, or durable application storage.
 For normal Windows use, double-click `Paperplane.cmd`. It installs `uv` when needed,
 installs Python 3.12.10, syncs locked dependencies, downloads Docling layout and table
 models, and starts the app.
+The local UI is available at `http://127.0.0.1:8551`.
 
 For development:
 
 ```powershell
 uv sync --locked --extra test --extra lint --extra docs
-uv run streamlit run streamlit_app.py
+uv run streamlit run streamlit_app.py --server.port=8551
 ```
 
-OpenAI credentials are required for scanned PDFs and image files. Native PDFs and modern
-Office files can be parsed locally without them.
+The key for the selected OpenAI or Agnes model is required for scanned PDFs and image
+files. Native PDFs and modern Office files can be parsed locally without either key.
 
 ```powershell
 [Environment]::SetEnvironmentVariable("OPENAI_API_KEY", "your-key", "User")
 [Environment]::SetEnvironmentVariable("OPENAI_BASE_URL", "https://api.openai.com", "User")
+[Environment]::SetEnvironmentVariable("AGNES_API_KEY", "your-key", "User")
 ```
 
 Open a new terminal after changing user-level variables. For a machine where user-level
@@ -41,7 +43,7 @@ Streamlit upload
   -> validate type, size, page count, and image limits
   -> inspect each PDF page
   -> native page or Office file: local Docling parser
-  -> scanned page or image: OpenAI vision pipeline
+  -> scanned page or image: selected OpenAI or Agnes vision adapter
   -> assemble reading-order Markdown and hierarchical grounding JSON
   -> build an in-memory annotated evidence PDF
   -> display and download the current result
@@ -56,12 +58,17 @@ models:
 | Balanced | `paperplane-ade-latest` | Adaptive verification for most documents |
 | Audit | `paperplane-ade-audit-latest` | Highest inspection and repair budget |
 
+Those behavior labels describe the OpenAI path. With Agnes selected, `agnes-2.5-flash`
+fills every model-call role while Fast, Balanced, and Audit still control how much
+verification work is allowed.
+
 ## Repository map
 
 | Path | Purpose |
 |---|---|
 | `streamlit_app.py` | UI, session state, previews, result views, and downloads |
-| `paperplane/runtime.py` | In-process construction of Docling and OpenAI adapters |
+| `paperplane/runtime.py` | In-process construction of Docling and the selected AI adapter |
+| `paperplane/agnes_document.py` | Agnes 2.5 Flash Chat Completions adapter |
 | `paperplane/parser.py` | Validation, per-page routing, and response assembly |
 | `paperplane/docling_parser.py` | Local native-document conversion |
 | `paperplane/pipeline.py` | Scanned-page vision extraction and verification |

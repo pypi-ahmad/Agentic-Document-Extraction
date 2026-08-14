@@ -5,7 +5,8 @@ response as trusted merely because it matches a JSON shape.
 
 ## Extraction safeguards
 
-- strict structured-output schemas for OpenAI calls
+- strict OpenAI structured-output schemas; JSON-only Agnes output followed by the same
+  Pydantic contract validation
 - bounded reasoning, reconciliation, crop verification, and repair policies
 - native-word alignment when selectable PDF text exists
 - normalized coordinate validation and crop-to-page transforms
@@ -29,8 +30,8 @@ response as trusted merely because it matches a JSON shape.
 
 ## Automated coverage
 
-The test suite covers document validation, configuration precedence, OpenAI request
-construction, geometry, pipeline decisions, reconciliation, contracts, runtime composition,
+The test suite covers document validation, configuration precedence, OpenAI and Agnes
+request construction, geometry, pipeline decisions, reconciliation, contracts, runtime composition,
 Docling routing, annotated PDFs, and the Streamlit workflow. AppTest exercises all four
 lazy result views and all three downloads.
 

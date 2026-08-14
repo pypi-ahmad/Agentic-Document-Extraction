@@ -9,6 +9,8 @@ and this project aims to follow [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- Selectable Agnes 2.5 Flash vision inference through the official Chat Completions API,
+  configured with `AGNES_API_KEY`.
 - Local Docling parsing for native PDFs, DOCX, PPTX, XLSX, ODT, ODP, ODS, and CSV.
 - Automatic per-page routing for native, scanned, and mixed PDFs.
 - HTML-table output, atomic-line grounding, and explicit semantic-only Office geometry.
@@ -19,7 +21,9 @@ and this project aims to follow [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
-- OpenAI credentials are now required only for scanned/image content and optional figure
+- The model selector now routes scans, images, and optional figure descriptions through
+  OpenAI Luna/Terra or `agnes-2.5-flash` without persisting credentials or documents.
+- AI provider credentials are required only for scanned/image content and optional figure
   descriptions; native documents can be converted locally.
 - `Paperplane.cmd` now downloads required Docling layout and table models during setup.
 - Docling's Windows layout path runs without Torch compilation or Visual Studio build tools.
@@ -314,7 +318,7 @@ and this project aims to follow [Semantic Versioning](https://semver.org/).
 # Release notes — v0.3.0
 
 **Release date:** 2026-06-22
-**Type:** Minor (backward-compatible; one bootstrap step required for existing deployments — see the [Migration Guide](MIGRATION_GUIDE.md))
+**Type:** Minor (backward-compatible; one bootstrap step required for existing deployments — see the [Migration Guide](docs/MIGRATION_GUIDE.md))
 
 > v0.3.0 is the **modernization release**. We took a hard look at
 > every layer of the codebase and brought it up to current
@@ -459,7 +463,7 @@ behind new endpoints, new env vars, and new opt-in components.
 
 The **only** mandatory operator action is `alembic stamp head`
 on existing v0.2.x databases, documented in the
-[Migration Guide](MIGRATION_GUIDE.md) §1.
+[Migration Guide](docs/MIGRATION_GUIDE.md) §1.
 
 ---
 
@@ -599,14 +603,13 @@ across eight logical phases.
   v0.3.0.
 - [`docs/RELEASE_NOTES.md`](docs/RELEASE_NOTES.md) — full feature
   list and breaking-change note.
-- [`docs/UPGRADE_SUMMARY.md`](docs/UPGRADE_SUMMARY.md) — one-page
-  at-a-glance table.
+- `docs/UPGRADE_SUMMARY.md` — historical one-page table removed in v4.
 - [`docs/RUNBOOK.md`](docs/RUNBOOK.md) — operator reference.
 - [`docs/FAQ.md`](docs/FAQ.md) — frequently asked questions.
 - [`docs/adr/0001-record-architecture-decisions.md`](docs/adr/0001-record-architecture-decisions.md)
   — ADR index.
 - [`docs/adr/0002-langgraph-for-pipeline.md`](docs/adr/0002-langgraph-for-pipeline.md).
-- [`docs/adr/0003-sqlite-wal-default.md`](docs/adr/0003-sqlite-wal-default.md).
+- `docs/adr/0003-sqlite-wal-default.md` — historical database ADR removed in v4.
 - [`docs/adr/0004-secure-by-default.md`](docs/adr/0004-secure-by-default.md).
 - `CONTRIBUTING.md` moved to the repo root (GitHub convention).
 - `.editorconfig` for project-wide style defaults.

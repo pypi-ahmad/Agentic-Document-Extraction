@@ -12,7 +12,7 @@ The supported architecture is:
 ```text
 streamlit_app.py -> paperplane.runtime -> AgenticDocumentParser
                   -> Docling for native content
-                  -> OpenAI vision for scans and images
+                  -> selected OpenAI or Agnes vision model for scans and images
                   -> Markdown/grounding assembly -> annotated PDF
 ```
 
@@ -43,7 +43,8 @@ query returned evidence.
 - Make the smallest coherent change and avoid speculative abstractions.
 - Use `uv` with the locked Python 3.12 dependency set.
 - Keep uploads and results session-only. Never log or persist document contents or secrets.
-- Prefer Windows user environment variables `OPENAI_API_KEY` and `OPENAI_BASE_URL`.
+- Prefer Windows user environment variables `OPENAI_API_KEY`, `OPENAI_BASE_URL`, and
+  `AGNES_API_KEY`.
   `.env` and `.streamlit/secrets.toml` are ignored local fallbacks only.
 - Update relevant documentation after every user-visible code change.
 - Keep `.codegraph/`, `.code-review-graph/`, `.ua/`, and `graphify-out/` trackable. Ignore
@@ -55,11 +56,13 @@ query returned evidence.
 - Limits: 200 MB, 500 pages, bounded PDF canvas area, and bounded decoded image pixels.
 - Encrypted PDFs are rejected.
 - Native PDF pages and Office files use Docling locally.
-- Scanned PDF pages and images require OpenAI vision.
+- Scanned PDF pages and images require the key for the selected OpenAI or Agnes model.
 - Mixed PDFs route each page independently.
 - The UI exposes Output, Annotated PDF, Markdown, and JSON views plus downloads.
 - Fast, Balanced, and Audit map to `paperplane-ade-fast-latest`, `paperplane-ade-latest`,
   and `paperplane-ade-audit-latest`, respectively.
+- OpenAI is the default AI selection. Agnes uses `agnes-2.5-flash` for every model-call
+  role while preserving the selected processing policy.
 - The app binds to `127.0.0.1` and retains only the current Streamlit session state.
 
 ## Verification
@@ -71,6 +74,6 @@ uv run pyright
 uv run pytest tests -q
 ```
 
-For UI changes, run `uv run streamlit run streamlit_app.py`. For generated documentation,
+For UI changes, run `uv run streamlit run streamlit_app.py --server.port=8551`. For generated documentation,
 run `uv run python scripts/build_handbook.py` and
 `uv run python scripts/build_app_guide.py`.

@@ -9,10 +9,10 @@ Streamlit session.
 | Input | Processing path |
 |---|---|
 | Text-native PDF page | Local Docling conversion |
-| Scanned PDF page | OpenAI vision |
-| Mixed PDF | Automatic per-page Docling/OpenAI routing |
-| PNG, JPEG, WebP, TIFF, BMP | OpenAI vision |
-| DOCX, PPTX, XLSX, ODT, ODP, ODS, CSV | Local Docling; optional OpenAI figure descriptions |
+| Scanned PDF page | Selected OpenAI or Agnes vision model |
+| Mixed PDF | Automatic per-page Docling/vision routing |
+| PNG, JPEG, WebP, TIFF, BMP | Selected OpenAI or Agnes vision model |
+| DOCX, PPTX, XLSX, ODT, ODP, ODS, CSV | Local Docling; optional selected-model figure descriptions |
 
 Default limits are 200 MB and 500 pages or image frames. Paperplane also bounds PDF page
 canvas area and cumulative decoded image pixels. Encrypted and password-protected files are
@@ -30,6 +30,7 @@ rejected.
 - Stable IDs within one response
 - Fast, Balanced, and Audit processing policies
 - Luna vision drafting with deterministic grounding and bounded Terra verification
+- Agnes 2.5 Flash as a single-model alternative for the same pipeline stages
 
 ## User workspace
 
@@ -66,12 +67,17 @@ and result data.
 
 ## Model mapping
 
+The AI selector defaults to OpenAI. Agnes 2.5 Flash is the alternate vision model.
+
 | Mode | Parser model | Vision behavior |
 |---|---|---|
 | Fast | `paperplane-ade-fast-latest` | Luna draft and deterministic grounding; no Terra pass |
 | Balanced | `paperplane-ade-latest` | Terra checks only for flagged content |
 | Audit | `paperplane-ade-audit-latest` | Highest rendering, verification, and repair budget |
 
-OpenAI is the vision inference provider; Docling is the local native-document engine.
+Users select OpenAI Luna/Terra or Agnes 2.5 Flash for vision inference; Docling remains the
+local native-document engine. Agnes uses `AGNES_API_KEY` and its official Chat Completions
+endpoint. With Agnes selected, `agnes-2.5-flash` fills all model-call roles while the mode
+continues to bound verification and repair work.
 Paperplane is inspired by ADE's observable workflow, but does not call LandingAI ADE or
 claim its benchmark results.

@@ -60,11 +60,11 @@ jobs:
           uv run --no-sync streamlit run streamlit_app.py \
             --server.headless=true \
             --server.address=127.0.0.1 \
-            --server.port=8501 &
+            --server.port=8551 &
           streamlit_pid=$!
           trap 'kill "$streamlit_pid"' EXIT
           for attempt in $(seq 1 30); do
-            if curl --fail --silent http://127.0.0.1:8501/_stcore/health; then
+            if curl --fail --silent http://127.0.0.1:8551/_stcore/health; then
               exit 0
             fi
             sleep 1

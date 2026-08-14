@@ -41,7 +41,7 @@ gh auth status
 Smoke-test the actual app and inspect the upload, parse, result, and download workflow:
 
 ```powershell
-uv run streamlit run streamlit_app.py
+uv run streamlit run streamlit_app.py --server.port=8551
 ```
 
 ## 2. Preview the release

@@ -79,7 +79,7 @@ class HandbookTemplate(BaseDocTemplate):
             bottomMargin=18 * mm,
             title="Paperplane Zero to Mastery",
             author="Ahmad",
-            subject="Code-grounded tutorial for mastering Paperplane v1.0.0",
+            subject="Code-grounded tutorial for mastering Paperplane v4.1.0",
         )
         frame = Frame(
             self.leftMargin,
@@ -287,7 +287,7 @@ def _code_block(value: str, width: float, style: ParagraphStyle) -> Table:
 def _story(source: str, width: float, styles: dict[str, ParagraphStyle]) -> list:
     lines = source.splitlines()
     title = lines[0].removeprefix("# ").strip()
-    subtitle = next((line for line in lines[1:] if line.strip()), "")
+    subtitle = "Local document extraction with Docling, OpenAI, and Agnes"
     story: list = [
         Spacer(1, 25 * mm),
         Table(
@@ -332,9 +332,6 @@ def _story(source: str, width: float, styles: dict[str, ParagraphStyle]) -> list
     while index < len(lines):
         line = lines[index]
         stripped = line.strip()
-        if index == 1 and stripped == subtitle:
-            index += 1
-            continue
         if stripped.startswith("```"):
             flush_paragraph()
             if in_code:
