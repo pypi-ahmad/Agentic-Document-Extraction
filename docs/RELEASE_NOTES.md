@@ -1,5 +1,11 @@
 # Release notes
 
+## Paperplane 5.0.2
+
+- Synchronized setup, capabilities, architecture, deployment, runtime, model, and handbook
+  documentation with Agnes 2.5 Flash private visual processing.
+- Updated current-version documentation and generated HTML/PDF artifacts to 5.0.2.
+
 ## Paperplane 5.0.1
 
 - Agnes 2.5 Flash now supports private visual Parse and enhancement through inline image

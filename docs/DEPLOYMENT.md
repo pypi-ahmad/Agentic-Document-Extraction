@@ -1,6 +1,6 @@
 # Deployment
 
-Paperplane 5.0.1 supports local, single-user use. The supported Windows entry point is
+Paperplane 5.0.2 supports local, single-user use. The supported Windows entry point is
 `Paperplane.cmd`, which repairs missing or out-of-date prerequisites when necessary and
 otherwise launches `workspace_app.py` directly on `127.0.0.1:8551`.
 
