@@ -1,5 +1,12 @@
 # Release notes
 
+## Paperplane 5.0.3
+
+- Expanded the README with detailed explanations of every processing engine, quality mode,
+  cloud model path, grounding feature, workspace view, workflow, job control, benchmark,
+  and calibration behavior.
+- Shipped and documented the red-and-black dark Streamlit theme.
+
 ## Paperplane 5.0.2
 
 - Synchronized setup, capabilities, architecture, deployment, runtime, model, and handbook
