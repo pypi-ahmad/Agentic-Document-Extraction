@@ -118,10 +118,6 @@ async def parse_document(
             parser_name = "ollama_vision"
         elif strategy == "ollama_ai":
             model_spec = get_document_model(ai_model)
-            if model_spec.provider == "agnes":
-                raise ValueError(
-                    "Agnes cannot enhance private visual uploads; choose another cloud model"
-                )
             adapter = ChainedStructuredAdapter(
                 OllamaDocumentAdapter(client, base_url=ollama_base_url),
                 cloud_adapter(client, model_spec.provider),
