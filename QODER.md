@@ -1,81 +1,32 @@
-# Qoder instructions for Paperplane
+# Qoder project context
 
-## Product contract
+Paperplane 5.0.0 is a Python 3.12/Streamlit application inspired by LandingAI ADE. Launch
+`workspace_app.py`; `streamlit_app.py` is only the Parse page.
 
-Paperplane is a local Streamlit application that converts PDFs, images, and modern Office
-documents into layout-aware Markdown, hierarchical grounding JSON, and an annotated PDF.
-It is inspired by LandingAI ADE's observable document-output workflow, but it does not call
-LandingAI ADE or claim compatibility with its private models or benchmarks.
+Four engine toggles are exclusive and initially off: Docling, PDF Inspector, Cloud AI,
+Ollama. Cloud enhancement can follow a local engine. Files are parallel but isolated;
+cross-page context is limited to selected pages in one file.
 
-The supported architecture is:
+Parse configuration lives below navigation in the sidebar. The main canvas uses one shared
+document selector and full-width Input preview, Output, Annotated PDF, Markdown, HTML, and
+JSON tabs. Individual downloads follow the selected document; the batch ZIP contains every
+successful document's available outputs and a versioned status manifest, never source uploads.
 
-```text
-streamlit_app.py -> paperplane.runtime -> AgenticDocumentParser
-                  -> Docling for native content
-                  -> selected cloud vision model for scans and images
-                  -> Markdown/grounding assembly -> annotated PDF
-```
+Public outputs are strict ADE v2-style Parse JSON and namespaced Paperplane v5 JSON.
+Classify/Split/Section require citations or explicit partial warnings.
+Word boxes must come from native PDF/RapidOCR observations. Calibration requires an exact
+engine/model/version/corpus profile.
 
-There is no database, REST API, background worker, JavaScript frontend, Docker deployment,
-authentication layer, job queue, or durable result storage. Do not reintroduce those systems
-unless the user explicitly changes the product scope.
+SQLite job metadata and private artifacts are stored under `%LOCALAPPDATA%\Paperplane` for
+seven days. There is no HTTP API, JavaScript frontend, authentication, or hosted profile.
 
-## Code discovery
-
-Use the `code-review-graph` tools before broad text or file searches when the graph service
-is available:
-
-| Tool | Use |
-|---|---|
-| `semantic_search_nodes_tool` | Find functions, classes, tests, and concepts |
-| `get_architecture_overview_tool` | Understand module and community boundaries |
-| `detect_changes_tool` | Review changed symbols and their risk |
-| `get_review_context_tool` | Obtain focused source and dependency context |
-
-If the graph tool reports a transport, indexing, or coverage failure, say so briefly and
-fall back to targeted `rg`, `git diff`, and focused reads. Do not pretend a failed graph
-query returned evidence.
-
-## Change discipline
-
-- Work on `main`; do not switch branches or disturb unrelated user changes.
-- Inspect the nearest implementation, contract, and tests before editing.
-- Make the smallest coherent change and avoid speculative abstractions.
-- Use `uv` with the locked Python 3.12 dependency set.
-- Keep uploads and results session-only. Never log or persist document contents or secrets.
-- Prefer Windows user environment variables `OPENAI_API_KEY`, `XAI_API_KEY`,
-  `GEMINI_API_KEY`, `ANTHROPIC_API_KEY`, and `AGNES_API_KEY`. `OPENAI_BASE_URL` is an
-  optional OpenAI-only override.
-  `.env` and `.streamlit/secrets.toml` are ignored local fallbacks only.
-- Update relevant documentation after every user-visible code change.
-- Keep `.codegraph/`, `.code-review-graph/`, `.ua/`, and `graphify-out/` trackable. Ignore
-  only their transient runtime/cache files already identified by the repository.
-
-## Observable behavior to preserve
-
-- Inputs: PDF, PNG, JPEG, WebP, TIFF, BMP, DOCX, PPTX, XLSX, ODT, ODP, ODS, and CSV.
-- Limits: 200 MB, 500 pages, bounded PDF canvas area, and bounded decoded image pixels.
-- Encrypted PDFs are rejected.
-- Native PDF pages and Office files use Docling locally.
-- Scanned PDF pages and images require the key for the selected cloud model.
-- Mixed PDFs route each page independently.
-- The UI exposes Output, Annotated PDF, Markdown, and JSON views plus downloads.
-- The result summary exposes provider token totals and a configured-rate cost estimate.
-- Fast, Balanced, and Audit map to `paperplane-ade-fast-latest`, `paperplane-ade-latest`,
-  and `paperplane-ade-audit-latest`, respectively.
-- GPT-5.6 Luna is the default. The selected catalog model fills every model-call role
-  while preserving the selected processing policy. See `docs/MODELS.md`.
-- The app binds to `127.0.0.1` and retains only the current Streamlit session state.
-
-## Verification
+Run:
 
 ```powershell
-uv run ruff check paperplane tests streamlit_app.py scripts
-uv run ruff format --check paperplane tests streamlit_app.py scripts
+uv run --extra cpu streamlit run workspace_app.py --server.port=8551
+uv run ruff check paperplane app_pages tests streamlit_app.py workspace_app.py scripts
 uv run pyright
-uv run pytest tests -q
+uv run pytest -q
 ```
 
-For UI changes, run `uv run streamlit run streamlit_app.py --server.port=8551`. For generated documentation,
-run `uv run python scripts/build_handbook.py` and
-`uv run python scripts/build_app_guide.py`.
+Never expose secrets, fabricate evidence/scores, or restore removed service/frontend stacks.

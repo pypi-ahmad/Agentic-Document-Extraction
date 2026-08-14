@@ -27,4 +27,5 @@ Required invariants remain:
 - never log document text or credentials.
 
 Future performance work requires current-code profiling, locked representative fixtures,
-quality comparisons, and a new plan based on the database-free runtime.
+quality comparisons, and a new plan based on the current local SQLite lifecycle without
+restoring distributed workers.

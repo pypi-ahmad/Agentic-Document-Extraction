@@ -1,86 +1,44 @@
 # Paperplane capabilities
 
-Paperplane 4.2.1 converts PDFs, images, and modern Office documents into layout-aware
-Markdown, hierarchical grounding JSON, and an annotated evidence PDF in one local
-Streamlit session.
+Paperplane 5.0.0 is a private multipage Streamlit workspace for converting PDFs, images,
+and modern Office files into reading-order Markdown, grounded JSON, annotated PDFs, and
+cited downstream data.
 
-## Inputs and routing
+## Processing
 
-| Input | Processing path |
-|---|---|
-| Text-native PDF page | Local Docling conversion |
-| Scanned PDF page | Selected cloud vision model |
-| Mixed PDF | Automatic per-page Docling/vision routing |
-| PNG, JPEG, WebP, TIFF, BMP | Selected cloud vision model |
-| DOCX, PPTX, XLSX, ODT, ODP, ODS, CSV | Local Docling; optional selected-model figure descriptions |
+- Up to 20 files per batch, 1 GiB combined, six concurrent files, and 200 MiB/500 pages per
+  file.
+- Independent one-based inclusive page range per file. Pages outside the range are not
+  inspected.
+- Four explicit, mutually exclusive engines, initially all off: Docling ADE, PDF Inspector
+  ADE, Cloud AI ADE, and Ollama ADE.
+- Optional cloud enhancement after Docling, PDF Inspector, or Ollama; no automatic routing.
+- Ollama discovery includes every installed model and checks the reported `vision`
+  capability before enabling Parse.
+- Prior selected-page context, ordered assembly, section starts, repeated marginalia, and
+  conservative continued-table relationships.
 
-Default limits are 200 MB and 500 pages or image frames. Paperplane also bounds PDF page
-canvas area and cumulative decoded image pixels. Encrypted and password-protected files are
-rejected.
+## Evidence and contracts
 
-## Extraction and evidence
+- Markdown, annotated PDF, strict ADE v2-style Parse JSON, and richer
+  `paperplane.parse.v5` JSON, plus sanitized standalone HTML.
+- Document → page → block → atomic-line/table-cell hierarchy with normalized boxes and
+  half-open Unicode ranges.
+- Native-PDF and RapidOCR word boxes only when observed words exactly align to Markdown.
+- Raw confidence remains visibly uncalibrated unless an engine/model/version profile and
+  corpus hash match.
+- Cited Classify, Split, and Section deterministic workflows.
 
-- Reading-order Markdown with explicit page breaks
-- Headings, paragraphs, lists, checkboxes, forms, figures, charts, marginalia, and tables
-- HTML tables with row, column, `rowspan`, and `colspan` metadata
-- Document, page, block, atomic-line, and table-cell hierarchy
-- Exact half-open Unicode Markdown ranges
-- One-based physical pages and normalized top-left-origin boxes
-- Explicit `semantic_only` grounding when Office geometry is unavailable
-- Stable IDs within one response
-- Fast, Balanced, and Audit processing policies
-- Six selectable cloud models using their verified production API IDs
-- One selected model for drafting and bounded verification, followed by deterministic grounding
+## Workspace and retention
 
-## User workspace
+Parse, Organize, Jobs, and Benchmarks are separate pages. SQLite job metadata and
+private artifacts are stored under `%LOCALAPPDATA%\Paperplane` for seven days. Users can
+cancel job state, delete one job, or clear all retained jobs.
 
-- Document preview before parsing
-- Output, Annotated PDF, Markdown, and JSON result tabs
-- Page, block, engine, duration, format, and warning summaries
-- Provider-reported token totals and an expandable estimated-cost calculation
-- Source overlays for PDF/image evidence
-- Semantic evidence reports for Office content without trustworthy coordinates
-- Annotated PDF, Markdown, and JSON downloads
-- **New extraction** control that clears the current workspace
+Parse configuration appears vertically in the sidebar. One main-canvas document selector
+drives Input preview, Output, Annotated PDF, Markdown, HTML, and JSON tabs. Selected-document
+downloads sit in one responsive row. The batch ZIP contains all successful documents'
+available outputs and a versioned success/failure manifest, but no original uploads.
 
-## Runtime and setup
-
-- One local Streamlit process bound to `127.0.0.1`
-- XSRF protection enabled and Streamlit usage telemetry disabled
-- One double-click Windows launcher
-- Automatic `uv`, Python 3.12.10, locked dependency, and Docling model setup
-- Windows user environment variables with ignored `.env` and Streamlit-secret fallbacks
-- Local Docling model-resource caching without document or result caching
-
-## Deliberately absent
-
-Paperplane has no REST API, database, accounts, authentication, background jobs, saved
-history, reusable schemas, schema extraction, queues, checkpoints, Docker deployment,
-JavaScript frontend, or package publishing.
-
-## Data lifetime
-
-The upload, latest result, and annotated PDF live in Streamlit session memory. Selecting a
-different file, starting a new extraction, closing the tab, or stopping the app releases
-that state. Downloading an artifact is the user's explicit persistence action. Installed
-dependencies and Docling model weights remain on disk; statelessness applies to document
-and result data.
-
-## Model mapping
-
-The AI selector exposes the six entries in the [model catalog](MODELS.md) and defaults to
-GPT-5.6 Luna.
-
-| Mode | Parser model | Vision behavior |
-|---|---|---|
-| Fast | `paperplane-ade-fast-latest` | Draft and deterministic grounding; no verification pass |
-| Balanced | `paperplane-ade-latest` | Verification only for flagged content |
-| Audit | `paperplane-ade-audit-latest` | Highest rendering, verification, and repair budget |
-
-Users select one cloud model for vision inference; Docling remains the local native-document
-engine. The selected model fills all model-call roles while the mode continues to bound
-verification and repair work.
-Pricing uses the configured standard rates in [MODELS.md](MODELS.md); provider invoices
-remain authoritative.
-Paperplane is inspired by ADE's observable workflow, but does not call LandingAI ADE or
-claim its benchmark results.
+There is no public/local HTTP API in v5. ADE compatibility refers to versioned JSON and
+Pydantic contracts and async/durable job semantics, not a client drop-in claim.

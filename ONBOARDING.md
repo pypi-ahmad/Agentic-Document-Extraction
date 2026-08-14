@@ -1,128 +1,73 @@
 # Paperplane contributor onboarding
 
-Paperplane is a local, stateless Streamlit application for converting PDFs, images, and
-modern Office documents into context- and layout-aware Markdown, hierarchical grounding
-JSON, and an annotated evidence PDF.
+Paperplane 5 is a local, multipage Streamlit document-intelligence workspace. It produces
+reading-order Markdown, annotated evidence, strict ADE v2-style JSON, a richer Paperplane
+v5 contract, and cited Classify/Split/Section results.
 
-The active application is deliberately small: one Streamlit process and the `paperplane`
-Python package. There is no database, REST API, background worker, JavaScript frontend,
-Docker runtime, account system, or durable application storage.
-
-## Start here
-
-For normal Windows use, double-click `Paperplane.cmd`. It installs `uv` when needed,
-installs Python 3.12.10, syncs locked dependencies, downloads Docling layout and table
-models, and starts the app.
-The local UI is available at `http://127.0.0.1:8551`.
-
-For development:
+## Start
 
 ```powershell
-uv sync --locked --extra test --extra lint --extra docs
-uv run streamlit run streamlit_app.py --server.port=8551
+uv sync --locked --extra cpu --extra test --extra lint --extra docs
+uv run --extra cpu streamlit run workspace_app.py --server.port=8551
 ```
 
-The key for the selected cloud model is required for scanned PDFs and image files. Native
-PDFs and modern Office files can be parsed locally without a provider key.
+Windows users can double-click `Paperplane.cmd`. On the first run it installs any missing
+uv, Python 3.12.10, LibreOffice, CPU/CUDA dependencies, and Docling/RapidOCR models. Later
+runs verify the locked environment and model files, then launch directly on port 8551.
 
-```powershell
-[Environment]::SetEnvironmentVariable("OPENAI_API_KEY", "your-key", "User")
-[Environment]::SetEnvironmentVariable("OPENAI_BASE_URL", "https://api.openai.com", "User")
-[Environment]::SetEnvironmentVariable("XAI_API_KEY", "your-key", "User")
-[Environment]::SetEnvironmentVariable("GEMINI_API_KEY", "your-key", "User")
-[Environment]::SetEnvironmentVariable("ANTHROPIC_API_KEY", "your-key", "User")
-[Environment]::SetEnvironmentVariable("AGNES_API_KEY", "your-key", "User")
-```
+Credentials come from Windows user/process variables, ignored `.env`, or Streamlit
+secrets. `OLLAMA_BASE_URL` defaults to `http://127.0.0.1:11434`. Never log or commit keys.
 
-Open a new terminal after changing user-level variables. For a machine where user-level
-variables are unavailable, copy `.env.example` to `.env`, or copy
-`.streamlit/secrets.toml.example` to `.streamlit/secrets.toml`. Never commit either local
-file or a real credential.
-
-## How the application works
+## Mental model
 
 ```text
-Streamlit upload
-  -> validate type, size, page count, and image limits
-  -> inspect each PDF page
-  -> native page or Office file: local Docling parser
-  -> scanned page or image: selected cloud vision adapter
-  -> assemble reading-order Markdown and hierarchical grounding JSON
-  -> aggregate provider token usage for the UI cost estimate
-  -> build an in-memory annotated evidence PDF
-  -> display and download the current result
+workspace_app navigation
+  -> Parse sidebar: explicit engine + uploads + per-file ranges
+  -> full-width shared-document tabs: input/output/PDF/Markdown/HTML/JSON
+  -> grounded internal ParseResponse
+  -> strict ADE v2 / Paperplane v5 / annotated PDF / sanitized HTML / batch ZIP
+  -> Organize cited workflows
+  -> SQLite job metadata + private artifacts (7-day TTL)
 ```
 
-Mixed PDFs use both engines page by page. The three UI modes map to the following parser
-models:
-
-| UI mode | Parser model | Behavior |
-|---|---|---|
-| Fast | `paperplane-ade-fast-latest` | Draft with deterministic grounding |
-| Balanced | `paperplane-ade-latest` | Adaptive verification for most documents |
-| Audit | `paperplane-ade-audit-latest` | Highest inspection and repair budget |
-
-The selected model fills every model-call role. Fast, Balanced, and Audit control how much
-reasoning, verification, and repair work is allowed.
+Files never share context. Earlier selected pages can inform later selected pages; pages
+outside the range are never inspected. Missing word boxes/citations/calibration remain
+missing. Local workflows return warnings/partials instead of silently calling cloud AI.
 
 ## Repository map
 
 | Path | Purpose |
 |---|---|
-| `streamlit_app.py` | UI, session state, previews, result views, and downloads |
-| `paperplane/runtime.py` | In-process construction of Docling and the selected AI adapter |
-| `paperplane/model_catalog.py` | Supported display names, API IDs, providers, and credentials |
-| `paperplane/openai_document.py` | OpenAI Responses and xAI-compatible Responses adapter |
-| `paperplane/gemini_document.py` | Google Gemini native `generateContent` adapter |
-| `paperplane/anthropic_document.py` | Anthropic Messages adapter |
-| `paperplane/agnes_document.py` | Agnes 2.5 Flash Chat Completions adapter |
-| `paperplane/parser.py` | Validation, per-page routing, and response assembly |
-| `paperplane/docling_parser.py` | Local native-document conversion |
-| `paperplane/pipeline.py` | Scanned-page vision extraction and verification |
-| `paperplane/contracts.py` | Public Markdown, hierarchy, range, and grounding contracts |
-| `paperplane/annotated_pdf.py` | Source overlays and semantic-only evidence reports |
-| `tests/` | Unit, contract, routing, UI, and artifact tests |
-| `docs/` | Architecture, setup, operations, quality, and generated guides |
-| `Paperplane.cmd` | One-file Windows setup and launcher |
+| `workspace_app.py` | Multipage navigation |
+| `streamlit_app.py` | Parse page |
+| `app_pages/` | Organize, Jobs, Benchmarks |
+| `paperplane/runtime.py` | Concurrent batch/provider composition |
+| `paperplane/parser.py` | Page-range and cross-page orchestration |
+| `paperplane/ade_contracts.py` | Engine options and public exports |
+| `paperplane/ade_workflows.py` | Classify/Split/Section |
+| `paperplane/jobs.py` | SQLite lifecycle/checkpoints/artifacts |
+| `paperplane/ollama_document.py` | Model discovery and vision/cloud chain |
+| `paperplane/document_intelligence.py` | Section/table/boundary relationships |
+| `paperplane/calibration.py` | Profile-pinned confidence |
+| `paperplane/benchmark.py` | Manifests and metrics |
+| `paperplane/outputs.py` | Sanitized standalone HTML and traversal-safe batch bundles |
 
-## Working agreement
+## Rules
 
-- Work on `main`, preserving unrelated local changes.
-- Use `uv`; do not add a second environment or package-management workflow.
-- Keep the Streamlit-only, in-process architecture unless a requested feature requires a
-  documented change in direction.
-- Do not introduce databases, persistence, queues, API servers, or frontend frameworks for
-  session-local behavior.
-- Keep credentials in user environment variables or ignored local configuration.
-- Update relevant documentation whenever observable code behavior changes. At minimum,
-  check `README.md`, `CHANGELOG.md`, `docs/RELEASE_NOTES.md`, and the affected setup,
-  architecture, capability, or limitation page.
-- Keep `.codegraph/`, `.code-review-graph/`, `.ua/`, and `graphify-out/` available for
-  versioning; only their documented transient cache/runtime files should be ignored.
+- Keep Streamlit out of core modules.
+- Keep four engine choices explicit and mutually exclusive.
+- Preserve exact Unicode ranges and normalized coordinates.
+- Never fabricate a word box, citation, calibrated score, or benchmark result.
+- Do not add an HTTP API without a separate approved design.
+- Update README, active docs, changelog, release notes, and generated guides after code.
 
-Use the repository knowledge graph before broad file searches when it is available. If the
-graph service is unavailable or stale, state that briefly and fall back to targeted `rg`
-searches and focused file reads.
-
-## Before handing off a change
-
-Run the narrowest relevant test first, then the full verification set when the change can
-affect application behavior:
+## Checks
 
 ```powershell
-uv run ruff check paperplane tests streamlit_app.py scripts
-uv run ruff format --check paperplane tests streamlit_app.py scripts
+uv run ruff check paperplane app_pages tests streamlit_app.py workspace_app.py scripts
+uv run ruff format --check paperplane app_pages tests streamlit_app.py workspace_app.py scripts
 uv run pyright
-uv run pytest tests -q
-```
-
-For documentation or UI changes, also start Streamlit and inspect the affected workflow.
-Generated documentation must remain synchronized:
-
-```powershell
-uv run python scripts/build_handbook.py
+uv run pytest -q
 uv run python scripts/build_app_guide.py
+uv run python scripts/build_handbook.py
 ```
-
-Begin with [README.md](README.md), then read the [model catalog](docs/MODELS.md),
-[architecture guide](docs/ARCHITECTURE.md), and [pipeline guide](docs/how-it-works.md).

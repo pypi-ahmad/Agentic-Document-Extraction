@@ -2,57 +2,28 @@
 
 ## One-click Windows launch
 
-Double-click `Paperplane.cmd`. It:
+Double-click `Paperplane.cmd`. It verifies `workspace_app.py`, `pyproject.toml`, and
+`uv.lock`; installs uv, Python 3.12.10, and LibreOffice when needed; selects CUDA 13.0 or
+CPU; and checks the locked environment and required Docling/RapidOCR model files. It
+synchronizes dependencies or downloads models only when they are missing or out of date.
+Otherwise it launches the multipage app directly at `http://127.0.0.1:8551`.
 
-1. verifies it is beside `pyproject.toml`, `uv.lock`, and `streamlit_app.py`;
-2. installs `uv` with WinGet or the official installer when missing;
-3. installs Python 3.12.10;
-4. creates or updates `.venv` from `uv.lock`;
-5. downloads Docling layout and table models; and
-6. starts the local Streamlit app at `http://127.0.0.1:8551`.
+Close the launcher window or press Ctrl+C to stop it.
 
-The first run needs internet access. Later runs reuse installed tools and model weights
-while still checking the locked dependency set.
-
-## Credentials
-
-The launcher refreshes all catalog provider keys and `OPENAI_BASE_URL` from the current
-Windows user's environment registry. It never prints or writes their values.
+## Manual launch
 
 ```powershell
-[Environment]::SetEnvironmentVariable("OPENAI_API_KEY", "your-key", "User")
-[Environment]::SetEnvironmentVariable("OPENAI_BASE_URL", "https://api.openai.com", "User")
-[Environment]::SetEnvironmentVariable("XAI_API_KEY", "your-key", "User")
-[Environment]::SetEnvironmentVariable("GEMINI_API_KEY", "your-key", "User")
-[Environment]::SetEnvironmentVariable("ANTHROPIC_API_KEY", "your-key", "User")
-[Environment]::SetEnvironmentVariable("AGNES_API_KEY", "your-key", "User")
+uv python install 3.12.10
+uv sync --locked --extra cpu
+uv run --locked --extra cpu streamlit run workspace_app.py --server.port=8551
 ```
 
-Open a new terminal after changing a user variable. If user-level variables are unavailable,
-copy `.env.example` to `.env` or `.streamlit/secrets.toml.example` to
-`.streamlit/secrets.toml`. Both destination files are ignored by Git.
+For Ollama ADE, start Ollama first and optionally set
+`OLLAMA_BASE_URL=http://127.0.0.1:11434`. Cloud credentials are read from the current
+process/Windows user environment, an ignored `.env`, or Streamlit secrets.
 
-Without the key for the selected model, native PDFs and supported Office files remain
-available. Scans and images show an actionable error, and figures use placeholders.
-
-The AI selector defaults to **GPT-5.6 Luna**. See [MODELS.md](MODELS.md) for every choice
-and its credential.
-
-## Terminal launch
-
-```powershell
-uv sync --locked
-uv run --locked streamlit run streamlit_app.py --server.port=8551
-```
-
-The checked-in configuration binds to `127.0.0.1`, enables XSRF protection, and caps
-uploads at 200 MB.
-
-## Use and stop
-
-After parsing, review token usage and the estimated model cost, then inspect Output,
-Annotated PDF, Markdown, and JSON. Downloading the annotated PDF, Markdown, or JSON is the
-only application-supported persistence action.
-
-Choose **New extraction** to clear the workspace. Press Ctrl+C or close the launcher window
-to stop Streamlit and end active sessions.
+The pages are Parse, Organize, Jobs, and Benchmarks. Select one Parse engine before
+uploading. Parse controls remain in the sidebar; the full-width canvas shares one document
+selector across Input preview, Output, Annotated PDF, Markdown, HTML, and JSON. Download one
+selected document at a time or the whole result batch as a ZIP. Job metadata and artifacts
+are private to `%LOCALAPPDATA%\Paperplane` and expire after seven days.

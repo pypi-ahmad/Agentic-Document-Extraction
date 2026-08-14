@@ -2,7 +2,7 @@
 
 ## Status
 
-Superseded by the Streamlit-only Paperplane v4 architecture on 2026-08-14. Do not execute
+Superseded by the Streamlit-only Paperplane architecture; reviewed for v5.0.0 on 2026-08-14. Do not execute
 the former Next.js/React implementation steps; those files and dependencies were removed.
 
 ## Original intent
@@ -10,7 +10,7 @@ the former Next.js/React implementation steps; those files and dependencies were
 The plan proposed a dark default, an accessible light/dark toggle, persisted browser
 preference, and semantic color tokens for the former Next.js interface.
 
-## Current v4.2.1 result
+## Current v5.0.0 result
 
 - Streamlit is the only UI runtime.
 - `.streamlit/config.toml` defines the checked-in dark visual theme.
@@ -21,5 +21,5 @@ preference, and semantic color tokens for the former Next.js interface.
 ## Future change boundary
 
 A theme selector should use supported Streamlit capabilities, preserve the localhost and
-session-only model, add AppTest coverage, and avoid reintroducing React or client-side state
+local-retention model, add AppTest coverage, and avoid reintroducing React or client-side state
 frameworks. A new approved plan is required before implementation.

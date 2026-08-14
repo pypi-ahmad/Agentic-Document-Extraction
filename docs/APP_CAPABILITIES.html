@@ -28,136 +28,53 @@ table{width:100%;border-collapse:collapse;display:block;overflow-x:auto;margin:1
     <aside class="sidebar"><strong>On this page</strong><div class="toc">
 <ul>
 <li><a href="#paperplane-capabilities">Paperplane capabilities</a><ul>
-<li><a href="#inputs-and-routing">Inputs and routing</a></li>
-<li><a href="#extraction-and-evidence">Extraction and evidence</a></li>
-<li><a href="#user-workspace">User workspace</a></li>
-<li><a href="#runtime-and-setup">Runtime and setup</a></li>
-<li><a href="#deliberately-absent">Deliberately absent</a></li>
-<li><a href="#data-lifetime">Data lifetime</a></li>
-<li><a href="#model-mapping">Model mapping</a></li>
+<li><a href="#processing">Processing</a></li>
+<li><a href="#evidence-and-contracts">Evidence and contracts</a></li>
+<li><a href="#workspace-and-retention">Workspace and retention</a></li>
 </ul>
 </li>
 </ul>
 </div>
 </aside>
     <main id="content"><h1 id="paperplane-capabilities">Paperplane capabilities<a class="headerlink" href="#paperplane-capabilities" title="Permanent link">&para;</a></h1>
-<p>Paperplane 4.2.1 converts PDFs, images, and modern Office documents into layout-aware
-Markdown, hierarchical grounding JSON, and an annotated evidence PDF in one local
-Streamlit session.</p>
-<h2 id="inputs-and-routing">Inputs and routing<a class="headerlink" href="#inputs-and-routing" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>Input</th>
-<th>Processing path</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Text-native PDF page</td>
-<td>Local Docling conversion</td>
-</tr>
-<tr>
-<td>Scanned PDF page</td>
-<td>Selected cloud vision model</td>
-</tr>
-<tr>
-<td>Mixed PDF</td>
-<td>Automatic per-page Docling/vision routing</td>
-</tr>
-<tr>
-<td>PNG, JPEG, WebP, TIFF, BMP</td>
-<td>Selected cloud vision model</td>
-</tr>
-<tr>
-<td>DOCX, PPTX, XLSX, ODT, ODP, ODS, CSV</td>
-<td>Local Docling; optional selected-model figure descriptions</td>
-</tr>
-</tbody>
-</table>
-<p>Default limits are 200 MB and 500 pages or image frames. Paperplane also bounds PDF page
-canvas area and cumulative decoded image pixels. Encrypted and password-protected files are
-rejected.</p>
-<h2 id="extraction-and-evidence">Extraction and evidence<a class="headerlink" href="#extraction-and-evidence" title="Permanent link">&para;</a></h2>
+<p>Paperplane 5.0.0 is a private multipage Streamlit workspace for converting PDFs, images,
+and modern Office files into reading-order Markdown, grounded JSON, annotated PDFs, and
+cited downstream data.</p>
+<h2 id="processing">Processing<a class="headerlink" href="#processing" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Reading-order Markdown with explicit page breaks</li>
-<li>Headings, paragraphs, lists, checkboxes, forms, figures, charts, marginalia, and tables</li>
-<li>HTML tables with row, column, <code>rowspan</code>, and <code>colspan</code> metadata</li>
-<li>Document, page, block, atomic-line, and table-cell hierarchy</li>
-<li>Exact half-open Unicode Markdown ranges</li>
-<li>One-based physical pages and normalized top-left-origin boxes</li>
-<li>Explicit <code>semantic_only</code> grounding when Office geometry is unavailable</li>
-<li>Stable IDs within one response</li>
-<li>Fast, Balanced, and Audit processing policies</li>
-<li>Six selectable cloud models using their verified production API IDs</li>
-<li>One selected model for drafting and bounded verification, followed by deterministic grounding</li>
+<li>Up to 20 files per batch, 1 GiB combined, six concurrent files, and 200 MiB/500 pages per
+  file.</li>
+<li>Independent one-based inclusive page range per file. Pages outside the range are not
+  inspected.</li>
+<li>Four explicit, mutually exclusive engines, initially all off: Docling ADE, PDF Inspector
+  ADE, Cloud AI ADE, and Ollama ADE.</li>
+<li>Optional cloud enhancement after Docling, PDF Inspector, or Ollama; no automatic routing.</li>
+<li>Ollama discovery includes every installed model and checks the reported <code>vision</code>
+  capability before enabling Parse.</li>
+<li>Prior selected-page context, ordered assembly, section starts, repeated marginalia, and
+  conservative continued-table relationships.</li>
 </ul>
-<h2 id="user-workspace">User workspace<a class="headerlink" href="#user-workspace" title="Permanent link">&para;</a></h2>
+<h2 id="evidence-and-contracts">Evidence and contracts<a class="headerlink" href="#evidence-and-contracts" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Document preview before parsing</li>
-<li>Output, Annotated PDF, Markdown, and JSON result tabs</li>
-<li>Page, block, engine, duration, format, and warning summaries</li>
-<li>Provider-reported token totals and an expandable estimated-cost calculation</li>
-<li>Source overlays for PDF/image evidence</li>
-<li>Semantic evidence reports for Office content without trustworthy coordinates</li>
-<li>Annotated PDF, Markdown, and JSON downloads</li>
-<li><strong>New extraction</strong> control that clears the current workspace</li>
+<li>Markdown, annotated PDF, strict ADE v2-style Parse JSON, and richer
+  <code>paperplane.parse.v5</code> JSON, plus sanitized standalone HTML.</li>
+<li>Document → page → block → atomic-line/table-cell hierarchy with normalized boxes and
+  half-open Unicode ranges.</li>
+<li>Native-PDF and RapidOCR word boxes only when observed words exactly align to Markdown.</li>
+<li>Raw confidence remains visibly uncalibrated unless an engine/model/version profile and
+  corpus hash match.</li>
+<li>Cited Classify, Split, and Section deterministic workflows.</li>
 </ul>
-<h2 id="runtime-and-setup">Runtime and setup<a class="headerlink" href="#runtime-and-setup" title="Permanent link">&para;</a></h2>
-<ul>
-<li>One local Streamlit process bound to <code>127.0.0.1</code></li>
-<li>XSRF protection enabled and Streamlit usage telemetry disabled</li>
-<li>One double-click Windows launcher</li>
-<li>Automatic <code>uv</code>, Python 3.12.10, locked dependency, and Docling model setup</li>
-<li>Windows user environment variables with ignored <code>.env</code> and Streamlit-secret fallbacks</li>
-<li>Local Docling model-resource caching without document or result caching</li>
-</ul>
-<h2 id="deliberately-absent">Deliberately absent<a class="headerlink" href="#deliberately-absent" title="Permanent link">&para;</a></h2>
-<p>Paperplane has no REST API, database, accounts, authentication, background jobs, saved
-history, reusable schemas, schema extraction, queues, checkpoints, Docker deployment,
-JavaScript frontend, or package publishing.</p>
-<h2 id="data-lifetime">Data lifetime<a class="headerlink" href="#data-lifetime" title="Permanent link">&para;</a></h2>
-<p>The upload, latest result, and annotated PDF live in Streamlit session memory. Selecting a
-different file, starting a new extraction, closing the tab, or stopping the app releases
-that state. Downloading an artifact is the user's explicit persistence action. Installed
-dependencies and Docling model weights remain on disk; statelessness applies to document
-and result data.</p>
-<h2 id="model-mapping">Model mapping<a class="headerlink" href="#model-mapping" title="Permanent link">&para;</a></h2>
-<p>The AI selector exposes the six entries in the <a href="MODELS.md">model catalog</a> and defaults to
-GPT-5.6 Luna.</p>
-<table>
-<thead>
-<tr>
-<th>Mode</th>
-<th>Parser model</th>
-<th>Vision behavior</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Fast</td>
-<td><code>paperplane-ade-fast-latest</code></td>
-<td>Draft and deterministic grounding; no verification pass</td>
-</tr>
-<tr>
-<td>Balanced</td>
-<td><code>paperplane-ade-latest</code></td>
-<td>Verification only for flagged content</td>
-</tr>
-<tr>
-<td>Audit</td>
-<td><code>paperplane-ade-audit-latest</code></td>
-<td>Highest rendering, verification, and repair budget</td>
-</tr>
-</tbody>
-</table>
-<p>Users select one cloud model for vision inference; Docling remains the local native-document
-engine. The selected model fills all model-call roles while the mode continues to bound
-verification and repair work.
-Pricing uses the configured standard rates in <a href="MODELS.md">MODELS.md</a>; provider invoices
-remain authoritative.
-Paperplane is inspired by ADE's observable workflow, but does not call LandingAI ADE or
-claim its benchmark results.</p></main>
+<h2 id="workspace-and-retention">Workspace and retention<a class="headerlink" href="#workspace-and-retention" title="Permanent link">&para;</a></h2>
+<p>Parse, Organize, Jobs, and Benchmarks are separate pages. SQLite job metadata and
+private artifacts are stored under <code>%LOCALAPPDATA%\Paperplane</code> for seven days. Users can
+cancel job state, delete one job, or clear all retained jobs.</p>
+<p>Parse configuration appears vertically in the sidebar. One main-canvas document selector
+drives Input preview, Output, Annotated PDF, Markdown, HTML, and JSON tabs. Selected-document
+downloads sit in one responsive row. The batch ZIP contains all successful documents'
+available outputs and a versioned success/failure manifest, but no original uploads.</p>
+<p>There is no public/local HTTP API in v5. ADE compatibility refers to versioned JSON and
+Pydantic contracts and async/durable job semantics, not a client drop-in claim.</p></main>
   </div>
   <footer class="footer">Paperplane V4.1 · Local grounded document parsing</footer>
 </body>

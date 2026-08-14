@@ -2,64 +2,51 @@
 
 ## App does not start
 
-Confirm the repository contains `pyproject.toml`, `uv.lock`, and `streamlit_app.py`. Then:
+Confirm `workspace_app.py`, `pyproject.toml`, and `uv.lock` exist, then run:
 
 ```powershell
 uv --version
-uv sync --locked
-uv run streamlit run streamlit_app.py --server.port=8551
+uv sync --locked --extra cpu
+uv run --extra cpu streamlit run workspace_app.py --server.port=8551
 ```
 
-If `uv` is missing, run `Paperplane.cmd` again with internet access so WinGet or the official
-installer can complete.
+## Engine cannot start
 
-## A scan or image asks for an API key
+- Cloud: set the selected model's key and reopen the terminal.
+- Ollama: start Ollama, verify `OLLAMA_BASE_URL`, and choose a model reporting `vision`.
+- Agnes: private visual uploads are intentionally blocked; choose another cloud model.
+- PDF Inspector: use PDF input only.
+- Office: rerun `Paperplane.cmd`; the launcher installs LibreOffice only when it is absent.
 
-Set the environment variable listed for the selected model in [MODELS.md](MODELS.md).
-Select the matching model in the UI. Alternatively use ignored `.env` or Streamlit secrets.
-Native PDFs and supported Office files do not require a key.
+## Parsing or artifact generation fails
 
-## Provider request fails
+Check file integrity, page range, the 20-file/1-GiB batch limit, 200-MiB/500-page file
+limit, provider access, and terminal logs. One file or annotated-PDF failure does not erase
+other successful batch results. Provider errors are sanitized.
 
-Check the selected model's credential, provider network access, account model access, and
-local terminal logs. For OpenAI only, also check `OPENAI_BASE_URL` and Responses API
-compatibility. Paperplane displays a safe summary instead of raw provider payloads. The
-default request timeout is 180 seconds.
+If an individual download is missing, confirm that the selected document completed and
+that its annotated PDF was generated. The whole-batch ZIP still includes all other
+available outputs; inspect `manifest.json` for per-document and artifact errors. Source
+uploads are intentionally absent from the ZIP.
 
-## File is rejected
+## Job recovery and cleanup
 
-Check the extension, integrity, 200 MB limit, 500-page/frame limit, PDF canvas size, and
-decoded image size. Legacy Office formats, RTF, encrypted PDFs, and password-protected
-documents are unsupported.
+Open **Jobs** to inspect pending/running/completed/failed/cancelled state. Checkpoints and
+artifacts live under `%LOCALAPPDATA%\Paperplane`. Delete one job or use **Clear all**.
+Expired data is purged after seven days. A stopped Streamlit process does no compute; run it
+again before resuming work.
 
-## Local model setup fails
+## Cost differs from an invoice
 
-Check internet access and free disk space, then run:
+The UI multiplies provider-reported tokens by configured standard rates. It does not infer
+batch discounts, promotions, taxes, long-context/fast surcharges, or account entitlements.
 
-```powershell
-uv run docling-tools models download layout tableformer --quiet
-```
-
-Restart Paperplane after the download succeeds. Torch compilation is intentionally disabled
-for the Windows layout path; Visual Studio build tools are not required.
-
-## Annotated PDF is unavailable
-
-The Markdown and JSON parse can still be valid because evidence-PDF generation is isolated.
-Review the UI error and terminal log, then inspect the JSON grounding directly. Office
-sources normally receive a semantic evidence report instead of source-page overlays.
-
-## Clear local state
-
-Choose **New extraction**, select another file, close the browser tab, or stop Streamlit.
-This releases the upload, result, and generated annotated PDF from session state.
-
-## Verification
+## Verify the checkout
 
 ```powershell
-uv run ruff check paperplane tests streamlit_app.py scripts
-uv run ruff format --check paperplane tests streamlit_app.py scripts
+uv run ruff check paperplane app_pages tests streamlit_app.py workspace_app.py scripts
 uv run pyright
-uv run pytest tests -q
-uv run streamlit run streamlit_app.py --server.port=8551
+uv run pytest -q
+uv run python scripts/benchmark_report.py
+uv run streamlit run workspace_app.py --server.port=8551
 ```

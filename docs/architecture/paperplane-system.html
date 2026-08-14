@@ -1,32 +1,17 @@
 <!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Paperplane 4.2.1 architecture</title>
-  <style>
-    :root{color-scheme:dark;--bg:#1e1e1e;--panel:#252526;--line:#3c3c3c;--text:#d4d4d4;--blue:#61afef;--muted:#a8b0bb}
-    *{box-sizing:border-box}body{font:16px/1.55 system-ui;margin:0;background:var(--bg);color:var(--text)}
-    main{max-width:980px;margin:auto;padding:48px 24px}h1{margin-bottom:8px}p{color:var(--muted)}
-    .flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin-top:28px}
-    .node{border:1px solid var(--line);border-radius:8px;background:var(--panel);padding:18px}
-    b{display:block;color:var(--blue);margin-bottom:5px}.boundary{margin-top:28px;border-left:4px solid var(--blue);padding:12px 18px;background:var(--panel)}
-    code{color:#dcdcaa}
-  </style>
-</head>
-<body><main>
-  <h1>Paperplane 4.2.1</h1>
-  <p>One local Streamlit process with automatic native/vision routing and no document persistence.</p>
-  <div class="flow">
-    <div class="node"><b>1 · Streamlit workspace</b><span>Upload, preview, select mode, parse, inspect cost and output, and download.</span></div>
-    <div class="node"><b>2 · In-process runtime</b><span>Reuse Docling model resources and create one short-lived provider client per parse.</span></div>
-    <div class="node"><b>3 · Validate and route</b><span>Enforce limits and classify native versus scan-like PDF pages.</span></div>
-    <div class="node"><b>4 · Local Docling</b><span>Convert native PDFs and Office/OpenDocument/CSV structure.</span></div>
-    <div class="node"><b>5 · Selectable vision</b><span>Use one of six verified cloud model IDs with deterministic grounding.</span></div>
-    <div class="node"><b>6 · Shared assembler</b><span>Validate reading-order Markdown and grounding while aggregating provider token usage.</span></div>
-    <div class="node"><b>7 · Evidence PDF</b><span>Overlay grounded source boxes or list semantic-only Office evidence.</span></div>
-    <div class="node"><b>8 · Session result</b><span>Output, annotated PDF, Markdown, and JSON remain available for explicit download.</span></div>
-  </div>
-  <div class="boundary"><b>Trust and state boundary</b><span>Streamlit binds to <code>127.0.0.1</code>. Uploads and results live only in the current session. Scans, images, and requested figure crops go to the selected model provider endpoint.</span></div>
-</main></body>
-</html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Paperplane 5.0.0 architecture</title>
+<style>body{font:16px system-ui;background:#111827;color:#e5e7eb;max-width:1100px;margin:3rem auto;padding:0 1rem}h1,h2{color:#fff}.flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem}.node{border:1px solid #475569;border-radius:12px;padding:1rem;background:#1e293b}.node span{display:block;color:#cbd5e1;margin-top:.4rem}.boundary{margin-top:1rem;border-left:4px solid #38bdf8;padding:1rem;background:#0f172a}code{color:#7dd3fc}</style></head>
+<body><h1>Paperplane 5.0.0 architecture</h1><p>Private multipage Streamlit document intelligence with explicit engines, grounded contracts, cited workflows, and durable local jobs.</p>
+<div class="flow">
+<div class="node"><b>1 · Workspace</b><span>Parse, Organize, Jobs, Benchmarks</span></div>
+<div class="node"><b>2 · Parallel runtime</b><span>Isolated files and selected page ranges</span></div>
+<div class="node"><b>3 · Explicit engine</b><span>Docling, PDF Inspector, Cloud AI, or Ollama</span></div>
+<div class="node"><b>4 · Grounded assembler</b><span>Markdown, blocks, atomic lines, cells, observed words</span></div>
+<div class="node"><b>5 · Document intelligence</b><span>Sections, repeated labels, continued tables, boundaries</span></div>
+<div class="node"><b>6 · Contracts</b><span>Strict ADE v2-style and Paperplane v5 JSON</span></div>
+<div class="node"><b>7 · Cited workflows</b><span>Classify, Split, Section</span></div>
+<div class="node"><b>8 · Durable local jobs</b><span>SQLite, checkpoints, private artifacts, seven-day TTL</span></div>
+</div>
+<div class="boundary"><b>Trust boundary</b><span>Streamlit binds to <code>127.0.0.1:8551</code>. There is no HTTP API. Files never share context, pages outside a selected range are not inspected, and missing evidence/calibration/scores remain missing.</span></div>
+</body></html>
