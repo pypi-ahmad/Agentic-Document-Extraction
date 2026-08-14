@@ -9,8 +9,12 @@ and this project aims to follow [Semantic Versioning](https://semver.org/).
 
 ### Added
 
-- Selectable Agnes 2.5 Flash vision inference through the official Chat Completions API,
-  configured with `AGNES_API_KEY`.
+- A fixed six-model catalog with Grok 4.6, GPT-5.6 Luna, Gemini 3.5 Flash-Lite, Gemini 3.6
+  Flash, Claude Sonnet 5, and Agnes 2.5 Flash using verified production API IDs.
+- Provider-native structured-output adapters for xAI Responses, Google Gemini
+  `generateContent`, Anthropic Messages, and Agnes Chat Completions.
+- Provider-token aggregation and an expandable Streamlit cost estimate using configured
+  per-million-token rates.
 - Local Docling parsing for native PDFs, DOCX, PPTX, XLSX, ODT, ODP, ODS, and CSV.
 - Automatic per-page routing for native, scanned, and mixed PDFs.
 - HTML-table output, atomic-line grounding, and explicit semantic-only Office geometry.
@@ -21,8 +25,9 @@ and this project aims to follow [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
-- The model selector now routes scans, images, and optional figure descriptions through
-  OpenAI Luna/Terra or `agnes-2.5-flash` without persisting credentials or documents.
+- The model selector now uses the same selected model for drafting and any bounded
+  verification calls without persisting credentials or documents.
+- Gemini Flash 3.7 was corrected to the current official stable `gemini-3.6-flash` API ID.
 - AI provider credentials are required only for scanned/image content and optional figure
   descriptions; native documents can be converted locally.
 - `Paperplane.cmd` now downloads required Docling layout and table models during setup.

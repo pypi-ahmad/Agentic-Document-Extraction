@@ -3,7 +3,7 @@
 ## Result
 
 The v4 runtime has a small local attack surface: Streamlit, document parsing, and outbound
-OpenAI or Agnes requests. The previous API authentication, CORS, rate-limit, database, worker,
+selected-provider requests. The previous API authentication, CORS, rate-limit, database, worker,
 container, and JavaScript surfaces no longer exist.
 
 ## Controls present
@@ -13,7 +13,7 @@ container, and JavaScript surfaces no longer exist.
 - a committed `.env.example` containing placeholders only
 - bounded upload size, page count, image pixels, and render area
 - strict file inspection before model work
-- strict OpenAI structured outputs, JSON-only Agnes output, and shared contract validation
+- provider-native structured output plus shared contract validation
 - safe user-facing errors without provider payloads or keys
 - no application persistence or cross-session result cache
 - locked dependencies and automated dependency review
@@ -21,8 +21,8 @@ container, and JavaScript surfaces no longer exist.
 ## Operational requirements
 
 - Do not expose the port publicly.
-- Treat scans, images, and extracted figure crops as data sent to the selected OpenAI or
-  Agnes endpoint;
+- Treat scans, images, and extracted figure crops as data sent to the selected model
+  provider endpoint;
   native Docling text conversion remains local.
 - Treat downloaded annotated PDFs as derived sensitive data; Paperplane otherwise keeps them
   only in session memory.

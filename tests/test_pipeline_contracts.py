@@ -18,8 +18,8 @@ def test_processing_modes_have_distinct_budgets() -> None:
     audit = mode_policy(ProcessingMode.AUDIT)
 
     assert fast.base_dpi < balanced.base_dpi < audit.base_dpi
-    assert fast.terra_scope == "none"
-    assert audit.terra_scope == "complex"
+    assert fast.verification_scope == "none"
+    assert audit.verification_scope == "complex"
 
 
 def test_verified_chunk_requires_grounding() -> None:

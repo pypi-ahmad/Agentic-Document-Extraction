@@ -45,9 +45,9 @@ class VerificationStatus(StrEnum):
 class ModePolicy(BaseModel):
     base_dpi: int
     crop_dpi: int
-    luna_reasoning_effort: Literal["none", "low", "medium"]
-    terra_reasoning_effort: Literal["medium", "high"] | None
-    terra_scope: Literal["none", "flagged", "complex"]
+    draft_reasoning_effort: Literal["none", "low", "medium"]
+    verification_reasoning_effort: Literal["medium", "high"] | None
+    verification_scope: Literal["none", "flagged", "complex"]
     max_repair_rounds: int
 
 
@@ -55,25 +55,25 @@ _MODE_POLICIES = {
     ProcessingMode.ECONOMY: ModePolicy(
         base_dpi=150,
         crop_dpi=300,
-        luna_reasoning_effort="none",
-        terra_reasoning_effort=None,
-        terra_scope="none",
+        draft_reasoning_effort="none",
+        verification_reasoning_effort=None,
+        verification_scope="none",
         max_repair_rounds=1,
     ),
     ProcessingMode.BALANCED: ModePolicy(
         base_dpi=200,
         crop_dpi=300,
-        luna_reasoning_effort="low",
-        terra_reasoning_effort="medium",
-        terra_scope="flagged",
+        draft_reasoning_effort="low",
+        verification_reasoning_effort="medium",
+        verification_scope="flagged",
         max_repair_rounds=2,
     ),
     ProcessingMode.AUDIT: ModePolicy(
         base_dpi=250,
         crop_dpi=400,
-        luna_reasoning_effort="medium",
-        terra_reasoning_effort="high",
-        terra_scope="complex",
+        draft_reasoning_effort="medium",
+        verification_reasoning_effort="high",
+        verification_scope="complex",
         max_repair_rounds=3,
     ),
 }

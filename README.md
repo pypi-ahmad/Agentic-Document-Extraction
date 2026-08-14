@@ -3,7 +3,7 @@
 Paperplane 4.1.0 is a local Streamlit app that converts PDFs, document images, and modern
 Office files into context- and layout-aware Markdown, hierarchical grounding JSON, and an
 annotated evidence PDF. It is inspired by LandingAI ADE's document-output workflow, but it
-runs its own local Docling pipeline with selectable OpenAI or Agnes vision inference.
+runs its own local Docling pipeline with a selectable cloud vision model.
 
 Paperplane does not use a database, API server, background worker, JavaScript frontend, or
 durable application storage. Uploads and generated results remain only in the current
@@ -29,6 +29,9 @@ launching the app:
 ```powershell
 [Environment]::SetEnvironmentVariable("OPENAI_API_KEY", "your-key", "User")
 [Environment]::SetEnvironmentVariable("OPENAI_BASE_URL", "https://api.openai.com", "User")
+[Environment]::SetEnvironmentVariable("XAI_API_KEY", "your-key", "User")
+[Environment]::SetEnvironmentVariable("GEMINI_API_KEY", "your-key", "User")
+[Environment]::SetEnvironmentVariable("ANTHROPIC_API_KEY", "your-key", "User")
 [Environment]::SetEnvironmentVariable("AGNES_API_KEY", "your-key", "User")
 ```
 
@@ -46,25 +49,28 @@ No GPU, Node.js, npm, Docker, database, or Visual Studio C++ build tools are req
 ## Use Paperplane
 
 1. Upload a supported document.
-2. Select **OpenAI (Luna + Terra)**, the default, or **Agnes 2.5 Flash**.
+2. Select one of the six supported models. **GPT-5.6 Luna** is the default.
 3. Select Fast, Balanced, or Audit mode.
 4. Choose **Parse document**.
-5. Inspect and download the Output, Annotated PDF, Markdown, and JSON artifacts.
+5. Review provider token usage and the estimated model cost.
+6. Inspect and download the Output, Annotated PDF, Markdown, and JSON artifacts.
 
 | Input | Engine |
 |---|---|
 | Text-based PDF pages | Local Docling |
-| Scanned PDF pages | Selected OpenAI or Agnes vision model |
+| Scanned PDF pages | Selected cloud vision model |
 | Mixed PDFs | Automatic per-page Docling/vision routing |
-| PNG, JPEG, WebP, TIFF, BMP | Selected OpenAI or Agnes vision model |
-| DOCX, PPTX, XLSX, ODT, ODP, ODS, CSV | Local Docling; selected AI model is optional for figures |
+| PNG, JPEG, WebP, TIFF, BMP | Selected cloud vision model |
+| DOCX, PPTX, XLSX, ODT, ODP, ODS, CSV | Local Docling; selected model is optional for figures |
 
 The default limits are 200 MB and 500 pages. Encrypted PDFs are not supported. Processing
 is synchronous in the local Streamlit session.
 
-Agnes integration uses the official `agnes-2.5-flash` Chat Completions endpoint and the
-`AGNES_API_KEY` user environment variable. See the [Agnes model documentation](https://www.agnes-ai.com/en/docs/agnes-25-flash)
-and [API overview](https://www.agnes-ai.com/en/docs/overview).
+The exact model names, API IDs, credentials, and provider APIs are listed in the
+[model catalog](docs/MODELS.md). Google has not published a Gemini Flash 3.7 API model;
+Paperplane therefore uses the current official stable ID, `gemini-3.6-flash`.
+The result UI estimates cost from provider-reported tokens and the configured rates in that
+catalog. Estimates do not replace provider billing.
 
 ## Output contract
 
@@ -94,4 +100,5 @@ uv run pytest tests -q
 
 Start with the [contributor onboarding guide](ONBOARDING.md),
 [architecture](docs/ARCHITECTURE.md), [run guide](docs/RUN_APP.md),
-[capabilities](docs/APP_CAPABILITIES.md), and [limitations](docs/LIMITATIONS.md).
+[model catalog](docs/MODELS.md), [capabilities](docs/APP_CAPABILITIES.md), and
+[limitations](docs/LIMITATIONS.md).

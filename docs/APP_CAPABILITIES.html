@@ -21,7 +21,7 @@ table{width:100%;border-collapse:collapse;display:block;overflow-x:auto;margin:1
   <header class="hero"><div class="hero-inner">
     <div class="eyebrow">Paperplane V4.1 technical guide</div>
     <h1>From document pages to grounded Markdown</h1>
-    <p>A concise guide to local Docling conversion, OpenAI vision parsing, the evidence contract, and the session boundary.</p>
+    <p>A concise guide to local Docling conversion, selectable cloud vision parsing, the evidence contract, and the session boundary.</p>
     <div class="badges"><span class="badge">Stateless</span><span class="badge">Docling + vision</span><span class="badge">Layout aware</span><span class="badge">Grounded JSON</span></div>
   </div></header>
   <div class="layout">
@@ -59,7 +59,7 @@ Streamlit session.</p>
 </tr>
 <tr>
 <td>Scanned PDF page</td>
-<td>Selected OpenAI or Agnes vision model</td>
+<td>Selected cloud vision model</td>
 </tr>
 <tr>
 <td>Mixed PDF</td>
@@ -67,7 +67,7 @@ Streamlit session.</p>
 </tr>
 <tr>
 <td>PNG, JPEG, WebP, TIFF, BMP</td>
-<td>Selected OpenAI or Agnes vision model</td>
+<td>Selected cloud vision model</td>
 </tr>
 <tr>
 <td>DOCX, PPTX, XLSX, ODT, ODP, ODS, CSV</td>
@@ -89,14 +89,15 @@ rejected.</p>
 <li>Explicit <code>semantic_only</code> grounding when Office geometry is unavailable</li>
 <li>Stable IDs within one response</li>
 <li>Fast, Balanced, and Audit processing policies</li>
-<li>Luna vision drafting with deterministic grounding and bounded Terra verification</li>
-<li>Agnes 2.5 Flash as a single-model alternative for the same pipeline stages</li>
+<li>Six selectable cloud models using their verified production API IDs</li>
+<li>One selected model for drafting and bounded verification, followed by deterministic grounding</li>
 </ul>
 <h2 id="user-workspace">User workspace<a class="headerlink" href="#user-workspace" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Document preview before parsing</li>
 <li>Output, Annotated PDF, Markdown, and JSON result tabs</li>
 <li>Page, block, engine, duration, format, and warning summaries</li>
+<li>Provider-reported token totals and an expandable estimated-cost calculation</li>
 <li>Source overlays for PDF/image evidence</li>
 <li>Semantic evidence reports for Office content without trustworthy coordinates</li>
 <li>Annotated PDF, Markdown, and JSON downloads</li>
@@ -122,7 +123,8 @@ that state. Downloading an artifact is the user's explicit persistence action. I
 dependencies and Docling model weights remain on disk; statelessness applies to document
 and result data.</p>
 <h2 id="model-mapping">Model mapping<a class="headerlink" href="#model-mapping" title="Permanent link">&para;</a></h2>
-<p>The AI selector defaults to OpenAI. Agnes 2.5 Flash is the alternate vision model.</p>
+<p>The AI selector exposes the six entries in the <a href="MODELS.md">model catalog</a> and defaults to
+GPT-5.6 Luna.</p>
 <table>
 <thead>
 <tr>
@@ -135,12 +137,12 @@ and result data.</p>
 <tr>
 <td>Fast</td>
 <td><code>paperplane-ade-fast-latest</code></td>
-<td>Luna draft and deterministic grounding; no Terra pass</td>
+<td>Draft and deterministic grounding; no verification pass</td>
 </tr>
 <tr>
 <td>Balanced</td>
 <td><code>paperplane-ade-latest</code></td>
-<td>Terra checks only for flagged content</td>
+<td>Verification only for flagged content</td>
 </tr>
 <tr>
 <td>Audit</td>
@@ -149,10 +151,11 @@ and result data.</p>
 </tr>
 </tbody>
 </table>
-<p>Users select OpenAI Luna/Terra or Agnes 2.5 Flash for vision inference; Docling remains the
-local native-document engine. Agnes uses <code>AGNES_API_KEY</code> and its official Chat Completions
-endpoint. With Agnes selected, <code>agnes-2.5-flash</code> fills all model-call roles while the mode
-continues to bound verification and repair work.
+<p>Users select one cloud model for vision inference; Docling remains the local native-document
+engine. The selected model fills all model-call roles while the mode continues to bound
+verification and repair work.
+Pricing uses the configured standard rates in <a href="MODELS.md">MODELS.md</a>; provider invoices
+remain authoritative.
 Paperplane is inspired by ADE's observable workflow, but does not call LandingAI ADE or
 claim its benchmark results.</p></main>
   </div>

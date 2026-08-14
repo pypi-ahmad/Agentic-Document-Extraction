@@ -14,7 +14,7 @@ The launcher opens Paperplane locally at `http://127.0.0.1:8551`.
 ## Does Paperplane use LandingAI ADE?
 
 No. Paperplane is inspired by ADE's observable document-output workflow, but uses its own
-Docling plus selectable OpenAI or Agnes inference and does not claim ADE model or benchmark parity.
+Docling plus selectable cloud-model inference and does not claim ADE model or benchmark parity.
 
 ## Does it have an API or database?
 
@@ -31,9 +31,9 @@ applies to document and result data, not runtime dependencies.
 
 ## Which credentials are required?
 
-Use `OPENAI_API_KEY` for OpenAI or `AGNES_API_KEY` for Agnes 2.5 Flash. The selected key is
-required for scans, images, and figure descriptions. Native text PDFs and supported Office
-files can run locally without either key.
+Set the environment variable listed for the selected model in [MODELS.md](MODELS.md). The
+selected key is required for scans, images, and figure descriptions. Native text PDFs and
+supported Office files can run locally without a provider key.
 `OPENAI_BASE_URL` is optional and defaults to `https://api.openai.com`.
 
 Configuration precedence is existing environment variables, `.env`, Streamlit secrets,
@@ -41,8 +41,9 @@ then the default URL. Local credential files are ignored by Git.
 
 ## Which AI model is selected by default?
 
-OpenAI Luna/Terra is the default. Choose Agnes 2.5 Flash in the **AI model** selector to
-route vision work through `agnes-2.5-flash` and `AGNES_API_KEY` instead.
+GPT-5.6 Luna is the default. The **AI model** selector contains exactly the six verified
+catalog entries. Google does not publish Gemini Flash 3.7, so the current stable
+`gemini-3.6-flash` ID is used.
 
 ## Which inputs work?
 
@@ -52,13 +53,21 @@ DOC/PPT/XLS, RTF, encrypted PDFs, and password-protected files are unsupported.
 ## What happens with a mixed PDF?
 
 Paperplane classifies each page independently. Native pages use Docling, scan-like pages
-use the selected OpenAI or Agnes vision model, and results are merged into page order.
+use the selected cloud vision model, and results are merged into page order.
 
 ## What do Fast, Balanced, and Audit change?
 
-For OpenAI, Fast uses Luna without a Terra pass, Balanced applies Terra to flagged content,
-and Audit has the largest verification budget. With Agnes selected, Agnes 2.5 Flash fills
-those model-call roles while the same modes bound the amount of work.
+Fast uses one model draft without a verification pass, Balanced verifies flagged content,
+and Audit has the largest verification budget. The selected model fills every model-call
+role.
+
+## How is model cost calculated?
+
+Paperplane sums provider-reported token usage across page drafting, reconciliation, crop
+verification, and figure-description calls. It multiplies input and output tokens by the
+configured per-million-token rates in [MODELS.md](MODELS.md). GPT-5.6 Luna cached input
+uses its separate supplied rate. The UI estimate does not infer Batch discounts,
+account-specific promotions, or surcharges; the provider invoice is authoritative.
 
 ## Which result views are available?
 

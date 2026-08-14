@@ -15,7 +15,7 @@ LangGraph workflow with a shared job deadline.
 
 - `AgenticDocumentParser` runs synchronously in the Streamlit session.
 - Vision pages are processed sequentially.
-- Fast skips Terra, Balanced verifies flagged work, and Audit uses the largest budget.
+- Fast skips verification, Balanced verifies flagged work, and Audit uses the largest budget.
 - Each selected-provider client uses a 180-second request timeout.
 - There is no document SLA, queue, worker concurrency, durable job, resume, or cache replay.
 - Successful page content uses bounded fallbacks rather than an autonomous retry loop.

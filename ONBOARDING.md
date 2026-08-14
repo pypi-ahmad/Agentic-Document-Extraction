@@ -22,12 +22,15 @@ uv sync --locked --extra test --extra lint --extra docs
 uv run streamlit run streamlit_app.py --server.port=8551
 ```
 
-The key for the selected OpenAI or Agnes model is required for scanned PDFs and image
-files. Native PDFs and modern Office files can be parsed locally without either key.
+The key for the selected cloud model is required for scanned PDFs and image files. Native
+PDFs and modern Office files can be parsed locally without a provider key.
 
 ```powershell
 [Environment]::SetEnvironmentVariable("OPENAI_API_KEY", "your-key", "User")
 [Environment]::SetEnvironmentVariable("OPENAI_BASE_URL", "https://api.openai.com", "User")
+[Environment]::SetEnvironmentVariable("XAI_API_KEY", "your-key", "User")
+[Environment]::SetEnvironmentVariable("GEMINI_API_KEY", "your-key", "User")
+[Environment]::SetEnvironmentVariable("ANTHROPIC_API_KEY", "your-key", "User")
 [Environment]::SetEnvironmentVariable("AGNES_API_KEY", "your-key", "User")
 ```
 
@@ -43,8 +46,9 @@ Streamlit upload
   -> validate type, size, page count, and image limits
   -> inspect each PDF page
   -> native page or Office file: local Docling parser
-  -> scanned page or image: selected OpenAI or Agnes vision adapter
+  -> scanned page or image: selected cloud vision adapter
   -> assemble reading-order Markdown and hierarchical grounding JSON
+  -> aggregate provider token usage for the UI cost estimate
   -> build an in-memory annotated evidence PDF
   -> display and download the current result
 ```
@@ -54,13 +58,12 @@ models:
 
 | UI mode | Parser model | Behavior |
 |---|---|---|
-| Fast | `paperplane-ade-fast-latest` | Luna draft with deterministic grounding |
+| Fast | `paperplane-ade-fast-latest` | Draft with deterministic grounding |
 | Balanced | `paperplane-ade-latest` | Adaptive verification for most documents |
 | Audit | `paperplane-ade-audit-latest` | Highest inspection and repair budget |
 
-Those behavior labels describe the OpenAI path. With Agnes selected, `agnes-2.5-flash`
-fills every model-call role while Fast, Balanced, and Audit still control how much
-verification work is allowed.
+The selected model fills every model-call role. Fast, Balanced, and Audit control how much
+reasoning, verification, and repair work is allowed.
 
 ## Repository map
 
@@ -68,6 +71,10 @@ verification work is allowed.
 |---|---|
 | `streamlit_app.py` | UI, session state, previews, result views, and downloads |
 | `paperplane/runtime.py` | In-process construction of Docling and the selected AI adapter |
+| `paperplane/model_catalog.py` | Supported display names, API IDs, providers, and credentials |
+| `paperplane/openai_document.py` | OpenAI Responses and xAI-compatible Responses adapter |
+| `paperplane/gemini_document.py` | Google Gemini native `generateContent` adapter |
+| `paperplane/anthropic_document.py` | Anthropic Messages adapter |
 | `paperplane/agnes_document.py` | Agnes 2.5 Flash Chat Completions adapter |
 | `paperplane/parser.py` | Validation, per-page routing, and response assembly |
 | `paperplane/docling_parser.py` | Local native-document conversion |
@@ -117,5 +124,5 @@ uv run python scripts/build_handbook.py
 uv run python scripts/build_app_guide.py
 ```
 
-Begin with [README.md](README.md), then read [the architecture guide](docs/ARCHITECTURE.md)
-and [how the pipeline works](docs/how-it-works.md).
+Begin with [README.md](README.md), then read the [model catalog](docs/MODELS.md),
+[architecture guide](docs/ARCHITECTURE.md), and [pipeline guide](docs/how-it-works.md).

@@ -12,9 +12,9 @@ Those assumptions no longer exist in Paperplane.
 
 ## Current design
 
-On the OpenAI path, Balanced mode uses Luna drafting, deterministic quality signals, Terra
-reconciliation for flagged content, and bounded crop verification. Agnes 2.5 Flash fills
-the same model-call roles when selected. Vision pages run sequentially. The provider client
+Balanced mode uses the selected model for drafting, deterministic quality signals,
+reconciliation of flagged content, and bounded crop verification. Vision pages run
+sequentially. The provider client
 has a 180-second request timeout, but Paperplane does not publish a document-level latency
 SLA.
 

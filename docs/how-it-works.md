@@ -5,10 +5,11 @@ upload
   -> validate type, integrity, size, page count, canvas, and decoded pixels
   -> inspect and route each page
      -> native PDF or Office: local Docling conversion
-     -> scan or image: render -> selected OpenAI or Agnes model
+     -> scan or image: render -> selected catalog model
                        -> deterministic grounding and mode-driven verification
   -> merge pages in original reading order
   -> assemble Markdown and hierarchical JSON
+  -> aggregate provider token usage and estimate cost
   -> build an in-memory annotated evidence PDF
   -> display Output/PDF/Markdown/JSON and expose downloads
 ```
@@ -21,12 +22,12 @@ UI.
 
 ## Mode policy
 
-- Fast: one draft plus deterministic checks; OpenAI skips Terra.
+- Fast: one draft plus deterministic checks; no verification pass.
 - Balanced: additional model checks only when deterministic signals flag content.
 - Audit: highest rendering, reconciliation, crop, and repair budget.
 
-OpenAI maps draft and verification work to Luna and Terra. Agnes maps every model call to
-`agnes-2.5-flash`; the processing policy remains unchanged.
+The selected model handles both drafting and any verification calls. The processing mode
+changes the reasoning and verification budget, not the model ID.
 
 ## Shared output
 
@@ -47,3 +48,7 @@ builder fails, a valid Markdown/JSON parse remains available with a separate UI 
 Each parse creates and closes its own provider HTTP client. The cached Docling converter holds
 model resources only. Paperplane does not persist document bytes, model responses, results,
 or generated artifacts.
+
+Provider-reported usage is aggregated across every model call and included in response
+metadata. Streamlit calculates the displayed estimate from [the configured model
+rates](MODELS.md); no extra model request is made for pricing.

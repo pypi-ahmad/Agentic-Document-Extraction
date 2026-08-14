@@ -140,7 +140,7 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 1.2em 0; }
 <h2 id="1-run-the-app">1. Run the app</h2>
 <p>Double-click <code>Paperplane.cmd</code>. It installs <code>uv</code>, Python 3.12.10, locked dependencies, and
 Docling layout/table models before starting Streamlit at <code>http://127.0.0.1:8551</code>. Set
-<code>OPENAI_API_KEY</code> or <code>AGNES_API_KEY</code> for the selected scan/image model.</p>
+the provider key documented in <a href="MODELS.md">MODELS.md</a> for the selected scan/image model.</p>
 <h2 id="2-follow-the-code">2. Follow the code</h2>
 <ol>
 <li>Start at <code>streamlit_app.py</code>.</li>
@@ -149,8 +149,9 @@ Docling layout/table models before starting Streamlit at <code>http://127.0.0.1:
 <li>Inspect validation and page classification in <code>paperplane/ingest.py</code>.</li>
 <li>Follow native conversion in <code>paperplane/docling_parser.py</code> or vision work in
    <code>paperplane/pipeline.py</code>.</li>
-<li>Read the provider boundaries in <code>paperplane/openai_document.py</code> and
-   <code>paperplane/agnes_document.py</code>.</li>
+<li>Read the model catalog and provider boundaries in <code>paperplane/model_catalog.py</code>,
+   <code>paperplane/openai_document.py</code>, <code>paperplane/gemini_document.py</code>,
+   <code>paperplane/anthropic_document.py</code>, and <code>paperplane/agnes_document.py</code>.</li>
 <li>Read coordinate alignment in <code>paperplane/grounding.py</code>.</li>
 <li>Inspect output assembly in <code>paperplane/contracts.py</code>.</li>
 <li>Follow evidence creation in <code>paperplane/annotated_pdf.py</code>.</li>
@@ -159,9 +160,10 @@ Docling layout/table models before starting Streamlit at <code>http://127.0.0.1:
 <pre><code class="language-text">uploaded bytes
   -&gt; validation and document inspection
   -&gt; per-page native/scanned routing
-  -&gt; local Docling conversion OR selected OpenAI/Agnes structured vision draft
+  -&gt; local Docling conversion OR selected cloud-model structured vision draft
   -&gt; deterministic grounding and mode-driven verification
   -&gt; merge in source reading order
+  -&gt; provider token aggregation and estimated model cost
   -&gt; Markdown + hierarchical JSON + annotated evidence PDF
   -&gt; Output/PDF/Markdown/JSON display and download
 </code></pre>
@@ -184,6 +186,7 @@ uv run pyright
 uv run pytest tests -q
 </code></pre>
 <p>Continue with the full <a href="../Zero_to_Hero_Study_Handbook.md">study handbook</a>,
-<a href="ARCHITECTURE.md">architecture</a>, and <a href="APP_CAPABILITIES.md">capabilities</a>.</p>
+<a href="MODELS.md">model catalog</a>, <a href="ARCHITECTURE.md">architecture</a>, and
+<a href="APP_CAPABILITIES.md">capabilities</a>.</p>
 </body>
 </html>

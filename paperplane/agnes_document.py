@@ -62,7 +62,7 @@ class AgnesDocumentAdapter:
     async def generate_structured(
         self,
         *,
-        model: Literal["gpt-5.6-luna", "gpt-5.6-terra"],
+        model: str,
         image: bytes | None,
         instructions: str,
         context: str | None = None,
@@ -72,7 +72,8 @@ class AgnesDocumentAdapter:
         detail: Literal["low", "high", "original"],
         prompt_cache_key: str,
     ) -> StructuredGeneration:
-        del model
+        if model != AGNES_MODEL:
+            raise AgnesRequestError(f"Unsupported Agnes model: {model}")
         audit_record: dict[str, Any] = {
             "model": AGNES_MODEL,
             "schema_name": schema_name,

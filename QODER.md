@@ -12,7 +12,7 @@ The supported architecture is:
 ```text
 streamlit_app.py -> paperplane.runtime -> AgenticDocumentParser
                   -> Docling for native content
-                  -> selected OpenAI or Agnes vision model for scans and images
+                  -> selected cloud vision model for scans and images
                   -> Markdown/grounding assembly -> annotated PDF
 ```
 
@@ -43,8 +43,9 @@ query returned evidence.
 - Make the smallest coherent change and avoid speculative abstractions.
 - Use `uv` with the locked Python 3.12 dependency set.
 - Keep uploads and results session-only. Never log or persist document contents or secrets.
-- Prefer Windows user environment variables `OPENAI_API_KEY`, `OPENAI_BASE_URL`, and
-  `AGNES_API_KEY`.
+- Prefer Windows user environment variables `OPENAI_API_KEY`, `XAI_API_KEY`,
+  `GEMINI_API_KEY`, `ANTHROPIC_API_KEY`, and `AGNES_API_KEY`. `OPENAI_BASE_URL` is an
+  optional OpenAI-only override.
   `.env` and `.streamlit/secrets.toml` are ignored local fallbacks only.
 - Update relevant documentation after every user-visible code change.
 - Keep `.codegraph/`, `.code-review-graph/`, `.ua/`, and `graphify-out/` trackable. Ignore
@@ -56,13 +57,14 @@ query returned evidence.
 - Limits: 200 MB, 500 pages, bounded PDF canvas area, and bounded decoded image pixels.
 - Encrypted PDFs are rejected.
 - Native PDF pages and Office files use Docling locally.
-- Scanned PDF pages and images require the key for the selected OpenAI or Agnes model.
+- Scanned PDF pages and images require the key for the selected cloud model.
 - Mixed PDFs route each page independently.
 - The UI exposes Output, Annotated PDF, Markdown, and JSON views plus downloads.
+- The result summary exposes provider token totals and a configured-rate cost estimate.
 - Fast, Balanced, and Audit map to `paperplane-ade-fast-latest`, `paperplane-ade-latest`,
   and `paperplane-ade-audit-latest`, respectively.
-- OpenAI is the default AI selection. Agnes uses `agnes-2.5-flash` for every model-call
-  role while preserving the selected processing policy.
+- GPT-5.6 Luna is the default. The selected catalog model fills every model-call role
+  while preserving the selected processing policy. See `docs/MODELS.md`.
 - The app binds to `127.0.0.1` and retains only the current Streamlit session state.
 
 ## Verification

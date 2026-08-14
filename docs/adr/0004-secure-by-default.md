@@ -9,7 +9,7 @@ Paperplane 4.1.0 (2026-08-14).
 
 Paperplane no longer exposes a FastAPI service or public network API. Its trust boundary is
 a localhost Streamlit process that accepts untrusted documents and can send selected visual
-content to the selected OpenAI or Agnes endpoint.
+content to the selected model provider endpoint.
 
 ## Decision
 

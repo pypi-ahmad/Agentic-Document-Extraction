@@ -7,15 +7,18 @@ from functools import lru_cache
 import httpx
 
 from paperplane.agnes_document import AgnesDocumentAdapter
+from paperplane.anthropic_document import AnthropicDocumentAdapter
 from paperplane.contracts import ParseResponse
 from paperplane.docling_parser import DoclingDocumentParser, create_docling_converter
+from paperplane.gemini_document import GeminiDocumentAdapter
+from paperplane.model_catalog import DEFAULT_DOCUMENT_MODEL, get_document_model
 from paperplane.openai_document import OpenAIDocumentAdapter
 from paperplane.parser import MODEL_MODES, AgenticDocumentParser
-from paperplane.pipeline import V2PageProcessor
+from paperplane.pipeline import StructuredAdapter, V2PageProcessor
 
 DEFAULT_OPENAI_BASE_URL = "https://api.openai.com"
+DEFAULT_XAI_BASE_URL = "https://api.x.ai"
 DEFAULT_OPENAI_TIMEOUT_SECONDS = 180.0
-SUPPORTED_AI_PROVIDERS = {"openai", "agnes"}
 
 
 @lru_cache(maxsize=1)
@@ -31,33 +34,50 @@ async def parse_document(
     filename: str,
     model: str,
     api_key: str,
-    base_url: str = DEFAULT_OPENAI_BASE_URL,
-    provider: str = "openai",
+    ai_model: str = DEFAULT_DOCUMENT_MODEL,
+    openai_base_url: str = DEFAULT_OPENAI_BASE_URL,
 ) -> ParseResponse:
     """Parse one document without retaining a client, upload, or result."""
     if model not in MODEL_MODES:
         raise ValueError(f"Unsupported processing model: {model}")
-    if provider not in SUPPORTED_AI_PROVIDERS:
-        raise ValueError(f"Unsupported AI provider: {provider}")
+    model_spec = get_document_model(ai_model)
     async with httpx.AsyncClient(timeout=DEFAULT_OPENAI_TIMEOUT_SECONDS) as client:
-        adapter = (
-            AgnesDocumentAdapter(client, api_key=api_key)
-            if provider == "agnes"
-            else OpenAIDocumentAdapter(client, api_key=api_key, base_url=base_url)
-        )
+        adapter: StructuredAdapter
+        if model_spec.provider == "agnes":
+            adapter = AgnesDocumentAdapter(client, api_key=api_key)
+        elif model_spec.provider == "anthropic":
+            adapter = AnthropicDocumentAdapter(client, api_key=api_key)
+        elif model_spec.provider == "google":
+            adapter = GeminiDocumentAdapter(client, api_key=api_key)
+        elif model_spec.provider == "xai":
+            adapter = OpenAIDocumentAdapter(
+                client,
+                api_key=api_key,
+                base_url=DEFAULT_XAI_BASE_URL,
+                provider_name="xAI",
+                explicit_prompt_cache=False,
+                image_detail=False,
+                minimum_reasoning_effort="low",
+            )
+        else:
+            adapter = OpenAIDocumentAdapter(
+                client,
+                api_key=api_key,
+                base_url=openai_base_url,
+            )
         parser = AgenticDocumentParser(
-            V2PageProcessor(adapter),
+            V2PageProcessor(adapter, model=model_spec.model_id),
             get_docling_parser(),
             vision_enabled=bool(api_key.strip()),
-            vision_key_name="AGNES_API_KEY" if provider == "agnes" else "OPENAI_API_KEY",
-            vision_parser="agnes_vision" if provider == "agnes" else "openai_vision",
+            vision_key_name=model_spec.api_key_env,
+            vision_parser=f"{model_spec.provider}_vision",
         )
         return await parser.parse(data=data, filename=filename, model=model)
 
 
 __all__ = [
     "DEFAULT_OPENAI_BASE_URL",
-    "SUPPORTED_AI_PROVIDERS",
+    "DEFAULT_XAI_BASE_URL",
     "get_docling_parser",
     "parse_document",
 ]

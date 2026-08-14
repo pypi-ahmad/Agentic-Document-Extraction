@@ -14,25 +14,26 @@ page geometry are returned as `semantic_only` with exact Markdown ranges and nul
 Figures are described with the selected AI model when its key is present; otherwise
 Paperplane emits an explicit unavailable placeholder and warning.
 
-## OpenAI vision engine
+## Cloud vision engines
 
-PyMuPDF renders scanned PDF pages and Pillow normalizes image frames. `gpt-5.6-luna`
+PyMuPDF renders scanned PDF pages and Pillow normalizes image frames. The selected model
 produces structured reading-order drafts. Deterministic code aligns native words when
 available, transforms coordinates, suppresses duplicate regions, validates critical
 content, and assembles evidence.
 
-Balanced mode can use `gpt-5.6-terra` for flagged reconciliation and crop verification.
-Audit mode uses the highest verification budget. Fast mode does not run Terra.
+Balanced mode can reuse the selected model for flagged reconciliation and crop
+verification. Audit mode uses the highest verification budget. Fast mode skips the
+verification pass.
 
-## Agnes 2.5 Flash vision engine
+## Provider adapters
 
-Agnes uses the official `agnes-2.5-flash` Chat Completions endpoint. The same model fills
-the pipeline's draft and verification roles, using JSON-only instructions followed by the
-same deterministic validation and grounding. It reads `AGNES_API_KEY`; the launcher
-refreshes that key from the Windows user environment without printing it.
+Paperplane uses provider-native structured-output APIs for OpenAI, xAI, Google Gemini,
+Anthropic, and Agnes. The exact display names, API IDs, environment variables, and official
+references are maintained in [MODELS.md](MODELS.md). The launcher refreshes provider keys
+from the Windows user environment without printing them.
 
-See the official [Agnes 2.5 Flash model guide](https://www.agnes-ai.com/en/docs/agnes-25-flash)
-and [Agnes API overview](https://www.agnes-ai.com/en/docs/overview).
+Each adapter normalizes its provider's usage fields into input, output, cached-input, and
+cache-write token totals. The parser aggregates them for the UI cost estimate.
 
 ## Routing
 
@@ -41,8 +42,8 @@ text and is not dominated by a full-page raster image; otherwise it is vision-ro
 Mixed PDFs combine Docling and the selected vision model in original page order.
 
 Images always require vision. Office/OpenDocument/CSV input always starts with Docling.
-There is no runtime plugin system or local model server. The UI provider choices are
-OpenAI Luna/Terra and Agnes 2.5 Flash.
+There is no runtime plugin system or local model server. The UI choices are the six models
+in the fixed catalog.
 
 `OPENAI_BASE_URL` can target an operator-controlled endpoint that implements the expected
 OpenAI Responses API contract. The default is `https://api.openai.com`.

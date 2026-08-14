@@ -105,7 +105,7 @@ async def test_crop_verification_uses_original_detail() -> None:
     adapter = OpenAIDocumentAdapter(http, api_key="sk-test")
 
     await adapter.generate_structured(
-        model="gpt-5.6-terra",
+        model="gpt-5.6-luna",
         image=b"crop",
         instructions="Read the crop independently.",
         schema_name="crop_verification",
@@ -163,7 +163,7 @@ async def test_document_reduction_places_dynamic_context_after_cache_breakpoint(
     adapter = OpenAIDocumentAdapter(http, api_key="sk-test")
 
     await adapter.generate_structured(
-        model="gpt-5.6-terra",
+        model="gpt-5.6-luna",
         image=None,
         instructions="Build the grounded document hierarchy.",
         context='<a id="p0001-c0001"></a> Invoice INV-42',
@@ -181,4 +181,52 @@ async def test_document_reduction_places_dynamic_context_after_cache_breakpoint(
         "text": '<a id="p0001-c0001"></a> Invoice INV-42',
     }
     assert all(item["type"] != "input_image" for item in content)
+    await http.aclose()
+
+
+@pytest.mark.asyncio
+async def test_xai_compatibility_uses_grok_without_openai_only_fields() -> None:
+    captured: dict = {}
+
+    async def handler(request: httpx.Request) -> httpx.Response:
+        captured["url"] = str(request.url)
+        captured["body"] = json.loads(request.content)
+        return httpx.Response(
+            200,
+            json={
+                "id": "resp_grok",
+                "output": [{"type": "message", "content": [{"type": "output_text", "text": "{}"}]}],
+            },
+        )
+
+    http = httpx.AsyncClient(transport=httpx.MockTransport(handler))
+    adapter = OpenAIDocumentAdapter(
+        http,
+        api_key="xai-test",
+        base_url="https://api.x.ai",
+        provider_name="xAI",
+        explicit_prompt_cache=False,
+        image_detail=False,
+        minimum_reasoning_effort="low",
+    )
+
+    await adapter.generate_structured(
+        model="grok-4.6",
+        image=b"png",
+        instructions="Extract.",
+        schema_name="page",
+        schema={"type": "object"},
+        reasoning_effort="none",
+        detail="original",
+        prompt_cache_key="unused",
+    )
+
+    body = captured["body"]
+    assert captured["url"] == "https://api.x.ai/v1/responses"
+    assert body["model"] == "grok-4.6"
+    assert body["reasoning"] == {"effort": "low"}
+    assert "prompt_cache_key" not in body
+    assert "prompt_cache_options" not in body
+    assert "prompt_cache_breakpoint" not in body["input"][0]["content"][0]
+    assert "detail" not in body["input"][0]["content"][1]
     await http.aclose()

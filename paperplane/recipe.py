@@ -10,7 +10,7 @@ RecipeVersion = Literal["v8", "v9"]
 
 
 class VerificationBudget(BaseModel):
-    max_terra_calls_per_page: int = Field(ge=0)
+    max_verification_calls_per_page: int = Field(ge=0)
     max_crop_calls_per_page: int = Field(ge=0)
 
 
@@ -25,18 +25,30 @@ _RECIPES = {
         version="v8",
         prompt_version="v8",
         verification_budgets={
-            "economy": VerificationBudget(max_terra_calls_per_page=0, max_crop_calls_per_page=0),
-            "balanced": VerificationBudget(max_terra_calls_per_page=99, max_crop_calls_per_page=99),
-            "audit": VerificationBudget(max_terra_calls_per_page=99, max_crop_calls_per_page=99),
+            "economy": VerificationBudget(
+                max_verification_calls_per_page=0, max_crop_calls_per_page=0
+            ),
+            "balanced": VerificationBudget(
+                max_verification_calls_per_page=99, max_crop_calls_per_page=99
+            ),
+            "audit": VerificationBudget(
+                max_verification_calls_per_page=99, max_crop_calls_per_page=99
+            ),
         },
     ),
     "v9": ProcessingRecipe(
         version="v9",
         prompt_version="v8",
         verification_budgets={
-            "economy": VerificationBudget(max_terra_calls_per_page=0, max_crop_calls_per_page=0),
-            "balanced": VerificationBudget(max_terra_calls_per_page=2, max_crop_calls_per_page=1),
-            "audit": VerificationBudget(max_terra_calls_per_page=6, max_crop_calls_per_page=5),
+            "economy": VerificationBudget(
+                max_verification_calls_per_page=0, max_crop_calls_per_page=0
+            ),
+            "balanced": VerificationBudget(
+                max_verification_calls_per_page=2, max_crop_calls_per_page=1
+            ),
+            "audit": VerificationBudget(
+                max_verification_calls_per_page=6, max_crop_calls_per_page=5
+            ),
         },
     ),
 }

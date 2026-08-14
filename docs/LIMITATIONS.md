@@ -17,8 +17,8 @@
 - Maximum decoded image content: 40,000,000 pixels across frames
 - Synchronous processing and sequential vision pages
 - Legacy DOC/PPT/XLS, RTF, encrypted PDFs, and password-protected files unsupported
-- Local Docling conversion does not OCR scans; vision input requires `OPENAI_API_KEY` or
-  `AGNES_API_KEY` for the selected model
+- Local Docling conversion does not OCR scans; vision input requires the selected model's
+  credential listed in [MODELS.md](MODELS.md)
 
 ## Evidence limits
 
@@ -26,7 +26,7 @@
 - IDs are stable within one response, not guaranteed across re-parses
 - Office elements without physical geometry are `semantic_only` with null boxes
 - Figure descriptions can be unavailable when the selected model is unconfigured or fails
-- Scans, images, and requested figure crops are sent to the selected OpenAI or Agnes endpoint
+- Scans, images, and requested figure crops are sent to the selected provider endpoint
 - Annotated PDFs are review aids, not independent proof of correctness
 
 Always review extracted values and source evidence before financial, legal, medical,

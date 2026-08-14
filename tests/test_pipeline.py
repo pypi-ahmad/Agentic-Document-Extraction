@@ -30,6 +30,26 @@ def _generation(value: dict) -> StructuredGeneration:
     return StructuredGeneration(value=value, usage=OpenAIUsage(), latency_ms=1)
 
 
+class _FigureDescriptionAdapter:
+    async def generate_structured(self, **kwargs):
+        assert kwargs["schema_name"] == "native_figure_description_v1"
+        return StructuredGeneration(
+            value={"type": "chart", "description": "Quarterly sales", "visible_text": "Q1"},
+            usage=OpenAIUsage(input_tokens=120, output_tokens=30, cached_input_tokens=20),
+            latency_ms=1,
+        )
+
+
+async def test_figure_description_returns_provider_usage_for_cost_aggregation() -> None:
+    description, usage = await V2PageProcessor(
+        _FigureDescriptionAdapter(),  # type: ignore[arg-type]
+        model="gpt-5.6-luna",
+    ).describe_figure_with_usage(_png(), "Sales", mode=ProcessingMode.BALANCED)
+
+    assert "Quarterly sales" in description
+    assert usage == OpenAIUsage(input_tokens=120, output_tokens=30, cached_input_tokens=20)
+
+
 def test_figure_specialist_ignores_multiple_tiny_decorative_regions() -> None:
     figures = [
         {
@@ -45,7 +65,7 @@ def test_figure_specialist_ignores_multiple_tiny_decorative_regions() -> None:
 class _ExactTextAdapter:
     async def generate_structured(self, **kwargs):
         if kwargs["model"] != "gpt-5.6-luna":
-            raise AssertionError("exact native text must not require Terra")
+            raise AssertionError("exact native text must use the selected model")
         return _generation(
             {
                 "chunks": [
@@ -63,7 +83,7 @@ class _ExactTextAdapter:
 
 class _VerifiedScanAdapter:
     async def generate_structured(self, **kwargs):
-        if kwargs["model"] == "gpt-5.6-luna":
+        if kwargs["schema_name"] == "page_draft_v8":
             return _generation(
                 {
                     "chunks": [
@@ -105,7 +125,7 @@ class _VerifiedScanAdapter:
 class _DisagreeingAdapter(_VerifiedScanAdapter):
     async def generate_structured(self, **kwargs):
         result = await super().generate_structured(**kwargs)
-        if kwargs["model"] == "gpt-5.6-terra":
+        if kwargs["schema_name"] == "page_reconciliation_v8":
             return _generation(
                 {
                     "chunks": [
@@ -119,27 +139,7 @@ class _DisagreeingAdapter(_VerifiedScanAdapter):
                     ],
                 }
             )
-        return result
-
-
-class _CorrectingAdapter(_VerifiedScanAdapter):
-    async def generate_structured(self, **kwargs):
-        result = await super().generate_structured(**kwargs)
-        if kwargs["model"] == "gpt-5.6-terra" and kwargs["schema_name"] == "page_reconciliation_v8":
-            return _generation(
-                {
-                    "chunks": [
-                        {
-                            "type": "table",
-                            "text": "Total 24.00",
-                            "markdown": "| Total | 24.00 |",
-                            "box": {"left": 0.1, "top": 0.2, "right": 0.9, "bottom": 0.8},
-                            "parent_order": None,
-                        }
-                    ],
-                }
-            )
-        if kwargs["model"] == "gpt-5.6-terra" and kwargs["schema_name"] == "page_reconciliation_v8":
+        if kwargs["schema_name"] == "crop_verification_v8":
             return _generation(
                 {
                     "text": "Total 24.00",
@@ -149,7 +149,37 @@ class _CorrectingAdapter(_VerifiedScanAdapter):
                     "reason": "values disagree",
                 }
             )
-        if kwargs["model"] == "gpt-5.6-terra":
+        return result
+
+
+class _CorrectingAdapter(_VerifiedScanAdapter):
+    async def generate_structured(self, **kwargs):
+        result = await super().generate_structured(**kwargs)
+        if kwargs["schema_name"] == "page_reconciliation_v8":
+            return _generation(
+                {
+                    "chunks": [
+                        {
+                            "type": "table",
+                            "text": "Total 24.00",
+                            "markdown": "| Total | 24.00 |",
+                            "box": {"left": 0.1, "top": 0.2, "right": 0.9, "bottom": 0.8},
+                            "parent_order": None,
+                        }
+                    ],
+                }
+            )
+        if kwargs["schema_name"] == "page_reconciliation_v8":
+            return _generation(
+                {
+                    "text": "Total 24.00",
+                    "markdown": "| Total | 24.00 |",
+                    "box": {"left": 0.05, "top": 0.1, "right": 0.95, "bottom": 0.9},
+                    "verdict": "unresolved",
+                    "reason": "values disagree",
+                }
+            )
+        if kwargs["schema_name"] == "crop_verification_v8":
             return _generation(
                 {
                     "text": "Total 24.00",
@@ -162,10 +192,10 @@ class _CorrectingAdapter(_VerifiedScanAdapter):
         return result
 
 
-class _ThousandScaleTerraAdapter(_VerifiedScanAdapter):
+class _ThousandScaleVerificationAdapter(_VerifiedScanAdapter):
     async def generate_structured(self, **kwargs):
         result = await super().generate_structured(**kwargs)
-        if kwargs["model"] == "gpt-5.6-terra" and kwargs["schema_name"] == "page_reconciliation_v8":
+        if kwargs["schema_name"] == "page_reconciliation_v8":
             return _generation(
                 {
                     "chunks": [
@@ -182,10 +212,10 @@ class _ThousandScaleTerraAdapter(_VerifiedScanAdapter):
         return result
 
 
-class _InvalidTerraBoxAdapter(_VerifiedScanAdapter):
+class _InvalidVerificationBoxAdapter(_VerifiedScanAdapter):
     async def generate_structured(self, **kwargs):
         result = await super().generate_structured(**kwargs)
-        if kwargs["model"] == "gpt-5.6-terra" and kwargs["schema_name"] == "page_reconciliation_v8":
+        if kwargs["schema_name"] == "page_reconciliation_v8":
             return _generation(
                 {
                     "chunks": [
@@ -202,7 +232,7 @@ class _InvalidTerraBoxAdapter(_VerifiedScanAdapter):
         return result
 
 
-class _InvalidLunaBoxAdapter:
+class _InvalidDraftBoxAdapter:
     async def generate_structured(self, **kwargs):
         return _generation(
             {
@@ -219,7 +249,7 @@ class _InvalidLunaBoxAdapter:
         )
 
 
-class _HugeLunaBoxAdapter(_InvalidLunaBoxAdapter):
+class _HugeDraftBoxAdapter(_InvalidDraftBoxAdapter):
     async def generate_structured(self, **kwargs):
         result = await super().generate_structured(**kwargs)
         result.value["chunks"][0]["box"] = {
@@ -231,7 +261,7 @@ class _HugeLunaBoxAdapter(_InvalidLunaBoxAdapter):
         return result
 
 
-class _ExactTextWithInvalidLunaBoxAdapter(_ExactTextAdapter):
+class _ExactTextWithInvalidDraftBoxAdapter(_ExactTextAdapter):
     async def generate_structured(self, **kwargs):
         result = await super().generate_structured(**kwargs)
         result.value["chunks"][0]["box"] = {
@@ -243,9 +273,9 @@ class _ExactTextWithInvalidLunaBoxAdapter(_ExactTextAdapter):
         return result
 
 
-class _EmptyDraftRecoveredByTerraAdapter:
+class _EmptyDraftRecoveredByVerificationAdapter:
     async def generate_structured(self, **kwargs):
-        if kwargs["model"] == "gpt-5.6-luna":
+        if kwargs["schema_name"] == "page_draft_v8":
             return _generation({"chunks": []})
         if kwargs["schema_name"] == "page_reconciliation_v8":
             return _generation(
@@ -272,9 +302,9 @@ class _EmptyDraftRecoveredByTerraAdapter:
         )
 
 
-class _TerraOnlyFallbackAdapter:
+class _VerificationOnlyFallbackAdapter:
     async def generate_structured(self, **kwargs):
-        if kwargs["model"] == "gpt-5.6-luna":
+        if kwargs["schema_name"] == "page_draft_v8":
             return _generation(
                 {
                     "chunks": [
@@ -294,8 +324,8 @@ class _TerraOnlyFallbackAdapter:
                     "chunks": [
                         {
                             "type": "text",
-                            "text": "Recovered by Terra",
-                            "markdown": "Recovered by Terra",
+                            "text": "Recovered by verification",
+                            "markdown": "Recovered by verification",
                             "box": {"left": 0.1, "top": 0.2, "right": 0.9, "bottom": 0.8},
                             "parent_order": None,
                         }
@@ -304,8 +334,8 @@ class _TerraOnlyFallbackAdapter:
             )
         return _generation(
             {
-                "text": "Recovered by Terra",
-                "markdown": "Recovered by Terra",
+                "text": "Recovered by verification",
+                "markdown": "Recovered by verification",
                 "box": {"left": 0.8, "top": 0.1, "right": 0.2, "bottom": 0.9},
                 "verdict": "unresolved",
                 "reason": "box could not be localized",
@@ -342,7 +372,7 @@ class _EmptyFigureAdapter:
 
 class _ReconciliationOmitsDraftRegionAdapter:
     async def generate_structured(self, **kwargs):
-        if kwargs["model"] == "gpt-5.6-luna":
+        if kwargs["schema_name"] == "page_draft_v8":
             return _generation(
                 {
                     "chunks": [
@@ -412,7 +442,7 @@ class _PrecisionIdentifierAdapter:
 
     async def generate_structured(self, **kwargs):
         self.calls.append(kwargs)
-        if kwargs["model"] == "gpt-5.6-luna":
+        if kwargs["schema_name"] == "page_draft_v8":
             return _generation(
                 {
                     "chunks": [
@@ -457,7 +487,7 @@ class _GroupedFigureAdapter:
 
     async def generate_structured(self, **kwargs):
         self.calls.append(kwargs)
-        if kwargs["model"] == "gpt-5.6-luna":
+        if kwargs["schema_name"] == "page_draft_v8":
             return _generation(
                 {
                     "chunks": [
@@ -585,7 +615,7 @@ class _MalformedFigureAdapter:
         )
 
 
-def test_reconciliation_uses_luna_as_reading_order_spine_and_remaps_parents() -> None:
+def test_reconciliation_uses_draft_as_reading_order_spine_and_remaps_parents() -> None:
     draft = [
         {
             "type": "heading",
@@ -682,7 +712,7 @@ async def test_malformed_figure_markdown_becomes_unresolved_semantic_placeholder
     assert "figure_description_unavailable" in chunk.warnings
 
 
-async def test_native_text_is_grounded_exactly_without_terra() -> None:
+async def test_native_text_is_grounded_exactly_without_verification() -> None:
     page = RenderedPage(
         page_number=1,
         image_png=_png(),
@@ -725,10 +755,10 @@ async def test_scanned_table_is_verified_by_full_page_reconciliation() -> None:
     assert chunk.grounding[0].method == GroundingMethod.VISION_REFINED
     assert chunk.grounding[0].evidence_artifact_id.startswith("page:")
     assert chunk.source_pass == "page_reconciliation"
-    assert set(result.model_usage) == {"gpt-5.6-luna", "gpt-5.6-terra"}
+    assert set(result.model_usage) == {"gpt-5.6-luna"}
 
 
-async def test_balanced_disagreement_preserves_the_luna_candidate() -> None:
+async def test_balanced_disagreement_preserves_the_draft_candidate() -> None:
     page = RenderedPage(1, _png(), 100, 100, [])
 
     result = await V2PageProcessor(_DisagreeingAdapter()).process_page(
@@ -765,7 +795,7 @@ async def test_audit_uses_full_page_reconciliation_for_ordinary_disagreement() -
     assert chunk.source_pass == "page_reconciliation"
 
 
-async def test_verified_terra_correction_replaces_luna_text_and_markdown() -> None:
+async def test_verified_correction_replaces_draft_text_and_markdown() -> None:
     result = await V2PageProcessor(_CorrectingAdapter()).process_page(
         source=_png(),
         filename="scan.png",
@@ -778,15 +808,15 @@ async def test_verified_terra_correction_replaces_luna_text_and_markdown() -> No
     assert chunk.verification_status == VerificationStatus.VERIFIED
     assert chunk.text == "Total 24.00"
     assert chunk.markdown == "| Total | 24.00 |"
-    assert chunk.source_model == "gpt-5.6-terra"
+    assert chunk.source_model == "gpt-5.6-luna"
     assert chunk.source_pass == "crop_verification"
     assert chunk.warnings == []
 
 
-async def test_terra_thousand_scale_page_box_is_normalized() -> None:
+async def test_verification_thousand_scale_page_box_is_normalized() -> None:
     page = RenderedPage(1, _png(), 100, 100, [])
 
-    result = await V2PageProcessor(_ThousandScaleTerraAdapter()).process_page(
+    result = await V2PageProcessor(_ThousandScaleVerificationAdapter()).process_page(
         source=_png(),
         filename="scan.png",
         source_sha256="d" * 64,
@@ -799,10 +829,10 @@ async def test_terra_thousand_scale_page_box_is_normalized() -> None:
     assert chunk.grounding[0].box == BoundingBox(left=0.1, top=0.2, right=0.9, bottom=0.8)
 
 
-async def test_balanced_invalid_terra_box_preserves_luna_at_the_draft_page_box() -> None:
+async def test_balanced_invalid_verification_box_preserves_draft_page_box() -> None:
     page = RenderedPage(1, _png(), 100, 100, [])
 
-    result = await V2PageProcessor(_InvalidTerraBoxAdapter()).process_page(
+    result = await V2PageProcessor(_InvalidVerificationBoxAdapter()).process_page(
         source=_png(),
         filename="scan.png",
         source_sha256="e" * 64,
@@ -820,10 +850,10 @@ async def test_balanced_invalid_terra_box_preserves_luna_at_the_draft_page_box()
     assert "page_reconciliation_failed" in chunk.warnings
 
 
-async def test_invalid_scanned_luna_box_preserves_content_without_false_grounding() -> None:
+async def test_invalid_scanned_draft_box_preserves_content_without_false_grounding() -> None:
     page = RenderedPage(1, _png(), 100, 100, [])
 
-    result = await V2PageProcessor(_InvalidLunaBoxAdapter()).process_page(
+    result = await V2PageProcessor(_InvalidDraftBoxAdapter()).process_page(
         source=_png(),
         filename="scan.png",
         source_sha256="f" * 64,
@@ -851,7 +881,7 @@ async def test_invalid_digital_audit_box_keeps_strict_abstention_out_of_markdown
         [NativeWord(text="Different", bbox=BoundingBox(left=0.1, top=0.1, right=0.2, bottom=0.2))],
     )
 
-    result = await V2PageProcessor(_InvalidLunaBoxAdapter()).process_page(
+    result = await V2PageProcessor(_InvalidDraftBoxAdapter()).process_page(
         source=_png(),
         filename="digital.pdf",
         source_sha256="1" * 64,
@@ -868,8 +898,8 @@ async def test_invalid_digital_audit_box_keeps_strict_abstention_out_of_markdown
     assert result.markdown == ""
 
 
-async def test_empty_scanned_draft_uses_full_page_terra_recovery() -> None:
-    result = await V2PageProcessor(_EmptyDraftRecoveredByTerraAdapter()).process_page(
+async def test_empty_scanned_draft_uses_full_page_verification_recovery() -> None:
+    result = await V2PageProcessor(_EmptyDraftRecoveredByVerificationAdapter()).process_page(
         source=_png(),
         filename="scan.png",
         source_sha256="2" * 64,
@@ -883,8 +913,8 @@ async def test_empty_scanned_draft_uses_full_page_terra_recovery() -> None:
     assert result.markdown == "Recovered page text"
 
 
-async def test_scanned_audit_uses_terra_fallback_when_luna_is_empty() -> None:
-    result = await V2PageProcessor(_TerraOnlyFallbackAdapter()).process_page(
+async def test_scanned_audit_uses_verification_fallback_when_draft_is_empty() -> None:
+    result = await V2PageProcessor(_VerificationOnlyFallbackAdapter()).process_page(
         source=_png(),
         filename="scan.png",
         source_sha256="3" * 64,
@@ -894,9 +924,9 @@ async def test_scanned_audit_uses_terra_fallback_when_luna_is_empty() -> None:
 
     chunk = result.chunks[0]
     assert chunk.verification_status == VerificationStatus.VERIFIED
-    assert chunk.text == "Recovered by Terra"
-    assert chunk.markdown == "Recovered by Terra"
-    assert chunk.source_model == "gpt-5.6-terra"
+    assert chunk.text == "Recovered by verification"
+    assert chunk.markdown == "Recovered by verification"
+    assert chunk.source_model == "gpt-5.6-luna"
     assert chunk.source_pass == "page_reconciliation"
     assert not chunk.warnings
 
@@ -921,7 +951,7 @@ async def test_empty_figure_gets_semantic_placeholder_not_warning_admonition() -
     assert "[!WARNING]" not in result.markdown
 
 
-async def test_reconciliation_preserves_draft_regions_that_terra_omits() -> None:
+async def test_reconciliation_preserves_draft_regions_that_verification_omits() -> None:
     result = await V2PageProcessor(_ReconciliationOmitsDraftRegionAdapter()).process_page(
         source=_png(),
         filename="scan.png",
@@ -939,10 +969,10 @@ async def test_reconciliation_preserves_draft_regions_that_terra_omits() -> None
     assert "9. Final shipping step" in result.markdown
 
 
-async def test_unrepresentable_scanned_luna_box_preserves_candidate_text() -> None:
+async def test_unrepresentable_scanned_draft_box_preserves_candidate_text() -> None:
     page = RenderedPage(1, _png(), 100, 100, [])
 
-    result = await V2PageProcessor(_HugeLunaBoxAdapter()).process_page(
+    result = await V2PageProcessor(_HugeDraftBoxAdapter()).process_page(
         source=_png(),
         filename="scan.png",
         source_sha256="0" * 64,
@@ -956,7 +986,7 @@ async def test_unrepresentable_scanned_luna_box_preserves_candidate_text() -> No
     assert result.chunks[0].warnings == ["invalid_draft_box", "scan_fallback_used"]
 
 
-async def test_exact_native_text_bypasses_an_invalid_luna_box() -> None:
+async def test_exact_native_text_bypasses_an_invalid_draft_box() -> None:
     page = RenderedPage(
         page_number=1,
         image_png=_png(),
@@ -969,7 +999,7 @@ async def test_exact_native_text_bypasses_an_invalid_luna_box() -> None:
         ],
     )
 
-    result = await V2PageProcessor(_ExactTextWithInvalidLunaBoxAdapter()).process_page(
+    result = await V2PageProcessor(_ExactTextWithInvalidDraftBoxAdapter()).process_page(
         source=_png(),
         filename="scan.png",
         source_sha256="1" * 64,
@@ -1000,16 +1030,16 @@ async def test_page_reconciliation_uses_v8_prompt_cache_key() -> None:
         for coordinate in box["properties"].values():
             assert coordinate["minimum"] == 0
             assert coordinate["maximum"] == 1
-    luna_call, terra_call = adapter.calls
+    draft_call, verification_call = adapter.calls
     assert CROP_VERIFICATION_SCHEMA["properties"]["markdown"] == {"type": "string"}
     assert "markdown" in CROP_VERIFICATION_SCHEMA["required"]
-    assert luna_call["schema_name"] == "page_draft_v8"
-    assert terra_call["schema_name"] == "page_reconciliation_v8"
-    assert ":v8:" in luna_call["prompt_cache_key"]
-    assert ":v8:" in terra_call["prompt_cache_key"]
-    assert "decimal coordinates 0-1 relative to the page" in luna_call["instructions"]
-    assert "mutually exclusive top-level regions" in terra_call["instructions"]
-    assert "<figure" in luna_call["instructions"]
+    assert draft_call["schema_name"] == "page_draft_v8"
+    assert verification_call["schema_name"] == "page_reconciliation_v8"
+    assert ":v8:" in draft_call["prompt_cache_key"]
+    assert ":v8:" in verification_call["prompt_cache_key"]
+    assert "decimal coordinates 0-1 relative to the page" in draft_call["instructions"]
+    assert "mutually exclusive top-level regions" in verification_call["instructions"]
+    assert "<figure" in draft_call["instructions"]
 
 
 async def test_disagreement_runs_one_targeted_crop_after_page_reconciliation() -> None:
@@ -1022,11 +1052,11 @@ async def test_disagreement_runs_one_targeted_crop_after_page_reconciliation() -
         mode=ProcessingMode.BALANCED,
     )
 
-    terra_calls = [call for call in adapter.calls if call["model"] == "gpt-5.6-terra"]
-    assert len(terra_calls) == 2
-    assert terra_calls[0]["schema_name"] == "page_reconciliation_v8"
-    assert terra_calls[1]["schema_name"] == "crop_verification_v8"
-    assert "decimal coordinates 0-1 relative to the crop" in terra_calls[1]["instructions"]
+    verification_calls = [call for call in adapter.calls if call["schema_name"] != "page_draft_v8"]
+    assert len(verification_calls) == 2
+    assert verification_calls[0]["schema_name"] == "page_reconciliation_v8"
+    assert verification_calls[1]["schema_name"] == "crop_verification_v8"
+    assert "decimal coordinates 0-1 relative to the crop" in verification_calls[1]["instructions"]
 
 
 async def test_audit_identifier_chunk_is_crop_verified_even_when_page_models_agree() -> None:
@@ -1049,7 +1079,7 @@ async def test_audit_identifier_chunk_is_crop_verified_even_when_page_models_agr
     ]
 
 
-async def test_audit_groups_connected_figures_and_keeps_them_at_the_luna_anchor() -> None:
+async def test_audit_groups_connected_figures_and_keeps_them_at_the_draft_anchor() -> None:
     adapter = _GroupedFigureAdapter()
 
     result = await V2PageProcessor(adapter).process_page(
