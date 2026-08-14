@@ -103,14 +103,18 @@ async def test_testing_flag_short_circuits(rate_limited_settings, rl_client) -> 
 
 
 @pytest.mark.asyncio
-async def test_no_identity_when_auth_disabled_skips_limiting(
+async def test_anonymous_requests_are_rate_limited_when_auth_disabled(
     rate_limited_settings, rl_client
 ) -> None:
     settings.api_key = ""
 
-    for _ in range(5):
-        response = await rl_client.get("/api/extraction-schemas")
-        assert response.status_code == 200
+    first = await rl_client.get("/api/extraction-schemas")
+    second = await rl_client.get("/api/extraction-schemas")
+    third = await rl_client.get("/api/extraction-schemas")
+
+    assert first.status_code == 200
+    assert second.status_code == 200
+    assert third.status_code == 429
 
 
 def test_identity_hash_is_stable_and_distinct_and_non_reversible() -> None:

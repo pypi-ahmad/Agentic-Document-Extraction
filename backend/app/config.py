@@ -35,7 +35,7 @@ class Settings(BaseSettings):
     parse_batch_max_attempts: int = Field(default=2, ge=1, le=3)
     max_page_repairs: int = Field(default=2, ge=0, le=2)
 
-    host: str = "0.0.0.0"
+    host: str = "127.0.0.1"
     port: int = Field(default=8000, ge=1, le=65535)
     debug: bool = False
     cors_origins: str = "http://localhost:3000,http://127.0.0.1:3000"

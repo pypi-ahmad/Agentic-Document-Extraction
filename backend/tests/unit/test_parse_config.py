@@ -23,6 +23,7 @@ def test_parser_limits_match_product_contract() -> None:
     assert settings.max_page_repairs == 2
     assert settings.max_upload_bytes == 200 * 1024 * 1024
     assert settings.api_key == ""
+    assert settings.host == "127.0.0.1"
 
 
 def test_ollama_endpoint_is_env_configurable(monkeypatch: pytest.MonkeyPatch) -> None:

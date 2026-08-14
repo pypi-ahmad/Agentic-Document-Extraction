@@ -73,9 +73,9 @@ def reset_rate_limiter_for_tests() -> None:
 async def require_rate_limit(
     request: Request, identity: str | None = Depends(require_api_key)
 ) -> None:
-    if not settings.rate_limit_enabled or settings.testing or identity is None:
+    if not settings.rate_limit_enabled or settings.testing:
         return
-    hashed = _identity(identity)
+    hashed = _identity(identity or "anonymous-local-client")
     retry_after = await _limiter.check(hashed)
     if retry_after is None:
         return
