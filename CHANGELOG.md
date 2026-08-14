@@ -9,9 +9,48 @@ and this project aims to follow [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- Local Docling parsing for native PDFs, DOCX, PPTX, XLSX, ODT, ODP, ODS, and CSV.
+- Automatic per-page routing for native, scanned, and mixed PDFs.
+- HTML-table output, atomic-line grounding, and explicit semantic-only Office geometry.
+- Rendered Output, Annotated PDF, Markdown, and JSON result tabs with downloadable PDF,
+  Markdown, and JSON artifacts.
+- In-memory source overlays for grounded PDF/image blocks and semantic evidence reports for
+  Office content without reliable geometry.
+
 ### Changed
 
+- OpenAI credentials are now required only for scanned/image content and optional figure
+  descriptions; native documents can be converted locally.
+- `Paperplane.cmd` now downloads required Docling layout and table models during setup.
+- Docling's Windows layout path runs without Torch compilation or Visual Studio build tools.
+
 ### Fixed
+
+## [4.0.0] - 2026-08-14
+
+### Added
+
+- The Windows launcher now bootstraps uv, Python 3.12.10, and locked runtime dependencies
+  before starting Streamlit.
+
+- A single local Streamlit workspace with native document preview, processing modes,
+  grounded Markdown/JSON inspection, downloads, and AppTest coverage.
+- A framework-neutral `paperplane` parsing package and one-file Windows launcher.
+
+### Changed
+
+- Configuration now prefers Windows user environment variables, with ignored `.env` and
+  Streamlit secrets available as local fallbacks.
+
+- The UI now calls the parser directly in-process and retains only the current Streamlit
+  session state.
+- Releases are source-only GitHub releases.
+
+### Removed
+
+- FastAPI, Next.js, React, Node.js, npm, Docker, PyPI publishing, and all REST endpoints.
+- Schema extraction, inactive providers, telemetry, authentication middleware, jobs,
+  persistence, and legacy pipeline modules.
 
 ## [3.0.0] - 2026-08-14
 

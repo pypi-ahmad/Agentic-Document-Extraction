@@ -1,27 +1,84 @@
 {
-  "schema_version": 1,
-  "diagram_type": "architecture",
-  "meta": {
-    "title": "Paperplane — Stateless Document Extraction",
-    "subtitle": "One upload, bounded processing, one grounded response",
-    "output": "paperplane-system.html"
-  },
-  "components": [
-    {"id": "operator", "type": "external", "label": "Operator", "sublabel": "Browser and local document"},
-    {"id": "web_ui", "type": "frontend", "label": "Paperplane UI", "sublabel": "Next.js and React", "sources": [{"path": "frontend/src/app/page.tsx", "line": 1}]},
-    {"id": "guard", "type": "security", "label": "Request Guard", "sublabel": "API key, rate limit, input bounds"},
-    {"id": "api", "type": "backend", "label": "FastAPI", "sublabel": "Synchronous /v2/parse", "sources": [{"path": "backend/app/routers/dpt_api.py", "line": 1}]},
-    {"id": "parser", "type": "service", "label": "Page Processor", "sublabel": "Render, draft, ground, verify", "sources": [{"path": "backend/app/services/agentic/parsing.py", "line": 1}]},
-    {"id": "openai", "type": "external", "label": "OpenAI", "sublabel": "Luna draft and Terra verification"}
+  "name": "Paperplane 4.1.0",
+  "description": "Local Streamlit document extraction with automatic Docling/OpenAI routing and session-only results",
+  "nodes": [
+    {
+      "id": "ui",
+      "type": "application",
+      "label": "Streamlit workspace",
+      "sublabel": "Upload, preview, mode, inspect, download",
+      "sources": [{"path": "streamlit_app.py", "line": 1}]
+    },
+    {
+      "id": "runtime",
+      "type": "service",
+      "label": "In-process runtime",
+      "sublabel": "Cached Docling resources and short-lived OpenAI client",
+      "sources": [{"path": "paperplane/runtime.py", "line": 1}]
+    },
+    {
+      "id": "router",
+      "type": "service",
+      "label": "Document parser",
+      "sublabel": "Validate, classify pages, route, merge",
+      "sources": [
+        {"path": "paperplane/ingest.py", "line": 1},
+        {"path": "paperplane/parser.py", "line": 1}
+      ]
+    },
+    {
+      "id": "docling",
+      "type": "service",
+      "label": "Local Docling",
+      "sublabel": "Native PDF and Office structure",
+      "sources": [{"path": "paperplane/docling_parser.py", "line": 1}]
+    },
+    {
+      "id": "vision",
+      "type": "service",
+      "label": "Vision pipeline",
+      "sublabel": "Luna draft, deterministic grounding, bounded Terra checks",
+      "sources": [
+        {"path": "paperplane/pipeline.py", "line": 1},
+        {"path": "paperplane/grounding.py", "line": 1}
+      ]
+    },
+    {
+      "id": "openai",
+      "type": "external",
+      "label": "OpenAI Responses API",
+      "sublabel": "Scans, images, and optional figure descriptions"
+    },
+    {
+      "id": "assembler",
+      "type": "service",
+      "label": "Grounded assembler",
+      "sublabel": "Reading-order Markdown and hierarchical JSON",
+      "sources": [{"path": "paperplane/contracts.py", "line": 1}]
+    },
+    {
+      "id": "evidence",
+      "type": "service",
+      "label": "Evidence PDF",
+      "sublabel": "Source overlays or semantic-only report",
+      "sources": [{"path": "paperplane/annotated_pdf.py", "line": 1}]
+    }
   ],
-  "connections": [
-    {"from": "operator", "to": "web_ui", "label": "select file"},
-    {"from": "web_ui", "to": "guard", "label": "multipart request"},
-    {"from": "guard", "to": "api", "label": "validated request"},
-    {"from": "api", "to": "parser", "label": "document bytes"},
-    {"from": "parser", "to": "openai", "label": "bounded model calls"},
-    {"from": "parser", "to": "api", "label": "grounded contract"},
-    {"from": "api", "to": "web_ui", "label": "Markdown and JSON"}
+  "edges": [
+    {"from": "ui", "to": "runtime", "label": "bytes + mode"},
+    {"from": "runtime", "to": "router", "label": "direct Python call"},
+    {"from": "router", "to": "docling", "label": "native content"},
+    {"from": "router", "to": "vision", "label": "scans and images"},
+    {"from": "vision", "to": "openai", "label": "structured requests"},
+    {"from": "docling", "to": "assembler", "label": "native blocks"},
+    {"from": "vision", "to": "assembler", "label": "grounded blocks"},
+    {"from": "assembler", "to": "evidence", "label": "validated response"},
+    {"from": "assembler", "to": "ui", "label": "Markdown + JSON"},
+    {"from": "evidence", "to": "ui", "label": "in-memory PDF"}
   ],
-  "notes": ["Paperplane does not retain uploads, results, jobs, or history."]
+  "boundaries": {
+    "network": "127.0.0.1 Streamlit plus configured OpenAI Responses API",
+    "state": "Current Streamlit session only",
+    "persistence": "No document or result store"
+  }
 }

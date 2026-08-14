@@ -1,20 +1,39 @@
-# v3.0.0 — Stateless Document Extraction
+# Paperplane 4.1.0
 
-Paperplane is now a deliberately simple, stateless document parser.
+Paperplane 4.1.0 produces ADE-inspired, context- and layout-aware Markdown, hierarchical
+grounding JSON, and an annotated evidence PDF from one local Streamlit application.
 
-## Highlights
+## Added
 
-- Upload a PDF or image and receive grounded Markdown and hierarchical JSON in one request.
-- Choose Fast, Balanced, or Audit processing.
-- Launch the FastAPI and Next.js app by double-clicking `Paperplane.cmd` on Windows.
-- Run without an application database, migration process, worker, queue, or data volume.
-- Keep uploads and results under caller control; Paperplane does not retain them.
+- Local Docling conversion for native PDFs, Office/OpenDocument files, and CSV
+- OpenAI vision parsing for scanned PDFs and images
+- Automatic per-page routing for native, scanned, and mixed PDFs
+- Shared reading-order Markdown and grounding assembly across both engines
+- HTML tables with row, column, `rowspan`, and `colspan` metadata
+- Atomic-line evidence and exact Unicode Markdown ranges
+- Explicit semantic-only geometry for Office content without physical coordinates
+- Optional native-document figure descriptions with explicit unavailable placeholders
+- Output, Annotated PDF, Markdown, and JSON result views
+- In-memory source overlays and semantic Office evidence reports
+- Annotated PDF, Markdown, and JSON downloads
+- Fast, Balanced, and Audit processing modes
+- Streamlit AppTest coverage for the complete result workflow
+- One-file Windows setup and launcher with Docling layout/table model download
 
-## Breaking changes
+## Changed
 
-- Replace create-and-poll clients with synchronous `POST /v2/parse`.
-- Job, history, artifact, cancellation, resume, saved-schema, review, curation, batch, and
-  reprocessing endpoints have been removed.
-- Interrupted requests must be retried by the caller.
+- `OPENAI_API_KEY` is required only for scans, images, and optional figure descriptions
+- Native documents can be parsed locally without OpenAI
+- Configuration prefers user/process environment variables, then ignored local fallbacks
+- The result and uploaded bytes remain only in the current Streamlit session
+- Releases are source-only GitHub releases
 
-See [MIGRATION_GUIDE.md](MIGRATION_GUIDE.md) for the client migration.
+## Still deliberately absent
+
+- FastAPI, REST/OpenAPI endpoints, Next.js, React, Node.js, Docker, and PyPI packaging
+- databases, persistence, jobs, queues, run history, and saved artifacts
+- schema extraction, reusable schemas, evaluation, and inactive legacy services
+- authentication, CORS configuration, rate limiting, telemetry services, and multi-user hosting
+
+See the [migration guide](MIGRATION_GUIDE.md) for the v3-to-v4 transition and
+[capabilities](APP_CAPABILITIES.md) for the current contract.

@@ -1,27 +1,24 @@
-# V2 Output Quality Implementation Plan
+# Archived plan: V2 output quality
 
-**Goal:** Restore all extracted page content, suppress duplicate regions, reject malformed visual Markdown, and prevent partial-document assembly.
+## Status
 
-**Approach:** Render every surviving chunk regardless of hierarchy. Strengthen deterministic reconciliation before adding model work, tighten existing prompts and crop validation, then invalidate V2 page caches. Keep public API and document schema unchanged.
+Completed in concept and superseded in implementation by Paperplane 4.1.0. The former API,
+stored-run replay, page cache, and benchmark tasks are not part of the current product.
 
-## Acceptance
+## Original intent
 
-- Parented chunks remain hierarchical in JSON and appear once in Markdown with valid spans.
-- Spatially overlapping near-equal or contained duplicate text collapses across semantic types; distinct content remains.
-- Figure and chart chunks contain semantic `<figure>` and `<description>` markup or an unresolved placeholder.
-- Assembly accepts exactly pages `1..page_count` and rejects missing or mismatched page results.
-- Stored-run replay reaches strict accuracy >= 0.70, token F1 >= 0.90, and minimum-page accuracy >= 0.55.
-- One new Balanced run improves on strict `0.3178` and token F1 `0.7675`, with eight substantive pages and no listed report defects.
+The plan aimed to preserve extracted content, suppress duplicate regions, reject malformed
+visual output, validate complete page assembly, and improve grounded Markdown quality.
 
-## Tasks
+## Current v4.1 result
 
-1. Add failing unit regressions for child rendering, duplicate containment, malformed visuals, and page gaps.
-2. Implement minimal shared fixes in reconciliation, page processing, and assembly.
-3. Bump prompt/schema/page-result cache version from `v7` to `v8`.
-4. Run targeted and full verification, offline replay, then one paid Balanced extraction.
+- both Docling and vision paths feed one validated Markdown/JSON assembler;
+- duplicate suppression and reading-order reconciliation are deterministic;
+- tables retain hierarchy and merged-cell metadata;
+- figures use semantic descriptions or explicit unavailable placeholders;
+- Markdown ranges, page ordering, boxes, and atomic evidence are validated;
+- annotated source overlays make grounding reviewable; and
+- tests cover reconciliation, contracts, page routing, and evidence artifacts.
 
-## Constraints
-
-- No new dependency, database migration, external API change, commit, or push.
-- Preserve unrelated dirty-worktree changes.
-- No final full-document model rewrite.
+Recipe version `v9` is internal implementation state, not a public cache or API contract.
+No stored replay benchmark or accuracy-parity claim is currently published.

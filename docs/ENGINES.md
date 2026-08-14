@@ -1,16 +1,38 @@
 # Processing engines
 
-The active parser uses three components:
+Paperplane selects its engine automatically from the document. Users choose a processing
+mode, not a parser implementation.
 
-| Component | Responsibility |
-|---|---|
-| PyMuPDF | Validate, render, crop, and recover native text coordinates |
-| `gpt-5.6-luna` | Produce the structured page draft |
-| `gpt-5.6-terra` | Verify ambiguous pages and crops within a bounded budget |
+## Local Docling engine
 
-The public model aliases select policy, not different response contracts: Fast minimizes
-verification, Balanced verifies flagged evidence, and Audit uses the largest inspection
-budget.
+Docling handles text-native PDF pages, DOCX, PPTX, XLSX, ODT, ODP, ODS, and CSV. It
+provides reading order, semantic elements, tables, and provenance where the source format
+contains trustworthy geometry.
 
-Legacy local-engine modules remain internal compatibility code and are not mounted by the
-active application. New integrations should target `/v2/parse` and its output contract.
+Native PDF blocks with provenance receive normalized boxes. Office blocks without physical
+page geometry are returned as `semantic_only` with exact Markdown ranges and null boxes.
+Figures are described with OpenAI when a key is present; otherwise Paperplane emits an
+explicit unavailable placeholder and warning.
+
+## OpenAI vision engine
+
+PyMuPDF renders scanned PDF pages and Pillow normalizes image frames. `gpt-5.6-luna`
+produces structured reading-order drafts. Deterministic code aligns native words when
+available, transforms coordinates, suppresses duplicate regions, validates critical
+content, and assembles evidence.
+
+Balanced mode can use `gpt-5.6-terra` for flagged reconciliation and crop verification.
+Audit mode uses the highest verification budget. Fast mode does not run Terra.
+
+## Routing
+
+PyMuPDF classifies each PDF page. A page is native when it contains meaningful selectable
+text and is not dominated by a full-page raster image; otherwise it is vision-routed.
+Mixed PDFs combine Docling and OpenAI results in original page order.
+
+Images always require vision. Office/OpenDocument/CSV input always starts with Docling.
+There is no runtime plugin system, local model server, manual engine selector, or alternate
+provider selector.
+
+`OPENAI_BASE_URL` can target an operator-controlled endpoint that implements the expected
+OpenAI Responses API contract. The default is `https://api.openai.com`.

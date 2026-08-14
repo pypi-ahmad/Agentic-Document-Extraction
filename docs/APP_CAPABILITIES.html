@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Paperplane stateless document-extraction capabilities and API.">
+  <meta name="description" content="Paperplane local Streamlit document-parsing capabilities.">
   <title>Paperplane | Capabilities and Technical Guide</title>
   <style>
 :root{--ink:#18202b;--muted:#5f6b7a;--paper:#fff;--wash:#f3f7fb;--line:#dce5ee;--blue:#155eef;--navy:#0b1f3a;--cyan:#148c99;--radius:14px}
@@ -19,74 +19,138 @@ table{width:100%;border-collapse:collapse;display:block;overflow-x:auto;margin:1
 <body>
   <a class="skip" href="#content">Skip to content</a>
   <header class="hero"><div class="hero-inner">
-    <div class="eyebrow">Paperplane V2 technical guide</div>
+    <div class="eyebrow">Paperplane V4.1 technical guide</div>
     <h1>From document pages to grounded Markdown</h1>
-    <p>A concise guide to the synchronous parser, its evidence contract, and its security boundary.</p>
-    <div class="badges"><span class="badge">Stateless</span><span class="badge">Layout aware</span><span class="badge">Luna + Terra</span><span class="badge">Grounded JSON</span></div>
+    <p>A concise guide to local Docling conversion, OpenAI vision parsing, the evidence contract, and the session boundary.</p>
+    <div class="badges"><span class="badge">Stateless</span><span class="badge">Docling + vision</span><span class="badge">Layout aware</span><span class="badge">Grounded JSON</span></div>
   </div></header>
   <div class="layout">
     <aside class="sidebar"><strong>On this page</strong><div class="toc">
 <ul>
 <li><a href="#paperplane-capabilities">Paperplane capabilities</a><ul>
-<li><a href="#available">Available</a></li>
+<li><a href="#inputs-and-routing">Inputs and routing</a></li>
+<li><a href="#extraction-and-evidence">Extraction and evidence</a></li>
+<li><a href="#user-workspace">User workspace</a></li>
+<li><a href="#runtime-and-setup">Runtime and setup</a></li>
 <li><a href="#deliberately-absent">Deliberately absent</a></li>
-<li><a href="#models-and-modes">Models and modes</a></li>
-<li><a href="#output-contract">Output contract</a></li>
+<li><a href="#data-lifetime">Data lifetime</a></li>
+<li><a href="#model-mapping">Model mapping</a></li>
 </ul>
 </li>
 </ul>
 </div>
 </aside>
     <main id="content"><h1 id="paperplane-capabilities">Paperplane capabilities<a class="headerlink" href="#paperplane-capabilities" title="Permanent link">&para;</a></h1>
-<p>Paperplane turns PDFs and document images into grounded Markdown and hierarchical JSON.</p>
-<h2 id="available">Available<a class="headerlink" href="#available" title="Permanent link">&para;</a></h2>
-<ul>
-<li>PDF, PNG, JPEG, WebP, and TIFF upload</li>
-<li>Native PDF text and coordinate alignment</li>
-<li>Headings, paragraphs, lists, tables, figures, forms, and checkboxes</li>
-<li>Page, block, line, and table-cell grounding</li>
-<li>Fast, Balanced, and Audit processing modes</li>
-<li>Bounded Luna drafting and Terra verification</li>
-<li>Partial output when some pages fail</li>
-<li>Inline JSON Schema extraction with field evidence</li>
-<li>Built-in <code>invoice-v1</code> extraction contract</li>
-<li>Optional API-key authentication, CORS restrictions, upload limits, and rate limiting</li>
-<li>Next.js visual workspace plus FastAPI/OpenAPI access</li>
-</ul>
-<h2 id="deliberately-absent">Deliberately absent<a class="headerlink" href="#deliberately-absent" title="Permanent link">&para;</a></h2>
-<p>Paperplane does not persist uploads, results, run history, reusable schemas, reviews, or
-page checkpoints. It does not provide background jobs, polling, cancellation, resume, or
-multi-worker coordination. A parse is one request and one response.</p>
-<h2 id="models-and-modes">Models and modes<a class="headerlink" href="#models-and-modes" title="Permanent link">&para;</a></h2>
+<p>Paperplane 4.1.0 converts PDFs, images, and modern Office documents into layout-aware
+Markdown, hierarchical grounding JSON, and an annotated evidence PDF in one local
+Streamlit session.</p>
+<h2 id="inputs-and-routing">Inputs and routing<a class="headerlink" href="#inputs-and-routing" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
-<th>API model</th>
-<th>Behavior</th>
+<th>Input</th>
+<th>Processing path</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>paperplane-ade-fast-latest</code></td>
-<td>Fast draft with deterministic grounding</td>
+<td>Text-native PDF page</td>
+<td>Local Docling conversion</td>
 </tr>
 <tr>
-<td><code>paperplane-ade-latest</code></td>
-<td>Balanced draft with adaptive verification</td>
+<td>Scanned PDF page</td>
+<td>OpenAI vision</td>
 </tr>
 <tr>
-<td><code>paperplane-ade-audit-latest</code></td>
-<td>Highest verification budget</td>
+<td>Mixed PDF</td>
+<td>Automatic per-page Docling/OpenAI routing</td>
+</tr>
+<tr>
+<td>PNG, JPEG, WebP, TIFF, BMP</td>
+<td>OpenAI vision</td>
+</tr>
+<tr>
+<td>DOCX, PPTX, XLSX, ODT, ODP, ODS, CSV</td>
+<td>Local Docling; optional OpenAI figure descriptions</td>
 </tr>
 </tbody>
 </table>
-<p>PyMuPDF performs deterministic rendering and geometry. OpenAI is the active inference
-provider; Paperplane does not call LandingAI ADE or claim its benchmark results.</p>
-<h2 id="output-contract">Output contract<a class="headerlink" href="#output-contract" title="Permanent link">&para;</a></h2>
-<p><code>POST /v2/parse</code> returns Markdown, a document/page/block hierarchy, coordinates, grounding
-methods, page warnings, failed-page information, model usage, and request metadata. The
-result can be saved by the caller as JSON or Markdown.</p></main>
+<p>Default limits are 200 MB and 500 pages or image frames. Paperplane also bounds PDF page
+canvas area and cumulative decoded image pixels. Encrypted and password-protected files are
+rejected.</p>
+<h2 id="extraction-and-evidence">Extraction and evidence<a class="headerlink" href="#extraction-and-evidence" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Reading-order Markdown with explicit page breaks</li>
+<li>Headings, paragraphs, lists, checkboxes, forms, figures, charts, marginalia, and tables</li>
+<li>HTML tables with row, column, <code>rowspan</code>, and <code>colspan</code> metadata</li>
+<li>Document, page, block, atomic-line, and table-cell hierarchy</li>
+<li>Exact half-open Unicode Markdown ranges</li>
+<li>One-based physical pages and normalized top-left-origin boxes</li>
+<li>Explicit <code>semantic_only</code> grounding when Office geometry is unavailable</li>
+<li>Stable IDs within one response</li>
+<li>Fast, Balanced, and Audit processing policies</li>
+<li>Luna vision drafting with deterministic grounding and bounded Terra verification</li>
+</ul>
+<h2 id="user-workspace">User workspace<a class="headerlink" href="#user-workspace" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Document preview before parsing</li>
+<li>Output, Annotated PDF, Markdown, and JSON result tabs</li>
+<li>Page, block, engine, duration, format, and warning summaries</li>
+<li>Source overlays for PDF/image evidence</li>
+<li>Semantic evidence reports for Office content without trustworthy coordinates</li>
+<li>Annotated PDF, Markdown, and JSON downloads</li>
+<li><strong>New extraction</strong> control that clears the current workspace</li>
+</ul>
+<h2 id="runtime-and-setup">Runtime and setup<a class="headerlink" href="#runtime-and-setup" title="Permanent link">&para;</a></h2>
+<ul>
+<li>One local Streamlit process bound to <code>127.0.0.1</code></li>
+<li>XSRF protection enabled and Streamlit usage telemetry disabled</li>
+<li>One double-click Windows launcher</li>
+<li>Automatic <code>uv</code>, Python 3.12.10, locked dependency, and Docling model setup</li>
+<li>Windows user environment variables with ignored <code>.env</code> and Streamlit-secret fallbacks</li>
+<li>Local Docling model-resource caching without document or result caching</li>
+</ul>
+<h2 id="deliberately-absent">Deliberately absent<a class="headerlink" href="#deliberately-absent" title="Permanent link">&para;</a></h2>
+<p>Paperplane has no REST API, database, accounts, authentication, background jobs, saved
+history, reusable schemas, schema extraction, queues, checkpoints, Docker deployment,
+JavaScript frontend, or package publishing.</p>
+<h2 id="data-lifetime">Data lifetime<a class="headerlink" href="#data-lifetime" title="Permanent link">&para;</a></h2>
+<p>The upload, latest result, and annotated PDF live in Streamlit session memory. Selecting a
+different file, starting a new extraction, closing the tab, or stopping the app releases
+that state. Downloading an artifact is the user's explicit persistence action. Installed
+dependencies and Docling model weights remain on disk; statelessness applies to document
+and result data.</p>
+<h2 id="model-mapping">Model mapping<a class="headerlink" href="#model-mapping" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Parser model</th>
+<th>Vision behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Fast</td>
+<td><code>paperplane-ade-fast-latest</code></td>
+<td>Luna draft and deterministic grounding; no Terra pass</td>
+</tr>
+<tr>
+<td>Balanced</td>
+<td><code>paperplane-ade-latest</code></td>
+<td>Terra checks only for flagged content</td>
+</tr>
+<tr>
+<td>Audit</td>
+<td><code>paperplane-ade-audit-latest</code></td>
+<td>Highest rendering, verification, and repair budget</td>
+</tr>
+</tbody>
+</table>
+<p>OpenAI is the vision inference provider; Docling is the local native-document engine.
+Paperplane is inspired by ADE's observable workflow, but does not call LandingAI ADE or
+claim its benchmark results.</p></main>
   </div>
-  <footer class="footer">Paperplane V2 · Stateless document extraction</footer>
+  <footer class="footer">Paperplane V4.1 · Local grounded document parsing</footer>
 </body>
 </html>

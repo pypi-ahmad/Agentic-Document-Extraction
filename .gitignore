@@ -33,6 +33,7 @@ env/
 .env
 .env.local
 .env.*.local
+.streamlit/secrets.toml
 
 # Database
 *.db
@@ -92,6 +93,7 @@ backend/pytest-cache-files-*/
 
 # >>> Codex Local Ignore (env/venv/cache/artifacts) >>>
 .env*
+!.env.example
 .venv/
 venv/
 **/.venv/

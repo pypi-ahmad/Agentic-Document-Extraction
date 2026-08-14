@@ -11,13 +11,9 @@ permissions:
   contents: read
 
 jobs:
-  test:
-    name: Lint + test (Python ${{ matrix.python-version }})
+  verify:
+    name: Verify Streamlit app
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: ["3.12.10"]
 
     steps:
       - name: Checkout
@@ -26,86 +22,58 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v4
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.12.10"
           enable-cache: true
           cache-dependency-glob: |
             pyproject.toml
             uv.lock
 
-      - name: Set up Python ${{ matrix.python-version }}
-        run: uv python install ${{ matrix.python-version }}
-
-      - name: Install locked backend + tooling
+      - name: Install locked dependencies
         run: uv sync --locked --extra test --extra lint --extra docs
 
       - name: Ruff lint
-        run: |
-          uv run --no-sync ruff check backend/app backend/tests scripts
+        run: uv run --no-sync ruff check paperplane tests streamlit_app.py scripts
 
       - name: Ruff format check
-        run: |
-          uv run --no-sync ruff format --check backend/app backend/tests scripts
+        run: uv run --no-sync ruff format --check paperplane tests streamlit_app.py scripts
 
-      - name: Pyright (basic)
-        run: |
-          uv run --no-sync pyright
+      - name: Pyright
+        run: uv run --no-sync pyright
 
-      - name: Pytest with coverage report
-        env:
-          PYTHONPATH: ${{ github.workspace }}
-        run: |
-          uv run --no-sync pytest backend/tests/unit --cov=app --cov-report=xml --cov-report=term-missing -q -p no:cacheprovider
+      - name: Pytest with coverage
+        run: >-
+          uv run --no-sync pytest tests
+          --cov=paperplane
+          --cov-report=xml
+          --cov-report=term-missing
+          -q
+          -p no:cacheprovider
 
-      - name: Rebuild handbook
+      - name: Rebuild generated documentation
         run: |
           uv run --no-sync python scripts/build_handbook.py
           uv run --no-sync python scripts/build_app_guide.py
           git diff --exit-code -- docs/APP_CAPABILITIES.html
 
+      - name: Smoke-test Streamlit startup
+        run: |
+          uv run --no-sync streamlit run streamlit_app.py \
+            --server.headless=true \
+            --server.address=127.0.0.1 \
+            --server.port=8501 &
+          streamlit_pid=$!
+          trap 'kill "$streamlit_pid"' EXIT
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8501/_stcore/health; then
+              exit 0
+            fi
+            sleep 1
+          done
+          exit 1
+
       - name: Upload coverage artifact
-        if: matrix.python-version == '3.12.10'
         uses: actions/upload-artifact@v4
         with:
           name: coverage-xml
           path: coverage.xml
           if-no-files-found: ignore
-
-      - name: Build package distributions
-        run: |
-          uv build
-
-      - name: Validate package metadata
-        run: |
-          uvx twine check dist/*
-
-  frontend:
-    name: Frontend lint + build
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: frontend
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-          cache: npm
-          cache-dependency-path: frontend/package-lock.json
-
-      - name: Install
-        run: npm ci
-
-      - name: Type-check
-        run: npx tsc --noEmit
-
-      - name: Lint
-        run: npm run lint
-
-      - name: Test
-        run: npm test
-
-      - name: Build
-        run: npm run build

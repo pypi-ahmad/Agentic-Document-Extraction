@@ -1,80 +1,92 @@
 # Paperplane
 
-Paperplane is a stateless document-extraction app. Upload a PDF or image and it returns
-grounded Markdown plus hierarchical JSON in the same HTTP request. OpenAI
-`gpt-5.6-luna` drafts each page, `gpt-5.6-terra` verifies ambiguous content, and PyMuPDF
-handles rendering and coordinates.
+Paperplane 4.1.0 is a local Streamlit app that converts PDFs, document images, and modern
+Office files into context- and layout-aware Markdown, hierarchical grounding JSON, and an
+annotated evidence PDF. It is inspired by LandingAI ADE's document-output workflow, but it
+runs its own local Docling and OpenAI-based pipeline.
 
-The app does not save uploads, results, jobs, schemas, or history. The current result lives
-in the browser until it is replaced or the page is refreshed.
+Paperplane does not use a database, API server, background worker, JavaScript frontend, or
+durable application storage. Uploads and generated results remain only in the current
+Streamlit session unless the user explicitly downloads them.
 
 ## Run on Windows
 
-Requirements: Python 3.12, `uv`, Node.js 20+, npm, and `OPENAI_API_KEY`.
+Double-click `Paperplane.cmd`. On first use, the launcher:
 
-Double-click `Paperplane.cmd`, or run:
+1. installs `uv` if necessary;
+2. installs Python 3.12.10;
+3. creates the environment and installs locked dependencies;
+4. downloads the required Docling layout and table models; and
+5. starts Paperplane on the local machine.
 
-```powershell
-$env:OPENAI_API_KEY = "your-key"
-./scripts/dev.ps1 -OpenBrowser
-```
+Windows 11 and an internet connection are required for initial setup. OpenAI credentials
+are required for scanned PDFs and images and enable figure descriptions in native
+documents. Text-based PDFs and Office files can be parsed locally without an API key.
 
-The launcher installs locked frontend dependencies, selects free local ports, starts
-FastAPI and Next.js, and stops both with Ctrl+C.
-
-Manual startup:
-
-```powershell
-uv sync --locked
-uv run uvicorn app.main:app --app-dir backend --host 127.0.0.1 --port 8000
-
-cd frontend
-npm ci
-npm run dev
-```
-
-## API
-
-- `POST /v2/parse` — multipart upload with `file` and optional `model`
-- `POST /v2/extract` — grounded extraction from Markdown and an inline JSON Schema
-- `GET /v2/contracts/presets/invoice-v1` — built-in invoice schema
-- `GET /health`, `/health/ready`, and `/info` — service status
-
-Models: `paperplane-ade-fast-latest`, `paperplane-ade-latest`, and
-`paperplane-ade-audit-latest`.
+Set credentials as Windows user environment variables, then open a new terminal before
+launching the app:
 
 ```powershell
-curl.exe -X POST http://127.0.0.1:8000/v2/parse `
-  -F "file=@sample.pdf" `
-  -F "model=paperplane-ade-latest" `
-  -o result.json
+[Environment]::SetEnvironmentVariable("OPENAI_API_KEY", "your-key", "User")
+[Environment]::SetEnvironmentVariable("OPENAI_BASE_URL", "https://api.openai.com", "User")
 ```
 
-Set `API_KEY` to require `X-API-Key` on `/v2/*`. The key and OpenAI credentials remain
-server-side.
+`Paperplane.cmd` refreshes these values directly from the current user's Windows
+environment. It does not store the key. On another machine, ignored local fallbacks are
+available:
 
-## Processing flow
+- copy `.env.example` to `.env`; or
+- copy `.streamlit/secrets.toml.example` to `.streamlit/secrets.toml`.
 
-```text
-upload -> validate -> render pages -> Luna draft -> deterministic grounding
-       -> bounded Terra verification -> assemble Markdown and JSON -> response
-```
+Environment variables take precedence over those local files. Never commit a real key.
 
-Supported inputs: PDF, PNG, JPEG, WebP, and TIFF. Defaults allow 200 MB and 500 pages.
-Long documents are processed synchronously, so deploy with an HTTP timeout appropriate to
-your largest input.
+No GPU, Node.js, npm, Docker, database, or Visual Studio C++ build tools are required.
 
-## Verify
+## Use Paperplane
+
+1. Upload a supported document.
+2. Select Fast, Balanced, or Audit mode.
+3. Choose **Parse document**.
+4. Inspect the Output, Annotated PDF, Markdown, and JSON tabs.
+5. Download the annotated PDF, Markdown, or JSON when needed.
+
+| Input | Engine |
+|---|---|
+| Text-based PDF pages | Local Docling |
+| Scanned PDF pages | OpenAI vision |
+| Mixed PDFs | Automatic per-page Docling/OpenAI routing |
+| PNG, JPEG, WebP, TIFF, BMP | OpenAI vision |
+| DOCX, PPTX, XLSX, ODT, ODP, ODS, CSV | Local Docling; OpenAI is optional for figures |
+
+The default limits are 200 MB and 500 pages. Encrypted PDFs are not supported. Processing
+is synchronous in the local Streamlit session.
+
+## Output contract
+
+The Markdown preserves reading order and layout-derived structure such as headings, lists,
+tables, figures, forms, and checkboxes. The JSON includes document, page, block,
+atomic-line, and table-cell structure with Markdown ranges and normalized page grounding.
+
+For PDFs and images, the annotated PDF overlays grounded blocks on source pages. Office
+documents without trustworthy source geometry receive an explicit semantic evidence report
+instead of invented coordinates.
+
+## Manual development setup
 
 ```powershell
-uv run ruff check backend/app backend/tests
-uv run pyright backend/app
-uv run pytest -q
-
-cd frontend
-npm test
-npm run build
+uv sync --locked --extra test --extra lint --extra docs
+uv run streamlit run streamlit_app.py
 ```
 
-See [architecture](docs/ARCHITECTURE.md), [run guide](docs/RUN_APP.md), and
-[limitations](docs/LIMITATIONS.md).
+Verification:
+
+```powershell
+uv run ruff check paperplane tests streamlit_app.py scripts
+uv run ruff format --check paperplane tests streamlit_app.py scripts
+uv run pyright
+uv run pytest tests -q
+```
+
+Start with the [contributor onboarding guide](ONBOARDING.md),
+[architecture](docs/ARCHITECTURE.md), [run guide](docs/RUN_APP.md),
+[capabilities](docs/APP_CAPABILITIES.md), and [limitations](docs/LIMITATIONS.md).

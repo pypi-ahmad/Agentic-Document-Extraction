@@ -1,34 +1,20 @@
-# Dark Theme Design
+# Archived design: dark theme
 
-## Goal
+## Status
 
-Make Paperplane use a polished dark theme by default while allowing users to switch to the existing light appearance.
+Superseded by Paperplane's Streamlit UI on 2026-08-14.
 
-## Scope
+## Historical design
 
-- Add an accessible light/dark toggle to the masthead.
-- Keep dark as the initial theme for users without a saved preference.
-- Persist an explicit preference in `localStorage` under the existing `paperplane:theme:v1` key.
-- Apply the selected theme before hydration using the existing inline layout script to avoid a visible color flash.
-- Convert hardcoded surface, border, text, status, and control colors to theme-aware CSS variables.
-- Preserve the existing layout, typography, responsive behavior, and green/amber/red visual identity.
+The former design specified a React-controlled theme toggle, pre-hydration script,
+`localStorage` preference, CSS variables, and light/dark component testing. That frontend
+was removed in v4.
 
-No system-preference detection, third-party theme package, or additional theme choices will be added.
+## Current design
 
-## Components and Behavior
+The checked-in `.streamlit/config.toml` supplies one dark theme with explicit primary,
+surface, text, border, and control-radius values. Streamlit owns rendering and interaction;
+there is no custom theme persistence or client-side script.
 
-The home page owns the toggle state because it is the only current application screen. On mount, it reads the effective `data-theme` value placed on the document root by the layout. Activating the toggle switches between `dark` and `light`, updates `document.documentElement.dataset.theme`, and persists the value.
-
-The toggle uses a native button with an explicit accessible label describing the action. Its icon reflects the destination theme, so a sun switches to light and a moon switches to dark.
-
-The stylesheet keeps light values as the base variables and overrides them under `:root[data-theme="dark"]`. Component rules reference semantic variables rather than hardcoded light colors. Focus indicators and status colors retain sufficient contrast in both themes.
-
-## Failure Handling
-
-If browser storage is unavailable, theme switching still works for the current page. Storage reads and writes are guarded so privacy settings do not break rendering or interaction.
-
-## Verification
-
-- Component tests verify the default dark state, switching to light, switching back, the accessible label, and persistence.
-- TypeScript, ESLint, Vitest, and the production Next.js build must pass.
-- A manual browser check confirms the masthead, forms, job list, status panels, artifact links, errors, and responsive layout remain legible in both themes.
+Any future theme selection must use supported Streamlit behavior, remain accessible, and
+avoid reintroducing a JavaScript application solely for presentation.

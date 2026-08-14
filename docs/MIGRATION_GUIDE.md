@@ -1,27 +1,46 @@
-# Migration guide: stateless V2
+# Migration from v3 to v4.1
 
-This version removes the persistence and background-worker layer.
+Version 4 is a breaking simplification. Version 4.1 keeps the local boundary and expands
+inputs, routing, grounding, and evidence review.
 
-## Breaking changes
+## Removed in v4
 
-- Use `POST /v2/parse` instead of job creation, polling, event, cancellation, and artifact
-  routes.
-- The parse response is returned when processing completes.
-- Saved schema, review, curation, evaluation-run, batch, and reprocessing APIs are removed.
-- Persistence connection settings and migration commands are removed.
-- The frontend displays only the current local upload and response.
+- FastAPI and every REST/OpenAPI endpoint
+- Next.js, React, TypeScript, Node.js, and npm
+- databases, migrations, jobs, workers, queues, polling, cancellation, and resume
+- saved artifacts, schemas, evaluations, reviews, and run history
+- schema extraction and invoice contracts
+- API-key middleware, CORS, rate limiting, and service health endpoints
+- Docker and PyPI publishing
+- inactive model providers and legacy pipeline modules
 
-## Client migration
+External API clients must migrate to the interactive local workspace or build their own
+adapter around the framework-neutral `paperplane` package. Paperplane itself no longer
+provides a network contract.
 
-Replace create-and-poll logic with one multipart request:
+## New entrypoint
+
+For Windows users, double-click `Paperplane.cmd`. For development:
 
 ```powershell
-curl.exe -X POST http://127.0.0.1:8000/v2/parse `
-  -F "file=@sample.pdf" `
-  -F "model=paperplane-ade-latest" `
-  -o result.json
+uv sync --locked
+uv run streamlit run streamlit_app.py
 ```
 
-If your product needs durable history or async execution, queue this request in your own
-platform and retain `result.json` there. Old local application data is not read by this
-version and can be archived or removed according to your retention policy.
+Configuration now uses `OPENAI_API_KEY` and optional `OPENAI_BASE_URL` from user/process
+environment variables, ignored `.env`, or ignored Streamlit secrets.
+
+## Added in v4.1
+
+- local Docling parsing for native PDFs and modern Office/OpenDocument/CSV input
+- OpenAI vision parsing for scanned PDFs and images
+- automatic per-page routing for mixed PDFs
+- shared reading-order Markdown and hierarchical grounding JSON
+- HTML tables, atomic-line evidence, and table-cell metadata
+- explicit semantic-only Office grounding
+- rendered Output, Annotated PDF, Markdown, and JSON tabs
+- annotated source overlays and semantic Office evidence reports
+- annotated PDF, Markdown, and JSON downloads
+
+The previous server-side artifacts and endpoints have no one-to-one replacement. The
+current user contract is one session-local parse result and its three explicit downloads.
