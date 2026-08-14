@@ -11,7 +11,7 @@ The plan targeted a cold-cache 10-page Balanced PDF under 180 seconds while pres
 content quality. It assumed a durable four-worker page queue and proposed a page-local
 LangGraph workflow with a shared job deadline.
 
-## Current v4.2 design
+## Current v4.2.1 design
 
 - `AgenticDocumentParser` runs synchronously in the Streamlit session.
 - Vision pages are processed sequentially.

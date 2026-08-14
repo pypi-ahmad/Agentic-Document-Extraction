@@ -8,6 +8,7 @@ Paperplane follows Semantic Versioning and publishes source-only GitHub releases
 The release script synchronizes exactly these files:
 
 - `pyproject.toml` — project version;
+- `uv.lock` — locked project metadata;
 - `streamlit_app.py` — visible `APP_VERSION`; and
 - `CHANGELOG.md` — dated release section.
 
@@ -81,7 +82,7 @@ uv run python scripts/release.py --bump minor --notes "Release summary" --push
 
 The script then:
 
-1. updates `pyproject.toml`, `streamlit_app.py`, and `CHANGELOG.md`;
+1. updates `pyproject.toml`, `uv.lock`, `streamlit_app.py`, and `CHANGELOG.md`;
 2. commits them as `chore(release): X.Y.Z`;
 3. creates annotated tag `vX.Y.Z`;
 4. pushes `main` and the tag to `origin`; and

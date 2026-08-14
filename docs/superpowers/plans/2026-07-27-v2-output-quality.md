@@ -2,7 +2,7 @@
 
 ## Status
 
-Completed in concept and superseded in implementation by Paperplane 4.2.0. The former API,
+Completed in concept and superseded in implementation by Paperplane 4.2.1. The former API,
 stored-run replay, page cache, and benchmark tasks are not part of the current product.
 
 ## Original intent
@@ -10,7 +10,7 @@ stored-run replay, page cache, and benchmark tasks are not part of the current p
 The plan aimed to preserve extracted content, suppress duplicate regions, reject malformed
 visual output, validate complete page assembly, and improve grounded Markdown quality.
 
-## Current v4.2 result
+## Current v4.2.1 result
 
 - Docling and every selectable vision-provider path feed one validated Markdown/JSON assembler;
 - duplicate suppression and reading-order reconciliation are deterministic;

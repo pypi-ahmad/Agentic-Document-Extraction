@@ -12,7 +12,7 @@ The plan proposed a document-first workspace with source preview, run navigation
 inspection, artifact preview, evaluation, responsive layouts, and a Graphite Signal visual
 system.
 
-## Current v4.2 result
+## Current v4.2.1 result
 
 Paperplane keeps the useful document-first workflow without the removed service stack:
 

@@ -84,4 +84,4 @@ additional model calls. There are no background jobs or resume support.
 
 Not with the checked-in configuration. Paperplane is local-only and binds to `127.0.0.1`.
 A shared service would require authentication, isolation, retention, observability, and
-abuse-control work that is intentionally outside v4.2.
+abuse-control work that is intentionally outside v4.2.1.
