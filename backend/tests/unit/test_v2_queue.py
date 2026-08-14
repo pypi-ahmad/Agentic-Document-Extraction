@@ -49,6 +49,27 @@ class _ValidationFailureRunner:
         BoundingBox.model_validate({"left": 2, "top": 0, "right": 1, "bottom": 1})
 
 
+class _WakeRaceLeases:
+    def __init__(self) -> None:
+        self.queue: V2JobQueue | None = None
+        self.claims = 0
+
+    async def claim(self, owner: str, *, lease_seconds: int):
+        self.claims += 1
+        if self.claims == 1:
+            assert self.queue is not None
+            self.queue._wake.set()
+            return None
+        assert self.queue is not None
+        self.queue._stopping = True
+        return None
+
+
+class _UnusedRunner:
+    async def run(self, task, *, owner: str) -> None:
+        raise AssertionError("No task should be returned")
+
+
 async def test_queue_enqueues_and_executes_durable_page_tasks() -> None:
     engine = create_async_engine("sqlite+aiosqlite:///:memory:", poolclass=StaticPool)
     sessions = async_sessionmaker(engine, expire_on_commit=False)
@@ -82,6 +103,17 @@ async def test_queue_enqueues_and_executes_durable_page_tasks() -> None:
         rows = list(await session.scalars(select(V2PageTask)))
         assert len(rows) == 1 and rows[0].status == "completed"
     await engine.dispose()
+
+
+async def test_queue_does_not_lose_wake_set_during_empty_claim() -> None:
+    leases = _WakeRaceLeases()
+    queue = V2JobQueue(None, leases, _UnusedRunner(), worker_count=1)  # type: ignore[arg-type]
+    leases.queue = queue
+    queue._wake.set()
+
+    await asyncio.wait_for(queue._consume(0), timeout=1)
+
+    assert leases.claims == 2
 
 
 async def test_queue_retries_then_marks_page_and_job_failed() -> None:
