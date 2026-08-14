@@ -35,7 +35,6 @@ _ALLOWED_KEYWORDS = {
     "enum",
     "const",
     "format",
-    "pattern",
     "minimum",
     "maximum",
     "exclusiveMinimum",
@@ -67,6 +66,7 @@ _UNSUPPORTED_KEYWORDS = {
     "unevaluatedProperties",
     "contains",
     "prefixItems",
+    "pattern",
 }
 
 
