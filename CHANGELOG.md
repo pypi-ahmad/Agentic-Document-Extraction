@@ -13,6 +13,9 @@ and this project aims to follow [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
+## [5.1.1] - 2026-08-15
+
+Fix Agnes annotated-PDF grounding with forced schema tool calls, local geometry validation, and one bounded correction attempt.
 ## [5.1.0] - 2026-08-15
 
 ### Added
