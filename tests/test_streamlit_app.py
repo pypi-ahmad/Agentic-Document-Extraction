@@ -148,15 +148,15 @@ def test_app_parses_upload_and_exposes_downloads(monkeypatch) -> None:
     assert app.json
 
 
-def test_app_blocks_private_agnes_visual_parse(monkeypatch) -> None:
+def test_app_allows_private_agnes_visual_parse(monkeypatch) -> None:
     monkeypatch.setenv("AGNES_API_KEY", "agnes-test")
     app = AppTest.from_file(APP_PATH).run()
     app = _select_engine(app, "Cloud AI ADE")
     app.selectbox[0].select("Agnes 2.5 Flash").run()
     app.file_uploader[0].set_value([("invoice.png", _png(), "image/png")]).run()
 
-    assert any("private visual processing is unavailable" in error.value for error in app.error)
-    assert next(button for button in app.button if button.label == "Parse files").disabled
+    assert not app.error
+    assert not next(button for button in app.button if button.label == "Parse files").disabled
 
 
 def test_app_lists_only_supported_document_models(monkeypatch) -> None:

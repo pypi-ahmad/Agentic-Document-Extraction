@@ -3,7 +3,7 @@ import json
 import httpx
 import pytest
 
-from paperplane.agnes_document import AGNES_MODEL, AgnesDocumentAdapter, AgnesRequestError
+from paperplane.agnes_document import AGNES_MODEL, AgnesDocumentAdapter
 from paperplane.openai_document import capture_audit_calls
 
 
@@ -52,17 +52,31 @@ async def test_agnes_uses_chat_completions_for_text_workflows() -> None:
 
 
 @pytest.mark.asyncio
-async def test_agnes_rejects_private_visual_inputs() -> None:
-    async with httpx.AsyncClient() as http:
+async def test_agnes_sends_private_visual_inputs_as_data_urls() -> None:
+    captured: dict = {}
+
+    async def handler(request: httpx.Request) -> httpx.Response:
+        captured["body"] = json.loads(request.content)
+        return httpx.Response(
+            200,
+            json={"choices": [{"message": {"content": '{"chunks": []}'}}]},
+        )
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as http:
         adapter = AgnesDocumentAdapter(http, api_key="agnes-test")
-        with pytest.raises(AgnesRequestError, match="public image URL"):
-            await adapter.generate_structured(
-                model=AGNES_MODEL,
-                image=b"private",
-                instructions="Extract chunks.",
-                schema_name="page_draft",
-                schema={"type": "object"},
-                reasoning_effort="low",
-                detail="high",
-                prompt_cache_key="page:v2:shard-0",
-            )
+        await adapter.generate_structured(
+            model=AGNES_MODEL,
+            image=b"private",
+            instructions="Extract chunks.",
+            schema_name="page_draft",
+            schema={"type": "object"},
+            reasoning_effort="low",
+            detail="high",
+            prompt_cache_key="page:v2:shard-0",
+        )
+
+    content = captured["body"]["messages"][0]["content"]
+    assert content[0] == {
+        "type": "image_url",
+        "image_url": {"url": "data:image/png;base64,cHJpdmF0ZQ=="},
+    }

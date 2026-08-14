@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import base64
 import hashlib
 import json
 import logging
@@ -89,14 +90,6 @@ class AgnesDocumentAdapter:
         if not self.api_key:
             _emit_audit({**audit_record, "status": "error", "error_type": "missing_api_key"})
             raise AgnesRequestError("Agnes API key is not configured")
-        if image is not None:
-            _emit_audit(
-                {**audit_record, "status": "error", "error_type": "private_image_unsupported"}
-            )
-            raise AgnesRequestError(
-                "Agnes private visual inputs are unavailable; its API requires a public image URL"
-            )
-
         prompt_parts = [
             instructions,
             f"Return only one JSON object named {schema_name} that matches this JSON Schema:",
@@ -104,7 +97,16 @@ class AgnesDocumentAdapter:
         ]
         if context is not None:
             prompt_parts.extend(["Document context:", context])
-        content: list[dict[str, Any]] = [{"type": "text", "text": "\n\n".join(prompt_parts)}]
+        content: list[dict[str, Any]] = []
+        if image is not None:
+            encoded = base64.b64encode(image).decode("ascii")
+            content.append(
+                {
+                    "type": "image_url",
+                    "image_url": {"url": f"data:image/png;base64,{encoded}"},
+                }
+            )
+        content.append({"type": "text", "text": "\n\n".join(prompt_parts)})
         payload: dict[str, Any] = {
             "model": AGNES_MODEL,
             "messages": [{"role": "user", "content": content}],

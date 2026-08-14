@@ -425,11 +425,6 @@ with st.sidebar, st.container(border=True):
                 icon=":material/key:",
             )
         st.caption(f"`{selected_ai_model.model_id}` · {selected_ai_model.help_text}")
-        if selected_ai_model.provider == "agnes":
-            st.warning(
-                "Agnes 2.5 Flash currently requires public image URLs. Private visual "
-                "Parse and enhancement are disabled in this release."
-            )
         selected_quality = st.segmented_control(
             "AI quality",
             list(QUALITY_LABELS),
@@ -518,14 +513,6 @@ with st.sidebar, st.container(border=True):
         preflight_errors.append(f"{selected_ai_model.api_key_env} is required.")
     if selected_engine == "ollama" and not ollama_ready:
         preflight_errors.append("Choose a vision-capable Ollama model.")
-    if (
-        (selected_engine == "cloud_ai" or cloud_enhancement)
-        and selected_ai_model.provider == "agnes"
-        and uploads
-    ):
-        preflight_errors.append(
-            "Agnes private visual processing is unavailable; choose another cloud model."
-        )
     for message in preflight_errors:
         st.error(message)
 
