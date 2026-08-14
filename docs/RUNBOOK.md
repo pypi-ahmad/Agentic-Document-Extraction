@@ -14,7 +14,7 @@ uv run --extra cpu streamlit run workspace_app.py --server.port=8551
 
 - Cloud: set the selected model's key and reopen the terminal.
 - Ollama: start Ollama, verify `OLLAMA_BASE_URL`, and choose a model reporting `vision`.
-- Agnes: private visual uploads are intentionally blocked; choose another cloud model.
+- Agnes: set `AGNES_API_KEY`; private visual inputs are sent inline.
 - PDF Inspector: use PDF input only.
 - Office: rerun `Paperplane.cmd`; the launcher installs LibreOffice only when it is absent.
 

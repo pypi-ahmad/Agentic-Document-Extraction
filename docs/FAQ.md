@@ -32,10 +32,10 @@ Paperplane lists all installed models from the local server and enables Parse on
 the selected model advertises vision. Unknown models work but their confidence is raw and
 uncalibrated.
 
-## Why is Agnes disabled for my upload?
+## Can Agnes process private uploads?
 
-Agnes currently requires publicly accessible image URLs. Paperplane does not upload a
-private file merely to create a URL, so private visual Parse/enhancement is disabled.
+Yes. Paperplane sends selected page images inline to Agnes and does not publish them at a
+separate public URL.
 
 ## Are citations and word boxes guaranteed?
 

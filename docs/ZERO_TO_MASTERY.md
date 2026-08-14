@@ -40,8 +40,8 @@ zero-based and response-local in strict ADE v2 output.
 
 SQLite metadata and private artifacts live under `%LOCALAPPDATA%\Paperplane` for seven
 days. Jobs exposes status, cancellation state, per-job deletion, and clear-all. Credentials
-are never stored there. Cloud engines transmit only selected pages; Agnes private images
-are disabled. Ollama, Docling, PDF Inspector, and storage remain local.
+are never stored there. Cloud engines, including Agnes, transmit only selected pages.
+Ollama, Docling, PDF Inspector, and storage remain local.
 
 ## 6. Follow the code
 

@@ -11,9 +11,8 @@ never auto-routes a batch.
 | Ollama ADE | All supported inputs | Local vision-capable installed Ollama model | No |
 
 The **Enhance with cloud AI** option runs after Docling, PDF Inspector, or Ollama. The
-selected cloud model and its credential are then required. Agnes cannot receive private
-visual uploads in v5 because its documented image interface requires a public URL, so it is
-disabled for private Parse/enhancement.
+selected cloud model and its credential are then required. Agnes receives private visual
+inputs inline, like the other cloud models.
 
 Ollama defaults to `http://127.0.0.1:11434`. Every installed model is visible, but Parse is
 disabled unless `/api/show` reports `vision`. `glm-ocr:latest` and

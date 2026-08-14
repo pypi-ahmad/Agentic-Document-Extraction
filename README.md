@@ -149,16 +149,15 @@ hard-coded choices.
 | `XAI_API_KEY` | Grok 4.6 |
 | `GEMINI_API_KEY` | Gemini 3.5 Flash-Lite and Gemini 3.6 Flash |
 | `ANTHROPIC_API_KEY` | Claude Sonnet 5 |
-| `AGNES_API_KEY` | Agnes 2.5 Flash text workflows and approved public benchmark assets |
+| `AGNES_API_KEY` | Agnes 2.5 Flash text and visual workflows |
 | `OLLAMA_BASE_URL` | Local Ollama server; default `http://127.0.0.1:11434` |
 
 Paperplane reads process/Windows user variables first, then an ignored `.env`, then
 Streamlit secrets. `.env.example` remains available for other machines. Never commit a
 real credential.
 
-Agnes currently requires publicly accessible image URLs. Paperplane therefore blocks
-private visual Parse/enhancement with Agnes in v5; other Agnes text workflows remain
-available. Agnes usage is recorded even though its configured price is $0.
+Paperplane sends Agnes visual inputs inline as private PNG data URLs. Agnes usage is
+recorded even though its configured price is $0.
 
 ## Usage
 

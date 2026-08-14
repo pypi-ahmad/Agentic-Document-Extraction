@@ -1,4 +1,11 @@
-# Paperplane 5.0.0
+# Release notes
+
+## Paperplane 5.0.1
+
+- Agnes 2.5 Flash now supports private visual Parse and enhancement through inline image
+  input; uploaded images do not need public URLs.
+
+## Paperplane 5.0.0
 
 Paperplane 5 is an ADE-inspired, private document-intelligence workspace with explicit
 engines, grounded contracts, cited workflows, and durable local jobs.
@@ -21,8 +28,8 @@ engines, grounded contracts, cited workflows, and durable local jobs.
   deletion controls.
 - Locked benchmark manifest, metric helpers, and GitHub Pages transparency workflow with
   no fabricated or inherited accuracy claims.
-- Agnes remains $0 in configured cost estimates, but private visual use is blocked until a
-  private-input interface exists.
+- Agnes remains $0 in configured cost estimates; private visual use was blocked in this
+  release because only public image URLs were supported.
 
 There is no HTTP API in this release. “ADE compatible” refers to versioned data contracts
 and job semantics, not LandingAI client or model parity.

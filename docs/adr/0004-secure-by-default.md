@@ -20,7 +20,7 @@ content to the selected model provider endpoint.
   under `%LOCALAPPDATA%\Paperplane` with a seven-day TTL and explicit deletion controls.
 - Never persist credentials or raw provider authorization material.
 - Never inspect pages outside the selected range or share context between uploaded files.
-- Block Agnes private visual processing while its interface requires public image URLs.
+- Send Agnes visual inputs inline without publishing uploaded images at a separate URL.
 - Read secrets from environment variables or ignored local configuration; never print them.
 - Sanitize model-produced Markdown before rendering supported HTML.
 - Bound upstream timeouts and model work by processing mode.

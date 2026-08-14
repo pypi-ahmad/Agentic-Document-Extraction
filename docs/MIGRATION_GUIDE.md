@@ -15,8 +15,8 @@ Version 5 changes the UI, public export contract, and retention model.
   Classify, Split, and Section workflows.
 - Configure `OLLAMA_BASE_URL` when the local server is not at
   `http://127.0.0.1:11434`.
-- Do not use Agnes for private visual Parse/enhancement; its current image interface
-  requires public URLs.
+- Agnes private visual Parse/enhancement now sends images inline; no public image URL is
+  required.
 
 The internal `ParseResponse` remains available for engine code. External consumers should
 use `paperplane.ade_contracts` exports. There is still no REST endpoint in v5.
