@@ -4,7 +4,12 @@ import fitz
 import pytest
 from PIL import Image
 
-from paperplane.ingest import DocumentInputError, inspect_document, render_page
+from paperplane.ingest import (
+    DocumentInputError,
+    inspect_document,
+    render_page,
+    select_page_range,
+)
 
 
 def _pdf_bytes() -> bytes:
@@ -31,11 +36,10 @@ def test_inspect_pdf_reports_page_count_and_mime() -> None:
 
     assert inspected.mime_type == "application/pdf"
     assert inspected.page_count == 1
-    assert inspected.native_pages == (1,)
-    assert inspected.vision_pages == ()
+    assert inspected.source_format == "pdf"
 
 
-def test_inspect_routes_mixed_pdf_pages_independently() -> None:
+def test_inspect_counts_mixed_pdf_without_automatic_routing() -> None:
     document = fitz.open()
     native = document.new_page(width=300, height=400)
     native.insert_text((50, 80), "Selectable native document text " * 3)
@@ -45,11 +49,10 @@ def test_inspect_routes_mixed_pdf_pages_independently() -> None:
 
     inspected = inspect_document(data, "mixed.pdf", max_bytes=1_000_000, max_pages=10)
 
-    assert inspected.native_pages == (1,)
-    assert inspected.vision_pages == (2,)
+    assert inspected.page_count == 2
 
 
-def test_inspect_keeps_short_selectable_pdf_text_on_local_path() -> None:
+def test_inspect_accepts_short_selectable_pdf_text() -> None:
     document = fitz.open()
     page = document.new_page(width=300, height=400)
     page.insert_text((50, 80), "Paid")
@@ -58,16 +61,23 @@ def test_inspect_keeps_short_selectable_pdf_text_on_local_path() -> None:
 
     inspected = inspect_document(data, "stamp.pdf", max_bytes=1_000_000, max_pages=10)
 
-    assert inspected.native_pages == (1,)
-    assert inspected.vision_pages == ()
+    assert inspected.page_count == 1
 
 
 def test_inspect_accepts_modern_office_input_for_local_conversion() -> None:
     inspected = inspect_document(b"conversion validates content", "report.docx", 1_000, 10)
 
     assert inspected.source_format == "docx"
-    assert inspected.native_pages == ()
-    assert inspected.vision_pages == ()
+    assert inspected.page_count == 1
+
+
+def test_select_page_range_is_inclusive_and_defaults_to_last_page() -> None:
+    assert select_page_range(5, 2, 4) == (2, 3, 4)
+    assert select_page_range(5, 3, None) == (3, 4, 5)
+    with pytest.raises(DocumentInputError, match="invalid_page_range"):
+        select_page_range(5, 4, 3)
+    with pytest.raises(DocumentInputError, match="invalid_page_range"):
+        select_page_range(5, 1, 6)
 
 
 def test_inspect_rejects_oversized_or_unsupported_input() -> None:

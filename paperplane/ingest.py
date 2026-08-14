@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from functools import lru_cache
 from io import BytesIO
 from pathlib import Path
+from typing import Any, cast
 
 import fitz
 from PIL import Image, UnidentifiedImageError
@@ -16,7 +18,6 @@ IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".webp", ".tif", ".tiff", ".bmp"}
 OFFICE_EXTENSIONS = {".docx", ".pptx", ".xlsx", ".odt", ".odp", ".ods", ".csv"}
 MAX_PDF_CANVAS_AREA = 4_000_000
 MAX_IMAGE_PIXELS = 40_000_000
-DOMINANT_RASTER_THRESHOLD = 0.8
 
 
 class DocumentInputError(ValueError):
@@ -30,8 +31,6 @@ class InspectedDocument:
     mime_type: str
     page_count: int
     source_format: str
-    native_pages: tuple[int, ...] = ()
-    vision_pages: tuple[int, ...] = ()
     findings: tuple[str, ...] = ()
 
 
@@ -62,15 +61,9 @@ def inspect_document(
             if page_count < 1:
                 raise DocumentInputError("empty_document", "Document contains no pages")
             oversized_pages: list[int] = []
-            native_pages: list[int] = []
-            vision_pages: list[int] = []
             for index, page in enumerate(document, start=1):
                 if page.rect.width * page.rect.height > MAX_PDF_CANVAS_AREA:
                     oversized_pages.append(index)
-                if _is_native_pdf_page(page):
-                    native_pages.append(index)
-                else:
-                    vision_pages.append(index)
             if oversized_pages:
                 raise DocumentInputError(
                     "canvas_too_large",
@@ -84,8 +77,6 @@ def inspect_document(
             mime_type="application/pdf",
             page_count=page_count,
             source_format="pdf",
-            native_pages=tuple(native_pages),
-            vision_pages=tuple(vision_pages),
         )
     if suffix in OFFICE_EXTENSIONS:
         return InspectedDocument(
@@ -124,22 +115,20 @@ def inspect_document(
         mime_type=mime,
         page_count=page_count,
         source_format=suffix.lstrip("."),
-        vision_pages=tuple(range(1, page_count + 1)),
     )
 
 
-def _is_native_pdf_page(page: fitz.Page) -> bool:
-    words = page.get_text("words", sort=True)
-    meaningful_text = any(str(item[4]).strip() for item in words)
-    page_area = float(page.rect.width * page.rect.height)
-    largest_raster_ratio = 0.0
-    if page_area > 0:
-        for image in page.get_image_info():
-            bbox = fitz.Rect(image["bbox"])
-            largest_raster_ratio = max(
-                largest_raster_ratio, float(bbox.width * bbox.height) / page_area
-            )
-    return meaningful_text and largest_raster_ratio < DOMINANT_RASTER_THRESHOLD
+def select_page_range(page_count: int, start: int = 1, end: int | None = None) -> tuple[int, ...]:
+    """Validate an inclusive one-based range and return its page numbers."""
+
+    selected_end = page_count if end is None else end
+    if start < 1 or selected_end < 1 or start > selected_end:
+        raise DocumentInputError("invalid_page_range", "Page range must be ordered and one-based")
+    if selected_end > page_count:
+        raise DocumentInputError(
+            "invalid_page_range", f"Page range exceeds the document's {page_count} pages"
+        )
+    return tuple(range(start, selected_end + 1))
 
 
 def _office_mime_type(suffix: str) -> str:
@@ -192,3 +181,76 @@ def render_page(data: bytes, filename: str, page_number: int, dpi: int) -> Rende
         output = BytesIO()
         rgb.save(output, format="PNG")
         return RenderedPage(page_number, output.getvalue(), float(rgb.width), float(rgb.height), [])
+
+
+def extract_native_words(data: bytes, filename: str, page_number: int) -> list[NativeWord]:
+    """Extract observed native PDF words without rendering the page."""
+
+    if Path(filename).suffix.lower() != ".pdf":
+        return []
+    document = fitz.open(stream=data, filetype="pdf")
+    try:
+        if page_number < 1 or page_number > document.page_count:
+            raise DocumentInputError("invalid_page", "Page is outside the document")
+        page = document[page_number - 1]
+        width, height = float(page.rect.width), float(page.rect.height)
+        return [
+            NativeWord(
+                text=str(item[4]),
+                bbox=BoundingBox(
+                    left=max(0, min(float(item[0]) / width, 1)),
+                    top=max(0, min(float(item[1]) / height, 1)),
+                    right=max(0, min(float(item[2]) / width, 1)),
+                    bottom=max(0, min(float(item[3]) / height, 1)),
+                ),
+            )
+            for item in page.get_text("words", sort=True)
+            if item[4].strip() and item[2] > item[0] and item[3] > item[1]
+        ]
+    finally:
+        document.close()
+
+
+@lru_cache(maxsize=1)
+def _rapid_ocr():
+    from rapidocr import RapidOCR
+
+    return RapidOCR()
+
+
+def extract_ocr_words(image_png: bytes) -> list[tuple[NativeWord, float]]:
+    """Run local OCR and return only word boxes produced by the OCR engine."""
+
+    result = _rapid_ocr()(image_png, return_word_box=True)
+    if result.img is None or not result.word_results:
+        return []
+    height, width = result.img.shape[:2]
+    words: list[tuple[NativeWord, float]] = []
+    for line in result.word_results:
+        if not isinstance(line, (list, tuple)):
+            continue
+        for item in line:
+            if not isinstance(item, (list, tuple)) or len(item) != 3:
+                continue
+            text, confidence, points = item
+            if not text or not points:
+                continue
+            if not all(isinstance(point, (list, tuple)) and len(point) >= 2 for point in points):
+                continue
+            point_values = cast(list[list[Any]], points)
+            xs = [float(point[0]) for point in point_values]
+            ys = [float(point[1]) for point in point_values]
+            left, right = max(0.0, min(xs) / width), min(1.0, max(xs) / width)
+            top, bottom = max(0.0, min(ys) / height), min(1.0, max(ys) / height)
+            if right <= left or bottom <= top:
+                continue
+            words.append(
+                (
+                    NativeWord(
+                        text=str(text),
+                        bbox=BoundingBox(left=left, top=top, right=right, bottom=bottom),
+                    ),
+                    min(1.0, max(0.0, float(confidence))),
+                )
+            )
+    return words

@@ -4,11 +4,13 @@ from __future__ import annotations
 
 import asyncio
 import html
+import math
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from io import BytesIO
 from typing import Any
 
+from docling.datamodel.accelerator_options import AcceleratorDevice, AcceleratorOptions
 from docling.datamodel.base_models import DocumentStream, InputFormat
 from docling.datamodel.object_detection_engine_options import (
     TransformersObjectDetectionEngineOptions,
@@ -16,6 +18,7 @@ from docling.datamodel.object_detection_engine_options import (
 from docling.datamodel.pipeline_options import (
     LayoutObjectDetectionOptions,
     PdfPipelineOptions,
+    RapidOcrOptions,
     TableFormerMode,
     TableStructureOptions,
 )
@@ -47,6 +50,13 @@ DOCLING_FORMATS = {
     ".odp": InputFormat.ODP,
     ".ods": InputFormat.ODS,
     ".csv": InputFormat.CSV,
+    ".png": InputFormat.IMAGE,
+    ".jpg": InputFormat.IMAGE,
+    ".jpeg": InputFormat.IMAGE,
+    ".webp": InputFormat.IMAGE,
+    ".tif": InputFormat.IMAGE,
+    ".tiff": InputFormat.IMAGE,
+    ".bmp": InputFormat.IMAGE,
 }
 
 
@@ -54,17 +64,22 @@ DOCLING_FORMATS = {
 class DoclingParseResult:
     pages: dict[int | None, AgenticPageInput]
     warnings: list[str]
+    page_confidence: dict[int, float | None]
 
 
-def create_docling_converter() -> DocumentConverter:
-    """Create the local converter with OCR and remote plugins disabled."""
+def create_docling_converter(
+    device: AcceleratorDevice | str = AcceleratorDevice.AUTO,
+) -> DocumentConverter:
+    """Create the local converter with RapidOCR and remote plugins disabled."""
     pdf_options = PdfPipelineOptions(
-        do_ocr=False,
+        do_ocr=True,
         do_table_structure=True,
         generate_picture_images=True,
         images_scale=2.0,
         enable_remote_services=False,
         allow_external_plugins=False,
+        accelerator_options=AcceleratorOptions(device=device),
+        ocr_options=RapidOcrOptions(backend="torch"),
         table_structure_options=TableStructureOptions(
             mode=TableFormerMode.ACCURATE,
             do_cell_matching=True,
@@ -80,8 +95,13 @@ def create_docling_converter() -> DocumentConverter:
 
 
 class DoclingDocumentParser:
-    def __init__(self, converter: DocumentConverter) -> None:
+    def __init__(
+        self,
+        converter: DocumentConverter,
+        fallback_converter: DocumentConverter | None = None,
+    ) -> None:
         self.converter = converter
+        self.fallback_converter = fallback_converter
 
     async def parse(
         self,
@@ -93,17 +113,38 @@ class DoclingDocumentParser:
         requested_pages: set[int] | None = None,
         describe_figure: FigureDescriber | None = None,
     ) -> DoclingParseResult:
+        page_range = (
+            (min(requested_pages), max(requested_pages)) if requested_pages else (1, max_pages)
+        )
+        warnings: list[str] = []
         try:
-            conversion = await asyncio.to_thread(
-                self.converter.convert,
-                DocumentStream(name=filename, stream=BytesIO(data)),
-                max_file_size=max_bytes,
-                max_num_pages=max_pages,
+            conversion = await self._convert(
+                self.converter,
+                data=data,
+                filename=filename,
+                max_bytes=max_bytes,
+                max_pages=max_pages,
+                page_range=page_range,
             )
-        except Exception as exc:
-            raise DocumentInputError(
-                "conversion_failed", "Docling could not convert this document"
-            ) from exc
+        except Exception as primary_error:
+            if self.fallback_converter is None:
+                raise DocumentInputError(
+                    "conversion_failed", "Docling could not convert this document"
+                ) from primary_error
+            try:
+                conversion = await self._convert(
+                    self.fallback_converter,
+                    data=data,
+                    filename=filename,
+                    max_bytes=max_bytes,
+                    max_pages=max_pages,
+                    page_range=page_range,
+                )
+                warnings.append("Docling retried on CPU after a CUDA conversion failure")
+            except Exception as fallback_error:
+                raise DocumentInputError(
+                    "conversion_failed", "Docling could not convert this document"
+                ) from fallback_error
 
         document = conversion.document
         physical_pages = sorted(int(page) for page in document.pages)
@@ -115,7 +156,6 @@ class DoclingDocumentParser:
         else:
             page_numbers = [None]
 
-        warnings: list[str] = []
         pages: dict[int | None, AgenticPageInput] = {}
         for page_number in page_numbers:
             blocks = await self._blocks_for_page(
@@ -129,7 +169,35 @@ class DoclingDocumentParser:
                 parser="docling",
                 blocks=blocks,
             )
-        return DoclingParseResult(pages=pages, warnings=warnings)
+        confidence_pages = getattr(getattr(conversion, "confidence", None), "pages", {})
+        page_confidence = {
+            page_number: _minimum_page_confidence(confidence_pages.get(page_number))
+            for page_number in page_numbers
+            if page_number is not None
+        }
+        return DoclingParseResult(
+            pages=pages,
+            warnings=warnings,
+            page_confidence=page_confidence,
+        )
+
+    async def _convert(
+        self,
+        converter: DocumentConverter,
+        *,
+        data: bytes,
+        filename: str,
+        max_bytes: int,
+        max_pages: int,
+        page_range: tuple[int, int],
+    ) -> Any:
+        return await asyncio.to_thread(
+            converter.convert,
+            DocumentStream(name=filename, stream=BytesIO(data)),
+            max_file_size=max_bytes,
+            max_num_pages=max_pages,
+            page_range=page_range,
+        )
 
     async def _blocks_for_page(
         self,
@@ -294,6 +362,20 @@ def _atomic_lines(markdown: str, box: NormalizedBox | None) -> list[AtomicLineIn
     if box is None:
         return []
     return [AtomicLineInput(text=line, box=box) for line in markdown.splitlines() if line.strip()]
+
+
+def _minimum_page_confidence(report: Any) -> float | None:
+    if report is None:
+        return None
+    values: list[float] = []
+    for name in ("parse_score", "layout_score", "ocr_score"):
+        raw = getattr(report, name, None)
+        if raw is None:
+            continue
+        value = float(raw)
+        if math.isfinite(value):
+            values.append(value)
+    return min(values) if values else None
 
 
 __all__ = [
