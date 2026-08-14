@@ -54,3 +54,14 @@ def test_windows_launcher_skips_completed_setup() -> None:
         '"%UV_EXE%" run --locked --python 3.12.10 --extra %TORCH_EXTRA% '
         "streamlit run" not in launcher
     )
+
+
+def test_linux_launcher_skips_completed_setup() -> None:
+    launcher = (ROOT / "Paperplane.sh").read_text(encoding="utf-8")
+
+    assert "set -Eeuo pipefail" in launcher
+    assert '"$uv_exe" sync --check --locked --python 3.12.10 --extra "$torch_extra"' in launcher
+    assert "sudo apt-get install -y libreoffice" in launcher
+    assert "nvidia-smi" in launcher
+    assert "models download layout tableformer rapidocr --quiet" in launcher
+    assert 'exec "$venv_python" -m streamlit run workspace_app.py --server.port=8551' in launcher
