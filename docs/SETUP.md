@@ -13,6 +13,8 @@ Windows drives, and Docling/RapidOCR models, then runs
 artifacts, skips setup when they are ready, and launches the app directly. Node.js, Docker,
 and a C++ compiler are not required. Python-Markdown and Bleach are runtime dependencies for
 sanitized standalone HTML output and are installed through the same locked environment.
+Before launch, Paperplane imports Torch and Docling to verify that binary dependencies are
+complete; it automatically reinstalls Torch and Torchvision if that health check fails.
 
 ## Automatic Linux setup
 

@@ -47,6 +47,8 @@ def test_windows_launcher_skips_completed_setup() -> None:
     launcher = (ROOT / "Paperplane.cmd").read_text(encoding="utf-8")
 
     assert 'set "UV_LINK_MODE=copy"' in launcher
+    assert 'import torch.backends; from docling.datamodel.base_models import DocumentStream' in launcher
+    assert "--reinstall-package torch --reinstall-package torchvision" in launcher
     assert "sync --check --locked --python 3.12.10 --extra %TORCH_EXTRA%" in launcher
     assert "sync --check --locked --python 3.12.10 --extra cpu" in launcher
     assert "if defined MODELS_READY goto :models_ready" in launcher
@@ -62,6 +64,8 @@ def test_linux_launcher_skips_completed_setup() -> None:
 
     assert "set -Eeuo pipefail" in launcher
     assert 'export UV_LINK_MODE="${UV_LINK_MODE:-copy}"' in launcher
+    assert 'import torch.backends; from docling.datamodel.base_models import DocumentStream' in launcher
+    assert "--reinstall-package torch --reinstall-package torchvision" in launcher
     assert '"$uv_exe" sync --check --locked --python 3.12.10 --extra "$torch_extra"' in launcher
     assert "sudo apt-get install -y libreoffice" in launcher
     assert "nvidia-smi" in launcher

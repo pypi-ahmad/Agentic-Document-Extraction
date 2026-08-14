@@ -113,6 +113,15 @@ if errorlevel 1 goto :setup_failure
 :dependencies_ready
 if not exist "%VENV_PYTHON%" goto :setup_failure
 if not exist "%VENV_DOCLING%" goto :setup_failure
+"%VENV_PYTHON%" -c "import torch.backends; from docling.datamodel.base_models import DocumentStream" >nul 2>&1
+if not errorlevel 1 goto :runtime_ready
+echo The Torch or Docling installation is incomplete. Repairing it...
+"%UV_EXE%" sync --locked --python 3.12.10 --extra %TORCH_EXTRA% --reinstall-package torch --reinstall-package torchvision
+if errorlevel 1 goto :setup_failure
+"%VENV_PYTHON%" -c "import torch.backends; from docling.datamodel.base_models import DocumentStream" >nul 2>&1
+if errorlevel 1 goto :setup_failure
+
+:runtime_ready
 echo Locked Python environment is ready.
 
 set "MODEL_ROOT=%USERPROFILE%\.cache\docling\models"

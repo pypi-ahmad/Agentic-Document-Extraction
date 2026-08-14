@@ -119,6 +119,17 @@ fi
 
 [[ -x "$venv_python" ]] || fail "The locked environment does not contain Python."
 [[ -x "$venv_docling" ]] || fail "The locked environment does not contain docling-tools."
+if ! "$venv_python" -c \
+    "import torch.backends; from docling.datamodel.base_models import DocumentStream" \
+    >/dev/null 2>&1; then
+    printf 'The Torch or Docling installation is incomplete. Repairing it...\n'
+    "$uv_exe" sync --locked --python 3.12.10 --extra "$torch_extra" \
+        --reinstall-package torch --reinstall-package torchvision \
+        || fail "Torch and Docling repair failed."
+    "$venv_python" -c \
+        "import torch.backends; from docling.datamodel.base_models import DocumentStream" \
+        >/dev/null 2>&1 || fail "Torch or Docling remains unusable after repair."
+fi
 printf 'Locked Python environment is ready.\n'
 
 cache_root="${DOCLING_CACHE_DIR:-${XDG_CACHE_HOME:-$HOME/.cache}/docling}"
