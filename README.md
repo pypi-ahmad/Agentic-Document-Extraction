@@ -39,8 +39,8 @@ compatibility, or claim LandingAI accuracy parity.
 - Track raw confidence separately from version/corpus-pinned calibrated confidence.
 - Validate a locked benchmark manifest and publish transparent result artifacts through
   GitHub Pages without a `gh-pages` branch.
-- Bootstrap missing Windows requirements once, then launch directly by double-clicking
-  `Paperplane.cmd`.
+- Bootstrap missing requirements once with `Paperplane.cmd` on Windows or `Paperplane.sh`
+  on Linux, then skip completed setup on later launches.
 
 ## Feature guide
 
@@ -214,6 +214,7 @@ Agentic-Document-Extraction/
 ├── streamlit_app.py             # Parse page
 ├── app_pages/                   # Organize, Jobs, Benchmarks
 ├── Paperplane.cmd               # One-file Windows setup and launcher
+├── Paperplane.sh                # One-file Linux setup and launcher
 ├── paperplane/
 │   ├── ade_contracts.py         # ADE v2 + Paperplane v5 exports and engine options
 │   ├── ade_workflows.py         # Classify, Split, Section
@@ -248,6 +249,21 @@ The launcher installs uv, Python 3.12.10, LibreOffice, locked CPU/CUDA dependenc
 Docling/RapidOCR models only when they are missing or out of date. Once ready, it skips
 setup and starts `workspace_app.py` directly on port `8551`.
 
+### Linux one-file setup
+
+On Ubuntu or Debian:
+
+```bash
+./Paperplane.sh
+```
+
+If the executable bit was lost while downloading an archive, run
+`chmod +x Paperplane.sh` once. The launcher installs missing `uv`, Python 3.12.10,
+LibreOffice through APT, locked CPU/CUDA dependencies, and Docling/RapidOCR models. It
+selects CUDA when `nvidia-smi` works and falls back to CPU if the locked CUDA environment
+cannot be synchronized. On other Linux distributions, install LibreOffice first and rerun
+the same launcher; it does not guess privileged package-manager commands.
+
 ### Manual setup
 
 ```powershell
@@ -276,9 +292,9 @@ hard-coded choices.
 | `AGNES_API_KEY` | Agnes 2.5 Flash text and visual workflows |
 | `OLLAMA_BASE_URL` | Local Ollama server; default `http://127.0.0.1:11434` |
 
-Paperplane reads process/Windows user variables first, then an ignored `.env`, then
-Streamlit secrets. `.env.example` remains available for other machines. Never commit a
-real credential.
+Paperplane reads the process environment, including missing values loaded from an ignored
+`.env`, before Streamlit secrets. `.env.example` remains available for other machines.
+Never commit a real credential.
 
 Paperplane sends Agnes visual inputs inline as private PNG data URLs. Agnes usage is
 recorded even though its configured price is $0.

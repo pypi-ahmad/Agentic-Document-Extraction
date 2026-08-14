@@ -13,6 +13,21 @@ artifacts, skips setup when they are ready, and launches the app directly. Node.
 and a C++ compiler are not required. Python-Markdown and Bleach are runtime dependencies for
 sanitized standalone HTML output and are installed through the same locked environment.
 
+## Automatic Linux setup
+
+From a cloned checkout on Ubuntu or Debian:
+
+```bash
+./Paperplane.sh
+```
+
+If needed, restore execute permission with `chmod +x Paperplane.sh`. The launcher installs
+missing uv and Python in the current user's environment, uses APT and sudo only when
+LibreOffice is absent, selects CUDA when `nvidia-smi` succeeds, falls back to CPU when
+necessary, synchronizes the locked environment, downloads missing Docling/RapidOCR models,
+and starts the same localhost app. On non-APT distributions, install LibreOffice with the
+distribution's package manager before running the launcher.
+
 ## Manual developer setup
 
 ```powershell
@@ -36,6 +51,13 @@ page PNGs inline, so no public image host is required.
 ```powershell
 [Environment]::SetEnvironmentVariable("OPENAI_API_KEY", "your-key", "User")
 [Environment]::SetEnvironmentVariable("OPENAI_BASE_URL", "https://api.openai.com", "User")
+```
+
+Linux shells can export the variables before launch:
+
+```bash
+export OPENAI_API_KEY="your-key"
+./Paperplane.sh
 ```
 
 Open a new terminal after changing a Windows user variable. Other users can copy

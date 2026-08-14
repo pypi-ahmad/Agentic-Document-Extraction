@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="author" content="Ahmad">
-  <meta name="description" content="A code-grounded tutorial for mastering Paperplane v5.0.3">
+  <meta name="description" content="A code-grounded tutorial for mastering Paperplane v5.1.0">
   <title>Paperplane Zero to Mastery</title>
   <style>
 @page {
@@ -138,9 +138,10 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 1.2em 0; }
 <body>
 <h1 id="paperplane-zero-to-mastery">Paperplane: zero to mastery</h1>
 <h2 id="1-start">1. Start</h2>
-<p>Double-click <code>Paperplane.cmd</code>. It installs only missing or out-of-date Windows prerequisites
-and opens the multipage Streamlit app at <code>http://127.0.0.1:8551</code>. Once ready, later launches
-skip setup. Manual entrypoint:</p>
+<p>Double-click <code>Paperplane.cmd</code> on Windows or run <code>./Paperplane.sh</code> on Linux. Each launcher
+installs only missing or out-of-date supported prerequisites and opens the multipage
+Streamlit app at <code>http://127.0.0.1:8551</code>. Once ready, later launches skip setup. Manual
+entrypoint:</p>
 <pre><code class="language-powershell">uv run --locked --extra cpu streamlit run workspace_app.py --server.port=8551
 </code></pre>
 <h2 id="2-parse">2. Parse</h2>

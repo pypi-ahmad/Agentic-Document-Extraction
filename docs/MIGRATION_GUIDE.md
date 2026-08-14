@@ -2,7 +2,8 @@
 
 Version 5 changes the UI, public export contract, and retention model.
 
-- Launch `workspace_app.py`, not `streamlit_app.py`; `Paperplane.cmd` is already updated.
+- Launch `workspace_app.py`, not `streamlit_app.py`; `Paperplane.cmd` and `Paperplane.sh`
+  already use the multipage entrypoint.
 - Replace the five strategy selector with one of four exclusive engines: Docling,
   PDF Inspector, Cloud AI, or Ollama. Combined behavior is the separate cloud-enhancement
   toggle.
