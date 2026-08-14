@@ -1,0 +1,11 @@
+{
+    "schema_version": 2,
+    "commit": "de69d23a6f32eecb0d47714a2ead73b8a01ea72c",
+    "indexed_at": "2026-08-14T10:24:56Z",
+    "project": "Agentic-Document-Extraction",
+    "nodes": 4203,
+    "edges": 15570,
+    "original_size": 8912896,
+    "compressed_size": 2037520,
+    "compression_level": 9
+}
