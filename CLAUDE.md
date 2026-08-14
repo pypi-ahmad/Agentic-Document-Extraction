@@ -1,4 +1,12 @@
 <!-- code-review-graph MCP tools -->
+# Paperplane project contract
+
+Paperplane is a local, database-free Streamlit document parser. Native content uses
+Docling; scans, images, and optional figure descriptions use the AI model selected in the
+UI: OpenAI Luna/Terra or Agnes 2.5 Flash. Credentials come from `OPENAI_API_KEY` plus the
+optional `OPENAI_BASE_URL`, or from `AGNES_API_KEY`. Keep uploads and results session-only,
+run the app on `127.0.0.1:8551`, and update affected documentation with every code change.
+
 ## MCP Tools: code-review-graph
 
 **IMPORTANT: This project has a knowledge graph. ALWAYS use the

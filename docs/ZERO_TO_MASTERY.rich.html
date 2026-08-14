@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="Ahmad">
+  <meta name="description" content="A code-grounded tutorial for mastering Paperplane v4.1.0">
+  <title>Paperplane Zero to Mastery</title>
+  <style>
+@page {
+  size: A4;
+  margin: 18mm 16mm 19mm;
+  @top-left {
+    content: "PAPERPLANE - ZERO TO MASTERY";
+    color: #64748b;
+    font-family: "DejaVu Sans", sans-serif;
+    font-size: 8pt;
+    letter-spacing: 0.08em;
+  }
+  @bottom-right {
+    content: "Page " counter(page) " of " counter(pages);
+    color: #64748b;
+    font-family: "DejaVu Sans", sans-serif;
+    font-size: 8pt;
+  }
+}
+
+@page:first {
+  @top-left { content: none; }
+  @bottom-right { content: none; }
+}
+
+:root {
+  --ink: #10233f;
+  --muted: #52647d;
+  --accent: #2563eb;
+  --accent-dark: #1e40af;
+  --teal: #0f766e;
+  --line: #cbd5e1;
+  --panel: #f4f7fb;
+  --code: #0f172a;
+}
+
+html { color: var(--ink); font-family: "DejaVu Sans", Arial, sans-serif; }
+body { font-size: 10.3pt; line-height: 1.52; margin: 0; }
+
+h1 {
+  align-items: center;
+  background: linear-gradient(145deg, #0f172a 0%, #173e78 58%, #0f766e 100%);
+  box-sizing: border-box;
+  color: white;
+  display: flex;
+  font-size: 29pt;
+  line-height: 1.15;
+  margin: -18mm -16mm 16mm;
+  min-height: 297mm;
+  padding: 42mm 22mm;
+  page-break-after: always;
+}
+
+h2 {
+  border-bottom: 2px solid var(--accent);
+  color: var(--accent-dark);
+  font-size: 18pt;
+  line-height: 1.2;
+  margin: 1.35em 0 0.55em;
+  padding-bottom: 0.2em;
+  page-break-after: avoid;
+}
+
+h3 {
+  border-left: 4px solid var(--teal);
+  color: #12325c;
+  font-size: 13pt;
+  line-height: 1.3;
+  margin: 1.1em 0 0.45em;
+  padding-left: 0.55em;
+  page-break-after: avoid;
+}
+
+h4 { color: #24496f; font-size: 11pt; margin: 1em 0 0.35em; page-break-after: avoid; }
+p { margin: 0.35em 0 0.65em; }
+ul, ol { margin: 0.35em 0 0.8em 1.25em; padding: 0; }
+li { margin: 0.22em 0; }
+a { color: var(--accent-dark); text-decoration: none; }
+strong { color: #0b2342; }
+
+blockquote {
+  background: #eef6ff;
+  border-left: 4px solid var(--accent);
+  border-radius: 0 5px 5px 0;
+  color: #294766;
+  margin: 0.9em 0;
+  padding: 0.7em 0.9em;
+}
+
+code {
+  background: #e8eef7;
+  border-radius: 3px;
+  color: #0f3159;
+  font-family: "DejaVu Sans Mono", Consolas, monospace;
+  font-size: 0.88em;
+  padding: 1px 4px;
+}
+
+pre {
+  background: var(--code);
+  border-radius: 6px;
+  color: #e2e8f0;
+  font-size: 8.4pt;
+  line-height: 1.42;
+  margin: 0.75em 0 1em;
+  overflow-wrap: anywhere;
+  padding: 10px 12px;
+  page-break-inside: avoid;
+  white-space: pre-wrap;
+}
+
+pre code { background: transparent; color: inherit; padding: 0; }
+table { border-collapse: collapse; font-size: 8.8pt; margin: 0.8em 0 1.1em; width: 100%; }
+thead { display: table-header-group; }
+tr { page-break-inside: avoid; }
+th, td { border: 1px solid var(--line); padding: 5px 6px; text-align: left; vertical-align: top; }
+th { background: #dfeaf8; color: #14375e; }
+tbody tr:nth-child(even) { background: #f8fafc; }
+hr { border: 0; border-top: 1px solid var(--line); margin: 1.2em 0; }
+
+#table-of-contents + ul {
+  columns: 2;
+  column-gap: 2em;
+  list-style: none;
+  margin-left: 0;
+}
+
+#table-of-contents + ul li { break-inside: avoid; margin-bottom: 0.45em; }
+</style>
+</head>
+<body>
+<h1 id="paperplane-zero-to-mastery">Paperplane: zero to mastery</h1>
+<h2 id="1-run-the-app">1. Run the app</h2>
+<p>Double-click <code>Paperplane.cmd</code>. It installs <code>uv</code>, Python 3.12.10, locked dependencies, and
+Docling layout/table models before starting Streamlit at <code>http://127.0.0.1:8551</code>. Set
+<code>OPENAI_API_KEY</code> or <code>AGNES_API_KEY</code> for the selected scan/image model.</p>
+<h2 id="2-follow-the-code">2. Follow the code</h2>
+<ol>
+<li>Start at <code>streamlit_app.py</code>.</li>
+<li>Follow <code>paperplane.runtime.parse_document</code>.</li>
+<li>Read <code>AgenticDocumentParser.parse</code> in <code>paperplane/parser.py</code>.</li>
+<li>Inspect validation and page classification in <code>paperplane/ingest.py</code>.</li>
+<li>Follow native conversion in <code>paperplane/docling_parser.py</code> or vision work in
+   <code>paperplane/pipeline.py</code>.</li>
+<li>Read the provider boundaries in <code>paperplane/openai_document.py</code> and
+   <code>paperplane/agnes_document.py</code>.</li>
+<li>Read coordinate alignment in <code>paperplane/grounding.py</code>.</li>
+<li>Inspect output assembly in <code>paperplane/contracts.py</code>.</li>
+<li>Follow evidence creation in <code>paperplane/annotated_pdf.py</code>.</li>
+</ol>
+<h2 id="3-understand-the-data-flow">3. Understand the data flow</h2>
+<pre><code class="language-text">uploaded bytes
+  -&gt; validation and document inspection
+  -&gt; per-page native/scanned routing
+  -&gt; local Docling conversion OR selected OpenAI/Agnes structured vision draft
+  -&gt; deterministic grounding and mode-driven verification
+  -&gt; merge in source reading order
+  -&gt; Markdown + hierarchical JSON + annotated evidence PDF
+  -&gt; Output/PDF/Markdown/JSON display and download
+</code></pre>
+<h2 id="4-understand-the-contract">4. Understand the contract</h2>
+<p>Physical pages are one-based and use normalized top-left-origin boxes. JSON nodes carry
+half-open Unicode Markdown ranges. Office content without trustworthy geometry is
+<code>semantic_only</code> with null boxes. IDs are stable within one response only.</p>
+<h2 id="5-understand-the-state-boundary">5. Understand the state boundary</h2>
+<p>Streamlit keeps widget values, uploaded bytes, the latest result, and the annotated PDF in
+one session. The parser receives bytes and returns validated Pydantic values without saving
+either. The cached Docling converter holds model resources only.</p>
+<h2 id="6-change-the-app-safely">6. Change the app safely</h2>
+<p>Keep parser logic independent from Streamlit, validate input at the parser boundary, keep
+secrets and documents out of logs and source control, add focused tests, and update affected
+documentation with every code change.</p>
+<h2 id="7-verify">7. Verify</h2>
+<pre><code class="language-powershell">uv run ruff check paperplane tests streamlit_app.py scripts
+uv run ruff format --check paperplane tests streamlit_app.py scripts
+uv run pyright
+uv run pytest tests -q
+</code></pre>
+<p>Continue with the full <a href="../Zero_to_Hero_Study_Handbook.md">study handbook</a>,
+<a href="ARCHITECTURE.md">architecture</a>, and <a href="APP_CAPABILITIES.md">capabilities</a>.</p>
+</body>
+</html>

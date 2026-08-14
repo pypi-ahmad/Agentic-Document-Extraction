@@ -59,19 +59,19 @@ Streamlit session.</p>
 </tr>
 <tr>
 <td>Scanned PDF page</td>
-<td>OpenAI vision</td>
+<td>Selected OpenAI or Agnes vision model</td>
 </tr>
 <tr>
 <td>Mixed PDF</td>
-<td>Automatic per-page Docling/OpenAI routing</td>
+<td>Automatic per-page Docling/vision routing</td>
 </tr>
 <tr>
 <td>PNG, JPEG, WebP, TIFF, BMP</td>
-<td>OpenAI vision</td>
+<td>Selected OpenAI or Agnes vision model</td>
 </tr>
 <tr>
 <td>DOCX, PPTX, XLSX, ODT, ODP, ODS, CSV</td>
-<td>Local Docling; optional OpenAI figure descriptions</td>
+<td>Local Docling; optional selected-model figure descriptions</td>
 </tr>
 </tbody>
 </table>
@@ -90,6 +90,7 @@ rejected.</p>
 <li>Stable IDs within one response</li>
 <li>Fast, Balanced, and Audit processing policies</li>
 <li>Luna vision drafting with deterministic grounding and bounded Terra verification</li>
+<li>Agnes 2.5 Flash as a single-model alternative for the same pipeline stages</li>
 </ul>
 <h2 id="user-workspace">User workspace<a class="headerlink" href="#user-workspace" title="Permanent link">&para;</a></h2>
 <ul>
@@ -121,6 +122,7 @@ that state. Downloading an artifact is the user's explicit persistence action. I
 dependencies and Docling model weights remain on disk; statelessness applies to document
 and result data.</p>
 <h2 id="model-mapping">Model mapping<a class="headerlink" href="#model-mapping" title="Permanent link">&para;</a></h2>
+<p>The AI selector defaults to OpenAI. Agnes 2.5 Flash is the alternate vision model.</p>
 <table>
 <thead>
 <tr>
@@ -147,7 +149,10 @@ and result data.</p>
 </tr>
 </tbody>
 </table>
-<p>OpenAI is the vision inference provider; Docling is the local native-document engine.
+<p>Users select OpenAI Luna/Terra or Agnes 2.5 Flash for vision inference; Docling remains the
+local native-document engine. Agnes uses <code>AGNES_API_KEY</code> and its official Chat Completions
+endpoint. With Agnes selected, <code>agnes-2.5-flash</code> fills all model-call roles while the mode
+continues to bound verification and repair work.
 Paperplane is inspired by ADE's observable workflow, but does not call LandingAI ADE or
 claim its benchmark results.</p></main>
   </div>

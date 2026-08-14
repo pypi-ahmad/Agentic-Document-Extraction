@@ -1,6 +1,6 @@
 {
   "name": "Paperplane 4.1.0",
-  "description": "Local Streamlit document extraction with automatic Docling/OpenAI routing and session-only results",
+  "description": "Local Streamlit document extraction with Docling and selectable OpenAI/Agnes vision inference",
   "nodes": [
     {
       "id": "ui",
@@ -13,7 +13,7 @@
       "id": "runtime",
       "type": "service",
       "label": "In-process runtime",
-      "sublabel": "Cached Docling resources and short-lived OpenAI client",
+      "sublabel": "Cached Docling resources and short-lived provider client",
       "sources": [{"path": "paperplane/runtime.py", "line": 1}]
     },
     {
@@ -37,7 +37,7 @@
       "id": "vision",
       "type": "service",
       "label": "Vision pipeline",
-      "sublabel": "Luna draft, deterministic grounding, bounded Terra checks",
+      "sublabel": "Selected-model draft, grounding, and bounded checks",
       "sources": [
         {"path": "paperplane/pipeline.py", "line": 1},
         {"path": "paperplane/grounding.py", "line": 1}
@@ -48,6 +48,12 @@
       "type": "external",
       "label": "OpenAI Responses API",
       "sublabel": "Scans, images, and optional figure descriptions"
+    },
+    {
+      "id": "agnes",
+      "type": "external",
+      "label": "Agnes Chat Completions API",
+      "sublabel": "Agnes 2.5 Flash vision alternative"
     },
     {
       "id": "assembler",
@@ -70,6 +76,7 @@
     {"from": "router", "to": "docling", "label": "native content"},
     {"from": "router", "to": "vision", "label": "scans and images"},
     {"from": "vision", "to": "openai", "label": "structured requests"},
+    {"from": "vision", "to": "agnes", "label": "JSON-only requests"},
     {"from": "docling", "to": "assembler", "label": "native blocks"},
     {"from": "vision", "to": "assembler", "label": "grounded blocks"},
     {"from": "assembler", "to": "evidence", "label": "validated response"},
@@ -77,7 +84,7 @@
     {"from": "evidence", "to": "ui", "label": "in-memory PDF"}
   ],
   "boundaries": {
-    "network": "127.0.0.1 Streamlit plus configured OpenAI Responses API",
+    "network": "127.0.0.1 Streamlit plus selected OpenAI or Agnes API",
     "state": "Current Streamlit session only",
     "persistence": "No document or result store"
   }

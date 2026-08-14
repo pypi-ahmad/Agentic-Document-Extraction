@@ -14,8 +14,9 @@ synchronous extraction workspace.
 ## Decision
 
 `AgenticDocumentParser` orchestrates document pages directly in Python. Native content uses
-Docling. Scans and images use `V2PageProcessor`, whose Luna and Terra work is bounded by the
-selected Fast, Balanced, or Audit policy.
+Docling. Scans and images use `V2PageProcessor` with the selected provider adapter. OpenAI
+maps work to Luna/Terra; Agnes maps every model call to `agnes-2.5-flash`. Fast, Balanced,
+and Audit bound the work for either provider.
 
 The active path is explicit:
 

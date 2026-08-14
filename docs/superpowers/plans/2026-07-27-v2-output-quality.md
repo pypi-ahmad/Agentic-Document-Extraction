@@ -12,7 +12,7 @@ visual output, validate complete page assembly, and improve grounded Markdown qu
 
 ## Current v4.1 result
 
-- both Docling and vision paths feed one validated Markdown/JSON assembler;
+- Docling and both selectable vision-provider paths feed one validated Markdown/JSON assembler;
 - duplicate suppression and reading-order reconciliation are deterministic;
 - tables retain hierarchy and merged-cell metadata;
 - figures use semantic descriptions or explicit unavailable placeholders;

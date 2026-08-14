@@ -1,4 +1,4 @@
-"""Bounded evidence-first page processing for the OpenAI V2 pipeline."""
+"""Bounded evidence-first page processing for document vision models."""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ import math
 from difflib import SequenceMatcher
 from io import BytesIO
 from pathlib import Path
-from typing import Any, Protocol, cast
+from typing import Any, Literal, Protocol, cast
 
 from PIL import Image, ImageDraw
 from pydantic import BaseModel, Field
@@ -170,7 +170,19 @@ FIGURE_DESCRIPTION_SCHEMA: dict[str, Any] = {
 
 
 class StructuredAdapter(Protocol):
-    async def generate_structured(self, **kwargs: Any) -> StructuredGeneration: ...
+    async def generate_structured(
+        self,
+        *,
+        model: Literal["gpt-5.6-luna", "gpt-5.6-terra"],
+        image: bytes | None,
+        instructions: str,
+        context: str | None = None,
+        schema_name: str,
+        schema: dict[str, Any],
+        reasoning_effort: Literal["none", "low", "medium", "high"],
+        detail: Literal["low", "high", "original"],
+        prompt_cache_key: str,
+    ) -> StructuredGeneration: ...
 
 
 class PageResult(BaseModel):

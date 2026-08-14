@@ -7,6 +7,7 @@ grounding JSON, and an annotated evidence PDF from one local Streamlit applicati
 
 - Local Docling conversion for native PDFs, Office/OpenDocument files, and CSV
 - OpenAI vision parsing for scanned PDFs and images
+- Selectable Agnes 2.5 Flash parsing using `AGNES_API_KEY`
 - Automatic per-page routing for native, scanned, and mixed PDFs
 - Shared reading-order Markdown and grounding assembly across both engines
 - HTML tables with row, column, `rowspan`, and `colspan` metadata
@@ -22,10 +23,12 @@ grounding JSON, and an annotated evidence PDF from one local Streamlit applicati
 
 ## Changed
 
-- `OPENAI_API_KEY` is required only for scans, images, and optional figure descriptions
-- Native documents can be parsed locally without OpenAI
+- The key for the selected OpenAI or Agnes model is required only for scans, images, and
+  optional figure descriptions
+- Native documents can be parsed locally without an external AI provider
 - Configuration prefers user/process environment variables, then ignored local fallbacks
 - The result and uploaded bytes remain only in the current Streamlit session
+- The local Streamlit server uses `http://127.0.0.1:8551` by default
 - Releases are source-only GitHub releases
 
 ## Still deliberately absent

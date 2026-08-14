@@ -6,7 +6,7 @@ import asyncio
 import hashlib
 import time
 import uuid
-from typing import Any
+from typing import Any, Literal
 
 from paperplane.contracts import (
     AgenticBlockInput,
@@ -60,7 +60,9 @@ def _atomic_lines(markdown: str, box: NormalizedBox) -> list[AtomicLineInput]:
     return [AtomicLineInput(text=line, box=box) for line in markdown.splitlines() if line.strip()]
 
 
-def _agentic_page(result: PageResult) -> AgenticPageInput:
+def _agentic_page(
+    result: PageResult, *, parser: Literal["openai_vision", "agnes_vision"]
+) -> AgenticPageInput:
     chunks = sorted(result.chunks, key=lambda item: item.order)
     children_by_parent: dict[str, list[Any]] = {}
     for chunk in chunks:
@@ -136,7 +138,7 @@ def _agentic_page(result: PageResult) -> AgenticPageInput:
         )
     return AgenticPageInput(
         page_number=result.page_number,
-        parser="openai_vision",
+        parser=parser,
         blocks=blocks,
     )
 
@@ -150,6 +152,8 @@ class AgenticDocumentParser:
         docling_parser: DoclingDocumentParser,
         *,
         vision_enabled: bool,
+        vision_key_name: str = "OPENAI_API_KEY",
+        vision_parser: Literal["openai_vision", "agnes_vision"] = "openai_vision",
         max_upload_bytes: int = DEFAULT_MAX_UPLOAD_BYTES,
         max_document_pages: int = DEFAULT_MAX_DOCUMENT_PAGES,
         recipe_version: RecipeVersion = DEFAULT_RECIPE_VERSION,
@@ -157,9 +161,11 @@ class AgenticDocumentParser:
         self.processor = processor
         self.docling_parser = docling_parser
         self.vision_enabled = vision_enabled
+        self.vision_key_name = vision_key_name
+        self.vision_parser: Literal["openai_vision", "agnes_vision"] = vision_parser
         self.max_upload_bytes = max_upload_bytes
         self.max_document_pages = max_document_pages
-        self.recipe_version = recipe_version
+        self.recipe_version: RecipeVersion = recipe_version
 
     async def parse(self, *, data: bytes, filename: str, model: str) -> ParseResponse:
         inspected = inspect_document(
@@ -196,7 +202,7 @@ class AgenticDocumentParser:
         if vision_pages and not self.vision_enabled:
             raise DocumentInputError(
                 "missing_api_key",
-                "OPENAI_API_KEY is required for scanned PDF pages and image files",
+                f"{self.vision_key_name} is required for scanned PDF pages and image files",
             )
         for page_number in vision_pages:
             rendered = await asyncio.to_thread(
@@ -214,19 +220,19 @@ class AgenticDocumentParser:
                 mode=mode,
                 recipe_version=self.recipe_version,
             )
-            pages[page_number] = _agentic_page(result)
+            pages[page_number] = _agentic_page(result, parser=self.vision_parser)
 
         if not pages:
             raise DocumentInputError("empty_document", "Document produced no readable pages")
 
         ordered_pages = [pages[key] for key in sorted(pages, key=lambda item: item or 0)]
         engines = {page.parser for page in ordered_pages}
-        engine = (
+        engine: Literal["docling", "openai_vision", "agnes_vision", "hybrid"] = (
             "hybrid"
             if len(engines) > 1
             else "docling"
             if engines == {"docling"}
-            else "openai_vision"
+            else self.vision_parser
         )
 
         request_id = uuid.uuid4().hex

@@ -13,11 +13,15 @@ Developers can start the same application directly:
 
 ```powershell
 uv sync --locked
-uv run streamlit run streamlit_app.py
+uv run streamlit run streamlit_app.py --server.port=8551
 ```
 
 The checked-in Streamlit configuration binds to `127.0.0.1`, enables XSRF protection,
 limits uploads to 200 MB, and disables Streamlit usage telemetry.
+
+Vision processing requires outbound HTTPS access to the selected provider. OpenAI uses
+`OPENAI_API_KEY` and optional `OPENAI_BASE_URL`; Agnes 2.5 Flash uses `AGNES_API_KEY` and
+`https://apihub.agnes-ai.com/v1`. Native Docling conversion remains local.
 
 ## Unsupported deployment
 

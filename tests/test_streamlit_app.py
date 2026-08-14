@@ -23,6 +23,7 @@ def _png() -> bytes:
 
 def test_app_explains_missing_api_key(monkeypatch) -> None:
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    monkeypatch.delenv("AGNES_API_KEY", raising=False)
     app = AppTest.from_file(APP_PATH).run()
 
     assert app.title[0].value == "Paperplane"
@@ -32,6 +33,7 @@ def test_app_explains_missing_api_key(monkeypatch) -> None:
 
 def test_app_allows_local_document_upload_without_api_key(monkeypatch) -> None:
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    monkeypatch.delenv("AGNES_API_KEY", raising=False)
     app = AppTest.from_file(APP_PATH).run()
     app.file_uploader[0].set_value(
         (
@@ -48,6 +50,7 @@ def test_app_parses_upload_and_exposes_downloads(monkeypatch) -> None:
     async def fake_parse_document(**kwargs):
         assert kwargs["filename"] == "invoice.png"
         assert kwargs["model"] == "paperplane-ade-latest"
+        assert kwargs["provider"] == "openai"
         return assemble_parse_response(
             document_id="document",
             job_id="request",
@@ -93,3 +96,27 @@ def test_app_parses_upload_and_exposes_downloads(monkeypatch) -> None:
     app.session_state["result_view"] = "JSON"
     app.run()
     assert app.json
+
+
+def test_app_selects_agnes_model(monkeypatch) -> None:
+    captured: dict = {}
+
+    async def fake_parse_document(**kwargs):
+        captured.update(kwargs)
+        return assemble_parse_response(
+            document_id="document",
+            job_id="request",
+            model=kwargs["model"],
+            pages=[],
+            duration_ms=1,
+        )
+
+    monkeypatch.setenv("AGNES_API_KEY", "agnes-test")
+    monkeypatch.setattr(runtime, "parse_document", fake_parse_document)
+    app = AppTest.from_file(APP_PATH).run()
+    app.selectbox[0].select("Agnes 2.5 Flash").run()
+    app.file_uploader[0].set_value(("invoice.png", _png(), "image/png")).run()
+    next(button for button in app.button if button.label == "Parse document").click().run()
+
+    assert captured["provider"] == "agnes"
+    assert captured["api_key"] == "agnes-test"

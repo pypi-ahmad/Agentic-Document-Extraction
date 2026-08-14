@@ -30,6 +30,10 @@ MODEL_HELP = {
     "Balanced": "Adaptive verification for most documents.",
     "Audit": "Maximum inspection depth for difficult pages.",
 }
+AI_MODEL_LABELS = {
+    "OpenAI (Luna + Terra)": "openai",
+    "Agnes 2.5 Flash": "agnes",
+}
 IMAGE_EXTENSIONS = {".bmp", ".jpeg", ".jpg", ".png", ".tif", ".tiff", ".webp"}
 SUPPORTED_EXTENSIONS = [
     "pdf",
@@ -118,8 +122,9 @@ st.session_state.setdefault("annotated_pdf", None)
 st.session_state.setdefault("artifact_error", None)
 st.session_state.setdefault("result_view", "Output")
 
-api_key = _setting("OPENAI_API_KEY")
-base_url = _setting("OPENAI_BASE_URL", runtime.DEFAULT_OPENAI_BASE_URL)
+openai_api_key = _setting("OPENAI_API_KEY")
+agnes_api_key = _setting("AGNES_API_KEY")
+openai_base_url = _setting("OPENAI_BASE_URL", runtime.DEFAULT_OPENAI_BASE_URL)
 
 with st.container(horizontal=True, vertical_alignment="center"):
     st.title("Paperplane")
@@ -129,18 +134,22 @@ st.caption(
     "with hierarchical grounding JSON."
 )
 
-if not api_key:
-    st.warning(
-        "Local Office and native-PDF parsing is available. Set `OPENAI_API_KEY` to parse "
-        "scans and images or describe figures.",
-        icon=":material/key:",
-    )
-
 preview_column, workspace_column = st.columns([1.15, 1], gap="large")
 
 with workspace_column:
     with st.container(border=True):
         st.subheader("New parse")
+        selected_ai_label = st.selectbox("AI model", list(AI_MODEL_LABELS))
+        selected_provider = AI_MODEL_LABELS[selected_ai_label]
+        api_key = agnes_api_key if selected_provider == "agnes" else openai_api_key
+        base_url = openai_base_url
+        if not api_key:
+            key_name = "AGNES_API_KEY" if selected_provider == "agnes" else "OPENAI_API_KEY"
+            st.warning(
+                f"Local Office and native-PDF parsing is available. Set `{key_name}` to parse "
+                "scans and images or describe figures.",
+                icon=":material/key:",
+            )
         selected_label = st.segmented_control(
             "Processing mode",
             list(MODEL_LABELS),
@@ -201,6 +210,7 @@ with workspace_column:
                         model=MODEL_LABELS[selected_label],
                         api_key=api_key,
                         base_url=base_url,
+                        provider=selected_provider,
                     )
                 )
                 st.write("Building annotated evidence PDF")

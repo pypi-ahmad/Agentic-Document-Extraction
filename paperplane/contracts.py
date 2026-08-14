@@ -31,7 +31,7 @@ StructureType = Literal[
     "scan_code",
 ]
 GroundingStatus = Literal["grounded", "semantic_only"]
-ParserEngine = Literal["docling", "openai_vision"]
+ParserEngine = Literal["docling", "openai_vision", "agnes_vision"]
 
 
 class NormalizedBox(BaseModel):
@@ -122,7 +122,7 @@ class ParseMetadata(BaseModel):
     service_tier: str | None = None
     total_credits: int = Field(default=0, ge=0)
     source_format: str = Field(default="unknown", min_length=1)
-    engine: Literal["docling", "openai_vision", "hybrid"] = "openai_vision"
+    engine: Literal["docling", "openai_vision", "agnes_vision", "hybrid"] = "openai_vision"
     warnings: list[str] = Field(default_factory=list)
 
 
@@ -278,7 +278,7 @@ def assemble_parse_response(
     failed_pages: list[int] | None = None,
     duration_ms: int | None = None,
     source_format: str = "unknown",
-    engine: Literal["docling", "openai_vision", "hybrid"] = "openai_vision",
+    engine: Literal["docling", "openai_vision", "agnes_vision", "hybrid"] = "openai_vision",
     warnings: list[str] | None = None,
 ) -> ParseResponse:
     """Assemble page-agent observations into globally grounded Markdown without model calls."""

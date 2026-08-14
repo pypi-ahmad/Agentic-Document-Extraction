@@ -19,14 +19,14 @@
   <p>One local Streamlit process with automatic native/vision routing and no document persistence.</p>
   <div class="flow">
     <div class="node"><b>1 · Streamlit workspace</b><span>Upload, preview, select mode, parse, inspect, and download.</span></div>
-    <div class="node"><b>2 · In-process runtime</b><span>Reuse Docling model resources and create one short-lived OpenAI client per parse.</span></div>
+    <div class="node"><b>2 · In-process runtime</b><span>Reuse Docling model resources and create one short-lived provider client per parse.</span></div>
     <div class="node"><b>3 · Validate and route</b><span>Enforce limits and classify native versus scan-like PDF pages.</span></div>
     <div class="node"><b>4 · Local Docling</b><span>Convert native PDFs and Office/OpenDocument/CSV structure.</span></div>
-    <div class="node"><b>5 · OpenAI vision</b><span>Use Luna drafts, deterministic grounding, and bounded Terra verification.</span></div>
+    <div class="node"><b>5 · Selectable vision</b><span>Use OpenAI Luna/Terra or Agnes 2.5 Flash with deterministic grounding.</span></div>
     <div class="node"><b>6 · Shared assembler</b><span>Validate reading-order Markdown, hierarchy, ranges, boxes, and table cells.</span></div>
     <div class="node"><b>7 · Evidence PDF</b><span>Overlay grounded source boxes or list semantic-only Office evidence.</span></div>
     <div class="node"><b>8 · Session result</b><span>Output, annotated PDF, Markdown, and JSON remain available for explicit download.</span></div>
   </div>
-  <div class="boundary"><b>Trust and state boundary</b><span>Streamlit binds to <code>127.0.0.1</code>. Uploads and results live only in the current session. Scans, images, and requested figure crops go to the configured OpenAI-compatible endpoint.</span></div>
+  <div class="boundary"><b>Trust and state boundary</b><span>Streamlit binds to <code>127.0.0.1</code>. Uploads and results live only in the current session. Scans, images, and requested figure crops go to the selected OpenAI or Agnes endpoint.</span></div>
 </main></body>
 </html>

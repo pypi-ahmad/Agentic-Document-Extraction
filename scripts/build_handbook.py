@@ -157,7 +157,7 @@ def build() -> None:
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="author" content="Ahmad">
-  <meta name="description" content="A code-grounded tutorial for mastering Paperplane v4.1">
+  <meta name="description" content="A code-grounded tutorial for mastering Paperplane v4.1.0">
   <title>Paperplane Zero to Mastery</title>
   <style>{CSS}</style>
 </head>

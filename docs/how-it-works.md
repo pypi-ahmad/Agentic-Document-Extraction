@@ -5,8 +5,8 @@ upload
   -> validate type, integrity, size, page count, canvas, and decoded pixels
   -> inspect and route each page
      -> native PDF or Office: local Docling conversion
-     -> scan or image: render -> Luna draft -> deterministic grounding
-                       -> optional Terra reconciliation/crop verification
+     -> scan or image: render -> selected OpenAI or Agnes model
+                       -> deterministic grounding and mode-driven verification
   -> merge pages in original reading order
   -> assemble Markdown and hierarchical JSON
   -> build an in-memory annotated evidence PDF
@@ -16,14 +16,17 @@ upload
 ## Routing
 
 PyMuPDF identifies native and scan-like PDF pages. A mixed PDF may use both engines.
-Office/OpenDocument/CSV content uses Docling, while images use OpenAI vision. There is no
-manual engine selector.
+Office/OpenDocument/CSV content uses Docling, while images use the AI model selected in the
+UI.
 
 ## Mode policy
 
-- Fast: Luna draft, deterministic checks, no Terra pass.
-- Balanced: Terra checks only when deterministic quality signals flag content.
+- Fast: one draft plus deterministic checks; OpenAI skips Terra.
+- Balanced: additional model checks only when deterministic signals flag content.
 - Audit: highest rendering, reconciliation, crop, and repair budget.
+
+OpenAI maps draft and verification work to Luna and Terra. Agnes maps every model call to
+`agnes-2.5-flash`; the processing policy remains unchanged.
 
 ## Shared output
 
@@ -41,6 +44,6 @@ PDF/image results receive labeled source overlays. Office content without physic
 geometry receives a semantic evidence report. Artifact generation is isolated: if the PDF
 builder fails, a valid Markdown/JSON parse remains available with a separate UI error.
 
-Each parse creates and closes its own OpenAI HTTP client. The cached Docling converter holds
+Each parse creates and closes its own provider HTTP client. The cached Docling converter holds
 model resources only. Paperplane does not persist document bytes, model responses, results,
 or generated artifacts.
