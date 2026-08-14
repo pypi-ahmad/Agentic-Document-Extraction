@@ -7,7 +7,8 @@
 3. Let the first dependency and model downloads complete if they are needed.
 
 The launcher is the single setup/start file. It installs missing uv, Python 3.12.10,
-LibreOffice, locked CPU/CUDA dependencies, and Docling/RapidOCR models, then runs
+LibreOffice, locked CPU/CUDA dependencies in copy mode so uv works quietly across different
+Windows drives, and Docling/RapidOCR models, then runs
 `workspace_app.py` on port `8551`. On later runs it checks the locked environment and model
 artifacts, skips setup when they are ready, and launches the app directly. Node.js, Docker,
 and a C++ compiler are not required. Python-Markdown and Bleach are runtime dependencies for
