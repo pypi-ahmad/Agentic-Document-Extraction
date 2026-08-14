@@ -13,6 +13,8 @@ from app.services.parsing.contracts import BoundingBox, NativeWord
 
 PDF_EXTENSIONS = {".pdf"}
 IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".webp", ".tif", ".tiff"}
+MAX_PDF_CANVAS_AREA = 4_000_000
+MAX_IMAGE_PIXELS = 40_000_000
 
 
 class DocumentInputError(ValueError):
@@ -54,18 +56,21 @@ def inspect_document(
             page_count = document.page_count
             if page_count < 1:
                 raise DocumentInputError("empty_document", "Document contains no pages")
-            findings = tuple(
-                f"page_{index + 1}_large_canvas"
+            oversized_pages = [
+                index + 1
                 for index, page in enumerate(document)
-                if page.rect.width * page.rect.height > 4_000_000
-            )
+                if page.rect.width * page.rect.height > MAX_PDF_CANVAS_AREA
+            ]
+            if oversized_pages:
+                raise DocumentInputError(
+                    "canvas_too_large",
+                    f"PDF page {oversized_pages[0]} exceeds the render canvas limit",
+                )
         finally:
             document.close()
         if page_count > max_pages:
             raise DocumentInputError("too_many_pages", f"Document exceeds {max_pages} pages")
-        return InspectedDocument(
-            mime_type="application/pdf", page_count=page_count, findings=findings
-        )
+        return InspectedDocument(mime_type="application/pdf", page_count=page_count)
     if suffix not in IMAGE_EXTENSIONS:
         raise DocumentInputError(
             "unsupported_type", "Supported types are PDF, PNG, JPEG, WebP, and TIFF"
@@ -73,9 +78,16 @@ def inspect_document(
     try:
         with Image.open(BytesIO(data)) as image:
             page_count = int(getattr(image, "n_frames", 1))
-            findings = ("large_image",) if image.width * image.height > 40_000_000 else ()
             if page_count > max_pages:
                 raise DocumentInputError("too_many_pages", f"Document exceeds {max_pages} pages")
+            total_pixels = 0
+            for frame_index in range(page_count):
+                image.seek(frame_index)
+                total_pixels += image.width * image.height
+                if total_pixels > MAX_IMAGE_PIXELS:
+                    raise DocumentInputError(
+                        "image_too_large", "Decoded image frames exceed the pixel limit"
+                    )
             image.verify()
     except DocumentInputError:
         raise
@@ -84,7 +96,7 @@ def inspect_document(
     mime = "image/jpeg" if suffix in {".jpg", ".jpeg"} else f"image/{suffix.lstrip('.')}"
     if suffix in {".tif", ".tiff"}:
         mime = "image/tiff"
-    return InspectedDocument(mime_type=mime, page_count=page_count, findings=findings)
+    return InspectedDocument(mime_type=mime, page_count=page_count)
 
 
 def render_page(data: bytes, filename: str, page_number: int, dpi: int) -> RenderedPage:

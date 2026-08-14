@@ -40,6 +40,24 @@ def test_inspect_rejects_oversized_or_unsupported_input() -> None:
         inspect_document(b"hello", "note.txt", max_bytes=100, max_pages=10)
 
 
+def test_inspect_rejects_pdf_canvas_that_would_exhaust_renderer() -> None:
+    document = fitz.open()
+    document.new_page(width=2500, height=2500)
+    data = document.tobytes()
+    document.close()
+
+    with pytest.raises(DocumentInputError, match="canvas_too_large"):
+        inspect_document(data, "oversized.pdf", max_bytes=1_000_000, max_pages=10)
+
+
+def test_inspect_rejects_multiframe_image_over_total_pixel_budget(monkeypatch) -> None:
+    data = _image_bytes("TIFF", frames=2)
+    monkeypatch.setattr("app.services.parsing.ingest.MAX_IMAGE_PIXELS", 10_000)
+
+    with pytest.raises(DocumentInputError, match="image_too_large"):
+        inspect_document(data, "oversized.tiff", max_bytes=1_000_000, max_pages=10)
+
+
 def test_inspect_and_render_multiframe_tiff() -> None:
     data = _image_bytes("TIFF", frames=2)
     inspected = inspect_document(data, "scan.tiff", 1_000_000, 10)
