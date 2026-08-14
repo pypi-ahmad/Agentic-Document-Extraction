@@ -98,7 +98,7 @@ export function ArtifactGallery({ jobId, artifacts }: { jobId: string; artifacts
       </div>
       <div className="artifact-preview" aria-live="polite">
         {selected && <div className="artifact-preview-head"><div><strong>{LABELS[selected.type] ?? selected.filename}</strong><small>{selected.filename} · {formatSize(selected.size)}</small></div><a href={artifactUrl(selected)} download={selected.filename}><Download size={15} /> Download</a></div>}
-        {selected?.mime_type === "application/pdf" && selected.preview_url && <iframe title={`${LABELS[selected.type] ?? selected.filename} preview`} src={apiResourceUrl(selected.preview_url)} />}
+        {selected?.mime_type === "application/pdf" && selected.preview_url && <iframe title={`${LABELS[selected.type] ?? selected.filename} preview`} src={apiResourceUrl(selected.preview_url)} sandbox="" />}
         {selected?.mime_type.startsWith("image/") && selected.preview_url && <div className="artifact-image">
           {/* Artifact URLs are authenticated runtime resources, not static Next images. */}
           {/* eslint-disable-next-line @next/next/no-img-element */}

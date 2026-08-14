@@ -21,7 +21,7 @@ file plus optional sidecars (Ollama, Redis, Prometheus).
 
 ## 1. The contract
 
-- **HTTP API** on `0.0.0.0:8000` by default.
+- **HTTP API** on `127.0.0.1:8000` by default. Set `HOST=0.0.0.0` only for an intentionally exposed deployment and configure `API_KEY` plus TLS at the edge.
 - **Liveness** is `GET /health` (always 200 if the process is up).
 - **Readiness** is `GET /health/ready` (200 once the database, the LLM
   registry, and the OCR registry are reachable; 503 otherwise).
@@ -276,7 +276,8 @@ recreate the tables. The startup code logs a warning if you forget.
 - [ ] `API_KEY` is set for any deployment reachable beyond localhost.
 - [ ] `RATE_LIMIT_ENABLED=true` (default) and
       `RATE_LIMIT_REQUESTS_PER_MINUTE` is sized for expected traffic —
-      only takes effect once `API_KEY` is set (see `app/rate_limit.py`).
+      authenticated and anonymous local requests both consume a budget
+      (see `app/rate_limit.py`).
 - [ ] `OLLAMA_BASE_URL` points at a loopback / local address. If not,
       `OLLAMA_ALLOW_PRIVATE_HOSTS=true` is set explicitly.
 - [ ] At least one LLM API key is set. The startup log line

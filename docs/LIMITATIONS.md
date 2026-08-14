@@ -111,10 +111,10 @@ or session middleware) **before** exposing the port.
 
 ## 7. No queue back-pressure
 
-The API will accept as many concurrent extraction jobs as you
-submit. There is no global rate limit, no per-user quota, and no
-back-pressure to upstream providers (we only back off inside a
-single LLM call's retry loop). If you script a flood, you may
+The API rate-limits selected expensive routes in-process, but there is no
+distributed global limit, per-user quota, or upstream-provider
+back-pressure (we only back off inside a single LLM call's retry loop).
+If you script a flood across unthrottled routes or multiple replicas, you may
 exceed your LLM provider's rate limit and start seeing
 `rate_limit` errors.
 
