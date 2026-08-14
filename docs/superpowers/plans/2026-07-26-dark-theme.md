@@ -13,7 +13,7 @@ preference, and semantic color tokens for the former Next.js interface.
 ## Current v5.0.0 result
 
 - Streamlit is the only UI runtime.
-- `.streamlit/config.toml` defines the checked-in dark visual theme.
+- `.streamlit/config.toml` defines the checked-in red-and-black dark visual theme.
 - The application does not add custom JavaScript, browser storage, or a theme toggle.
 - Native Streamlit widgets preserve keyboard and accessibility behavior.
 - UI verification lives in `tests/test_streamlit_app.py` plus manual browser inspection.
