@@ -20,6 +20,8 @@ upload up to 20 files
 Pages outside a range are never rendered, parsed, or placed in context. For AI processing,
 later selected pages can receive bounded Markdown context from earlier selected pages. This
 supports document-level continuity without leaking content between uploaded files.
+Cloud providers receive only selected page images. Agnes receives those PNGs inline rather
+than through public image URLs.
 
 Strict ADE output uses zero-based response-local type IDs and inline normalized grounding.
 Paperplane output adds observed words, confidence state, provenance, warnings, and semantic

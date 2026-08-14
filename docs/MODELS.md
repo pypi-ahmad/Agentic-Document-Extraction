@@ -59,7 +59,7 @@ displayed amount is an estimate; the provider invoice is authoritative.
 - [OpenAI latest models](https://developers.openai.com/api/docs/guides/latest-model)
 - [Google Gemini models](https://ai.google.dev/gemini-api/docs/models)
 - [Anthropic model overview](https://platform.claude.com/docs/en/about-claude/models/overview)
-- [Agnes 2.5 Flash](https://www.agnes-ai.com/en/docs/agnes-25-flash)
+- [Agnes AI model catalog](https://github.com/AgnesAI-Labs/AgnesAI-Models/blob/main/MODEL_CATALOG.md)
 - [Ollama API](https://docs.ollama.com/api/introduction)
 
 Provider credentials are read at runtime from Windows user environment variables, `.env`,
