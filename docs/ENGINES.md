@@ -1,49 +1,23 @@
 # Processing engines
 
-Paperplane selects Docling or vision automatically from the document. Users choose the AI
-model for vision work and a processing mode.
+All four engine toggles are off initially. Activating one turns the others off. Paperplane
+never auto-routes a batch.
 
-## Local Docling engine
+| Engine | Input | Primary work | Cloud key |
+|---|---|---|---|
+| Docling ADE | PDF, images, modern Office/OpenDocument/CSV | Local layout, tables, OCR, reading order | No |
+| PDF Inspector ADE | PDF only | Local PDF inspection, Markdown, positioned text, OCR flags | No |
+| Cloud AI ADE | All supported inputs | Sends every selected visual page to the chosen provider | Yes |
+| Ollama ADE | All supported inputs | Local vision-capable installed Ollama model | No |
 
-Docling handles text-native PDF pages, DOCX, PPTX, XLSX, ODT, ODP, ODS, and CSV. It
-provides reading order, semantic elements, tables, and provenance where the source format
-contains trustworthy geometry.
+The **Enhance with cloud AI** option runs after Docling, PDF Inspector, or Ollama. The
+selected cloud model and its credential are then required. Agnes cannot receive private
+visual uploads in v5 because its documented image interface requires a public URL, so it is
+disabled for private Parse/enhancement.
 
-Native PDF blocks with provenance receive normalized boxes. Office blocks without physical
-page geometry are returned as `semantic_only` with exact Markdown ranges and null boxes.
-Figures are described with the selected AI model when its key is present; otherwise
-Paperplane emits an explicit unavailable placeholder and warning.
+Ollama defaults to `http://127.0.0.1:11434`. Every installed model is visible, but Parse is
+disabled unless `/api/show` reports `vision`. `glm-ocr:latest` and
+`AuditAid/PaddleOCR-VL-1.6-0.9B:latest` are calibration targets, not a fixed allowlist.
 
-## Cloud vision engines
-
-PyMuPDF renders scanned PDF pages and Pillow normalizes image frames. The selected model
-produces structured reading-order drafts. Deterministic code aligns native words when
-available, transforms coordinates, suppresses duplicate regions, validates critical
-content, and assembles evidence.
-
-Balanced mode can reuse the selected model for flagged reconciliation and crop
-verification. Audit mode uses the highest verification budget. Fast mode skips the
-verification pass.
-
-## Provider adapters
-
-Paperplane uses provider-native structured-output APIs for OpenAI, xAI, Google Gemini,
-Anthropic, and Agnes. The exact display names, API IDs, environment variables, and official
-references are maintained in [MODELS.md](MODELS.md). The launcher refreshes provider keys
-from the Windows user environment without printing them.
-
-Each adapter normalizes its provider's usage fields into input, output, cached-input, and
-cache-write token totals. The parser aggregates them for the UI cost estimate.
-
-## Routing
-
-PyMuPDF classifies each PDF page. A page is native when it contains meaningful selectable
-text and is not dominated by a full-page raster image; otherwise it is vision-routed.
-Mixed PDFs combine Docling and the selected vision model in original page order.
-
-Images always require vision. Office/OpenDocument/CSV input always starts with Docling.
-There is no runtime plugin system or local model server. The UI choices are the six models
-in the fixed catalog.
-
-`OPENAI_BASE_URL` can target an operator-controlled endpoint that implements the expected
-OpenAI Responses API contract. The default is `https://api.openai.com`.
+Local semantic workflows use the shared contracts and return deterministic partials with
+warnings when evidence is insufficient. They never silently invoke another engine.

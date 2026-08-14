@@ -11,13 +11,14 @@ The plan targeted a cold-cache 10-page Balanced PDF under 180 seconds while pres
 content quality. It assumed a durable four-worker page queue and proposed a page-local
 LangGraph workflow with a shared job deadline.
 
-## Current v4.2.1 design
+## Current v5.0.0 design
 
 - `AgenticDocumentParser` runs synchronously in the Streamlit session.
 - Vision pages are processed sequentially.
 - Fast skips verification, Balanced verifies flagged work, and Audit uses the largest budget.
 - Each selected-provider client uses a 180-second request timeout.
-- There is no document SLA, queue, worker concurrency, durable job, resume, or cache replay.
+- There is no document SLA or distributed worker queue. SQLite lifecycle/checkpoints make
+  interrupted local jobs discoverable; compute runs only while Streamlit is active.
 - Successful page content uses bounded fallbacks rather than an autonomous retry loop.
 
 ## Current performance guidance
@@ -27,4 +28,4 @@ Report input type, pages, mode, provider latency, and result quality together. D
 the archived 180-second document target as a current guarantee.
 
 Any future concurrency or deadline work must preserve reading order, bounded model calls,
-session-only state, and evidence quality, with tests added before implementation.
+local retention, and evidence quality, with tests added before implementation.

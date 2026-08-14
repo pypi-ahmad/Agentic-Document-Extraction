@@ -1,35 +1,18 @@
 # Deployment
 
-Paperplane 4.2.1 supports local, single-user operation only.
+Paperplane 5.0.0 supports local, single-user use. The supported Windows entry point is
+`Paperplane.cmd`, which repairs missing or out-of-date prerequisites when necessary and
+otherwise launches `workspace_app.py` directly on `127.0.0.1:8551`.
 
-## Supported deployment
+Do not expose the Streamlit port to an untrusted network. There is no authentication,
+tenant isolation, REST API, container image, or hosted deployment profile. XSRF protection
+remains enabled and telemetry disabled in `.streamlit/config.toml`.
 
-On Windows 11, double-click `Paperplane.cmd`. It installs `uv` if needed, installs Python
-3.12.10, synchronizes `uv.lock`, downloads Docling layout/table models, and starts
-Streamlit. Later launches reuse installed tools and model weights while rechecking the
-locked environment.
+SQLite job metadata and private artifacts live under `%LOCALAPPDATA%\Paperplane` with a
+seven-day TTL. Deleting a job removes its artifact directory; **Clear all** removes every
+retained job. Provider credentials remain in environment variables/secrets and are never
+written to job storage.
 
-Developers can start the same application directly:
-
-```powershell
-uv sync --locked
-uv run streamlit run streamlit_app.py --server.port=8551
-```
-
-The checked-in Streamlit configuration binds to `127.0.0.1`, enables XSRF protection,
-limits uploads to 200 MB, and disables Streamlit usage telemetry.
-
-Vision processing requires outbound HTTPS access to the selected provider. Credentials and
-provider APIs are listed in [MODELS.md](MODELS.md); `OPENAI_BASE_URL` is an optional
-OpenAI-only override. Native Docling conversion remains local.
-
-## Unsupported deployment
-
-The repository does not ship a container image, reverse-proxy configuration, public server
-profile, authentication layer, multi-user isolation, durable storage, or hosted deployment
-workflow. Do not expose the Streamlit port to an untrusted network.
-
-A future shared deployment would require explicit designs for authentication,
-authorization, TLS, data retention and deletion, concurrency, model-provider privacy,
-observability, abuse controls, and resource limits. Local configuration is not a substitute
-for those controls.
+Cloud AI transmits only selected pages, but that content leaves the machine. Agnes private
+visual processing is blocked in v5. Ollama, Docling, PDF Inspector, SQLite, and artifact
+storage remain local.

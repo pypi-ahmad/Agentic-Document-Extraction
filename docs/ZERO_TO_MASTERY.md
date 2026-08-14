@@ -1,67 +1,70 @@
 # Paperplane: zero to mastery
 
-## 1. Run the app
+## 1. Start
 
-Double-click `Paperplane.cmd`. It installs `uv`, Python 3.12.10, locked dependencies, and
-Docling layout/table models before starting Streamlit at `http://127.0.0.1:8551`. Set
-the provider key documented in [MODELS.md](MODELS.md) for the selected scan/image model.
+Double-click `Paperplane.cmd`. It installs only missing or out-of-date Windows prerequisites
+and opens the multipage Streamlit app at `http://127.0.0.1:8551`. Once ready, later launches
+skip setup. Manual entrypoint:
 
-## 2. Follow the code
-
-1. Start at `streamlit_app.py`.
-2. Follow `paperplane.runtime.parse_document`.
-3. Read `AgenticDocumentParser.parse` in `paperplane/parser.py`.
-4. Inspect validation and page classification in `paperplane/ingest.py`.
-5. Follow native conversion in `paperplane/docling_parser.py` or vision work in
-   `paperplane/pipeline.py`.
-6. Read the model catalog and provider boundaries in `paperplane/model_catalog.py`,
-   `paperplane/openai_document.py`, `paperplane/gemini_document.py`,
-   `paperplane/anthropic_document.py`, and `paperplane/agnes_document.py`.
-7. Read coordinate alignment in `paperplane/grounding.py`.
-8. Inspect output assembly in `paperplane/contracts.py`.
-9. Follow evidence creation in `paperplane/annotated_pdf.py`.
-
-## 3. Understand the data flow
-
-```text
-uploaded bytes
-  -> validation and document inspection
-  -> per-page native/scanned routing
-  -> local Docling conversion OR selected cloud-model structured vision draft
-  -> deterministic grounding and mode-driven verification
-  -> merge in source reading order
-  -> provider token aggregation and estimated model cost
-  -> Markdown + hierarchical JSON + annotated evidence PDF
-  -> Output/PDF/Markdown/JSON display and download
+```powershell
+uv run --locked --extra cpu streamlit run workspace_app.py --server.port=8551
 ```
 
-## 4. Understand the contract
+## 2. Parse
 
-Physical pages are one-based and use normalized top-left-origin boxes. JSON nodes carry
-half-open Unicode Markdown ranges. Office content without trustworthy geometry is
-`semantic_only` with null boxes. IDs are stable within one response only.
+All four engine toggles start off. Choose Docling ADE, PDF Inspector ADE, Cloud AI ADE, or
+Ollama ADE. Optionally add cloud enhancement to a local engine. Upload up to 20 files,
+choose each one-based inclusive page range, then parse. Files run concurrently but remain
+context-isolated.
 
-## 5. Understand the state boundary
+All Parse controls sit below navigation in the sidebar. One main document selector drives
+Input preview, Output, Annotated PDF, Markdown, HTML, and JSON. Download strict ADE v2 JSON
+when you need the compatibility-shaped hierarchy; download Paperplane JSON for observed
+words, confidence state, provenance, warnings, and document relations. Standalone HTML is
+sanitized. The batch ZIP groups every successful document's available outputs and records
+failures in a versioned manifest without copying source uploads.
 
-Streamlit keeps widget values, uploaded bytes, the latest result, and the annotated PDF in
-one session. The parser receives bytes and returns validated Pydantic values without saving
-either. The cached Docling converter holds model resources only.
+## 3. Organize
 
-## 6. Change the app safely
+Organize runs Classify, Split, and Section over the grounded Parse response. Results retain
+source ranges and identify deterministic partials.
 
-Keep parser logic independent from Streamlit, validate input at the parser boundary, keep
-secrets and documents out of logs and source control, add focused tests, and update affected
-documentation with every code change.
+## 4. Understand grounding
+
+Pages and blocks carry normalized boxes and half-open Unicode ranges. Text/marginalia use
+atomic line grounding; table cells carry row/column/span data. Native PDF words and
+RapidOCR word observations are emitted only when their text aligns exactly. IDs are
+zero-based and response-local in strict ADE v2 output.
+
+## 5. Jobs and privacy
+
+SQLite metadata and private artifacts live under `%LOCALAPPDATA%\Paperplane` for seven
+days. Jobs exposes status, cancellation state, per-job deletion, and clear-all. Credentials
+are never stored there. Cloud engines transmit only selected pages; Agnes private images
+are disabled. Ollama, Docling, PDF Inspector, and storage remain local.
+
+## 6. Follow the code
+
+1. `workspace_app.py` — navigation.
+2. `streamlit_app.py` and `app_pages/` — UI flows.
+3. `paperplane/runtime.py` — batch/provider composition.
+4. `paperplane/parser.py` — range and page orchestration.
+5. `paperplane/contracts.py` and `ade_contracts.py` — internal and public contracts.
+6. `paperplane/ade_workflows.py` — cited workflows.
+7. `paperplane/jobs.py` — durable lifecycle.
+8. `paperplane/outputs.py` — sanitized HTML and safe batch archive assembly.
+9. `document_intelligence.py`, `calibration.py`, `benchmark.py` — semantic and evaluation
+   layers.
 
 ## 7. Verify
 
 ```powershell
-uv run ruff check paperplane tests streamlit_app.py scripts
-uv run ruff format --check paperplane tests streamlit_app.py scripts
+uv run ruff check paperplane app_pages tests streamlit_app.py workspace_app.py scripts
 uv run pyright
-uv run pytest tests -q
+uv run pytest -q
+uv run python scripts/benchmark_report.py
 ```
 
-Continue with the full [study handbook](../Zero_to_Hero_Study_Handbook.md),
-[model catalog](MODELS.md), [architecture](ARCHITECTURE.md), and
-[capabilities](APP_CAPABILITIES.md).
+The initial benchmark corpus is an integrity baseline, not an accuracy claim. Publish raw
+outputs, prompts, versions, costs, failures, and calibration provenance before publishing
+scores.

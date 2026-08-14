@@ -1,8 +1,7 @@
 # Model catalog
 
-Paperplane exposes exactly six document-vision models. The selected model is used for the
-initial page draft and any reconciliation or crop-verification calls; processing modes
-change reasoning effort and verification budgets, not the model.
+Cloud AI exposes six configured models. Ollama ADE separately lists every installed local
+model and checks its live `vision` capability.
 
 | UI name | API model ID | Input/1M | Output/1M | Required environment variable |
 |---|---|---:|---:|---|
@@ -15,6 +14,19 @@ change reasoning effort and verification budgets, not the model.
 
 `GPT-5.6 Luna` is the default. `OPENAI_BASE_URL` is an optional OpenAI-only override; it
 does not change the endpoints for other providers.
+
+Agnes uses its current configured $0 rate, while still recording tokens and pricing
+entitlement. Its visual API requires public image URLs, so Paperplane 5 blocks private
+visual Parse/enhancement with Agnes. Text workflows and approved public benchmark assets
+remain possible.
+
+## Ollama models
+
+`OLLAMA_BASE_URL` defaults to `http://127.0.0.1:11434`. Paperplane queries `/api/tags` and
+`/api/show`; non-vision models remain visible but cannot start Parse. The initial benchmark
+and calibration targets are `glm-ocr:latest` and
+`AuditAid/PaddleOCR-VL-1.6-0.9B:latest`. Other installed vision models run with raw,
+explicitly uncalibrated confidence until a matching profile is checked in.
 
 ## Gemini 3.7 correction
 
@@ -49,6 +61,7 @@ displayed amount is an estimate; the provider invoice is authoritative.
 - [Google Gemini models](https://ai.google.dev/gemini-api/docs/models)
 - [Anthropic model overview](https://platform.claude.com/docs/en/about-claude/models/overview)
 - [Agnes 2.5 Flash](https://www.agnes-ai.com/en/docs/agnes-25-flash)
+- [Ollama API](https://docs.ollama.com/api/introduction)
 
 Provider credentials are read at runtime from Windows user environment variables, `.env`,
 or local Streamlit secrets. Never commit real keys.

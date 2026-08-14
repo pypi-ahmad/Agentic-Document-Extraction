@@ -1,84 +1,32 @@
 {
-  "name": "Paperplane 4.2.1",
-  "description": "Local Streamlit document extraction with Docling and six selectable cloud vision models",
+  "name": "Paperplane 5.0.0",
+  "description": "Private multipage Streamlit document intelligence with explicit engines and durable local jobs",
   "nodes": [
-    {
-      "id": "ui",
-      "type": "application",
-      "label": "Streamlit workspace",
-      "sublabel": "Upload, preview, mode, inspect cost, download",
-      "sources": [{"path": "streamlit_app.py", "line": 1}]
-    },
-    {
-      "id": "runtime",
-      "type": "service",
-      "label": "In-process runtime",
-      "sublabel": "Cached Docling resources and short-lived provider client",
-      "sources": [{"path": "paperplane/runtime.py", "line": 1}]
-    },
-    {
-      "id": "router",
-      "type": "service",
-      "label": "Document parser",
-      "sublabel": "Validate, classify pages, route, merge",
-      "sources": [
-        {"path": "paperplane/ingest.py", "line": 1},
-        {"path": "paperplane/parser.py", "line": 1}
-      ]
-    },
-    {
-      "id": "docling",
-      "type": "service",
-      "label": "Local Docling",
-      "sublabel": "Native PDF and Office structure",
-      "sources": [{"path": "paperplane/docling_parser.py", "line": 1}]
-    },
-    {
-      "id": "vision",
-      "type": "service",
-      "label": "Vision pipeline",
-      "sublabel": "Selected-model draft, grounding, and bounded checks",
-      "sources": [
-        {"path": "paperplane/pipeline.py", "line": 1},
-        {"path": "paperplane/grounding.py", "line": 1}
-      ]
-    },
-    {
-      "id": "providers",
-      "type": "external",
-      "label": "Cloud model providers",
-      "sublabel": "OpenAI, xAI, Google, Anthropic, or Agnes"
-    },
-    {
-      "id": "assembler",
-      "type": "service",
-      "label": "Grounded assembler",
-      "sublabel": "Markdown, hierarchical JSON, and token totals",
-      "sources": [{"path": "paperplane/contracts.py", "line": 1}]
-    },
-    {
-      "id": "evidence",
-      "type": "service",
-      "label": "Evidence PDF",
-      "sublabel": "Source overlays or semantic-only report",
-      "sources": [{"path": "paperplane/annotated_pdf.py", "line": 1}]
-    }
+    {"id": "ui", "type": "application", "label": "Streamlit workspace", "sublabel": "Parse, Organize, Jobs, Benchmarks", "sources": [{"path": "workspace_app.py", "line": 1}]},
+    {"id": "runtime", "type": "service", "label": "Parallel runtime", "sublabel": "Six isolated file tasks and explicit page ranges", "sources": [{"path": "paperplane/runtime.py", "line": 1}]},
+    {"id": "engines", "type": "service", "label": "Explicit engines", "sublabel": "Docling, PDF Inspector, Cloud AI, Ollama"},
+    {"id": "assembler", "type": "service", "label": "Grounded assembler", "sublabel": "Reading-order Markdown, blocks, lines, cells, words", "sources": [{"path": "paperplane/contracts.py", "line": 1}]},
+    {"id": "intelligence", "type": "service", "label": "Document intelligence", "sublabel": "Sections, repeated labels, continued tables, boundaries", "sources": [{"path": "paperplane/document_intelligence.py", "line": 1}]},
+    {"id": "contracts", "type": "service", "label": "Public contracts", "sublabel": "Strict ADE v2-style and Paperplane v5 JSON", "sources": [{"path": "paperplane/ade_contracts.py", "line": 1}]},
+    {"id": "workflows", "type": "service", "label": "Cited workflows", "sublabel": "Classify, Split, Section", "sources": [{"path": "paperplane/ade_workflows.py", "line": 1}]},
+    {"id": "jobs", "type": "database", "label": "Local durable jobs", "sublabel": "SQLite metadata, checkpoints, private artifacts, 7-day TTL", "sources": [{"path": "paperplane/jobs.py", "line": 1}]},
+    {"id": "providers", "type": "external", "label": "Optional cloud providers", "sublabel": "OpenAI, xAI, Google, Anthropic; Agnes text/public assets"}
   ],
   "edges": [
-    {"from": "ui", "to": "runtime", "label": "bytes + mode"},
-    {"from": "runtime", "to": "router", "label": "direct Python call"},
-    {"from": "router", "to": "docling", "label": "native content"},
-    {"from": "router", "to": "vision", "label": "scans and images"},
-    {"from": "vision", "to": "providers", "label": "provider-native structured requests"},
-    {"from": "docling", "to": "assembler", "label": "native blocks"},
-    {"from": "vision", "to": "assembler", "label": "grounded blocks"},
-    {"from": "assembler", "to": "evidence", "label": "validated response"},
-    {"from": "assembler", "to": "ui", "label": "Markdown + JSON"},
-    {"from": "evidence", "to": "ui", "label": "in-memory PDF"}
+    {"from": "ui", "to": "runtime", "label": "batch + ranges + selected engine"},
+    {"from": "runtime", "to": "engines", "label": "direct Python calls"},
+    {"from": "engines", "to": "providers", "label": "cloud only when explicitly selected"},
+    {"from": "engines", "to": "assembler", "label": "grounded page inputs"},
+    {"from": "assembler", "to": "intelligence", "label": "selected document pages"},
+    {"from": "intelligence", "to": "contracts", "label": "relations + evidence"},
+    {"from": "contracts", "to": "workflows", "label": "cited downstream data"},
+    {"from": "contracts", "to": "jobs", "label": "local retention"},
+    {"from": "jobs", "to": "ui", "label": "history + deletion"}
   ],
   "boundaries": {
-    "network": "127.0.0.1 Streamlit plus the selected model provider API",
-    "state": "Current Streamlit session only",
-    "persistence": "No document or result store"
+    "network": "Streamlit 127.0.0.1:8551; no HTTP API",
+    "state": "%LOCALAPPDATA%\\Paperplane, seven-day TTL",
+    "context": "selected pages within one file only",
+    "evidence": "missing geometry, citations, calibration, and scores remain missing"
   }
 }

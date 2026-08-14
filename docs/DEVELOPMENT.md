@@ -1,65 +1,29 @@
 # Development
 
-## Environment
-
 ```powershell
 uv python install 3.12.10
-uv sync --locked --extra test --extra lint --extra docs
-uv run streamlit run streamlit_app.py --server.port=8551
+uv sync --locked --extra cpu --extra test --extra lint --extra docs
+uv run --extra cpu streamlit run workspace_app.py --server.port=8551
 ```
 
-`Paperplane.cmd` is the end-user entry point. It installs runtime dependencies and Docling
-models; development extras remain an explicit developer installation.
+`workspace_app.py` defines Streamlit navigation; `streamlit_app.py` remains the Parse page.
+Other pages are under `app_pages/`. Core modules are framework-neutral and must not import
+Streamlit.
 
-Configuration precedence is existing process/user environment, ignored `.env`, ignored
-Streamlit secrets, then the default provider base URLs. Keep only safe placeholders in
-`.env.example` and `.streamlit/secrets.toml.example`.
-
-## Important paths
-
-- `streamlit_app.py` — complete user interface and session state
-- `paperplane/runtime.py` — parser composition and client lifetime
-- `paperplane/agnes_document.py` — Agnes 2.5 Flash provider adapter
-- `paperplane/openai_document.py` — OpenAI provider adapter
-- `paperplane/ingest.py` — validation, PDF classification, and rendering
-- `paperplane/parser.py` — automatic document routing and assembly
-- `paperplane/docling_parser.py` — local native-document conversion
-- `paperplane/pipeline.py` — vision drafting and bounded verification
-- `paperplane/grounding.py` — coordinate transforms and text alignment
-- `paperplane/contracts.py` — grounded output contract
-- `paperplane/annotated_pdf.py` — evidence artifacts
-- `tests/` — parser, contract, routing, artifact, and Streamlit AppTest coverage
-
-## Change rules
-
-- Work on `main` and preserve unrelated local edits.
-- Keep parsing logic independent from Streamlit widgets.
-- Validate all untrusted input at the parser boundary.
-- Do not cache uploads, model responses, annotated PDFs, results, or credentials.
-- Caching the Docling converter is allowed because it retains model resources only.
-- Sanitize model-produced HTML before rendering it.
-- Do not add a database, API server, queue, frontend framework, or persistence layer for
-  session-local behavior.
-- Update affected documentation with every observable code change.
-- Keep `.codegraph/`, `.code-review-graph/`, `.ua/`, and `graphify-out/` available for
-  versioning; ignore only their transient runtime/cache files.
-
-Use the repository knowledge graph before broad searches when available. If it is
-unavailable or stale, state that and fall back to targeted `rg` and focused file reads.
-
-## Verification
+Run checks:
 
 ```powershell
-uv run ruff check paperplane tests streamlit_app.py scripts
-uv run ruff format --check paperplane tests streamlit_app.py scripts
+uv run ruff check paperplane app_pages tests streamlit_app.py workspace_app.py scripts
+uv run ruff format --check paperplane app_pages tests streamlit_app.py workspace_app.py scripts
 uv run pyright
-uv run pytest tests -q
+uv run pytest -q
+uv run python scripts/benchmark_report.py
 ```
 
-For UI changes, run the app and inspect upload, preview, parse, all four result tabs, and all
-three downloads. Rebuild generated documentation after source changes:
+Use the internal `ParseResponse` as an engine assembly boundary. Public interchange goes
+through `to_ade_v2_parse()` or `to_paperplane_export()`. Never invent ranges, boxes,
+citations, confidence calibration, or benchmark scores. Add a matching profile/corpus hash
+before describing a confidence value as calibrated.
 
-```powershell
-uv run python scripts/build_handbook.py
-uv run python scripts/build_app_guide.py
-```
+After code changes, update README, active docs, changelog/release notes, and generated
+guides. Rebuild them with `scripts/build_app_guide.py` and `scripts/build_handbook.py`.

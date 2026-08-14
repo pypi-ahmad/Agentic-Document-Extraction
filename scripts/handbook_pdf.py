@@ -79,7 +79,7 @@ class HandbookTemplate(BaseDocTemplate):
             bottomMargin=18 * mm,
             title="Paperplane Zero to Mastery",
             author="Ahmad",
-            subject="Code-grounded tutorial for mastering Paperplane v4.2.1",
+            subject="Code-grounded tutorial for mastering Paperplane v5.0.0",
         )
         frame = Frame(
             self.leftMargin,
@@ -287,7 +287,7 @@ def _code_block(value: str, width: float, style: ParagraphStyle) -> Table:
 def _story(source: str, width: float, styles: dict[str, ParagraphStyle]) -> list:
     lines = source.splitlines()
     title = lines[0].removeprefix("# ").strip()
-    subtitle = "Local document extraction with Docling, OpenAI, and Agnes"
+    subtitle = "Docling, PDF Inspector, cloud AI, and local Ollama document intelligence"
     story: list = [
         Spacer(1, 25 * mm),
         Table(

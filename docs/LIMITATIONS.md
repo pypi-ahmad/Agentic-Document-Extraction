@@ -1,33 +1,26 @@
 # Limitations
 
-## Product scope
+- Local, single-user Streamlit deployment; no authentication, hosted profile, REST API, or
+  client drop-in compatibility with LandingAI ADE.
+- Job execution still runs inside the Streamlit process. SQLite/checkpoints retain lifecycle
+  state, but a stopped process cannot continue computing until the app is running again.
+- Retention is seven days under `%LOCALAPPDATA%\Paperplane`; this is not a multi-user
+  database or remote object store.
+- PDF Inspector accepts PDF only. Legacy DOC/PPT/XLS and encrypted PDFs are unsupported.
+- Cloud engines send selected page images to their provider. Agnes private visual input is
+  disabled because the current interface requires public image URLs.
+- Files are context-isolated. Only selected pages inside one file share ordered context.
+- Word boxes are emitted only from native PDF text or RapidOCR word observations that align
+  exactly to Markdown. Missing alignment remains missing.
+- Arbitrary Ollama models have raw, explicitly uncalibrated confidence until a matching
+  checked-in profile exists.
+- Classify/Split/Section deterministic local results may be partial and carry warnings.
+- The initial locked benchmark corpus is too small for a comparative accuracy claim. No
+  LandingAI parity or production-accuracy claim is made.
+- Provider/model IDs and prices may change. UI cost is an estimate, not an invoice.
+- Batch ZIPs exclude original uploads. If annotated-PDF generation fails for an otherwise
+  successful parse, the other four outputs remain downloadable and the manifest records the
+  artifact warning.
 
-- Local, single-user operation only
-- No public API, batch endpoint, background jobs, cancellation, or resume
-- No durable history, upload storage, result storage, or application database
-- No schema extraction or reusable extraction contracts
-- No authentication or multi-user isolation beyond separate Streamlit sessions
-- No Docker image, hosted deployment profile, or PyPI package
-
-## Input and runtime limits
-
-- Maximum upload: 200 MB
-- Maximum document: 500 pages or image frames
-- Maximum PDF page canvas area: 4,000,000 source-coordinate units
-- Maximum decoded image content: 40,000,000 pixels across frames
-- Synchronous processing and sequential vision pages
-- Legacy DOC/PPT/XLS, RTF, encrypted PDFs, and password-protected files unsupported
-- Local Docling conversion does not OCR scans; vision input requires the selected model's
-  credential listed in [MODELS.md](MODELS.md)
-
-## Evidence limits
-
-- Extraction quality depends on source quality and model behavior
-- IDs are stable within one response, not guaranteed across re-parses
-- Office elements without physical geometry are `semantic_only` with null boxes
-- Figure descriptions can be unavailable when the selected model is unconfigured or fails
-- Scans, images, and requested figure crops are sent to the selected provider endpoint
-- Annotated PDFs are review aids, not independent proof of correctness
-
-Always review extracted values and source evidence before financial, legal, medical,
-safety, or other high-impact use.
+Limits: 20 files, 1 GiB combined, six concurrent files, 200 MiB and 500 pages per file,
+4,000,000 PDF canvas units per page, and 40,000,000 decoded image pixels.

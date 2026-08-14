@@ -1,87 +1,54 @@
 # FAQ
 
-## Is Paperplane a Streamlit app?
+## Is Paperplane Streamlit?
 
-Yes. Streamlit is the only web runtime. The UI calls the Python parser directly in the same
-process.
+Yes. `workspace_app.py` provides the Parse, Organize, Jobs, and Benchmarks pages.
 
-## Do I need to install Python or uv first?
+## Does it use LandingAI ADE?
 
-No on Windows 11. Double-click `Paperplane.cmd`; it installs `uv`, Python 3.12.10, locked
-dependencies, and required Docling models. Initial setup requires internet access.
-The launcher opens Paperplane locally at `http://127.0.0.1:8551`.
+No. It independently implements an ADE-inspired workflow and versioned v2-style JSON
+contracts. It does not call LandingAI or claim accuracy/API drop-in parity.
 
-## Does Paperplane use LandingAI ADE?
+## Which engine should I choose?
 
-No. Paperplane is inspired by ADE's observable document-output workflow, but uses its own
-Docling plus selectable cloud-model inference and does not claim ADE model or benchmark parity.
+Select one of Docling ADE, PDF Inspector ADE, Cloud AI ADE, or Ollama ADE. All toggles are
+off initially and selection is exclusive. PDF Inspector is PDF-only. Cloud enhancement is
+optional after a local engine; there is no automatic routing.
+
+## Where are files saved?
+
+The active batch remains in Streamlit session state. Durable job metadata, source files,
+result JSON, and annotated PDFs are retained under `%LOCALAPPDATA%\Paperplane` for seven
+days. Use Jobs to delete one job or clear all.
 
 ## Does it have an API or database?
 
-No. There is no REST API, database, queue, worker, or durable result store.
+It uses local SQLite for job metadata and filesystem artifacts. There is no HTTP API in
+v5; the Python service layer is designed to be wrapped later.
 
-## Where is my document saved?
+## How does Ollama work?
 
-Paperplane keeps the upload, latest result, and annotated PDF in Streamlit session memory.
-Selecting another file, choosing **New extraction**, closing the tab, or stopping the app
-clears that state. A browser download is the user's explicit persistence action.
+Paperplane lists all installed models from the local server and enables Parse only when
+the selected model advertises vision. Unknown models work but their confidence is raw and
+uncalibrated.
 
-The launcher does install Python packages and Docling model weights on disk. Statelessness
-applies to document and result data, not runtime dependencies.
+## Why is Agnes disabled for my upload?
 
-## Which credentials are required?
+Agnes currently requires publicly accessible image URLs. Paperplane does not upload a
+private file merely to create a URL, so private visual Parse/enhancement is disabled.
 
-Set the environment variable listed for the selected model in [MODELS.md](MODELS.md). The
-selected key is required for scans, images, and figure descriptions. Native text PDFs and
-supported Office files can run locally without a provider key.
-`OPENAI_BASE_URL` is optional and defaults to `https://api.openai.com`.
+## Are citations and word boxes guaranteed?
 
-Configuration precedence is existing environment variables, `.env`, Streamlit secrets,
-then the default URL. Local credential files are ignored by Git.
+Missing evidence remains missing. Word boxes come only from native PDF text or RapidOCR
+word observations that exactly align to Markdown. Organize results retain source ranges or
+explicitly report deterministic partials.
 
-## Which AI model is selected by default?
+## Can files affect one another?
 
-GPT-5.6 Luna is the default. The **AI model** selector contains exactly the six verified
-catalog entries. Google does not publish Gemini Flash 3.7, so the current stable
-`gemini-3.6-flash` ID is used.
+No. Cross-page context is limited to selected pages inside one document. Pages outside the
+range and other uploaded files are never used as context.
 
-## Which inputs work?
+## Is there a published accuracy score?
 
-PDF, PNG, JPEG, WebP, TIFF/TIF, BMP, DOCX, PPTX, XLSX, ODT, ODP, ODS, and CSV. Legacy
-DOC/PPT/XLS, RTF, encrypted PDFs, and password-protected files are unsupported.
-
-## What happens with a mixed PDF?
-
-Paperplane classifies each page independently. Native pages use Docling, scan-like pages
-use the selected cloud vision model, and results are merged into page order.
-
-## What do Fast, Balanced, and Audit change?
-
-Fast uses one model draft without a verification pass, Balanced verifies flagged content,
-and Audit has the largest verification budget. The selected model fills every model-call
-role.
-
-## How is model cost calculated?
-
-Paperplane sums provider-reported token usage across page drafting, reconciliation, crop
-verification, and figure-description calls. It multiplies input and output tokens by the
-configured per-million-token rates in [MODELS.md](MODELS.md). GPT-5.6 Luna cached input
-uses its separate supplied rate. The UI estimate does not infer Batch discounts,
-account-specific promotions, or surcharges; the provider invoice is authoritative.
-
-## Which result views are available?
-
-The UI provides rendered Output, Annotated PDF, raw Markdown, and JSON tabs. PDF/image
-annotations overlay source pages. Office sources without physical geometry receive a
-semantic evidence PDF. Annotated PDF, Markdown, and JSON are downloadable.
-
-## Why can a large document take time?
-
-Parsing is synchronous and vision pages are processed sequentially. Higher modes can make
-additional model calls. There are no background jobs or resume support.
-
-## Can I host it for multiple users?
-
-Not with the checked-in configuration. Paperplane is local-only and binds to `127.0.0.1`.
-A shared service would require authentication, isolation, retention, observability, and
-abuse-control work that is intentionally outside v4.2.1.
+Not yet. The checked-in initial benchmark corpus is intentionally too small. Paperplane
+publishes no score without raw results and full provenance.

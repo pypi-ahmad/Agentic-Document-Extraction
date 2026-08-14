@@ -1,54 +1,33 @@
-# How it works
+# How Paperplane works
 
 ```text
-upload
-  -> validate type, integrity, size, page count, canvas, and decoded pixels
-  -> inspect and route each page
-     -> native PDF or Office: local Docling conversion
-     -> scan or image: render -> selected catalog model
-                       -> deterministic grounding and mode-driven verification
-  -> merge pages in original reading order
-  -> assemble Markdown and hierarchical JSON
-  -> aggregate provider token usage and estimate cost
-  -> build an in-memory annotated evidence PDF
-  -> display Output/PDF/Markdown/JSON and expose downloads
+upload up to 20 files
+  -> choose exactly one engine (all are off initially)
+  -> validate type, size, and each page range
+  -> process up to six files concurrently; files remain isolated
+  -> keep selected pages in physical reading order
+  -> Docling / PDF Inspector / Cloud AI / Ollama
+     -> optional cloud enhancement for local engines
+  -> assemble global Markdown, blocks, atomic lines, cells, and citations
+  -> align native-PDF or RapidOCR-observed words; omit unmatched words
+  -> infer section, repeated marginalia, table continuation, and range-boundary relations
+  -> export strict ADE v2-style JSON and Paperplane v5 JSON
+  -> render sanitized standalone HTML and package available outputs in a manifest ZIP
+  -> optionally Classify, Split, or Section in Organize
+  -> retain local job metadata and artifacts for seven days
 ```
 
-## Routing
+Pages outside a range are never rendered, parsed, or placed in context. For AI processing,
+later selected pages can receive bounded Markdown context from earlier selected pages. This
+supports document-level continuity without leaking content between uploaded files.
 
-PyMuPDF identifies native and scan-like PDF pages. A mixed PDF may use both engines.
-Office/OpenDocument/CSV content uses Docling, while images use the AI model selected in the
-UI.
+Strict ADE output uses zero-based response-local type IDs and inline normalized grounding.
+Paperplane output adds observed words, confidence state, provenance, warnings, and semantic
+relations. Organize workflows retain source ranges and identify deterministic partials.
 
-## Mode policy
+Job execution has a durable service boundary and checkpoint files, but no HTTP endpoints in
+v5. The UI directly calls Python services in the same Streamlit process.
 
-- Fast: one draft plus deterministic checks; no verification pass.
-- Balanced: additional model checks only when deterministic signals flag content.
-- Audit: highest rendering, reconciliation, crop, and repair budget.
-
-The selected model handles both drafting and any verification calls. The processing mode
-changes the reasoning and verification budget, not the model ID.
-
-## Shared output
-
-Both engines feed the same assembler. It creates reading-order Markdown and a validated
-document → page → block → atomic-line/table-cell hierarchy. HTML tables preserve merged
-cells. Half-open Unicode ranges connect JSON nodes to exact Markdown text. Physical boxes
-are normalized with a top-left origin.
-
-IDs are stable within the returned response only. Office blocks without trustworthy
-geometry are labeled `semantic_only` with null boxes rather than invented coordinates.
-
-## Evidence and state
-
-PDF/image results receive labeled source overlays. Office content without physical
-geometry receives a semantic evidence report. Artifact generation is isolated: if the PDF
-builder fails, a valid Markdown/JSON parse remains available with a separate UI error.
-
-Each parse creates and closes its own provider HTTP client. The cached Docling converter holds
-model resources only. Paperplane does not persist document bytes, model responses, results,
-or generated artifacts.
-
-Provider-reported usage is aggregated across every model call and included in response
-metadata. Streamlit calculates the displayed estimate from [the configured model
-rates](MODELS.md); no extra model request is made for pricing.
+The Parse sidebar owns engine, model, upload, and page-range controls. A single selected
+document drives six full-width main views. Individual downloads always follow that
+selection; the batch archive covers all outcomes and lists failures only in its manifest.
