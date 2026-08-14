@@ -40,7 +40,7 @@ class NumberedCanvas(canvas.Canvas):
     """Canvas that renders stable Page X of Y footers."""
 
     def __init__(self, *args, **kwargs) -> None:
-        kwargs.setdefault("invariant", 1)
+        kwargs["invariant"] = 1
         super().__init__(*args, **kwargs)
         self._saved_page_states: list[dict] = []
 
