@@ -28,9 +28,9 @@ intended changes and run the release checks:
 ```powershell
 git branch --show-current
 git status --short
-uv sync --locked --extra test --extra lint --extra docs
-uv run ruff check paperplane tests streamlit_app.py scripts
-uv run ruff format --check paperplane tests streamlit_app.py scripts
+uv sync --locked --extra cpu --extra test --extra lint --extra docs
+uv run ruff check paperplane app_pages tests streamlit_app.py workspace_app.py scripts
+uv run ruff format --check paperplane app_pages tests streamlit_app.py workspace_app.py scripts
 uv run pyright
 uv run pytest tests -q
 uv run python scripts/build_handbook.py
@@ -39,10 +39,13 @@ git diff --exit-code -- docs/APP_CAPABILITIES.html
 gh auth status
 ```
 
-Smoke-test the actual app and inspect the upload, parse, result, and download workflow:
+Smoke-test the actual app: confirm the four vertical sidebar toggles are exclusive, upload
+multiple files with independent ranges, Parse, switch the shared document selector across
+all six full-width tabs, switch both JSON formats, download each selected-document artifact,
+and inspect the batch ZIP manifest and safe per-document folders:
 
 ```powershell
-uv run streamlit run streamlit_app.py --server.port=8551
+uv run --extra cpu streamlit run workspace_app.py --server.port=8551
 ```
 
 ## 2. Preview the release
@@ -61,11 +64,11 @@ Choose exactly one version option:
 ```
 
 Provide concise release notes with `--notes`. Without `--push`, the script updates the
-three version sources but does not commit, tag, push, or create a GitHub release:
+four version sources but does not commit, tag, push, or create a GitHub release:
 
 ```powershell
 uv run python scripts/release.py --bump minor --notes "Release summary"
-git diff -- pyproject.toml streamlit_app.py CHANGELOG.md
+git diff -- pyproject.toml uv.lock streamlit_app.py CHANGELOG.md
 ```
 
 Review those edits before committing them manually or restoring them through a normal,

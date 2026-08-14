@@ -7,9 +7,45 @@ and this project aims to follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [5.0.0] - 2026-08-14
+
 ### Added
 
+- Multipage Parse, Extract, Organize, Jobs, and Benchmarks workspace.
+- Four exclusive engine toggles with no default selection, Ollama model/capability
+  discovery, and optional cloud enhancement after local engines.
+- Strict ADE v2-style Parse JSON and namespaced Paperplane v5 JSON.
+- Exact native-PDF/RapidOCR word grounding, selected-page cross-page context, conservative
+  section/table relations, and profile-pinned confidence calibration.
+- Schema builder, fail-closed cited Extract, and cited Classify/Split/Section workflows.
+- SQLite job lifecycle, atomic checkpoints, seven-day artifact retention, cancellation
+  state, per-job deletion, and clear-all.
+- Locked benchmark manifest, metric helpers, and GitHub Pages transparency report.
+- Sanitized standalone HTML for every completed Parse result.
+- Selected-document Markdown, HTML, annotated PDF, Paperplane JSON, and ADE v2 JSON
+  downloads plus a traversal-safe batch ZIP with a versioned success/failure manifest.
+
 ### Changed
+
+- Replaced five combined strategy choices with four primary engines plus a separate cloud
+  enhancement switch.
+- Switched the launcher to `workspace_app.py` while preserving port 8551.
+- Blocked Agnes private visual Parse/enhancement because its current image interface
+  requires public URLs; text workflows remain available.
+- Changed document/result handling from session-only to explicit seven-day local retention.
+- `Paperplane.cmd` now verifies the locked environment and local model artifacts, performs
+  setup only when something is missing or out of date, and launches Streamlit directly
+  from the ready virtual environment.
+- Parse setup now lives vertically below sidebar navigation with mutually exclusive engine
+  toggles. One shared document selector drives full-width Input preview, Output, Annotated
+  PDF, Markdown, HTML, and JSON tabs.
+- Python-Markdown is now a runtime dependency; model-produced HTML remains allowlist
+  sanitized. Batch bundles omit original uploads and retain partial successes.
+
+### Removed
+
+- The schema-based Extract page, field schema/value workflow, Extract response contract,
+  and extraction-specific benchmark metric.
 
 ### Fixed
 
