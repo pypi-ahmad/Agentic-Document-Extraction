@@ -1,6 +1,6 @@
 # Paperplane capabilities
 
-Paperplane 5.1.0 is a private multipage Streamlit workspace for converting PDFs, images,
+Paperplane 5.1.1 is a private multipage Streamlit workspace for converting PDFs, images,
 and modern Office files into reading-order Markdown, grounded JSON, annotated PDFs, and
 cited downstream data.
 
@@ -15,6 +15,8 @@ cited downstream data.
 - Optional cloud enhancement after Docling, PDF Inspector, or Ollama; no automatic routing.
 - Agnes 2.5 Flash supports private visual Parse and enhancement through inline PNG input;
   uploads do not require public image URLs.
+- Agnes structured results use forced schema tool calls, local geometry validation, and one
+  bounded correction attempt so valid regions reach annotated PDFs.
 - Ollama discovery includes every installed model and checks the reported `vision`
   capability before enabling Parse.
 - Prior selected-page context, ordered assembly, section starts, repeated marginalia, and

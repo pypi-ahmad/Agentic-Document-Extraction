@@ -1,5 +1,13 @@
 # Release notes
 
+## Paperplane 5.1.1
+
+- Forced Agnes structured extraction through schema-shaped tool calls so bounding boxes
+  reliably reach annotated PDFs.
+- Added local JSON Schema and geometry validation with one bounded correction attempt for
+  missing, out-of-range, or reversed coordinates.
+- Preserved private inline PNG input and included all retry tokens in usage reporting.
+
 ## Paperplane 5.1.0
 
 - Added executable `Paperplane.sh` for idempotent Linux setup and launch.

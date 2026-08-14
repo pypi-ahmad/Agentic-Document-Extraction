@@ -37,7 +37,7 @@ table{width:100%;border-collapse:collapse;display:block;overflow-x:auto;margin:1
 </div>
 </aside>
     <main id="content"><h1 id="paperplane-capabilities">Paperplane capabilities<a class="headerlink" href="#paperplane-capabilities" title="Permanent link">&para;</a></h1>
-<p>Paperplane 5.1.0 is a private multipage Streamlit workspace for converting PDFs, images,
+<p>Paperplane 5.1.1 is a private multipage Streamlit workspace for converting PDFs, images,
 and modern Office files into reading-order Markdown, grounded JSON, annotated PDFs, and
 cited downstream data.</p>
 <h2 id="processing">Processing<a class="headerlink" href="#processing" title="Permanent link">&para;</a></h2>
@@ -51,6 +51,8 @@ cited downstream data.</p>
 <li>Optional cloud enhancement after Docling, PDF Inspector, or Ollama; no automatic routing.</li>
 <li>Agnes 2.5 Flash supports private visual Parse and enhancement through inline PNG input;
   uploads do not require public image URLs.</li>
+<li>Agnes structured results use forced schema tool calls, local geometry validation, and one
+  bounded correction attempt so valid regions reach annotated PDFs.</li>
 <li>Ollama discovery includes every installed model and checks the reported <code>vision</code>
   capability before enabling Parse.</li>
 <li>Prior selected-page context, ordered assembly, section starts, repeated marginalia, and
@@ -76,7 +78,9 @@ cancel job state, delete one job, or clear all retained jobs.</p>
 drives Input preview, Output, Annotated PDF, Markdown, HTML, and JSON tabs. Selected-document
 downloads sit in one responsive row. The batch ZIP contains all successful documents'
 available outputs and a versioned success/failure manifest, but no original uploads.
-The checked-in Streamlit theme uses near-black surfaces, charcoal panels, and red accents.</p>
+The checked-in Streamlit theme uses near-black surfaces, charcoal panels, and red accents.
+Within that dark workspace, HTML results use a responsive, print-friendly white paper
+surface with black text. The preview, individual HTML download, and ZIP copy match.</p>
 <p>There is no public/local HTTP API in v5. ADE compatibility refers to versioned JSON and
 Pydantic contracts and async/durable job semantics, not a client drop-in claim.</p></main>
   </div>

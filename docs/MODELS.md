@@ -17,7 +17,10 @@ does not change the endpoints for other providers.
 
 Agnes uses its current configured $0 rate, while still recording tokens and pricing
 entitlement. Paperplane sends private visual inputs inline as PNG data URLs, enabling Parse
-and enhancement without publishing uploaded images.
+and enhancement without publishing uploaded images. Paperplane forces Agnes structured
+results through schema-shaped tool calls, validates them locally, and permits one bounded
+correction attempt. Missing, out-of-range, or reversed geometry therefore cannot silently
+reach the annotated-PDF renderer.
 
 ## Ollama models
 

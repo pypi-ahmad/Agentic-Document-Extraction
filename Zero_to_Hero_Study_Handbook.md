@@ -29,7 +29,8 @@ All engines start off. Select exactly one:
 - Ollama ADE — installed local model that reports vision support.
 
 Cloud enhancement can follow Docling, PDF Inspector, or Ollama. There is no automatic
-routing. Agnes is available for text/approved public assets but not private visual uploads.
+routing. Agnes accepts private visual inputs as inline PNG data URLs. Its structured output
+is schema- and geometry-validated with one bounded correction attempt before failure.
 
 ## Contract lesson
 
