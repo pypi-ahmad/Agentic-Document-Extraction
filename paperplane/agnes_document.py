@@ -40,7 +40,15 @@ def _chat_completions_url(base_url: str) -> str:
     )
 
 
-def _tool_arguments(body: dict[str, Any], schema_name: str) -> dict[str, Any]:
+def _json_text(value: str) -> str:
+    raw = value.strip()
+    if raw.startswith("```") and raw.endswith("```"):
+        lines = raw.splitlines()
+        raw = "\n".join(lines[1:-1]).strip()
+    return raw
+
+
+def _structured_value(body: dict[str, Any], schema_name: str) -> dict[str, Any]:
     choices = body.get("choices")
     if not isinstance(choices, list) or not choices or not isinstance(choices[0], dict):
         raise ValueError("Agnes response did not contain a message")
@@ -50,21 +58,25 @@ def _tool_arguments(body: dict[str, Any], schema_name: str) -> dict[str, Any]:
         raise ValueError("Agnes response did not contain a message")
     message_data = cast(dict[str, Any], message)
     tool_calls = message_data.get("tool_calls")
-    if not isinstance(tool_calls, list) or not tool_calls:
-        raise ValueError("Agnes did not return the required tool call")
-    if not isinstance(tool_calls[0], dict):
-        raise ValueError("Agnes returned an invalid tool call")
-    tool_call = cast(dict[str, Any], tool_calls[0])
-    function = tool_call.get("function")
-    if not isinstance(function, dict):
-        raise ValueError("Agnes returned an unexpected tool call")
-    function_data = cast(dict[str, Any], function)
-    if function_data.get("name") != schema_name:
-        raise ValueError("Agnes returned an unexpected tool call")
-    arguments = function_data.get("arguments")
-    value_data: Any = json.loads(arguments) if isinstance(arguments, str) else arguments
+    if isinstance(tool_calls, list) and tool_calls:
+        if not isinstance(tool_calls[0], dict):
+            raise ValueError("Agnes returned an invalid tool call")
+        tool_call = cast(dict[str, Any], tool_calls[0])
+        function = tool_call.get("function")
+        if not isinstance(function, dict):
+            raise ValueError("Agnes returned an unexpected tool call")
+        function_data = cast(dict[str, Any], function)
+        if function_data.get("name") != schema_name:
+            raise ValueError("Agnes returned an unexpected tool call")
+        arguments = function_data.get("arguments")
+        value_data: Any = json.loads(arguments) if isinstance(arguments, str) else arguments
+    else:
+        content = message_data.get("content")
+        if not isinstance(content, str):
+            raise ValueError("Agnes returned neither tool arguments nor JSON content")
+        value_data = json.loads(_json_text(content))
     if not isinstance(value_data, dict):
-        raise ValueError("Agnes tool arguments must be a JSON object")
+        raise ValueError("Agnes structured output must be a JSON object")
     return cast(dict[str, Any], value_data)
 
 
@@ -92,6 +104,45 @@ def _geometry_error(value: Any, path: str = "$") -> str | None:
             if error := _geometry_error(child, f"{path}[{index}]"):
                 return error
     return None
+
+
+def _normalize_agnes_value(value: dict[str, Any]) -> dict[str, Any]:
+    """Normalize Agnes JSON equivalents that the pipeline already accepts."""
+
+    def normalize_boxes(item: Any) -> None:
+        if isinstance(item, dict):
+            item_data = cast(dict[str, Any], item)
+            coordinate_names = ("left", "top", "right", "bottom")
+            coordinates = [item_data.get(name) for name in coordinate_names]
+            if (
+                all(
+                    isinstance(coordinate, (int, float)) and not isinstance(coordinate, bool)
+                    for coordinate in coordinates
+                )
+                and any(cast(float, coordinate) > 1 for coordinate in coordinates)
+                and all(0 <= cast(float, coordinate) <= 1000 for coordinate in coordinates)
+            ):
+                for name in coordinate_names:
+                    item_data[name] = cast(float, item_data[name]) / 1000
+            for child in item_data.values():
+                normalize_boxes(child)
+        elif isinstance(item, list):
+            for child in cast(list[Any], item):
+                normalize_boxes(child)
+
+    chunks = value.get("chunks")
+    if isinstance(chunks, list):
+        for raw_chunk in chunks:
+            if not isinstance(raw_chunk, dict):
+                continue
+            chunk = cast(dict[str, Any], raw_chunk)
+            chunk.setdefault("markdown", str(chunk.get("text", "")))
+            chunk.setdefault("parent_order", None)
+            chunk.setdefault("atomic_lines", [])
+            for name in ("row", "col", "rowspan", "colspan"):
+                chunk.setdefault(name, None)
+    normalize_boxes(value)
+    return value
 
 
 def _validate_structured_value(value: dict[str, Any], schema: dict[str, Any]) -> None:
@@ -227,7 +278,7 @@ class AgnesDocumentAdapter:
             total_usage.input_tokens += attempt_usage.input_tokens
             total_usage.output_tokens += attempt_usage.output_tokens
             try:
-                value = _tool_arguments(body, schema_name)
+                value = _normalize_agnes_value(_structured_value(body, schema_name))
                 _validate_structured_value(value, schema)
             except (KeyError, IndexError, json.JSONDecodeError, ValidationError, ValueError) as exc:
                 validation_feedback = str(exc).splitlines()[0]
@@ -245,7 +296,9 @@ class AgnesDocumentAdapter:
                     }
                 )
                 logger.warning(
-                    "Agnes returned invalid structured output after %d attempts", attempt
+                    "Agnes returned invalid structured output after %d attempts: %s",
+                    attempt,
+                    validation_feedback,
                 )
                 raise AgnesRequestError(
                     "Agnes did not return valid structured output after two attempts"

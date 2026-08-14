@@ -44,6 +44,17 @@ def _tool_response(
     )
 
 
+def _content_response(value: dict, *, response_id: str = "chatcmpl_content") -> httpx.Response:
+    return httpx.Response(
+        200,
+        json={
+            "id": response_id,
+            "choices": [{"message": {"content": f"```json\n{json.dumps(value)}\n```"}}],
+            "usage": {"prompt_tokens": 12, "completion_tokens": 4},
+        },
+    )
+
+
 def _chunk(box: dict[str, float]) -> dict:
     return {
         "type": "text",
@@ -169,6 +180,41 @@ async def test_agnes_retries_reversed_geometry_and_counts_all_usage() -> None:
 
 
 @pytest.mark.asyncio
+async def test_agnes_normalizes_provider_shorthand_before_validation() -> None:
+    async def handler(request: httpx.Request) -> httpx.Response:
+        return _content_response(
+            {
+                "chunks": [
+                    {
+                        "type": "text",
+                        "text": "Invoice total 42.00",
+                        "box": {"left": 100, "top": 100, "right": 800, "bottom": 400},
+                    }
+                ]
+            }
+        )
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as http:
+        result = await AgnesDocumentAdapter(http, api_key="agnes-test").generate_structured(
+            model=AGNES_MODEL,
+            image=b"private",
+            instructions="Extract chunks.",
+            schema_name="page_draft_v8",
+            schema=PAGE_DRAFT_SCHEMA,
+            reasoning_effort="low",
+            detail="high",
+            prompt_cache_key="page:v2:shard-0",
+        )
+
+    chunk = result.value["chunks"][0]
+    assert chunk["markdown"] == "Invoice total 42.00"
+    assert chunk["atomic_lines"] == []
+    assert chunk["parent_order"] is None
+    assert chunk["row"] is None
+    assert chunk["box"] == {"left": 0.1, "top": 0.1, "right": 0.8, "bottom": 0.4}
+
+
+@pytest.mark.asyncio
 async def test_agnes_fails_after_two_invalid_structured_responses() -> None:
     attempts = 0
 
@@ -197,10 +243,8 @@ async def test_agnes_fails_after_two_invalid_structured_responses() -> None:
 @pytest.mark.asyncio
 async def test_agnes_geometry_reaches_the_annotated_pdf() -> None:
     async def handler(request: httpx.Request) -> httpx.Response:
-        request_body = json.loads(request.content)
-        return _tool_response(
-            {"chunks": [_chunk({"left": 0.1, "top": 0.1, "right": 0.8, "bottom": 0.4})]},
-            function_name=request_body["tool_choice"]["function"]["name"],
+        return _content_response(
+            {"chunks": [_chunk({"left": 0.1, "top": 0.1, "right": 0.8, "bottom": 0.4})]}
         )
 
     image = _png()
