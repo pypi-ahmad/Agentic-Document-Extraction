@@ -145,6 +145,9 @@ if errorlevel 1 goto :setup_failure
 
 :models_ready
 echo Local document models are ready.
+echo Clearing previous Streamlit cache...
+"%VENV_PYTHON%" -m streamlit cache clear >nul
+if errorlevel 1 goto :setup_failure
 echo Starting Paperplane...
 echo Open http://127.0.0.1:8551 in your browser.
 echo Close this window or press Ctrl+C to stop the app.

@@ -146,6 +146,11 @@ def _clear_workspace() -> None:
     _reset_results()
 
 
+def _start_parse() -> None:
+    st.cache_data.clear()
+    _reset_results()
+
+
 def _activate_engine(engine: str) -> None:
     if not st.session_state.get(f"engine_{engine}", False):
         return
@@ -522,6 +527,7 @@ with st.sidebar, st.container(border=True):
             type="primary",
             icon=":material/document_scanner:",
             disabled=not uploads or bool(preflight_errors),
+            on_click=_start_parse,
         )
         st.button("New parse", icon=":material/note_add:", on_click=_clear_workspace)
 

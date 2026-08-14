@@ -41,6 +41,8 @@ compatibility, or claim LandingAI accuracy parity.
   GitHub Pages without a `gh-pages` branch.
 - Bootstrap missing requirements once with `Paperplane.cmd` on Windows or `Paperplane.sh`
   on Linux, then skip completed setup on later launches.
+- Start every launch and parse with empty UI caches so previous results never remain in the
+  output tabs.
 
 ## Feature guide
 

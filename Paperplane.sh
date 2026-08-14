@@ -162,6 +162,9 @@ if [[ -z "$models_ready" ]]; then
 fi
 
 printf 'Local document models are ready.\n'
+printf 'Clearing previous Streamlit cache...\n'
+"$venv_python" -m streamlit cache clear >/dev/null \
+    || fail "Streamlit cache cleanup failed."
 printf 'Starting Paperplane...\n'
 printf 'Open http://127.0.0.1:8551 in your browser.\n'
 printf 'Press Ctrl+C to stop the app.\n\n'

@@ -9,6 +9,8 @@ synchronizes dependencies or downloads models only when they are missing or out 
 Otherwise it launches the multipage app directly at `http://127.0.0.1:8551`.
 
 Close the launcher window or press Ctrl+C to stop it.
+Each launcher start clears Streamlit's data cache. Each **Parse files** action also clears
+the previous batch from every output tab before processing begins.
 
 ## One-file Linux launch
 
