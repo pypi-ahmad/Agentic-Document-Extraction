@@ -15,6 +15,14 @@ On Windows, starting the launcher again safely stops an existing Paperplane proc
 `8551` before setup. If another application owns that port, the launcher leaves it running
 and reports the conflict.
 
+## Stop from the UI
+
+Select **Stop and clear** in the sidebar from any page, then confirm. Paperplane clears its
+Streamlit data/resource caches and active session, blanks all Paperplane tabs in the same
+browser, stops the backend with a successful exit, and closes the launcher. Downloaded
+models, seven-day job history, and saved job artifacts are preserved. If browser JavaScript
+is disabled, the backend still stops and open tabs show as disconnected.
+
 ## One-file Linux launch
 
 Run `./Paperplane.sh` from the repository. It performs the same repository, Python,

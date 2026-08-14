@@ -43,8 +43,19 @@ compatibility, or claim LandingAI accuracy parity.
   on Linux, then skip completed setup on later launches.
 - Start every launch and parse with empty UI caches so previous results never remain in the
   output tabs.
+- Use **Stop and clear** from any page to clear Streamlit and session caches, blank every
+  Paperplane tab in the same browser, and stop the local backend and launcher. Downloaded
+  models, job history, and saved artifacts remain available.
 
 ## Feature guide
+
+### Stop and clear from any page
+
+The shared sidebar includes a confirmation-protected **Stop and clear** control on Parse,
+Organize, Jobs, and Benchmarks. Confirming it clears in-memory Streamlit data and resource
+caches plus the active session, notifies other Paperplane tabs in the same browser to close
+their UI, and exits the local server successfully. Browsers with JavaScript disabled show a
+disconnected page instead. Local models and retained job artifacts are not deleted.
 
 ### Four explicit processing engines
 
