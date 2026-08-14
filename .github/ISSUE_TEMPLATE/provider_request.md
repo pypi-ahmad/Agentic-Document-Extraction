@@ -1,13 +1,13 @@
-name: Recognition or review integration request
-description: Request a local or cloud recognition/review integration.
+name: Vision model integration request
+description: Request a new cloud document-vision model for Paperplane's fixed catalog.
 title: "[integration] "
 labels: ["enhancement", "triage"]
 body:
   - type: markdown
     attributes:
       value: |
-        Use this template for a local recognition, cloud review, or
-        schema-extraction integration.
+        Use this template to propose a provider-native vision adapter and
+        catalog entry for scanned pages, images, and figure descriptions.
 
   - type: input
     id: name
@@ -17,14 +17,12 @@ body:
     validations:
       required: true
 
-  - type: dropdown
-    id: kind
+  - type: input
+    id: model
     attributes:
-      label: Provider kind
-      options:
-        - Local recognition
-        - Cloud review
-        - Schema extraction
+      label: Exact production model ID
+      description: Link to the provider's official model documentation.
+      placeholder: "provider-model-id"
     validations:
       required: true
 
@@ -33,24 +31,25 @@ body:
     attributes:
       label: What does it do?
       description: |
-        One paragraph on what the provider does, the file types it
-        supports (for OCR), and any model-listing behaviour it has.
+        Describe document-vision quality, image inputs, structured-output
+        support, limits, pricing, and why the existing catalog is insufficient.
 
   - type: textarea
     id: integration
     attributes:
       label: Integration plan
       description: |
-        Which library / SDK? How would the provider class look? Does
-        it need a new feature flag? Does it depend on a system
-        install (e.g. ONNX, Tesseract)?
+        Identify the official API endpoint and structured-output mechanism.
+        Explain how usage tokens map into Paperplane's shared contract and
+        whether the adapter needs a new dependency.
 
   - type: textarea
     id: env
     attributes:
       label: Configuration
       description: |
-        Which env vars would the provider read? Defaults?
+        Which credential environment variable is required? Include only its
+        name, never a key value. Are any safe endpoint overrides necessary?
 
   - type: checkboxes
     id: checklist
