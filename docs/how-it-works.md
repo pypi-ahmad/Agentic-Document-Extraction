@@ -1,5 +1,8 @@
 # How Paperplane works
 
+
+> **V2 status (2026-08-14):** The active runtime is OpenAI-only and uses versioned recipes, bounded Terra verification, safe partial results, and private evidence bundles. This page retains older detail where useful; [README](../README.md) and [V2 architecture](ARCHITECTURE_V2.md) are authoritative for current behavior.
+
 Paperplane turns the visual structure of a document into Markdown and structured evidence
 that an LLM can use without repeatedly reopening the original PDF. It keeps the page,
 coordinates, reading order, recognition source, and quality state attached to each block so

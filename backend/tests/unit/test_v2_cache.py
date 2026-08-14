@@ -32,6 +32,8 @@ def test_cache_hit_does_not_rebill_stored_openai_usage() -> None:
         input_tokens=100,
         output_tokens=10,
         cached_input_tokens=50,
+        audit_calls=[{"status": "completed"}],
+        evidence_artifacts={"crop-1": b"crop"},
     )
     key = page_cache_key(b"page", mode="balanced", prompt_version="v2")
     cache.put(key, result)
@@ -42,3 +44,5 @@ def test_cache_hit_does_not_rebill_stored_openai_usage() -> None:
     assert hit.input_tokens == 0
     assert hit.output_tokens == 0
     assert hit.cached_input_tokens == 0
+    assert hit.audit_calls == [{"status": "completed"}]
+    assert hit.evidence_artifacts == {"crop-1": b"crop"}

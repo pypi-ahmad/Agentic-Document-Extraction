@@ -1,5 +1,8 @@
 # Runbook
 
+
+> **V2 status (2026-08-14):** The active runtime is OpenAI-only and uses versioned recipes, bounded Terra verification, safe partial results, and private evidence bundles. This page retains older detail where useful; [README](../README.md) and [V2 architecture](ARCHITECTURE_V2.md) are authoritative for current behavior.
+
 > Operator reference for the on-call rotation.
 
 ---

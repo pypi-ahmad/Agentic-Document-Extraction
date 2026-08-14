@@ -440,6 +440,15 @@ export interface AgenticParseJob {
   usage: Record<string, unknown> | null;
   artifacts: AgenticParseArtifact[];
   source_preview_url: string;
+  assurance?: {
+    recipe_version: string;
+    audit_integrity_sha256: string | null;
+    partial: boolean;
+    evidence_bundle_ready: boolean;
+    warning_count: number;
+  };
+  timeline?: Array<{ page_number: number; stage: string | null; status: string }>;
+  pages?: Array<{ page_number: number; status: string; stage: string | null; warnings: string[]; error_code: string | null }>;
 }
 
 export interface AgentTraceEvent {

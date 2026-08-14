@@ -86,6 +86,7 @@ async def test_create_v2_job_queues_openai_only_processing(api) -> None:
         "mode": "balanced",
         "segment_documents": True,
         "extraction_schema_id": None,
+        "recipe_version": "v9",
     }
     assert payload["models"] == {"draft": "gpt-5.6-luna", "verification": "gpt-5.6-terra"}
     assert payload["status"] == "queued"

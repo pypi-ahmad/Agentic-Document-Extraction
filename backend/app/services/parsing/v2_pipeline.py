@@ -29,6 +29,7 @@ from app.services.parsing.v2_grounding import (
     map_crop_box_to_page,
     render_crop,
 )
+from app.services.parsing.v2_recipe import RecipeVersion, processing_recipe
 from app.services.parsing.v2_reconciliation import (
     assess_page_quality,
     clean_repeated_labels,
@@ -132,6 +133,7 @@ class PageResult(BaseModel):
     cache_write_tokens: int = 0
     model_usage: dict[str, OpenAIUsage] = Field(default_factory=dict)
     application_cache_hit: bool = False
+    audit_calls: list[dict[str, Any]] = Field(default_factory=list)
     evidence_artifacts: dict[str, bytes] = Field(default_factory=dict, exclude=True)
 
 
@@ -390,8 +392,12 @@ class V2PageProcessor:
         source_sha256: str,
         page: RenderedPage,
         mode: ProcessingMode,
+        recipe_version: RecipeVersion = "v9",
     ) -> PageResult:
         policy = mode_policy(mode)
+        budget = processing_recipe(recipe_version).verification_budgets[mode.value]
+        terra_calls = 0
+        crop_calls = 0
         draft = await self.adapter.generate_structured(
             model="gpt-5.6-luna",
             image=page.image_png,
@@ -449,7 +455,7 @@ class V2PageProcessor:
             mode == ProcessingMode.BALANCED and quality.flagged
         )
         reconciliation_failed = False
-        if reconcile_page:
+        if reconcile_page and terra_calls < budget.max_terra_calls_per_page:
             reconciliation = await self.adapter.generate_structured(
                 model="gpt-5.6-terra",
                 image=page.image_png,
@@ -481,7 +487,12 @@ class V2PageProcessor:
             total_usage.cached_input_tokens += reconciliation.usage.cached_input_tokens
             total_usage.cache_write_tokens += reconciliation.usage.cache_write_tokens
             model_usage["gpt-5.6-terra"] = reconciliation.usage.model_copy()
-        if mode == ProcessingMode.AUDIT and _needs_figure_reconciliation(raw_chunks):
+            terra_calls += 1
+        if (
+            mode == ProcessingMode.AUDIT
+            and _needs_figure_reconciliation(raw_chunks)
+            and terra_calls < budget.max_terra_calls_per_page
+        ):
             figure_reconciliation = await self.adapter.generate_structured(
                 model="gpt-5.6-terra",
                 image=page.image_png,
@@ -512,6 +523,7 @@ class V2PageProcessor:
             terra_usage.output_tokens += figure_reconciliation.usage.output_tokens
             terra_usage.cached_input_tokens += figure_reconciliation.usage.cached_input_tokens
             terra_usage.cache_write_tokens += figure_reconciliation.usage.cache_write_tokens
+            terra_calls += 1
         previous_heading_text: str | None = None
         for order, raw in enumerate(raw_chunks, start=1):
             chunk_id = f"p{page.page_number:04d}-c{order:04d}"
@@ -638,7 +650,11 @@ class V2PageProcessor:
                         box=candidate_box,
                         crop_dpi=policy.crop_dpi,
                         reasoning_effort=policy.terra_reasoning_effort or "medium",
-                        max_rounds=policy.max_repair_rounds,
+                        max_rounds=min(
+                            policy.max_repair_rounds,
+                            budget.max_crop_calls_per_page - crop_calls,
+                            budget.max_terra_calls_per_page - terra_calls,
+                        ),
                         mode=mode,
                         scan_like=scan_like,
                         verified_source_pass=verified_source_pass,
@@ -656,6 +672,8 @@ class V2PageProcessor:
                         terra_usage.cached_input_tokens += usage.cached_input_tokens
                         terra_usage.cache_write_tokens += usage.cache_write_tokens
                     evidence_artifacts.update(evidence)
+                    crop_calls += len(usages)
+                    terra_calls += len(usages)
             elif policy.terra_scope == "none":
                 grounding = Grounding(
                     page=page.page_number,
@@ -692,7 +710,11 @@ class V2PageProcessor:
                     box=box,
                     crop_dpi=policy.crop_dpi,
                     reasoning_effort=policy.terra_reasoning_effort or "medium",
-                    max_rounds=policy.max_repair_rounds,
+                    max_rounds=min(
+                        policy.max_repair_rounds,
+                        budget.max_crop_calls_per_page - crop_calls,
+                        budget.max_terra_calls_per_page - terra_calls,
+                    ),
                     mode=mode,
                     scan_like=scan_like,
                     verified_source_pass="crop_verification",
@@ -710,6 +732,8 @@ class V2PageProcessor:
                     terra_usage.cached_input_tokens += usage.cached_input_tokens
                     terra_usage.cache_write_tokens += usage.cache_write_tokens
                 evidence_artifacts.update(evidence)
+                crop_calls += len(usages)
+                terra_calls += len(usages)
             if raw["type"] in _VISUAL_TYPES and not _is_semantic_visual_markdown(final_markdown):
                 status = VerificationStatus.UNRESOLVED
                 final_text = ""
@@ -792,6 +816,29 @@ class V2PageProcessor:
         candidate_source_model: str,
         candidate_source_pass: str,
     ):
+        if max_rounds <= 0:
+            return (
+                Grounding(
+                    page=page.page_number,
+                    box=box,
+                    method=GroundingMethod.VISION_REFINED,
+                    source_box=_source_box(box, page),
+                    source_unit=_source_unit(filename),
+                    evidence_artifact_id=f"page:{source_sha256}:{page.page_number}",
+                ),
+                (
+                    VerificationStatus.UNRESOLVED
+                    if mode == ProcessingMode.AUDIT
+                    else VerificationStatus.CANDIDATE
+                ),
+                normalize_extracted_text(candidate_text),
+                normalize_extracted_text(candidate_markdown),
+                ["verification_budget_exhausted"],
+                [],
+                {},
+                candidate_source_model,
+                candidate_source_pass,
+            )
         crop = render_crop(
             source, filename, page_number=page.page_number, box=box, dpi=crop_dpi, padding=0.05
         )

@@ -44,6 +44,7 @@ class V2Settings(BaseModel):
     mode: ProcessingMode = ProcessingMode.BALANCED
     segment_documents: bool = True
     extraction_schema_id: str | None = None
+    recipe_version: Literal["v8", "v9"] = "v9"
 
 
 class V2JobResponse(BaseModel):
@@ -187,7 +188,11 @@ async def create_v2_job(
         source_sha256=hashlib.sha256(data).hexdigest(),
         page_count=inspected.page_count,
         status=JobStatus.QUEUED,
-        settings=parse_settings.model_dump(mode="json"),
+        settings={
+            **parse_settings.model_dump(mode="json"),
+            "recipe_version": app_settings.v2_recipe_version,
+            "preflight_findings": list(inspected.findings),
+        },
         model_name="gpt-5.6-luna",
         review_model_name="gpt-5.6-terra",
         extraction_schema_id=extraction_schema.id if extraction_schema else None,

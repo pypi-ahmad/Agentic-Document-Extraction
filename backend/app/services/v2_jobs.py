@@ -117,6 +117,9 @@ class V2JobQueue:
                             error_message=type(exc).__name__,
                             max_attempts=max_attempts,
                         )
+                    assemble = getattr(self.runner, "_assemble_with_retries", None)
+                    if assemble is not None:
+                        await assemble(task.job_id)
             self._wake.clear()
 
     async def shutdown(self) -> None:

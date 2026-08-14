@@ -25,6 +25,7 @@ class DocumentInputError(ValueError):
 class InspectedDocument:
     mime_type: str
     page_count: int
+    findings: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -51,11 +52,20 @@ def inspect_document(
             if document.needs_pass:
                 raise DocumentInputError("encrypted_pdf", "Encrypted PDFs are not supported")
             page_count = document.page_count
+            if page_count < 1:
+                raise DocumentInputError("empty_document", "Document contains no pages")
+            findings = tuple(
+                f"page_{index + 1}_large_canvas"
+                for index, page in enumerate(document)
+                if page.rect.width * page.rect.height > 4_000_000
+            )
         finally:
             document.close()
         if page_count > max_pages:
             raise DocumentInputError("too_many_pages", f"Document exceeds {max_pages} pages")
-        return InspectedDocument(mime_type="application/pdf", page_count=page_count)
+        return InspectedDocument(
+            mime_type="application/pdf", page_count=page_count, findings=findings
+        )
     if suffix not in IMAGE_EXTENSIONS:
         raise DocumentInputError(
             "unsupported_type", "Supported types are PDF, PNG, JPEG, WebP, and TIFF"
@@ -63,6 +73,7 @@ def inspect_document(
     try:
         with Image.open(BytesIO(data)) as image:
             page_count = int(getattr(image, "n_frames", 1))
+            findings = ("large_image",) if image.width * image.height > 40_000_000 else ()
             if page_count > max_pages:
                 raise DocumentInputError("too_many_pages", f"Document exceeds {max_pages} pages")
             image.verify()
@@ -73,7 +84,7 @@ def inspect_document(
     mime = "image/jpeg" if suffix in {".jpg", ".jpeg"} else f"image/{suffix.lstrip('.')}"
     if suffix in {".tif", ".tiff"}:
         mime = "image/tiff"
-    return InspectedDocument(mime_type=mime, page_count=page_count)
+    return InspectedDocument(mime_type=mime, page_count=page_count, findings=findings)
 
 
 def render_page(data: bytes, filename: str, page_number: int, dpi: int) -> RenderedPage:

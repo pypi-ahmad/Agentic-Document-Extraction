@@ -147,7 +147,9 @@ class V2TaskLeases:
         job.completed_pages = sum(task.status == "completed" for task in tasks)
         job.failed_pages = len(failed)
         if tasks and len(failed) + job.completed_pages == len(tasks) and failed:
-            job.status = JobStatus.FAILED
+            job.status = (
+                JobStatus.COMPLETED_WITH_WARNINGS if job.completed_pages else JobStatus.FAILED
+            )
             job.error_code = "page_task_failed"
             job.error_message = (
                 f"{len(failed)} page task{'s' if len(failed) != 1 else ''} failed; "

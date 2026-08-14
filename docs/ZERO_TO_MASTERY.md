@@ -1,5 +1,8 @@
 # Paperplane Zero to Mastery
 
+
+> **V2 status (2026-08-14):** The active runtime is OpenAI-only and uses versioned recipes, bounded Terra verification, safe partial results, and private evidence bundles. This page retains older detail where useful; [README](../README.md) and [V2 architecture](ARCHITECTURE_V2.md) are authoritative for current behavior.
+
 A code-grounded tutorial for applied AI engineers
 
 ## How to use this tutorial

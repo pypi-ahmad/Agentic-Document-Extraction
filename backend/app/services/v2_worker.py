@@ -9,7 +9,7 @@ import json
 import re
 import uuid
 from collections.abc import Mapping, Sequence
-from typing import Any, Protocol
+from typing import Any, Protocol, cast
 
 from sqlalchemy import delete, func, select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
@@ -29,10 +29,11 @@ from app.services.agentic.contracts import (
 )
 from app.services.agentic.supervisor import AdaptiveDocumentSupervisor
 from app.services.parsing.ingest import render_page
-from app.services.parsing.openai_document import OpenAIUsage
+from app.services.parsing.openai_document import OpenAIUsage, capture_audit_calls
 from app.services.parsing.review_cases import sync_grounded_review_case
 from app.services.parsing.storage import ObjectStore
 from app.services.parsing.v2_annotations import build_annotated_pdf
+from app.services.parsing.v2_audit import build_bundle, write_page_manifest
 from app.services.parsing.v2_cache import PageResultCache, page_cache_key
 from app.services.parsing.v2_contracts import (
     DocumentItem,
@@ -50,6 +51,7 @@ from app.services.parsing.v2_contracts import (
 )
 from app.services.parsing.v2_cost import ModelRates, calculate_usage_cost
 from app.services.parsing.v2_pipeline import PageResult, V2PageProcessor
+from app.services.parsing.v2_recipe import RecipeVersion, processing_recipe
 from app.services.parsing.v2_schema_extraction import V2SchemaExtractor
 from app.services.parsing.v2_segmentation import build_document_splits
 from app.services.v2_tasks import V2TaskLeases
@@ -293,6 +295,9 @@ class V2PageTaskRunner:
             mode = ProcessingMode(job.settings.get("mode", "balanced"))
             api_family = job.settings.get("api_family")
             agentic_model = str(job.settings.get("model", "paperplane-ade-latest"))
+            recipe = processing_recipe(
+                cast(RecipeVersion, job.settings.get("recipe_version", settings.v2_recipe_version))
+            )
 
         source = await asyncio.to_thread(self.store.read, source_path)
         policy = mode_policy(mode)
@@ -303,17 +308,21 @@ class V2PageTaskRunner:
         cache_key = page_cache_key(
             rendered.image_png,
             mode=f"{mode.value}:p{task.page_number}",
-            prompt_version="v8",
+            prompt_version=recipe.prompt_version,
         )
         result = await asyncio.to_thread(cache.get, cache_key)
         if result is None:
-            result = await self.processor.process_page(
-                source=source,
-                filename=filename,
-                source_sha256=source_sha256,
-                page=rendered,
-                mode=mode,
-            )
+            audit_calls: list[dict[str, Any]] = []
+            with capture_audit_calls(audit_calls):
+                result = await self.processor.process_page(
+                    source=source,
+                    filename=filename,
+                    source_sha256=source_sha256,
+                    page=rendered,
+                    mode=mode,
+                    recipe_version=recipe.version,
+                )
+            result = result.model_copy(update={"audit_calls": audit_calls})
             await asyncio.to_thread(cache.put, cache_key, result)
         result_path = f"jobs-v2/{task.job_id}/pages/p{task.page_number:04d}.json"
         await asyncio.to_thread(
@@ -322,6 +331,18 @@ class V2PageTaskRunner:
         for evidence_id, data in result.evidence_artifacts.items():
             path = f"jobs-v2/{task.job_id}/evidence/{_sha256(evidence_id.encode())[:20]}.png"
             await asyncio.to_thread(self.store.write, path, data)
+        await asyncio.to_thread(
+            write_page_manifest,
+            self.store,
+            job_id=task.job_id,
+            page_number=task.page_number,
+            recipe=recipe.model_dump(mode="json"),
+            source_sha256=source_sha256,
+            page_image=rendered.image_png,
+            calls=result.audit_calls,
+            result=result.model_dump(mode="json"),
+            evidence=result.evidence_artifacts,
+        )
 
         if api_family == "agentic_v2":
             supervisor = self.agentic_supervisor
@@ -436,9 +457,12 @@ class V2PageTaskRunner:
                     .order_by(V2PageTask.page_number)
                 )
             )
-            if not tasks or any(
-                task.status != "completed" or not task.result_path for task in tasks
-            ):
+            if not tasks or any(task.status not in {"completed", "failed"} for task in tasks):
+                return
+            completed_tasks = [
+                task for task in tasks if task.status == "completed" and task.result_path
+            ]
+            if not completed_tasks:
                 return
             job = await session.scalar(
                 select(ParseJob)
@@ -475,16 +499,21 @@ class V2PageTaskRunner:
             api_family = job.settings.get("api_family")
             agentic_model = str(job.settings.get("model", "paperplane-ade-latest"))
             extraction_schema = job.extraction_schema_snapshot
+            recipe = processing_recipe(
+                cast(RecipeVersion, job.settings.get("recipe_version", settings.v2_recipe_version))
+            )
 
         page_results = [
             PageResult.model_validate_json(
                 await asyncio.to_thread(self.store.read, task.result_path)
             )
-            for task in tasks
+            for task in completed_tasks
             if task.result_path
         ]
-        if [result.page_number for result in page_results] != expected_pages:
-            raise IncompletePageSetError("page results do not match job page_count")
+        completed_page_numbers = [task.page_number for task in completed_tasks]
+        if [result.page_number for result in page_results] != completed_page_numbers:
+            raise IncompletePageSetError("page results do not match completed page tasks")
+        failed_page_numbers = [task.page_number for task in tasks if task.status == "failed"]
         chunks = [chunk for result in page_results for chunk in result.chunks]
         clean_markdown = build_clean_markdown(page_results)
         usage: dict[str, Any] = {
@@ -503,14 +532,16 @@ class V2PageTaskRunner:
                 aggregate.cache_write_tokens += item.cache_write_tokens
         extraction = {}
         structured_data = None
+        document_audit_calls: list[dict[str, Any]] = []
         if extraction_schema and self.extractor is not None:
-            outcome = await self.extractor.extract(
-                markdown=clean_markdown,
-                chunks=chunks,
-                user_schema=extraction_schema["json_schema"],
-                source_sha256=source_sha256,
-                reasoning_effort="high" if mode == ProcessingMode.AUDIT else "medium",
-            )
+            with capture_audit_calls(document_audit_calls):
+                outcome = await self.extractor.extract(
+                    markdown=clean_markdown,
+                    chunks=chunks,
+                    user_schema=extraction_schema["json_schema"],
+                    source_sha256=source_sha256,
+                    reasoning_effort="high" if mode == ProcessingMode.AUDIT else "medium",
+                )
             extraction = outcome.fields
             structured_data = outcome.structured_data
             usage["input_tokens"] += outcome.usage.input_tokens
@@ -558,7 +589,9 @@ class V2PageTaskRunner:
             chunk.verification_status == VerificationStatus.CANDIDATE for chunk in chunks
         )
         verified = sum(chunk.verification_status == VerificationStatus.VERIFIED for chunk in chunks)
-        warning_count = unresolved_items + candidate + extraction_unresolved
+        warning_count = (
+            unresolved_items + candidate + extraction_unresolved + len(failed_page_numbers)
+        )
         trace_payload: dict[str, object] | None = None
         if api_family == "agentic_v2":
             trace_pages: list[dict[str, object]] = []
@@ -615,6 +648,9 @@ class V2PageTaskRunner:
                 usage=usage,
                 processing={
                     "mode": mode.value,
+                    "recipe_version": recipe.version,
+                    "partial": bool(failed_page_numbers),
+                    "failed_pages": failed_page_numbers,
                     "draft_model": "gpt-5.6-luna",
                     "verification_model": "gpt-5.6-terra",
                 },
@@ -623,6 +659,21 @@ class V2PageTaskRunner:
             output_markdown = clean_markdown
         source = await asyncio.to_thread(self.store.read, source_path)
         annotated_pdf = await asyncio.to_thread(build_annotated_pdf, source, filename, chunks)
+        evidence_bundle, audit_manifest = await asyncio.to_thread(
+            build_bundle,
+            self.store,
+            job_id=job_id,
+            source_path=source_path,
+            source_sha256=source_sha256,
+            recipe=recipe.model_dump(mode="json"),
+            page_count=page_count,
+            extra_files={
+                "document.json": document_json,
+                "document.md": output_markdown.encode(),
+                "document-calls.json": json.dumps(document_audit_calls, indent=2).encode(),
+            },
+        )
+        audit_manifest_json = json.dumps(audit_manifest, indent=2).encode()
         payloads = [
             (
                 "markdown",
@@ -641,6 +692,18 @@ class V2PageTaskRunner:
                 "annotated.pdf",
                 annotated_pdf,
                 "application/pdf",
+            ),
+            (
+                "audit_manifest",
+                "audit-manifest.json",
+                audit_manifest_json,
+                "application/json",
+            ),
+            (
+                "evidence_bundle",
+                "evidence-bundle.zip",
+                evidence_bundle,
+                "application/zip",
             ),
         ]
         if trace_payload is not None:
@@ -691,6 +754,8 @@ class V2PageTaskRunner:
             job.warning_count = warning_count
             job.quality_policy_snapshot = {
                 "usage": usage,
+                "recipe_version": recipe.version,
+                "audit_integrity_sha256": audit_manifest["integrity_sha256"],
                 **(
                     {
                         "agentic": {
@@ -704,7 +769,10 @@ class V2PageTaskRunner:
             }
             job.status = JobStatus.COMPLETED_WITH_WARNINGS if warning_count else JobStatus.COMPLETED
             job.current_page = None
-            job.completed_pages = page_count
-            job.failed_pages = 0
+            job.completed_pages = len(completed_tasks)
+            job.failed_pages = len(failed_page_numbers)
+            if failed_page_numbers:
+                job.error_code = "partial_page_failure"
+                job.error_message = f"Pages failed after retries: {failed_page_numbers}"
             job.completed_at = dt.datetime.now(dt.UTC)
             await session.commit()

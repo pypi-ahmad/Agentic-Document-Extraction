@@ -281,7 +281,10 @@ export default function HomePage() {
               <div className="metrics">
                 <div><strong>{active.completed_pages}/{active.page_count}</strong><span>Pages parsed</span></div>
                 <div><strong>{active.failed_pages}</strong><span>Page failures</span></div>
+                <div><strong>{active.assurance?.recipe_version ?? "v8"}</strong><span>Recipe</span></div>
+                <div><strong>{active.assurance?.evidence_bundle_ready ? "Ready" : "Pending"}</strong><span>Evidence bundle</span></div>
               </div>
+              {active.assurance?.partial && <div className="run-error">Partial result: successful pages are available; failed pages are listed in the run details.</div>}
               {active.error_message && <div className="run-error">{active.error_message}</div>}
               <ArtifactPreview jobId={active.id} artifacts={active.artifacts} reviews={reviews} trace={trace} />
               {CANCELLABLE.has(active.status) && <button className="stop" type="button" onClick={() => void cancel()}><Square size={13} />Stop parsing</button>}

@@ -224,10 +224,17 @@ class DocumentResult(BaseModel):
 
     @model_validator(mode="after")
     def validate_grounded_graph(self) -> DocumentResult:
-        if len(self.pages) != self.source.page_count:
+        partial = bool(self.processing.get("partial"))
+        if not partial and len(self.pages) != self.source.page_count:
             raise ValueError("page count does not match source")
-        if [page.number for page in self.pages] != list(range(1, self.source.page_count + 1)):
+        page_numbers = [page.number for page in self.pages]
+        if not partial and page_numbers != list(range(1, self.source.page_count + 1)):
             raise ValueError("pages must be contiguous and ordered")
+        if partial and (
+            page_numbers != sorted(set(page_numbers))
+            or any(page > self.source.page_count for page in page_numbers)
+        ):
+            raise ValueError("partial pages must be unique, ordered, and within the source")
         items = [item for page in self.pages for item in page.items]
         item_ids = [item.id for item in items]
         if len(item_ids) != len(set(item_ids)):
