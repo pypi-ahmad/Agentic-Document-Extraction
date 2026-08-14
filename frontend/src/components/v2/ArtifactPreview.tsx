@@ -10,6 +10,7 @@ const NAMES: Record<string, string> = {
   json: "JSON",
   annotated_pdf: "Annotated PDF",
 };
+const MAX_TEXT_PREVIEW_BYTES = 2 * 1024 * 1024;
 
 function name(artifact: AgenticParseArtifact) {
   return NAMES[artifact.type] ?? artifact.type.replaceAll("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
@@ -39,7 +40,7 @@ function artifactFor(tab: ResultTab, artifacts: AgenticParseArtifact[]) {
 export function ArtifactPreview({ jobId, artifacts, reviews, trace }: { jobId: string; artifacts: AgenticParseArtifact[]; reviews: ParseReview[]; trace: AgentTraceEvent[] }) {
   const [selectedTab, setSelectedTab] = useState<ResultTab>("annotated_pdf");
   const [content, setContent] = useState("");
-  const [state, setState] = useState<"idle" | "loading" | "ready" | "error">("idle");
+  const [state, setState] = useState<"idle" | "loading" | "ready" | "error" | "too_large">("idle");
 
   useEffect(() => setSelectedTab("annotated_pdf"), [jobId]);
 
@@ -49,6 +50,10 @@ export function ArtifactPreview({ jobId, artifacts, reviews, trace }: { jobId: s
     setContent("");
     if (!selected || !isText(selected)) {
       setState("idle");
+      return;
+    }
+    if (selected.size > MAX_TEXT_PREVIEW_BYTES) {
+      setState("too_large");
       return;
     }
 
@@ -105,6 +110,7 @@ export function ArtifactPreview({ jobId, artifacts, reviews, trace }: { jobId: s
         {state === "loading" && <div className="artifact-message"><LoaderCircle className="spin" size={20} /> Loading preview…</div>}
         {state === "ready" && <pre>{content}</pre>}
         {state === "error" && <div className="artifact-message">Preview unavailable. Download the artifact to inspect it.</div>}
+        {state === "too_large" && <div className="artifact-message">This artifact is too large to preview safely. Download it to inspect the full contents.</div>}
         {state === "idle" && selected && !isText(selected) && !selected.preview_url && <div className="artifact-message"><FileArchive size={24} />This artifact is download-only.</div>}
         {state === "idle" && !selected && selectedTab !== "review" && selectedTab !== "trace" && selectedTab !== "extract" && <div className="artifact-message">This output is not available yet.</div>}
       </div>

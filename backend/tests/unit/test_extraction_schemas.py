@@ -43,11 +43,20 @@ def test_schema_validator_normalizes_nested_objects_and_tables() -> None:
     )
 
 
-@pytest.mark.parametrize("keyword", ["$ref", "oneOf", "allOf", "anyOf", "if"])
+@pytest.mark.parametrize("keyword", ["$ref", "oneOf", "allOf", "anyOf", "if", "pattern"])
 def test_schema_validator_rejects_unsupported_composition(keyword: str) -> None:
     schema = {
         "type": "object",
-        "properties": {"value": {keyword: [] if keyword != "$ref" else "remote.json"}},
+        "properties": {
+            "value": {
+                "type": "string",
+                keyword: (
+                    "^(a+)+$"
+                    if keyword == "pattern"
+                    else ([] if keyword != "$ref" else "remote.json")
+                ),
+            }
+        },
     }
 
     result = validate_extraction_schema(schema)
