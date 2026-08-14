@@ -13,6 +13,12 @@ and this project aims to follow [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
+## [5.0.2] - 2026-08-14
+
+### Changed
+
+- Synchronized all current setup, capabilities, architecture, deployment, runtime, model, and handbook documentation with Agnes 2.5 Flash private visual processing.
+- Rebuilt the published HTML and PDF documentation artifacts.
 ## [5.0.1] - 2026-08-14
 
 ### Fixed
