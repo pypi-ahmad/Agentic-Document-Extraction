@@ -5,6 +5,8 @@
 - Synchronized setup, capabilities, architecture, deployment, runtime, model, and handbook
   documentation with Agnes 2.5 Flash private visual processing.
 - Updated current-version documentation and generated HTML/PDF artifacts to 5.0.2.
+- Added a red-and-black dark Streamlit theme with near-black surfaces, charcoal panels,
+  red controls, and dark-red borders.
 
 ## Paperplane 5.0.1
 
