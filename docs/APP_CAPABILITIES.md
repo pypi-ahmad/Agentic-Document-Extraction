@@ -39,7 +39,7 @@ PDF upload
 
 ### 1. Upload and job creation
 
-`POST /api/parse-jobs` validates the file, creates a database job, saves the source, and returns `202 Accepted` with a job ID. Parsing runs asynchronously. Clients can poll the job or consume its SSE stream. Default limits are 200 MB and 500 pages; both are configurable.
+`POST /api/parse-jobs` validates the file, creates a database job, saves the source, and returns `202 Accepted` with a job ID. Parsing runs asynchronously. Clients can poll the job or consume its SSE stream. Default limits are 200 MB and 500 pages; oversized PDF canvases and image frame sets above the decoded-pixel budget are rejected before rendering.
 
 ### 2. `ingest_and_render`
 

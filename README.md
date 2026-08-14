@@ -108,7 +108,10 @@ rate variables to enable USD estimates. Keys remain backend-only. Set `API_KEY` 
 the service behind TLS and authentication before exposing it beyond localhost.
 
 Supported inputs are PDF, PNG, JPEG, WebP, and TIFF. Defaults limit documents to 200 MB
-and 500 pages. Large documents are processed as independently leased page tasks, so
+and 500 pages; oversized PDF canvases and image frame sets above the decoded-pixel
+budget are rejected before rendering. The API binds to `127.0.0.1` by default, and
+anonymous local requests still use the configured rate limit. Large documents are
+processed as independently leased page tasks, so
 completed pages survive worker restarts.
 
 ## Verification

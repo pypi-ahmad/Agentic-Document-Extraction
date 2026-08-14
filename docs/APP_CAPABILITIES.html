@@ -61,9 +61,11 @@ table{width:100%;border-collapse:collapse;display:block;overflow-x:auto;margin:1
 </div>
 </aside>
     <main id="content"><h1 id="paperplane-capabilities-pipeline-and-technical-guide">Paperplane: Capabilities, Pipeline, and Technical Guide<a class="headerlink" href="#paperplane-capabilities-pipeline-and-technical-guide" title="Permanent link">&para;</a></h1>
-<p>Paperplane is a local-first document intelligence application that converts native or scanned PDFs into layout-aware Markdown for retrieval-augmented generation (RAG), LLM context, indexing, search, and human review.</p>
+<p>Paperplane converts PDFs and document images into grounded Markdown and JSON using Luna
+drafting, bounded Terra verification, deterministic PyMuPDF geometry, and auditable evidence.</p>
 <blockquote>
-<p>Paperplane implements a LandingAI ADE-inspired visual workflow and LlamaParse-inspired Markdown reconstruction locally. It does not call either hosted service.</p>
+<p>It is independently inspired by visual ADE and structured parsing concepts. It does not
+call LandingAI or LlamaParse. OpenAI is the only model provider in the active V2 runtime.</p>
 </blockquote>
 <h2 id="what-the-application-can-do">What the application can do<a class="headerlink" href="#what-the-application-can-do" title="Permanent link">&para;</a></h2>
 <ul>
@@ -72,11 +74,13 @@ table{width:100%;border-collapse:collapse;display:block;overflow-x:auto;margin:1
 <li>Recover native words and coordinates when a usable PDF text layer exists.</li>
 <li>Detect headings, columns, text, lists, tables, figures, charts, headers, and footers as bounded regions.</li>
 <li>Process regions independently so complex layouts are not flattened into one OCR stream.</li>
-<li>Use native text, PaddleOCR, Docling, and Ollama-hosted models where appropriate.</li>
+<li>Snap native PDF text exactly and use OpenAI vision for scanned or ambiguous content.</li>
 <li>Reconstruct headings, paragraphs, lists, tables, figures, and multi-column reading order as Markdown.</li>
 <li>Produce clean Markdown, grounded Markdown, RAG context chunks, an annotated bounding-box PDF, figure crops, layout data, and quality diagnostics.</li>
 <li>Review alignment and retry failed regions through a bounded LangGraph correction loop.</li>
-<li>Persist jobs, page checkpoints, artifacts, failures, cancellation, and resumable progress in SQLite.</li>
+<li>Persist jobs, page checkpoints, artifacts, retries, cancellation, and safe partial progress.</li>
+<li>Export tamper-evident audit manifests and private evidence/replay bundles.</li>
+<li>Execute generic inline JSON Schema extraction and expose an invoice-v1 preset.</li>
 <li>Expose the workflow through FastAPI, server-sent events, and a Next.js interface.</li>
 </ul>
 <h2 id="end-to-end-pipeline">End-to-end pipeline<a class="headerlink" href="#end-to-end-pipeline" title="Permanent link">&para;</a></h2>
@@ -92,7 +96,7 @@ table{width:100%;border-collapse:collapse;display:block;overflow-x:auto;margin:1
   -&gt; persist Markdown, context, figures, diagnostics, and status
 </code></pre>
 <h3 id="1-upload-and-job-creation">1. Upload and job creation<a class="headerlink" href="#1-upload-and-job-creation" title="Permanent link">&para;</a></h3>
-<p><code>POST /api/parse-jobs</code> validates the file, creates a database job, saves the source, and returns <code>202 Accepted</code> with a job ID. Parsing runs asynchronously. Clients can poll the job or consume its SSE stream. Default limits are 200 MB and 500 pages; both are configurable.</p>
+<p><code>POST /api/parse-jobs</code> validates the file, creates a database job, saves the source, and returns <code>202 Accepted</code> with a job ID. Parsing runs asynchronously. Clients can poll the job or consume its SSE stream. Default limits are 200 MB and 500 pages; oversized PDF canvases and image frame sets above the decoded-pixel budget are rejected before rendering.</p>
 <h3 id="2-ingest_and_render">2. <code>ingest_and_render</code><a class="headerlink" href="#2-ingest_and_render" title="Permanent link">&para;</a></h3>
 <p>The parser opens the PDF with PyMuPDF, checks its page count, renders pages to PNG, and extracts native word coordinates when possible. Page images and native words remain connected to their source coordinates for later grounding.</p>
 <h3 id="3-visual_segmentation">3. <code>visual_segmentation</code><a class="headerlink" href="#3-visual_segmentation" title="Permanent link">&para;</a></h3>
@@ -430,7 +434,7 @@ table{width:100%;border-collapse:collapse;display:block;overflow-x:auto;margin:1
 <li>local or privacy-sensitive document processing.</li>
 </ul>
 <h2 id="important-boundaries">Important boundaries<a class="headerlink" href="#important-boundaries" title="Permanent link">&para;</a></h2>
-<p>Paperplane is a layout-aware Markdown parser, not a field-level business-schema extractor. Version 1.0 focuses on faithful document reconstruction rather than invoices, fixed schemas, or provider-specific structured extraction.</p>
+<p>Paperplane supports optional schema-first field extraction in addition to faithful document reconstruction. Saved restricted Draft 2020-12 schemas can contain nested objects, arrays, and table arrays. Results preserve page, region, bounding-box, and table-cell citations; large tables are also exported as grounded JSONL. Incomplete or invalid instances remain auditable partial outputs and complete the parse with warnings.</p>
 <p>Quality depends on scan resolution, rotation, language support, local GPU capacity, model quality, and table complexity. A <code>completed_with_warnings</code> result means output was produced but one or more diagnostics should be reviewed.</p>
 <p>The default SQLite deployment is intended for local and single-worker operation. <code>job_max_concurrent</code> is limited to one; distributed workers would require a different coordination and persistence design.</p>
 <h2 id="continue-reading">Continue reading<a class="headerlink" href="#continue-reading" title="Permanent link">&para;</a></h2>
@@ -440,7 +444,9 @@ table{width:100%;border-collapse:collapse;display:block;overflow-x:auto;margin:1
 <li><a href="QUALITY.md">Quality</a> - diagnostics and quality behavior</li>
 <li><a href="LIMITATIONS.md">Limitations</a> - known constraints</li>
 <li><a href="RUNBOOK.md">Runbook</a> - operational procedures</li>
-<li><a href="../Zero_to_Hero_Study_Handbook.md">Zero-to-Hero Study Handbook</a> - extended learning guide</li>
+<li><a href="how-it-works.md">How Paperplane works</a> - end-to-end processing journey</li>
+<li><a href="ZERO_TO_MASTERY.md">Zero to Mastery</a> - guided codebase tutorial and exercises</li>
+<li><a href="RUN_APP.md">Run Paperplane</a> - command-only PowerShell and Bash reference</li>
 </ul></main>
   </div>
   <footer class="footer">Paperplane v1.0 · Local-first document intelligence</footer>
