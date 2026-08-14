@@ -5,7 +5,7 @@ title Paperplane
 
 echo.
 echo ========================================
-echo   Paperplane setup and launcher
+echo   Paperplane launcher
 echo ========================================
 echo.
 
@@ -17,8 +17,8 @@ if not exist "uv.lock" (
     echo ERROR: uv.lock was not found next to Paperplane.cmd.
     goto :failure
 )
-if not exist "streamlit_app.py" (
-    echo ERROR: streamlit_app.py was not found next to Paperplane.cmd.
+if not exist "workspace_app.py" (
+    echo ERROR: workspace_app.py was not found next to Paperplane.cmd.
     goto :failure
 )
 
@@ -30,10 +30,11 @@ for /f "tokens=1,2,*" %%A in ('reg.exe query "HKCU\Environment" /v XAI_API_KEY 2
 for /f "tokens=1,2,*" %%A in ('reg.exe query "HKCU\Environment" /v GEMINI_API_KEY 2^>nul') do if /i "%%A"=="GEMINI_API_KEY" set "GEMINI_API_KEY=%%C"
 for /f "tokens=1,2,*" %%A in ('reg.exe query "HKCU\Environment" /v ANTHROPIC_API_KEY 2^>nul') do if /i "%%A"=="ANTHROPIC_API_KEY" set "ANTHROPIC_API_KEY=%%C"
 for /f "tokens=1,2,*" %%A in ('reg.exe query "HKCU\Environment" /v AGNES_API_KEY 2^>nul') do if /i "%%A"=="AGNES_API_KEY" set "AGNES_API_KEY=%%C"
+for /f "tokens=1,2,*" %%A in ('reg.exe query "HKCU\Environment" /v OLLAMA_BASE_URL 2^>nul') do if /i "%%A"=="OLLAMA_BASE_URL" set "OLLAMA_BASE_URL=%%C"
 
 call :find_uv
 if not defined UV_EXE (
-    echo [1/5] Installing uv...
+    echo Installing uv because it is not available...
     where winget.exe >nul 2>&1
     if not errorlevel 1 (
         winget install --id astral-sh.uv --exact --silent --accept-package-agreements --accept-source-agreements
@@ -54,30 +55,98 @@ if not defined UV_EXE (
     goto :failure
 )
 
-echo [1/5] uv is ready.
-echo [2/5] Installing Python 3.12.10 if needed...
-"%UV_EXE%" python install 3.12.10
+echo uv is ready.
+
+call :find_soffice
+if not defined SOFFICE_EXE (
+    echo Installing LibreOffice because it is not available...
+    where winget.exe >nul 2>&1
+    if errorlevel 1 (
+        echo ERROR: Windows Package Manager is required to install LibreOffice automatically.
+        goto :setup_failure
+    )
+    winget install --id TheDocumentFoundation.LibreOffice --exact --silent --accept-package-agreements --accept-source-agreements
+    if errorlevel 1 goto :setup_failure
+    call :find_soffice
+) else (
+    echo LibreOffice is ready.
+)
+if not defined SOFFICE_EXE (
+    echo ERROR: LibreOffice was installed but soffice.com could not be located.
+    goto :setup_failure
+)
+
+set "TORCH_EXTRA=cpu"
+where nvidia-smi.exe >nul 2>&1 && set "TORCH_EXTRA=cu130"
+set "VENV_PYTHON=%CD%\.venv\Scripts\python.exe"
+set "VENV_DOCLING=%CD%\.venv\Scripts\docling-tools.exe"
+
+echo Checking the locked Python environment...
+"%UV_EXE%" sync --check --locked --python 3.12.10 --extra %TORCH_EXTRA% >nul 2>&1
+if not errorlevel 1 goto :dependencies_ready
+if /i "%TORCH_EXTRA%"=="cu130" (
+    "%UV_EXE%" sync --check --locked --python 3.12.10 --extra cpu >nul 2>&1
+    if not errorlevel 1 (
+        set "TORCH_EXTRA=cpu"
+        goto :dependencies_ready
+    )
+)
+
+echo Python or locked dependencies are missing or out of date.
+"%UV_EXE%" python find 3.12.10 >nul 2>&1
+if errorlevel 1 (
+    echo Installing Python 3.12.10...
+    "%UV_EXE%" python install 3.12.10
+    if errorlevel 1 goto :setup_failure
+)
+
+echo Synchronizing locked dependencies with the %TORCH_EXTRA% PyTorch backend...
+"%UV_EXE%" sync --locked --python 3.12.10 --extra %TORCH_EXTRA%
+if errorlevel 1 if /i "%TORCH_EXTRA%"=="cu130" (
+    echo CUDA dependency setup failed. Retrying with the CPU backend...
+    set "TORCH_EXTRA=cpu"
+    "%UV_EXE%" sync --locked --python 3.12.10 --extra cpu
+)
 if errorlevel 1 goto :setup_failure
 
-echo [3/5] Creating the environment and installing locked dependencies...
-"%UV_EXE%" sync --locked --python 3.12.10
+:dependencies_ready
+if not exist "%VENV_PYTHON%" goto :setup_failure
+if not exist "%VENV_DOCLING%" goto :setup_failure
+echo Locked Python environment is ready.
+
+set "MODEL_ROOT=%USERPROFILE%\.cache\docling\models"
+if defined DOCLING_CACHE_DIR set "MODEL_ROOT=%DOCLING_CACHE_DIR%\models"
+set "MODELS_READY=1"
+if not exist "%MODEL_ROOT%\docling-project--docling-layout-heron\model.safetensors" set "MODELS_READY="
+if not exist "%MODEL_ROOT%\docling-project--docling-models\model_artifacts\tableformer\accurate\tableformer_accurate.safetensors" set "MODELS_READY="
+if not exist "%MODEL_ROOT%\docling-project--docling-models\model_artifacts\tableformer\accurate\tm_config.json" set "MODELS_READY="
+if not exist "%MODEL_ROOT%\RapidOcr\PP-OCRv6_det_small.pth" set "MODELS_READY="
+if not exist "%MODEL_ROOT%\RapidOcr\PP-OCRv6_rec_small.pth" set "MODELS_READY="
+if not exist "%MODEL_ROOT%\RapidOcr\ch_ptocr_mobile_v2.0_cls_mobile.pth" set "MODELS_READY="
+if not exist "%MODEL_ROOT%\RapidOcr\PP-OCRv6_det_small.onnx" set "MODELS_READY="
+if not exist "%MODEL_ROOT%\RapidOcr\PP-OCRv6_rec_small.onnx" set "MODELS_READY="
+if not exist "%MODEL_ROOT%\RapidOcr\ch_ppocr_mobile_v2.0_cls_mobile.onnx" set "MODELS_READY="
+if not exist "%MODEL_ROOT%\RapidOcr\ppocrv6_dict.txt" set "MODELS_READY="
+if defined MODELS_READY goto :models_ready
+
+echo Downloading local layout, table, and OCR models because they are not available...
+"%VENV_DOCLING%" models download layout tableformer rapidocr --quiet
 if errorlevel 1 goto :setup_failure
 
-echo [4/5] Downloading local document-layout models if needed...
-"%UV_EXE%" run --locked --python 3.12.10 docling-tools models download layout tableformer --quiet
-if errorlevel 1 goto :setup_failure
-
-echo [5/5] Starting Paperplane...
+:models_ready
+echo Local document models are ready.
+echo Starting Paperplane...
 echo Open http://127.0.0.1:8551 in your browser.
 echo Close this window or press Ctrl+C to stop the app.
 echo.
 if not defined OPENAI_API_KEY if not defined XAI_API_KEY if not defined GEMINI_API_KEY if not defined ANTHROPIC_API_KEY if not defined AGNES_API_KEY (
     echo Note: No supported model API key is set in this terminal.
-    echo Scans and images require the key for the selected model.
+    echo Cloud AI and cloud enhancement require the key for the selected model.
+    echo Docling, PDF Inspector, and a running local Ollama can work without a cloud key.
     echo.
 )
 
-"%UV_EXE%" run --locked --python 3.12.10 streamlit run streamlit_app.py --server.port=8551
+"%VENV_PYTHON%" -m streamlit run workspace_app.py --server.port=8551
 set "PAPERPLANE_EXIT=%ERRORLEVEL%"
 if not "%PAPERPLANE_EXIT%"=="0" (
     echo.
@@ -92,6 +161,13 @@ for /f "delims=" %%I in ('where uv.exe 2^>nul') do if not defined UV_EXE set "UV
 if not defined UV_EXE if exist "%USERPROFILE%\.local\bin\uv.exe" set "UV_EXE=%USERPROFILE%\.local\bin\uv.exe"
 if not defined UV_EXE if exist "%USERPROFILE%\.cargo\bin\uv.exe" set "UV_EXE=%USERPROFILE%\.cargo\bin\uv.exe"
 if not defined UV_EXE if exist "%LOCALAPPDATA%\Microsoft\WinGet\Links\uv.exe" set "UV_EXE=%LOCALAPPDATA%\Microsoft\WinGet\Links\uv.exe"
+exit /b 0
+
+:find_soffice
+set "SOFFICE_EXE="
+for /f "delims=" %%I in ('where soffice.com 2^>nul') do if not defined SOFFICE_EXE set "SOFFICE_EXE=%%I"
+if not defined SOFFICE_EXE if exist "%ProgramFiles%\LibreOffice\program\soffice.com" set "SOFFICE_EXE=%ProgramFiles%\LibreOffice\program\soffice.com"
+if not defined SOFFICE_EXE if exist "%ProgramFiles(x86)%\LibreOffice\program\soffice.com" set "SOFFICE_EXE=%ProgramFiles(x86)%\LibreOffice\program\soffice.com"
 exit /b 0
 
 :setup_failure
