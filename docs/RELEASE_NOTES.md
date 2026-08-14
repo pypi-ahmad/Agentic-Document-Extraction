@@ -1,6 +1,6 @@
-# Paperplane 4.2.0
+# Paperplane 4.2.1
 
-Paperplane 4.2.0 produces ADE-inspired, context- and layout-aware Markdown, hierarchical
+Paperplane 4.2.1 produces ADE-inspired, context- and layout-aware Markdown, hierarchical
 grounding JSON, and an annotated evidence PDF from one local Streamlit application.
 
 ## Added

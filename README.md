@@ -1,6 +1,6 @@
 # Paperplane
 
-Paperplane 4.2.0 is a local Streamlit app that converts PDFs, document images, and modern
+Paperplane 4.2.1 is a local Streamlit app that converts PDFs, document images, and modern
 Office files into context- and layout-aware Markdown, hierarchical grounding JSON, and an
 annotated evidence PDF. It is inspired by LandingAI ADE's document-output workflow, but it
 runs its own local Docling pipeline with a selectable cloud vision model.

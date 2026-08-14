@@ -1,6 +1,6 @@
-# Migration from v3 to v4.2
+# Migration from v3 to v4.2.1
 
-Version 4 is a breaking simplification. Version 4.2 keeps the local boundary and expands
+Version 4 is a breaking simplification. Version 4.2.1 keeps the local boundary and expands
 inputs, routing, grounding, and evidence review.
 
 ## Removed in v4

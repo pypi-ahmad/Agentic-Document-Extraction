@@ -11,6 +11,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 PYPROJECT = ROOT / "pyproject.toml"
+UV_LOCK = ROOT / "uv.lock"
 STREAMLIT_APP = ROOT / "streamlit_app.py"
 CHANGELOG = ROOT / "CHANGELOG.md"
 SEMVER = re.compile(r"^(\d+)\.(\d+)\.(\d+)$")
@@ -95,7 +96,7 @@ def main() -> int:
         raise SystemExit(f"Invalid semantic version: {version}")
 
     print(f"Paperplane {current} -> {version}")
-    print("Updates: pyproject.toml, streamlit_app.py, CHANGELOG.md")
+    print("Updates: pyproject.toml, uv.lock, streamlit_app.py, CHANGELOG.md")
     print(f"Publish: {args.push}")
     if args.dry_run:
         return 0
@@ -113,10 +114,18 @@ def main() -> int:
         rf"\g<1>{version}\g<2>",
     )
     add_changelog(version, args.notes)
+    command("uv", "lock")
 
     if not args.push:
         return 0
-    command("git", "add", "pyproject.toml", "streamlit_app.py", "CHANGELOG.md")
+    command(
+        "git",
+        "add",
+        "pyproject.toml",
+        "uv.lock",
+        "streamlit_app.py",
+        "CHANGELOG.md",
+    )
     command("git", "commit", "-m", f"chore(release): {version}")
     tag = f"v{version}"
     command("git", "tag", "-a", tag, "-m", tag)

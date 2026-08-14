@@ -1,6 +1,6 @@
 # Paperplane capabilities
 
-Paperplane 4.2.0 converts PDFs, images, and modern Office documents into layout-aware
+Paperplane 4.2.1 converts PDFs, images, and modern Office documents into layout-aware
 Markdown, hierarchical grounding JSON, and an annotated evidence PDF in one local
 Streamlit session.
 
