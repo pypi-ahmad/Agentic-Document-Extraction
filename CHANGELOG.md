@@ -7,6 +7,17 @@ and this project aims to follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+### Changed
+
+### Fixed
+
+## [5.0.1] - 2026-08-14
+
+### Fixed
+
+- Enabled Agnes 2.5 Flash private visual Parse and enhancement with inline PNG input, removing the public-image URL restriction.
 ## [5.0.0] - 2026-08-14
 
 ### Added
