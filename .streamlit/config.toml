@@ -10,17 +10,17 @@ gatherUsageStats = false
 
 [theme]
 base = "dark"
-primaryColor = "#61AFEF"
-backgroundColor = "#1E1E1E"
-secondaryBackgroundColor = "#252526"
-textColor = "#D4D4D4"
-borderColor = "#3C3C3C"
+primaryColor = "#D32F2F"
+backgroundColor = "#0B0B0D"
+secondaryBackgroundColor = "#17171A"
+textColor = "#F2F2F2"
+borderColor = "#3D2023"
 showWidgetBorder = true
 baseRadius = "6px"
 buttonRadius = "6px"
 
 [theme.sidebar]
-backgroundColor = "#252526"
-secondaryBackgroundColor = "#333333"
-textColor = "#D4D4D4"
-borderColor = "#3C3C3C"
+backgroundColor = "#111113"
+secondaryBackgroundColor = "#211517"
+textColor = "#F2F2F2"
+borderColor = "#462327"
