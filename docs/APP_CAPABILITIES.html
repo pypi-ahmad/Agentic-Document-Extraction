@@ -97,6 +97,7 @@ call LandingAI or LlamaParse. OpenAI is the only model provider in the active V2
 </code></pre>
 <h3 id="1-upload-and-job-creation">1. Upload and job creation<a class="headerlink" href="#1-upload-and-job-creation" title="Permanent link">&para;</a></h3>
 <p><code>POST /api/parse-jobs</code> validates the file, creates a database job, saves the source, and returns <code>202 Accepted</code> with a job ID. Parsing runs asynchronously. Clients can poll the job or consume its SSE stream. Default limits are 200 MB and 500 pages; oversized PDF canvases and image frame sets above the decoded-pixel budget are rejected before rendering.</p>
+<p>Reusable extraction schemas support bounded structural and scalar constraints but reject regular-expression <code>pattern</code> rules. Browser previews load text and JSON artifacts only up to 2 MB; larger artifacts remain available as downloads.</p>
 <h3 id="2-ingest_and_render">2. <code>ingest_and_render</code><a class="headerlink" href="#2-ingest_and_render" title="Permanent link">&para;</a></h3>
 <p>The parser opens the PDF with PyMuPDF, checks its page count, renders pages to PNG, and extracts native word coordinates when possible. Page images and native words remain connected to their source coordinates for later grounding.</p>
 <h3 id="3-visual_segmentation">3. <code>visual_segmentation</code><a class="headerlink" href="#3-visual_segmentation" title="Permanent link">&para;</a></h3>

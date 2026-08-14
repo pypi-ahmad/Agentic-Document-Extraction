@@ -41,6 +41,8 @@ PDF upload
 
 `POST /api/parse-jobs` validates the file, creates a database job, saves the source, and returns `202 Accepted` with a job ID. Parsing runs asynchronously. Clients can poll the job or consume its SSE stream. Default limits are 200 MB and 500 pages; oversized PDF canvases and image frame sets above the decoded-pixel budget are rejected before rendering.
 
+Reusable extraction schemas support bounded structural and scalar constraints but reject regular-expression `pattern` rules. Browser previews load text and JSON artifacts only up to 2 MB; larger artifacts remain available as downloads.
+
 ### 2. `ingest_and_render`
 
 The parser opens the PDF with PyMuPDF, checks its page count, renders pages to PNG, and extracts native word coordinates when possible. Page images and native words remain connected to their source coordinates for later grounding.

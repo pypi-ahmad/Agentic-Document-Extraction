@@ -114,6 +114,12 @@ anonymous local requests still use the configured rate limit. Large documents ar
 processed as independently leased page tasks, so
 completed pages survive worker restarts.
 
+Reusable extraction schemas intentionally reject regular-expression `pattern` rules;
+this keeps validation deterministic and avoids attacker-controlled regex backtracking.
+Text and JSON artifact previews are capped at 2 MB in the browser, while larger files
+remain downloadable. Python and frontend dependency locks are maintained at versions
+that pass `pip-audit` and `npm audit`.
+
 ## Verification
 
 ```powershell

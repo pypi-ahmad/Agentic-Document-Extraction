@@ -280,6 +280,10 @@ recreate the tables. The startup code logs a warning if you forget.
       (see `app/rate_limit.py`).
 - [ ] `OLLAMA_BASE_URL` points at a loopback / local address. If not,
       `OLLAMA_ALLOW_PRIVATE_HOSTS=true` is set explicitly.
+- [ ] `uv run --with pip-audit pip-audit` and `npm audit` in `frontend/`
+      report no known dependency vulnerabilities before release.
+- [ ] Remote live-canary targets use HTTPS and pass the explicit
+      `--allow-remote` flag; the canary refuses to forward `API_KEY` otherwise.
 - [ ] At least one LLM API key is set. The startup log line
       `startup.complete` only appears if at least one LLM provider
       is ready.
