@@ -30,6 +30,9 @@ Set only the provider variables you use: `OPENAI_API_KEY`, `OPENAI_BASE_URL`,
 `XAI_API_KEY`, `GEMINI_API_KEY`, `ANTHROPIC_API_KEY`, or `AGNES_API_KEY`. Paperplane also
 accepts `OLLAMA_BASE_URL`, defaulting to `http://127.0.0.1:11434`.
 
+`AGNES_API_KEY` enables both text and private visual workflows. Paperplane sends selected
+page PNGs inline, so no public image host is required.
+
 ```powershell
 [Environment]::SetEnvironmentVariable("OPENAI_API_KEY", "your-key", "User")
 [Environment]::SetEnvironmentVariable("OPENAI_BASE_URL", "https://api.openai.com", "User")

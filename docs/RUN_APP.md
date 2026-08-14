@@ -21,6 +21,7 @@ uv run --locked --extra cpu streamlit run workspace_app.py --server.port=8551
 For Ollama ADE, start Ollama first and optionally set
 `OLLAMA_BASE_URL=http://127.0.0.1:11434`. Cloud credentials are read from the current
 process/Windows user environment, an ignored `.env`, or Streamlit secrets.
+Agnes 2.5 Flash accepts selected page images inline for Parse and cloud enhancement.
 
 The pages are Parse, Organize, Jobs, and Benchmarks. Select one Parse engine before
 uploading. Parse controls remain in the sidebar; the full-width canvas shares one document
