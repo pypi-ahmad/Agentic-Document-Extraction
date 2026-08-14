@@ -90,6 +90,7 @@ class V2JobQueue:
             await self._wake.wait()
             if self._stopping:
                 return
+            self._wake.clear()
             while not self._stopping:
                 task = await self.leases.claim(owner, lease_seconds=300)
                 if task is None:
@@ -120,7 +121,6 @@ class V2JobQueue:
                     assemble = getattr(self.runner, "_assemble_with_retries", None)
                     if assemble is not None:
                         await assemble(task.job_id)
-            self._wake.clear()
 
     async def shutdown(self) -> None:
         self._stopping = True

@@ -11,7 +11,7 @@ from typing import Any
 from zipfile import ZIP_DEFLATED, ZipFile
 
 from fastapi import APIRouter, Depends, HTTPException, Response
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -40,6 +40,13 @@ class ApproveRequest(BaseModel):
 class ExportRequest(BaseModel):
     name: str = Field(min_length=1, max_length=255)
     document_ids: list[str] = Field(min_length=1, max_length=100)
+
+    @field_validator("name")
+    @classmethod
+    def validate_download_name(cls, value: str) -> str:
+        if any(ord(char) < 32 or char in {'"', "\\"} for char in value):
+            raise ValueError("Export name contains characters that are unsafe in downloads")
+        return value
 
 
 def _error(code: str, message: str, status: int) -> HTTPException:
