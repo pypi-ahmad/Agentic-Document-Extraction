@@ -373,3 +373,5 @@ uv run pytest -q
 Paperplane builds on Streamlit, Docling, RapidOCR, Firecrawl PDF Inspector, LibreOffice,
 PyMuPDF, Ollama, and provider-native multimodal APIs. LandingAI ADE inspired the observable
 workflow and evidence contract, while Paperplane remains independent.
+
+<p align="center">Made with ❤️ by Ahmad Mujtaba</p>
