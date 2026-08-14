@@ -54,7 +54,7 @@ lint = [
   "pyright>=1.1.400",
 ]
 docs = [
-  "reportlab>=4.4,<5",
+  "reportlab>=4.4,<6",
 ]
 cpu = [
   "torch>=2.11",
