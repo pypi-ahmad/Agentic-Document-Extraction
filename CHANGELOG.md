@@ -13,6 +13,11 @@ and this project aims to follow [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
+## [4.2.1] - 2026-08-14
+
+### Fixed
+
+- Keep `uv.lock` synchronized and committed whenever the release script changes the project version, so locked installs succeed on clean systems and CI.
 ## [4.2.0] - 2026-08-14
 
 ### Added
@@ -40,7 +45,8 @@ and this project aims to follow [Semantic Versioning](https://semver.org/).
   descriptions; native documents can be converted locally.
 - `Paperplane.cmd` now downloads required Docling layout and table models during setup.
 - Docling's Windows layout path runs without Torch compilation or Visual Studio build tools.
-
+
+
 ### Fixed
 ## [4.0.0] - 2026-08-14
 
