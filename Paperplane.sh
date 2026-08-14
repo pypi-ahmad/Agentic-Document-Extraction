@@ -179,4 +179,4 @@ if [[ -z "${OPENAI_API_KEY:-}" \
     printf 'Docling, PDF Inspector, and a running local Ollama can work without a cloud key.\n\n'
 fi
 
-exec "$venv_python" -m streamlit run workspace_app.py --server.port=8551
+exec "$venv_python" -m paperplane.streamlit_runner run workspace_app.py --server.port=8551

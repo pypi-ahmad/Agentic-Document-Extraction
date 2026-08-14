@@ -57,7 +57,11 @@ def test_windows_launcher_skips_completed_setup() -> None:
     assert "sync --check --locked --python 3.12.10 --extra cpu" in launcher
     assert "if defined MODELS_READY goto :models_ready" in launcher
     assert '"%VENV_PYTHON%" -m streamlit cache clear' in launcher
-    assert '"%VENV_PYTHON%" -m streamlit run workspace_app.py --server.port=8551' in launcher
+    assert "*paperplane.streamlit_runner run workspace_app.py*" in launcher
+    assert (
+        '"%VENV_PYTHON%" -m paperplane.streamlit_runner run workspace_app.py '
+        "--server.port=8551" in launcher
+    )
     assert (
         '"%UV_EXE%" run --locked --python 3.12.10 --extra %TORCH_EXTRA% '
         "streamlit run" not in launcher
@@ -77,7 +81,10 @@ def test_linux_launcher_skips_completed_setup() -> None:
     assert "nvidia-smi" in launcher
     assert "models download layout tableformer rapidocr --quiet" in launcher
     assert '"$venv_python" -m streamlit cache clear' in launcher
-    assert 'exec "$venv_python" -m streamlit run workspace_app.py --server.port=8551' in launcher
+    assert (
+        'exec "$venv_python" -m paperplane.streamlit_runner run workspace_app.py '
+        "--server.port=8551" in launcher
+    )
 
 
 def test_workspace_exposes_shared_stop_and_clear_control() -> None:

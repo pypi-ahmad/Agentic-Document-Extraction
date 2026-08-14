@@ -11,7 +11,7 @@ echo ========================================
 echo.
 
 rem A new launcher run replaces only an existing Paperplane Streamlit process.
-powershell.exe -NoProfile -Command "$connection = Get-NetTCPConnection -LocalPort 8551 -State Listen -ErrorAction SilentlyContinue | Select-Object -First 1; if (-not $connection) { exit 0 }; $owner = Get-CimInstance Win32_Process -Filter ('ProcessId = ' + $connection.OwningProcess); if ($owner.CommandLine -like '*streamlit run workspace_app.py*') { Stop-Process -Id $connection.OwningProcess -Force; Wait-Process -Id $connection.OwningProcess -ErrorAction SilentlyContinue; exit 10 }; exit 20"
+powershell.exe -NoProfile -Command "$connection = Get-NetTCPConnection -LocalPort 8551 -State Listen -ErrorAction SilentlyContinue | Select-Object -First 1; if (-not $connection) { exit 0 }; $owner = Get-CimInstance Win32_Process -Filter ('ProcessId = ' + $connection.OwningProcess); if (($owner.CommandLine -like '*streamlit run workspace_app.py*') -or ($owner.CommandLine -like '*paperplane.streamlit_runner run workspace_app.py*')) { Stop-Process -Id $connection.OwningProcess -Force; Wait-Process -Id $connection.OwningProcess -ErrorAction SilentlyContinue; exit 10 }; exit 20"
 set "PORT_RESULT=%ERRORLEVEL%"
 if "%PORT_RESULT%"=="10" echo Stopped the previous Paperplane run.
 if "%PORT_RESULT%"=="20" goto :port_in_use
@@ -166,7 +166,7 @@ if not defined OPENAI_API_KEY if not defined XAI_API_KEY if not defined GEMINI_A
     echo.
 )
 
-"%VENV_PYTHON%" -m streamlit run workspace_app.py --server.port=8551
+"%VENV_PYTHON%" -m paperplane.streamlit_runner run workspace_app.py --server.port=8551
 set "PAPERPLANE_EXIT=%ERRORLEVEL%"
 if not "%PAPERPLANE_EXIT%"=="0" (
     echo.
