@@ -9,6 +9,14 @@ and this project aims to follow [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+### Changed
+
+### Fixed
+
+## [4.2.0] - 2026-08-14
+
+### Added
+
 - A fixed six-model catalog with Grok 4.6, GPT-5.6 Luna, Gemini 3.5 Flash-Lite, Gemini 3.6
   Flash, Claude Sonnet 5, and Agnes 2.5 Flash using verified production API IDs.
 - Provider-native structured-output adapters for xAI Responses, Google Gemini
@@ -32,9 +40,8 @@ and this project aims to follow [Semantic Versioning](https://semver.org/).
   descriptions; native documents can be converted locally.
 - `Paperplane.cmd` now downloads required Docling layout and table models during setup.
 - Docling's Windows layout path runs without Torch compilation or Visual Studio build tools.
-
+
 ### Fixed
-
 ## [4.0.0] - 2026-08-14
 
 ### Added
