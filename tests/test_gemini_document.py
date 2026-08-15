@@ -7,8 +7,16 @@ from paperplane.gemini_document import GeminiDocumentAdapter
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("model", ["gemini-3.5-flash-lite", "gemini-3.7-flash"])
-async def test_gemini_uses_native_multimodal_structured_output(model: str) -> None:
+@pytest.mark.parametrize(
+    ("model", "expected_thinking_level"),
+    [
+        ("gemini-3.5-flash-lite", "minimal"),
+        ("gemini-3.7-flash", "low"),
+    ],
+)
+async def test_gemini_uses_native_multimodal_structured_output(
+    model: str, expected_thinking_level: str
+) -> None:
     captured: dict = {}
 
     async def handler(request: httpx.Request) -> httpx.Response:
@@ -46,10 +54,10 @@ async def test_gemini_uses_native_multimodal_structured_output(model: str) -> No
     assert captured["key"] == "gemini-test"
     assert body["contents"][0]["parts"][0]["inlineData"]["mimeType"] == "image/png"
     assert body["generationConfig"]["responseFormat"]["text"] == {
-        "mimeType": "application/json",
+        "mimeType": "APPLICATION_JSON",
         "schema": {"type": "object"},
     }
-    assert body["generationConfig"]["thinkingConfig"] == {"thinkingLevel": "minimal"}
+    assert body["generationConfig"]["thinkingConfig"] == {"thinkingLevel": expected_thinking_level}
     assert result.value == {"chunks": []}
     assert result.usage.cached_input_tokens == 2
     await http.aclose()

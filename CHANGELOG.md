@@ -33,6 +33,9 @@ and this project aims to follow [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
+- Fixed Gemini Cloud AI requests by sending Google's REST-native structured-output MIME
+  enum and enforcing each selected model's minimum supported thinking level.
+
 - Prevented repeated GLM Markdown tails, vertical marginal-text failures, empty visual
   responses, and isolated empty OCR crops from aborting or inflating a page result.
 - Retried empty or transiently failed DeepSeek regions once, preserved successful sibling

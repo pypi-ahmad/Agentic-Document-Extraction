@@ -52,6 +52,9 @@ Use `GOOGLE_API_KEY` in the Windows user environment, process environment, ignor
 or Streamlit secrets. `GEMINI_API_KEY` remains a legacy fallback only when
 `GOOGLE_API_KEY` is absent.
 
+Paperplane automatically uses the minimum thinking level supported by the selected Gemini
+model (`minimal` for 3.5 Flash-Lite and `low` for 3.7 Flash).
+
 ## Can Agnes process private uploads?
 
 Yes. Paperplane sends selected page images inline to Agnes and does not publish them at a

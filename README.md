@@ -355,6 +355,9 @@ Paperplane reads the process environment, including missing values loaded from a
 `GEMINI_API_KEY` remains a compatibility fallback only when `GOOGLE_API_KEY` is absent.
 Never commit a real credential.
 
+Gemini requests use each model's supported thinking floor: `minimal` for Gemini 3.5
+Flash-Lite and `low` for Gemini 3.7 Flash, including when **Fast** quality is selected.
+
 Paperplane sends Agnes visual inputs inline as private PNG data URLs. Agnes usage is
 recorded even though its configured price is $0. Invalid Agnes structured output is
 validated and corrected once before the request fails explicitly.

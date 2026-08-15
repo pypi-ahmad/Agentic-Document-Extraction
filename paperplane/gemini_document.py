@@ -86,13 +86,14 @@ class GeminiDocumentAdapter:
             instructions if context is None else f"{instructions}\n\nDocument context:\n{context}"
         )
         parts.append({"text": prompt})
-        thinking_level = "minimal" if reasoning_effort == "none" else reasoning_effort
+        minimum_thinking_level = "minimal" if model == "gemini-3.5-flash-lite" else "low"
+        thinking_level = minimum_thinking_level if reasoning_effort == "none" else reasoning_effort
         payload = {
             "contents": [{"role": "user", "parts": parts}],
             "generationConfig": {
                 "responseFormat": {
                     "text": {
-                        "mimeType": "application/json",
+                        "mimeType": "APPLICATION_JSON",
                         "schema": schema,
                     }
                 },
