@@ -302,9 +302,10 @@ Agentic-Document-Extraction/
 2. Double-click `Paperplane.cmd`.
 3. Open [http://127.0.0.1:8551](http://127.0.0.1:8551) if the browser does not open.
 
-The launcher installs uv, Python 3.12.10, LibreOffice, locked CPU/CUDA dependencies,
-Docling/RapidOCR models, and the PP-DocLayoutV3 detector only when missing or out of date.
-Once ready, it skips setup and starts `workspace_app.py` directly on port `8551`.
+The launcher installs uv, Python 3.12.10, LibreOffice, locked CPU/CUDA dependencies, and
+the required Docling, RapidOCR, and PP-DocLayoutV3 weights. Existing caches are migrated
+without a download. The weights then remain in the versioned Paperplane model store and
+each launch performs a fast manifest/size check before starting on port `8551`.
 
 ### Linux one-file setup
 
@@ -316,8 +317,8 @@ On Ubuntu or Debian:
 
 If the executable bit was lost while downloading an archive, run
 `chmod +x Paperplane.sh` once. The launcher installs missing `uv`, Python 3.12.10,
-LibreOffice through APT, locked CPU/CUDA dependencies, Docling/RapidOCR models, and the
-PP-DocLayoutV3 detector. It selects CUDA when `nvidia-smi` works and falls back to CPU if
+LibreOffice through APT, locked CPU/CUDA dependencies, and the permanent Paperplane model
+store. It selects CUDA when `nvidia-smi` works and falls back to CPU if
 the locked CUDA environment cannot be synchronized. On other Linux distributions, install
 LibreOffice first and rerun the same launcher; it does not guess privileged package-manager
 commands.
@@ -329,10 +330,16 @@ git clone https://github.com/pypi-ahmad/Agentic-Document-Extraction.git
 cd Agentic-Document-Extraction
 uv python install 3.12.10
 uv sync --locked --extra cpu
-uv run --locked --extra cpu docling-tools models download layout tableformer rapidocr --quiet
-uv run --locked --extra cpu python -m paperplane.ollama_ocr --download
+uv run --locked --extra cpu python -m paperplane.model_store --prepare
 uv run --locked --extra cpu streamlit run workspace_app.py --server.port=8551
 ```
+
+On Windows the model set is stored under
+`%LOCALAPPDATA%\Paperplane\models\sets\v1`; on Linux it is stored under
+`${XDG_DATA_HOME:-~/.local/share}/Paperplane/models/sets/v1`. It survives repository,
+virtual-environment, job, and Streamlit-cache cleanup until manually deleted. A future
+Paperplane model-set version is installed beside `v1`, so rollback weights are preserved.
+Ollama continues to manage its own models separately.
 
 Install and start [Ollama](https://ollama.com/) separately for Ollama ADE. Paperplane lists
 the models returned by the local server; `glm-ocr:latest` and

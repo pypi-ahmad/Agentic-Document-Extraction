@@ -16,9 +16,10 @@ Version 5 changes the UI, public export contract, and retention model.
   Classify, Split, and Section workflows.
 - Configure `OLLAMA_BASE_URL` when the local server is not at
   `http://127.0.0.1:11434`.
-- Current launchers download PP-DocLayoutV3 automatically. Manual installations must run
-  `python -m paperplane.ollama_ocr --download`; GLM-OCR, PaddleOCR-VL, and DeepSeek-OCR now
-  use its regions instead of whole-page JSON generation.
+- Current launchers migrate existing Docling/RapidOCR and PP-DocLayoutV3 caches into the
+  permanent versioned Paperplane model store, downloading only missing files. Manual
+  installations must run `python -m paperplane.model_store --prepare`; GLM-OCR,
+  PaddleOCR-VL, and DeepSeek-OCR use PP-DocLayoutV3 regions instead of whole-page JSON.
 - Rename new Gemini configurations to `GOOGLE_API_KEY`. Legacy `GEMINI_API_KEY` remains a
   fallback, but all UI guidance and examples use the canonical name. Gemini 3.7 Flash
   replaces Gemini 3.6 Flash in the supported catalog.

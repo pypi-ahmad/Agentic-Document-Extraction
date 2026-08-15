@@ -4,9 +4,9 @@
 
 Double-click `Paperplane.cmd`. It verifies `workspace_app.py`, `pyproject.toml`, and
 `uv.lock`; installs uv, Python 3.12.10, and LibreOffice when needed; selects CUDA 13.0 or
-CPU; and checks the locked environment and required Docling/RapidOCR and PP-DocLayoutV3
-model files. It synchronizes dependencies or downloads models only when they are missing
-or out of date.
+CPU; and checks the locked environment and permanent, versioned Docling/RapidOCR and
+PP-DocLayoutV3 model set. Existing cache files are migrated on the first run. Later runs
+validate the manifest and file sizes without downloading again.
 Otherwise it launches the multipage app directly at `http://127.0.0.1:8551`.
 
 Close the launcher window or press Ctrl+C to stop it.
@@ -38,8 +38,15 @@ LibreOffice first. Open `http://127.0.0.1:8551` and press Ctrl+C to stop the app
 ```powershell
 uv python install 3.12.10
 uv sync --locked --extra cpu
+uv run --locked --extra cpu python -m paperplane.model_store --prepare
 uv run --locked --extra cpu python -m paperplane.streamlit_runner run workspace_app.py --server.port=8551
 ```
+
+Model weights persist in `%LOCALAPPDATA%\Paperplane\models\sets\v1` on Windows or
+`${XDG_DATA_HOME:-~/.local/share}/Paperplane/models/sets/v1` on Linux. They are removed
+only when the operator manually deletes that directory. Job cleanup, **Stop and clear**,
+repository deletion, and virtual-environment recreation do not remove them. Ollama models
+remain in Ollama's own store.
 
 For Ollama ADE, start Ollama first and optionally set
 `OLLAMA_BASE_URL=http://127.0.0.1:11434`. Cloud credentials are read from the current

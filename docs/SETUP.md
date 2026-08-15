@@ -8,9 +8,10 @@
 
 The launcher is the single setup/start file. It installs missing uv, Python 3.12.10,
 LibreOffice, locked CPU/CUDA dependencies in copy mode so uv works quietly across different
-Windows drives, Docling/RapidOCR models, and the PP-DocLayoutV3 detector, then runs
-`workspace_app.py` on port `8551`. On later runs it checks the locked environment and model
-artifacts, skips setup when they are ready, and launches the app directly. Node.js, Docker,
+Windows drives, and the permanent Docling/RapidOCR/PP-DocLayoutV3 model set, then runs
+`workspace_app.py` on port `8551`. Existing weights are copied from their old caches without
+network access. On later runs it validates the manifest and sizes, skips downloads, and
+launches the app directly. Node.js, Docker,
 and a C++ compiler are not required. Python-Markdown and Bleach are runtime dependencies for
 sanitized standalone HTML output and are installed through the same locked environment.
 Before launch, Paperplane imports Torch, Transformers, and Docling to verify that binary
@@ -30,8 +31,8 @@ From a cloned checkout on Ubuntu or Debian:
 If needed, restore execute permission with `chmod +x Paperplane.sh`. The launcher installs
 missing uv and Python in the current user's environment, uses APT and sudo only when
 LibreOffice is absent, selects CUDA when `nvidia-smi` succeeds, falls back to CPU when
-necessary, synchronizes the locked environment, downloads missing Docling/RapidOCR and
-PP-DocLayoutV3 models, and starts the same localhost app. On non-APT distributions,
+necessary, synchronizes the locked environment, prepares the permanent model set, and
+starts the same localhost app. On non-APT distributions,
 install LibreOffice with the distribution's package manager before running the launcher.
 
 ## Manual developer setup
@@ -39,10 +40,15 @@ install LibreOffice with the distribution's package manager before running the l
 ```powershell
 uv python install 3.12.10
 uv sync --locked --extra cpu --extra test --extra lint --extra docs
-uv run --locked --extra cpu docling-tools models download layout tableformer rapidocr --quiet
-uv run --locked --extra cpu python -m paperplane.ollama_ocr --download
+uv run --locked --extra cpu python -m paperplane.model_store --prepare
 uv run --locked --extra cpu streamlit run workspace_app.py --server.port=8551
 ```
+
+The versioned model set lives at `%LOCALAPPDATA%\Paperplane\models\sets\v1` on Windows
+and `${XDG_DATA_HOME:-~/.local/share}/Paperplane/models/sets/v1` on Linux. Do not delete
+that directory unless the weights should be removed. Repository and `.venv` cleanup do not
+affect it. New pinned model-set versions are installed alongside older sets. Ollama models
+are managed separately by Ollama.
 
 Use `--extra cu130` instead of `--extra cpu` on a compatible NVIDIA system.
 The Windows launcher removes external CUDA Toolkit directories from Paperplane's child

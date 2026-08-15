@@ -29,6 +29,10 @@ provider selection and terms, credentials, charges, regulatory obligations, outp
 and deletion of retained artifacts. Paperplane is self-hosted; the project maintainers do
 not receive documents or API keys through the application.
 
-The PP-DocLayoutV3 weights are downloaded from Hugging Face during setup and then loaded
-locally on CPU. Ollama OCR crops remain local and are sent only to the configured Ollama
+Required Docling, RapidOCR, and PP-DocLayoutV3 weights are kept in Paperplane's versioned
+user data store. Setup migrates an existing cache when possible and downloads only missing
+files; subsequent launches validate path and size without network access. The store is
+outside the checkout, virtual environment, job store, and Streamlit cache and is deleted
+only manually. Ollama's model store is not modified. PP-DocLayoutV3 is loaded locally on
+CPU. Ollama OCR crops remain local and are sent only to the configured Ollama
 server; keep `OLLAMA_BASE_URL` on loopback when local-only processing is required.

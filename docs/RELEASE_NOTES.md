@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Added a permanent versioned model store for Docling, RapidOCR, and PP-DocLayoutV3.
+  Existing caches migrate without downloading; later launches perform an offline manifest
+  and size check. Repository, virtual-environment, job, and cache cleanup do not remove the
+  weights, and Ollama continues to manage its own models.
 - Fixed Docling GPU layout failures caused by system CUDA Toolkit DLLs overriding PyTorch's
   bundled cuDNN on Windows. Startup now validates Torch metadata and a CUDA convolution.
 - Launcher synchronization preserves installed test, lint, and documentation extras.

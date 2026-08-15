@@ -26,6 +26,10 @@ and this project aims to follow [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- Added a permanent, versioned Paperplane model store that migrates existing Docling,
+  RapidOCR, and PP-DocLayoutV3 weights and preserves them across checkout and environment
+  cleanup.
+
 - Added live batch progress with document/page status, output-generation status, and a
   monotonic percentage from preparation through completion.
 
@@ -38,6 +42,8 @@ and this project aims to follow [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- Launchers now validate the model manifest and file sizes on every start, downloading only
+  when the required pinned set is absent or incomplete. Ollama models remain untouched.
 - Removed the redundant "Private local workspace" badge from the Parse header.
 
 - Replaced the Benchmarks workspace page with Cost while retaining benchmark tooling and
