@@ -81,6 +81,30 @@ class _ExactTextAdapter:
         )
 
 
+class _PresegmentedAdapter:
+    def __init__(self) -> None:
+        self.calls = 0
+
+    async def generate_structured(self, **kwargs):
+        self.calls += 1
+        return StructuredGeneration(
+            value={
+                "chunks": [
+                    {
+                        "type": "form_field",
+                        "text": "PWS Id: MO1010001",
+                        "markdown": "PWS Id: MO1010001",
+                        "box": {"left": 0.1, "top": 0.2, "right": 0.8, "bottom": 0.3},
+                        "parent_order": None,
+                    }
+                ]
+            },
+            usage=OpenAIUsage(),
+            latency_ms=1,
+            presegmented=True,
+        )
+
+
 class _VerifiedScanAdapter:
     async def generate_structured(self, **kwargs):
         if kwargs["schema_name"] == "page_draft_v8":
@@ -737,6 +761,23 @@ async def test_native_text_is_grounded_exactly_without_verification() -> None:
     assert chunk.verification_status == VerificationStatus.VERIFIED
     assert chunk.grounding[0].method == GroundingMethod.TEXT_LAYER_EXACT
     assert chunk.grounding[0].box.right == 0.42
+
+
+async def test_presegmented_ocr_page_skips_reconciliation_and_crop_verification() -> None:
+    adapter = _PresegmentedAdapter()
+
+    result = await V2PageProcessor(adapter).process_page(
+        source=_png(),
+        filename="scan.png",
+        source_sha256="1" * 64,
+        page=RenderedPage(1, _png(), 100, 100, []),
+        mode=ProcessingMode.AUDIT,
+    )
+
+    assert adapter.calls == 1
+    assert result.markdown == "PWS Id: MO1010001"
+    assert result.chunks[0].verification_status == VerificationStatus.CANDIDATE
+    assert result.chunks[0].warnings == ["single_model_candidate"]
 
 
 async def test_scanned_table_is_verified_by_full_page_reconciliation() -> None:
