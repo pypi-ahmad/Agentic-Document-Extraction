@@ -120,12 +120,12 @@ if errorlevel 1 goto :setup_failure
 :dependencies_ready
 if not exist "%VENV_PYTHON%" goto :setup_failure
 if not exist "%VENV_DOCLING%" goto :setup_failure
-"%VENV_PYTHON%" -c "import torch.backends; from docling.datamodel.base_models import DocumentStream" >nul 2>&1
+"%VENV_PYTHON%" -c "import torch.backends; from docling.datamodel.base_models import DocumentStream; from transformers import AutoModelForObjectDetection" >nul 2>&1
 if not errorlevel 1 goto :runtime_ready
 echo The Torch or Docling installation is incomplete. Repairing it...
 "%UV_EXE%" sync --locked --python 3.12.10 --extra %TORCH_EXTRA% --link-mode copy --reinstall-package torch --reinstall-package torchvision
 if errorlevel 1 goto :setup_failure
-"%VENV_PYTHON%" -c "import torch.backends; from docling.datamodel.base_models import DocumentStream" >nul 2>&1
+"%VENV_PYTHON%" -c "import torch.backends; from docling.datamodel.base_models import DocumentStream; from transformers import AutoModelForObjectDetection" >nul 2>&1
 if errorlevel 1 goto :setup_failure
 
 :runtime_ready
@@ -152,6 +152,14 @@ if errorlevel 1 goto :setup_failure
 
 :models_ready
 echo Local document models are ready.
+"%VENV_PYTHON%" -m paperplane.ollama_ocr --check >nul 2>&1
+if not errorlevel 1 goto :ollama_layout_ready
+echo Downloading PP-DocLayoutV3 for Ollama OCR region detection...
+"%VENV_PYTHON%" -m paperplane.ollama_ocr --download
+if errorlevel 1 goto :setup_failure
+
+:ollama_layout_ready
+echo Ollama OCR layout model is ready.
 echo Clearing previous Streamlit cache...
 "%VENV_PYTHON%" -m streamlit cache clear >nul
 if errorlevel 1 goto :setup_failure

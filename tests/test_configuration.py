@@ -51,11 +51,16 @@ def test_windows_launcher_skips_completed_setup() -> None:
     assert "Stopped the previous Paperplane run." in launcher
     assert "Port 8551 is used by another application." in launcher
     assert "*streamlit run workspace_app.py*" in launcher
-    assert 'import torch.backends; from docling.datamodel.base_models import DocumentStream' in launcher
+    assert (
+        "import torch.backends; from docling.datamodel.base_models import DocumentStream; "
+        "from transformers import AutoModelForObjectDetection" in launcher
+    )
     assert "--reinstall-package torch --reinstall-package torchvision" in launcher
     assert "sync --check --locked --python 3.12.10 --extra %TORCH_EXTRA%" in launcher
     assert "sync --check --locked --python 3.12.10 --extra cpu" in launcher
     assert "if defined MODELS_READY goto :models_ready" in launcher
+    assert '"%VENV_PYTHON%" -m paperplane.ollama_ocr --check' in launcher
+    assert '"%VENV_PYTHON%" -m paperplane.ollama_ocr --download' in launcher
     assert '"%VENV_PYTHON%" -m streamlit cache clear' in launcher
     assert "*paperplane.streamlit_runner run workspace_app.py*" in launcher
     assert (
@@ -74,12 +79,17 @@ def test_linux_launcher_skips_completed_setup() -> None:
     assert "set -Eeuo pipefail" in launcher
     assert 'export UV_LINK_MODE="${UV_LINK_MODE:-copy}"' in launcher
     assert launcher.count("--link-mode copy") == 3
-    assert 'import torch.backends; from docling.datamodel.base_models import DocumentStream' in launcher
+    assert (
+        "import torch.backends; from docling.datamodel.base_models import DocumentStream; "
+        "from transformers import AutoModelForObjectDetection" in launcher
+    )
     assert "--reinstall-package torch --reinstall-package torchvision" in launcher
     assert '"$uv_exe" sync --check --locked --python 3.12.10 --extra "$torch_extra"' in launcher
     assert "sudo apt-get install -y libreoffice" in launcher
     assert "nvidia-smi" in launcher
     assert "models download layout tableformer rapidocr --quiet" in launcher
+    assert '"$venv_python" -m paperplane.ollama_ocr --check' in launcher
+    assert '"$venv_python" -m paperplane.ollama_ocr --download' in launcher
     assert '"$venv_python" -m streamlit cache clear' in launcher
     assert (
         'exec "$venv_python" -m paperplane.streamlit_runner run workspace_app.py '
@@ -95,4 +105,4 @@ def test_workspace_exposes_shared_stop_and_clear_control() -> None:
     assert "st.cache_data.clear()" in workspace
     assert "st.cache_resource.clear()" in workspace
     assert "st.session_state.clear()" in workspace
-    assert workspace.index('with st.sidebar:') < workspace.index("navigation.run()")
+    assert workspace.index("with st.sidebar:") < workspace.index("navigation.run()")
