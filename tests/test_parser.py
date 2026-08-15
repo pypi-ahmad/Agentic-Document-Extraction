@@ -70,6 +70,9 @@ class FakeProcessor:
             warnings=self.warnings,
         )
 
+    async def describe_figure_with_usage(self, _image, _caption, *, mode):
+        return "<figure>Described</figure>", OpenAIUsage(input_tokens=50, output_tokens=10)
+
 
 class FakeDocling:
     def __init__(self, confidence: float | None = 0.9) -> None:
@@ -99,6 +102,15 @@ class FakeDocling:
         )
 
 
+class FakeFigureDocling(FakeDocling):
+    async def parse(self, **kwargs):
+        result = await super().parse(**kwargs)
+        describer = kwargs["describe_figure"]
+        assert describer is not None
+        await describer(_png(), "Chart")
+        return result
+
+
 @pytest.mark.asyncio
 async def test_parser_returns_one_grounded_response_without_persistence() -> None:
     processor = FakeProcessor()
@@ -121,6 +133,24 @@ async def test_parser_returns_one_grounded_response_without_persistence() -> Non
     assert result.metadata.page_range == (1, 1)
     assert "Invoice total: 42" in result.markdown
     assert len(processor.calls) == 1
+
+
+@pytest.mark.asyncio
+async def test_docling_ai_describes_figures_and_counts_their_usage() -> None:
+    parser = AgenticDocumentParser(
+        FakeProcessor(), FakeFigureDocling(), vision_enabled=True  # type: ignore[arg-type]
+    )
+
+    result = await parser.parse(
+        data=_pdf(1),
+        filename="report.pdf",
+        model="paperplane-ade-fast-latest",
+        strategy="docling_ai",
+    )
+
+    assert result.metadata.input_tokens == 50
+    assert result.metadata.output_tokens == 10
+    assert result.metadata.model_usage["gpt-5.6-luna"].input_tokens == 50
 
 
 @pytest.mark.asyncio

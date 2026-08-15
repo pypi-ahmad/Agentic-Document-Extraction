@@ -1,7 +1,12 @@
+import pytest
 from docling.datamodel.base_models import InputFormat
 from docling.datamodel.pipeline_options import PdfPipelineOptions, RapidOcrOptions
 
-from paperplane.docling_parser import DOCLING_FORMATS, create_docling_converter
+from paperplane.docling_parser import (
+    DOCLING_FORMATS,
+    DoclingDocumentParser,
+    create_docling_converter,
+)
 
 
 def test_docling_converter_supports_native_formats_without_torch_compilation() -> None:
@@ -31,3 +36,25 @@ def test_docling_converter_supports_native_formats_without_torch_compilation() -
         ".tiff",
         ".bmp",
     }
+
+
+@pytest.mark.asyncio
+async def test_plain_docling_uses_figure_placeholder_without_failure_warning() -> None:
+    class Picture:
+        @staticmethod
+        def caption_text(_document):
+            return "Chart"
+
+        @staticmethod
+        def get_image(_document):
+            return None
+
+    warnings: list[str] = []
+    parser = DoclingDocumentParser(object())  # type: ignore[arg-type]
+
+    markdown = await parser._figure_markdown(
+        object(), Picture(), describe_figure=None, warnings=warnings  # type: ignore[arg-type]
+    )
+
+    assert "description unavailable" in markdown
+    assert warnings == []

@@ -248,6 +248,24 @@ class AgenticDocumentParser:
         model_usage: dict[str, ModelTokenUsage] = {}
         reported_pages: set[int] = set()
 
+        async def describe_docling_figure(image_png: bytes, caption: str) -> str:
+            nonlocal input_tokens, output_tokens, cached_input_tokens, cache_write_tokens
+            description, usage = await self.processor.describe_figure_with_usage(
+                image_png,
+                caption,
+                mode=mode,
+            )
+            input_tokens += usage.input_tokens
+            output_tokens += usage.output_tokens
+            cached_input_tokens += usage.cached_input_tokens
+            cache_write_tokens += usage.cache_write_tokens
+            aggregate = model_usage.setdefault(self.processor.model, ModelTokenUsage())
+            aggregate.input_tokens += usage.input_tokens
+            aggregate.output_tokens += usage.output_tokens
+            aggregate.cached_input_tokens += usage.cached_input_tokens
+            aggregate.cache_write_tokens += usage.cache_write_tokens
+            return description
+
         def report_page_complete(page_number: int) -> None:
             if progress_callback is None or page_number in reported_pages:
                 return
@@ -266,7 +284,9 @@ class AgenticDocumentParser:
                     max_bytes=self.max_upload_bytes,
                     max_pages=self.max_document_pages,
                     requested_pages=selected_page_set,
-                    describe_figure=None,
+                    describe_figure=(
+                        describe_docling_figure if strategy == "docling_ai" else None
+                    ),
                 )
                 pages.update(docling_result.pages)
                 warnings.extend(docling_result.warnings)

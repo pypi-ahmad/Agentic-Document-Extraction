@@ -273,9 +273,8 @@ class DoclingDocumentParser:
             try:
                 return await describe_figure(output.getvalue(), caption)
             except Exception:
-                pass
-        if "figure_description_unavailable" not in warnings:
-            warnings.append("figure_description_unavailable")
+                if "figure_description_unavailable" not in warnings:
+                    warnings.append("figure_description_unavailable")
         caption_markup = f"\n{html.escape(caption)}" if caption else ""
         return (
             '<figure type="FIGURE"><description>Visual content present; '
