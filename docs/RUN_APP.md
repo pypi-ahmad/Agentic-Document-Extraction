@@ -57,6 +57,12 @@ selector across Input preview, Output, Annotated PDF, Markdown, HTML, and JSON. 
 selected document at a time or the whole result batch as a ZIP. Job metadata and artifacts
 are private to `%LOCALAPPDATA%\Paperplane` and expire after seven days.
 
+While a batch runs, a live progress bar reports the current document, finalized page, or
+output-building stage and shows the overall percentage. The percentage represents completed
+work units rather than a time estimate; native whole-document engines can advance in larger
+jumps. Failed documents are finalized in the progress calculation, so every finished batch
+reaches 100%.
+
 Workspace data remains in the current browser session while changing pages. Cost keeps a
 per-model token and configured-price ledger across **New parse** actions until **Stop and
 clear**, restart, or session end.

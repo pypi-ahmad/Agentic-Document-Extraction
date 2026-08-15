@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Added a live batch progress bar covering preparation, finalized pages, output generation,
+  and completion. Failed documents still complete their share of the batch progress.
+- Removed the "Private local workspace" badge from the Parse header.
 - Preserved uploads, Parse outputs, Organize values, tabs, and selections across workspace
   navigation within one browser session.
 - Replaced the Benchmarks UI page with a Cost page that aggregates input, cached-input,

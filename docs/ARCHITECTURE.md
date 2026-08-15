@@ -36,7 +36,8 @@ flowchart LR
 
 - `workspace_app.py` owns navigation; `streamlit_app.py` is the Parse page.
 - `runtime.py` composes providers and processes files concurrently; files never share
-  context.
+  context. Optional progress events identify document start, finalized pages, and document
+  completion without coupling the runtime to Streamlit.
 - `agnes_document.py` sends selected page PNGs inline in Agnes Chat Completions requests;
   it does not publish uploads at separate URLs.
 - `ollama_ocr.py` detects PP-DocLayoutV3 regions on CPU, selects family-native OCR prompts,

@@ -37,6 +37,8 @@ the project.
 
 - Upload up to 20 files and process up to six concurrently, with an independent one-based
   page range for every file.
+- Follow a live batch progress bar with the current document, page or output stage, and a
+  monotonic completion percentage that reaches 100% even when a document fails.
 - Choose exactly one engine: **Docling ADE**, **PDF Inspector ADE**, **Cloud AI ADE**, or
   **Ollama ADE**. Nothing is selected or routed automatically.
 - Optionally run cloud enhancement after Docling, PDF Inspector, or Ollama.

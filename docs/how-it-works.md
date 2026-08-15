@@ -5,6 +5,7 @@ upload up to 20 files
   -> choose exactly one engine (all are off initially)
   -> validate type, size, and each page range
   -> process up to six files concurrently; files remain isolated
+  -> report monotonic batch progress as pages and documents finalize
   -> keep selected pages in physical reading order
   -> Docling / PDF Inspector / Cloud AI / Ollama
      -> profiled Ollama OCR families: CPU layout regions -> native crop recognition
@@ -15,6 +16,7 @@ upload up to 20 files
   -> export strict ADE v2-style JSON and Paperplane v5 JSON
   -> attribute provider-reported tokens to each model used in the parse
   -> render sanitized HTML on a responsive white paper surface and package it in a manifest ZIP
+  -> advance output-building progress and finish at 100%
   -> optionally Classify, Split, or Section in Organize
   -> accumulate per-model token and configured-cost totals for the browser session
   -> retain local job metadata and artifacts for seven days

@@ -16,7 +16,9 @@ uv run --locked --extra cpu python -m paperplane.ollama_ocr --check
 `workspace_app.py` defines Parse, Organize, Jobs, and Cost navigation;
 `streamlit_app.py` remains the Parse page. Other pages are under `app_pages/`. Session
 usage is attributed in the framework-neutral parse contracts before the Cost page
-aggregates it. Core modules must not import Streamlit.
+aggregates it. Parser/runtime progress callbacks report finalized work through neutral
+events; only the Parse page renders them with Streamlit. Core modules must not import
+Streamlit.
 
 Run checks:
 

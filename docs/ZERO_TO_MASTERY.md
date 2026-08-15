@@ -32,6 +32,11 @@ words, confidence state, provenance, warnings, and document relations. Standalon
 sanitized. The batch ZIP groups every successful document's available outputs and records
 failures in a versioned manifest without copying source uploads.
 
+While processing, one batch-wide progress bar shows the current document, finalized page,
+or output-building stage with a percentage. The value measures completed work rather than
+remaining time, so native whole-document engines may advance in larger jumps. Completed
+failures still count, allowing every finished batch to reach 100%.
+
 Uploads, engine settings, page ranges, and results remain in the browser session when you
 move between Parse, Organize, Jobs, and Cost. **New parse** clears the active Parse
 workspace but does not reset the session Cost ledger.

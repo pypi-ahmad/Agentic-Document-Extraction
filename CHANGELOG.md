@@ -17,6 +17,9 @@ and this project aims to follow [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- Added live batch progress with document/page status, output-generation status, and a
+  monotonic percentage from preparation through completion.
+
 - Added a session Cost page with input, cached-input, output, per-model, and total estimates.
 
 - Added CPU PP-DocLayoutV3 region detection for GLM-OCR, PaddleOCR-VL, and DeepSeek-OCR,
@@ -25,6 +28,8 @@ and this project aims to follow [Semantic Versioning](https://semver.org/).
   `GEMINI_API_KEY` fallback.
 
 ### Changed
+
+- Removed the redundant "Private local workspace" badge from the Parse header.
 
 - Replaced the Benchmarks workspace page with Cost while retaining benchmark tooling and
   checked-in evaluation assets.
