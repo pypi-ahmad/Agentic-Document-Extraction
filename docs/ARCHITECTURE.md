@@ -21,7 +21,9 @@ flowchart LR
   Docling --> Assemble
   Inspector --> Assemble
   Cloud --> Assemble
-  Ollama --> Assemble
+  Ollama --> Layout[PP-DocLayoutV3 regions]
+  Layout --> OllamaOCR[Ollama crop recognition]
+  OllamaOCR --> Assemble
   Assemble --> Intelligence[cross-page relations]
   Intelligence --> Contracts[ADE v2 + Paperplane v5]
   Contracts --> Outputs[Markdown / HTML / JSON / annotated PDF / batch ZIP]

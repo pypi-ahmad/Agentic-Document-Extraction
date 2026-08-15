@@ -8,13 +8,14 @@
 
 The launcher is the single setup/start file. It installs missing uv, Python 3.12.10,
 LibreOffice, locked CPU/CUDA dependencies in copy mode so uv works quietly across different
-Windows drives, and Docling/RapidOCR models, then runs
+Windows drives, Docling/RapidOCR models, and the PP-DocLayoutV3 detector, then runs
 `workspace_app.py` on port `8551`. On later runs it checks the locked environment and model
 artifacts, skips setup when they are ready, and launches the app directly. Node.js, Docker,
 and a C++ compiler are not required. Python-Markdown and Bleach are runtime dependencies for
 sanitized standalone HTML output and are installed through the same locked environment.
-Before launch, Paperplane imports Torch and Docling to verify that binary dependencies are
-complete; it automatically reinstalls Torch and Torchvision if that health check fails.
+Before launch, Paperplane imports Torch, Transformers, and Docling to verify that binary
+dependencies are complete; it automatically reinstalls Torch and Torchvision if that health
+check fails.
 
 ## Automatic Linux setup
 
@@ -27,8 +28,8 @@ From a cloned checkout on Ubuntu or Debian:
 If needed, restore execute permission with `chmod +x Paperplane.sh`. The launcher installs
 missing uv and Python in the current user's environment, uses APT and sudo only when
 LibreOffice is absent, selects CUDA when `nvidia-smi` succeeds, falls back to CPU when
-necessary, synchronizes the locked environment, downloads missing Docling/RapidOCR models,
-and starts the same localhost app. On non-APT distributions, install LibreOffice with the
+necessary, synchronizes the locked environment, downloads missing Docling/RapidOCR and
+PP-DocLayoutV3 models, and starts the same localhost app. On non-APT distributions, install LibreOffice with the
 distribution's package manager before running the launcher.
 
 ## Manual developer setup
@@ -37,6 +38,7 @@ distribution's package manager before running the launcher.
 uv python install 3.12.10
 uv sync --locked --extra cpu --extra test --extra lint --extra docs
 uv run --locked --extra cpu docling-tools models download layout tableformer rapidocr --quiet
+uv run --locked --extra cpu python -m paperplane.ollama_ocr --download
 uv run --locked --extra cpu streamlit run workspace_app.py --server.port=8551
 ```
 

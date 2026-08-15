@@ -30,7 +30,9 @@ v5; the Python service layer is designed to be wrapped later.
 
 Paperplane lists all installed models from the local server and enables Parse only when
 the selected model advertises vision. Unknown models work but their confidence is raw and
-uncalibrated.
+uncalibrated. GLM-OCR, PaddleOCR-VL, and DeepSeek-OCR first receive crops from the local
+PP-DocLayoutV3 detector, so their native OCR prompts are not constrained by a whole-page
+JSON schema.
 
 ## Can Agnes process private uploads?
 

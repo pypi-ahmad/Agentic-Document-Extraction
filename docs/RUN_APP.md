@@ -4,7 +4,8 @@
 
 Double-click `Paperplane.cmd`. It verifies `workspace_app.py`, `pyproject.toml`, and
 `uv.lock`; installs uv, Python 3.12.10, and LibreOffice when needed; selects CUDA 13.0 or
-CPU; and checks the locked environment and required Docling/RapidOCR model files. It
+CPU; and checks the locked environment and required Docling/RapidOCR and PP-DocLayoutV3
+model files. It
 synchronizes dependencies or downloads models only when they are missing or out of date.
 Otherwise it launches the multipage app directly at `http://127.0.0.1:8551`.
 
@@ -44,6 +45,8 @@ For Ollama ADE, start Ollama first and optionally set
 `OLLAMA_BASE_URL=http://127.0.0.1:11434`. Cloud credentials are read from the current
 process environment, Windows user environment, an ignored `.env`, or Streamlit secrets.
 Agnes 2.5 Flash accepts selected page images inline for Parse and cloud enhancement.
+GLM-OCR, PaddleOCR-VL, and DeepSeek-OCR are automatically run on PP-DocLayoutV3 page
+regions with their native prompts.
 
 The pages are Parse, Organize, Jobs, and Benchmarks. Select one Parse engine before
 uploading. Parse controls remain in the sidebar; the full-width canvas shares one document

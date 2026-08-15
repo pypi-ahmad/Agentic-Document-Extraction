@@ -30,6 +30,11 @@ and calibration targets are `glm-ocr:latest` and
 `AuditAid/PaddleOCR-VL-1.6-0.9B:latest`. Other installed vision models run with raw,
 explicitly uncalibrated confidence until a matching profile is checked in.
 
+GLM-OCR, PaddleOCR-VL, and DeepSeek-OCR use a layout-first path. The local
+`PaddlePaddle/PP-DocLayoutV3_safetensors` detector finds page regions on CPU, then the
+selected Ollama model receives each crop with its native OCR prompt. Detector boxes ground
+the assembled blocks; RapidOCR is used only for final word-box alignment.
+
 ## Gemini 3.7 correction
 
 Google's current official model catalog does not contain a model named “Gemini Flash
