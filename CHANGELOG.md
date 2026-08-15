@@ -16,6 +16,12 @@ and this project aims to follow [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
+- Prevented Windows system CUDA Toolkit DLLs from mixing with PyTorch's bundled cuDNN,
+  strengthened launcher repair detection for missing Torch metadata and CUDA failures, and
+  stopped runtime synchronization from uninstalling optional development tools.
+- Connected Docling cloud enhancement to figure descriptions with token accounting, while
+  treating plain Docling's local figure placeholder as expected behavior rather than failure.
+
 ## [5.2.0] - 2026-08-15
 
 ### Added

@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Fixed Docling GPU layout failures caused by system CUDA Toolkit DLLs overriding PyTorch's
+  bundled cuDNN on Windows. Startup now validates Torch metadata and a CUDA convolution.
+- Launcher synchronization preserves installed test, lint, and documentation extras.
+- Docling cloud enhancement now describes detected figures and records their token usage;
+  plain Docling placeholders no longer emit a misleading failure warning.
 - PDF source preview now follows the current page range, and annotated preview follows the
   successfully parsed range. Annotated-PDF downloads and batch ZIP artifacts remain complete.
 - Added a live batch progress bar covering preparation, finalized pages, output generation,

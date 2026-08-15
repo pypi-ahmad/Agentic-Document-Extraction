@@ -30,6 +30,12 @@ uv run --locked --extra cpu python -m paperplane.ollama_ocr --download
 
 Use `--extra cu130` instead of `--extra cpu` when that is the synchronized environment.
 
+If Docling reports `CUDNN_STATUS_SUBLIBRARY_VERSION_MISMATCH`, restart through the current
+Windows launcher. It isolates PyTorch's bundled CUDA runtime from system CUDA Toolkit DLLs
+and validates a CUDA convolution before starting. A missing Torch `RECORD` file now fails the
+same health probe and triggers the existing targeted Torch/torchvision reinstall while the
+previous Paperplane process is stopped.
+
 DeepSeek automatically retries one empty or transiently failed region. A completed parse
 may show `DeepSeek OCR skipped ... after two attempts`; inspect that page for missing text.
 `DeepSeek OCR stopped after three consecutive region failures` indicates sustained local

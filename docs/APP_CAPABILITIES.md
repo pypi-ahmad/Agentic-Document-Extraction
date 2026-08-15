@@ -28,6 +28,10 @@ cited downstream data.
   3.5 Flash-Lite plus Gemini 3.7 Flash.
 - Prior selected-page context, ordered assembly, section starts, repeated marginalia, and
   conservative continued-table relationships.
+- Windows CUDA isolation and a Torch metadata/CUDA-convolution startup probe prevent mixed
+  system and wheel-bundled cuDNN libraries. Launcher sync preserves optional developer tools.
+- Docling cloud enhancement describes detected figure crops with the selected provider and
+  counts their tokens. Plain Docling uses a local figure placeholder without a failure warning.
 - Idempotent one-file setup and launch on Windows and Linux.
 
 ## Evidence and contracts

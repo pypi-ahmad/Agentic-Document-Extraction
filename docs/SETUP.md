@@ -45,6 +45,11 @@ uv run --locked --extra cpu streamlit run workspace_app.py --server.port=8551
 ```
 
 Use `--extra cu130` instead of `--extra cpu` on a compatible NVIDIA system.
+The Windows launcher removes external CUDA Toolkit directories from Paperplane's child
+process `PATH`, allowing the cu130 PyTorch wheel to use its matching bundled cuDNN libraries.
+It verifies Torch package metadata and a CUDA convolution before launch, repairing Torch when
+that probe fails. Synchronization is inexact so separately installed test, lint, and docs
+extras are not removed.
 
 ## Credentials and Ollama
 

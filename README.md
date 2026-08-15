@@ -153,6 +153,14 @@ then marks section starts, repeated marginalia, continued tables, parent/child s
 and page-range boundaries. Each result retains provenance, warnings, source passes,
 verification state, and raw or calibrated confidence status.
 
+On Windows NVIDIA systems, Paperplane isolates PyTorch's bundled CUDA/cuDNN runtime from
+incompatible CUDA Toolkit DLLs inherited through `PATH`. Launcher health checks also reject
+missing Torch `RECORD` metadata and exercise a small CUDA convolution before startup. Existing
+test, lint, and documentation tools are preserved during runtime dependency synchronization.
+Docling with cloud enhancement describes detected figures with the selected cloud model and
+includes those tokens in the session cost; plain Docling keeps a local placeholder without
+reporting that expected limitation as a processing failure.
+
 ### Parse workspace and red/black dark theme
 
 The checked-in Streamlit theme uses a near-black canvas, charcoal panels, red controls,
