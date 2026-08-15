@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import logging
 from dataclasses import dataclass
 from functools import lru_cache
 
@@ -19,6 +20,7 @@ from paperplane.ollama_document import (
     DEFAULT_OLLAMA_BASE_URL,
     ChainedStructuredAdapter,
     OllamaDocumentAdapter,
+    OllamaRequestError,
 )
 from paperplane.openai_document import OpenAIDocumentAdapter, OpenAIRequestError
 from paperplane.parser import MODEL_MODES, AgenticDocumentParser
@@ -30,6 +32,8 @@ DEFAULT_OPENAI_TIMEOUT_SECONDS = 180.0
 MAX_BATCH_FILES = 20
 MAX_BATCH_BYTES = 1024 * 1024 * 1024
 MAX_BATCH_CONCURRENCY = 6
+
+logger = logging.getLogger("paperplane.runtime")
 
 
 @lru_cache(maxsize=2)
@@ -186,13 +190,14 @@ async def parse_documents(
                     filename=request.filename,
                     result=result,
                 )
-            except (DocumentInputError, OpenAIRequestError, ValueError) as exc:
+            except (DocumentInputError, OpenAIRequestError, OllamaRequestError, ValueError) as exc:
                 return BatchParseOutcome(
                     file_id=request.file_id,
                     filename=request.filename,
                     error=str(exc),
                 )
             except Exception:
+                logger.exception("Unexpected document parsing failure for %s", request.filename)
                 return BatchParseOutcome(
                     file_id=request.file_id,
                     filename=request.filename,

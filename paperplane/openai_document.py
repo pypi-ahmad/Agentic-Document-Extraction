@@ -54,6 +54,7 @@ class StructuredGeneration(BaseModel):
     usage: OpenAIUsage
     latency_ms: float = Field(ge=0)
     presegmented: bool = False
+    warnings: list[str] = Field(default_factory=list)
 
 
 def _responses_url(base_url: str) -> str:

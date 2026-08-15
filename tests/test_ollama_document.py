@@ -7,7 +7,12 @@ import httpx
 import pytest
 from PIL import Image
 
-from paperplane.ollama_document import OllamaDocumentAdapter
+import paperplane.ollama_document as ollama_document
+from paperplane.ollama_document import (
+    ChainedStructuredAdapter,
+    OllamaDocumentAdapter,
+    OllamaRequestError,
+)
 from paperplane.ollama_ocr import (
     LayoutRegion,
     clean_ocr_output,
@@ -15,6 +20,7 @@ from paperplane.ollama_ocr import (
     deduplicate_regions,
     profile_for_family,
 )
+from paperplane.openai_document import OpenAIUsage, StructuredGeneration
 
 
 class FakeLayoutDetector:
@@ -31,6 +37,11 @@ class FakeVisualDetector:
             LayoutRegion("text", 0.99, 0.1, 0.1, 0.9, 0.2),
             LayoutRegion("image", 0.99, 0.1, 0.3, 0.9, 0.9),
         ]
+
+
+class FakeThreeRegionDetector:
+    def detect(self, _image: bytes) -> list[LayoutRegion]:
+        return [LayoutRegion("text", 0.99, 0.1, top, 0.9, top + 0.1) for top in (0.1, 0.3, 0.5)]
 
 
 def _png() -> bytes:
@@ -178,6 +189,193 @@ async def test_empty_text_is_skipped_and_empty_visual_keeps_its_grounded_figure(
 
     assert result.value["chunks"][0]["text"] == ""
     assert result.value["chunks"][0]["markdown"] == '<figure type="figure"></figure>'
+
+
+@pytest.mark.asyncio
+async def test_deepseek_retries_empty_text_with_strict_prompt_and_counts_usage() -> None:
+    prompts: list[str] = []
+
+    async def handler(request: httpx.Request) -> httpx.Response:
+        if request.url.path == "/api/show":
+            return httpx.Response(200, json={"details": {"family": "deepseekocr"}})
+        body = json.loads(request.content)
+        prompts.append(body["messages"][0]["content"])
+        content = "" if len(prompts) == 1 else "Recovered text"
+        return httpx.Response(
+            200,
+            json={"message": {"content": content}, "prompt_eval_count": 4, "eval_count": 2},
+        )
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+        result = await OllamaDocumentAdapter(
+            client, layout_detector=FakeThreeRegionDetector()
+        ).generate_structured(
+            model="deepseek-ocr:latest",
+            image=_png(),
+            instructions="extract",
+            schema_name="page",
+            schema={"type": "object", "properties": {"chunks": {"type": "array"}}},
+            reasoning_effort="none",
+            detail="high",
+            prompt_cache_key="test",
+        )
+
+    assert prompts[:2] == [
+        "Free OCR.",
+        "Transcribe all visible text in this crop exactly. Return only the transcription; "
+        "do not explain or add Markdown fences.",
+    ]
+    assert result.usage.input_tokens == 16
+    assert result.usage.output_tokens == 8
+    assert result.warnings == []
+
+
+@pytest.mark.asyncio
+async def test_deepseek_retries_transient_http_failure(monkeypatch) -> None:
+    attempts = 0
+    monkeypatch.setattr(ollama_document, "DEEPSEEK_RETRY_DELAY_SECONDS", 0)
+
+    async def handler(request: httpx.Request) -> httpx.Response:
+        nonlocal attempts
+        if request.url.path == "/api/show":
+            return httpx.Response(200, json={"details": {"family": "deepseekocr"}})
+        attempts += 1
+        if attempts == 1:
+            return httpx.Response(500, json={"error": "temporary"})
+        return httpx.Response(200, json={"message": {"content": "Recovered"}})
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+        result = await OllamaDocumentAdapter(
+            client, layout_detector=FakeThreeRegionDetector()
+        ).generate_structured(
+            model="deepseek-ocr:latest",
+            image=_png(),
+            instructions="extract",
+            schema_name="page",
+            schema={"type": "object", "properties": {"chunks": {"type": "array"}}},
+            reasoning_effort="none",
+            detail="high",
+            prompt_cache_key="test",
+        )
+
+    assert attempts == 4
+    assert len(result.value["chunks"]) == 3
+
+
+@pytest.mark.asyncio
+async def test_deepseek_skips_one_exhausted_region_and_warns() -> None:
+    attempts = 0
+
+    async def handler(request: httpx.Request) -> httpx.Response:
+        nonlocal attempts
+        if request.url.path == "/api/show":
+            return httpx.Response(200, json={"details": {"family": "deepseekocr"}})
+        attempts += 1
+        content = "" if attempts <= 2 else "Usable text"
+        return httpx.Response(200, json={"message": {"content": content}})
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+        result = await OllamaDocumentAdapter(
+            client, layout_detector=FakeThreeRegionDetector()
+        ).generate_structured(
+            model="deepseek-ocr:latest",
+            image=_png(),
+            instructions="extract",
+            schema_name="page",
+            schema={"type": "object", "properties": {"chunks": {"type": "array"}}},
+            reasoning_effort="none",
+            detail="high",
+            prompt_cache_key="test",
+        )
+
+    assert len(result.value["chunks"]) == 2
+    assert result.warnings == ["DeepSeek OCR skipped text region 1 after two attempts"]
+
+
+@pytest.mark.asyncio
+async def test_deepseek_aborts_after_three_consecutive_exhausted_regions() -> None:
+    async def handler(request: httpx.Request) -> httpx.Response:
+        if request.url.path == "/api/show":
+            return httpx.Response(200, json={"details": {"family": "deepseekocr"}})
+        return httpx.Response(200, json={"message": {"content": ""}})
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+        with pytest.raises(OllamaRequestError, match="three consecutive region failures"):
+            await OllamaDocumentAdapter(
+                client, layout_detector=FakeThreeRegionDetector()
+            ).generate_structured(
+                model="deepseek-ocr:latest",
+                image=_png(),
+                instructions="extract",
+                schema_name="page",
+                schema={"type": "object", "properties": {"chunks": {"type": "array"}}},
+                reasoning_effort="none",
+                detail="high",
+                prompt_cache_key="test",
+            )
+
+
+@pytest.mark.asyncio
+async def test_deepseek_does_not_retry_nontransient_http_error() -> None:
+    attempts = 0
+
+    async def handler(request: httpx.Request) -> httpx.Response:
+        nonlocal attempts
+        if request.url.path == "/api/show":
+            return httpx.Response(200, json={"details": {"family": "deepseekocr"}})
+        attempts += 1
+        return httpx.Response(400, json={"error": "bad request"})
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+        with pytest.raises(OllamaRequestError, match="text region 1"):
+            await OllamaDocumentAdapter(
+                client, layout_detector=FakeThreeRegionDetector()
+            ).generate_structured(
+                model="deepseek-ocr:latest",
+                image=_png(),
+                instructions="extract",
+                schema_name="page",
+                schema={"type": "object", "properties": {"chunks": {"type": "array"}}},
+                reasoning_effort="none",
+                detail="high",
+                prompt_cache_key="test",
+            )
+
+    assert attempts == 1
+
+
+@pytest.mark.asyncio
+async def test_chained_adapter_preserves_local_and_cloud_warnings() -> None:
+    class FakeAdapter:
+        def __init__(self, generation: StructuredGeneration) -> None:
+            self.generation = generation
+
+        async def generate_structured(self, **_kwargs) -> StructuredGeneration:
+            return self.generation
+
+    local = FakeAdapter(
+        StructuredGeneration(
+            value={"chunks": []},
+            usage=OpenAIUsage(input_tokens=2),
+            latency_ms=1,
+            warnings=["local warning"],
+        )
+    )
+    cloud = FakeAdapter(
+        StructuredGeneration(
+            value={"chunks": []},
+            usage=OpenAIUsage(output_tokens=3),
+            latency_ms=2,
+            warnings=["cloud warning"],
+        )
+    )
+
+    result = await ChainedStructuredAdapter(
+        local, cloud, cloud_model="gemini-3.7-flash"
+    ).generate_structured(model="deepseek-ocr:latest")
+
+    assert result.warnings == ["local warning", "cloud warning"]
+    assert result.usage == OpenAIUsage(input_tokens=2, output_tokens=3)
 
 
 @pytest.mark.parametrize(

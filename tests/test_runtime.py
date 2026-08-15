@@ -5,6 +5,7 @@ from PIL import Image
 
 import paperplane.runtime as runtime
 from paperplane.contracts import AgenticPageInput, assemble_parse_response
+from paperplane.ollama_document import OllamaRequestError
 from paperplane.runtime import BatchParseRequest, parse_document
 
 
@@ -109,3 +110,27 @@ async def test_batch_runtime_limits_concurrency_and_isolates_failures(monkeypatc
     assert [outcome.file_id for outcome in outcomes] == [str(index) for index in range(8)]
     assert outcomes[-1].error == "bad document"
     assert all(outcome.result is not None for outcome in outcomes[:-1])
+
+
+@pytest.mark.asyncio
+async def test_batch_runtime_surfaces_safe_ollama_error(monkeypatch) -> None:
+    async def fake_parse_document(**_kwargs):
+        raise OllamaRequestError("DeepSeek OCR stopped after three consecutive region failures")
+
+    monkeypatch.setattr(runtime, "parse_document", fake_parse_document)
+    outcome = (
+        await runtime.parse_documents(
+            [
+                BatchParseRequest(
+                    file_id="deepseek",
+                    data=b"pdf",
+                    filename="sample.pdf",
+                    model="paperplane-ade-latest",
+                    api_key="",
+                    strategy="ollama",
+                )
+            ]
+        )
+    )[0]
+
+    assert outcome.error == "DeepSeek OCR stopped after three consecutive region failures"

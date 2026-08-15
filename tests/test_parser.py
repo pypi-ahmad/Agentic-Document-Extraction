@@ -37,6 +37,7 @@ class FakeProcessor:
     def __init__(self) -> None:
         self.calls = []
         self.model = "gpt-5.6-luna"
+        self.warnings: list[str] = []
 
     async def process_page(self, **kwargs):
         self.calls.append(kwargs)
@@ -58,6 +59,7 @@ class FakeProcessor:
             input_tokens=1_200,
             output_tokens=300,
             cached_input_tokens=200,
+            warnings=self.warnings,
         )
 
 
@@ -109,6 +111,23 @@ async def test_parser_returns_one_grounded_response_without_persistence() -> Non
     assert result.metadata.page_range == (1, 1)
     assert "Invoice total: 42" in result.markdown
     assert len(processor.calls) == 1
+
+
+@pytest.mark.asyncio
+async def test_parser_surfaces_page_processor_warnings() -> None:
+    processor = FakeProcessor()
+    processor.warnings = ["DeepSeek OCR skipped text region 2 after two attempts"]
+    parser = AgenticDocumentParser(processor, object(), vision_enabled=True)  # type: ignore[arg-type]
+
+    result = await parser.parse(
+        data=_png(),
+        filename="invoice.png",
+        model="paperplane-ade-fast-latest",
+    )
+
+    assert result.metadata.warnings == [
+        "Page 1: DeepSeek OCR skipped text region 2 after two attempts"
+    ]
 
 
 @pytest.mark.asyncio

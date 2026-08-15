@@ -350,6 +350,7 @@ class AgenticDocumentParser:
             output_tokens += result.output_tokens
             cached_input_tokens += result.cached_input_tokens
             cache_write_tokens += result.cache_write_tokens
+            warnings.extend(f"Page {page_number}: {warning}" for warning in result.warnings)
             pages[page_number] = _agentic_page(result, parser=self.vision_parser)
             refined_pages.append(page_number)
 

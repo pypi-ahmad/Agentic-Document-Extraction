@@ -6,6 +6,7 @@ import asyncio
 import base64
 import html
 import json
+import logging
 import time
 from dataclasses import dataclass
 from typing import Any, Literal
@@ -24,6 +25,10 @@ from paperplane.ollama_ocr import (
 from paperplane.openai_document import OpenAIUsage, StructuredGeneration
 
 DEFAULT_OLLAMA_BASE_URL = "http://127.0.0.1:11434"
+DEEPSEEK_RETRY_DELAY_SECONDS = 0.5
+DEEPSEEK_MAX_CONSECUTIVE_FAILURES = 3
+
+logger = logging.getLogger("paperplane.ollama_document")
 
 
 @dataclass(frozen=True, slots=True)
@@ -152,37 +157,91 @@ class OllamaDocumentAdapter:
             raise OllamaRequestError("Ollama layout detection found no document regions")
 
         chunks: list[dict[str, Any]] = []
+        warnings: list[str] = []
         input_tokens = 0
         output_tokens = 0
-        for region in regions:
+        consecutive_failures = 0
+        for region_index, region in enumerate(regions, start=1):
             prompt = profile.prompt_for(region.label)
             chunk_type = chunk_type_for_label(region.label)
             region_area = (region.right - region.left) * (region.bottom - region.top)
             max_tokens = 512 if chunk_type == "table" else 256 if region_area > 0.03 else 128
             encoded = base64.b64encode(crop_region(image, region)).decode("ascii")
-            try:
-                response = await self.http.post(
-                    f"{self.base_url}/api/chat",
-                    json={
-                        "model": model,
-                        "messages": [{"role": "user", "content": prompt, "images": [encoded]}],
-                        "stream": False,
-                        "options": {
-                            "temperature": 0,
-                            "num_ctx": 4096,
-                            "num_predict": max_tokens,
+            content = ""
+            exhausted = False
+            for attempt in range(1, 3):
+                try:
+                    response = await self.http.post(
+                        f"{self.base_url}/api/chat",
+                        json={
+                            "model": model,
+                            "messages": [{"role": "user", "content": prompt, "images": [encoded]}],
+                            "stream": False,
+                            "options": {
+                                "temperature": 0,
+                                "num_ctx": 4096,
+                                "num_predict": max_tokens,
+                            },
                         },
-                    },
+                    )
+                    response.raise_for_status()
+                    body = response.json()
+                    content = clean_ocr_output(str(body["message"]["content"]))
+                    input_tokens += int(body.get("prompt_eval_count", 0) or 0)
+                    output_tokens += int(body.get("eval_count", 0) or 0)
+                except (httpx.HTTPError, KeyError, TypeError, ValueError) as exc:
+                    if profile.family != "deepseekocr" or not _retryable_ocr_error(exc):
+                        raise OllamaRequestError(
+                            f"Ollama OCR failed for {region.label} region {region_index}"
+                        ) from exc
+                    status = (
+                        exc.response.status_code if isinstance(exc, httpx.HTTPStatusError) else None
+                    )
+                    logger.warning(
+                        "DeepSeek OCR request failed: model=%s region=%d label=%s attempt=%d "
+                        "status=%s error=%s",
+                        model,
+                        region_index,
+                        region.label,
+                        attempt,
+                        status,
+                        type(exc).__name__,
+                    )
+                    if attempt == 1:
+                        await asyncio.sleep(DEEPSEEK_RETRY_DELAY_SECONDS)
+                        continue
+                    exhausted = True
+                    break
+                if content or chunk_type in {"figure", "chart"}:
+                    break
+                if profile.family != "deepseekocr":
+                    break
+                if attempt == 1:
+                    prompt = (
+                        "Transcribe all visible text in this crop exactly. Return only the "
+                        "transcription; do not explain or add Markdown fences."
+                    )
+                    continue
+                exhausted = True
+                break
+            if exhausted:
+                consecutive_failures += 1
+                warning = (
+                    f"DeepSeek OCR skipped {region.label} region {region_index} after two attempts"
                 )
-                response.raise_for_status()
-                body = response.json()
-                content = clean_ocr_output(str(body["message"]["content"]))
-            except (httpx.HTTPError, KeyError, TypeError, ValueError) as exc:
-                raise OllamaRequestError(
-                    f"Ollama OCR failed for {region.label} region {len(chunks) + 1}"
-                ) from exc
-            input_tokens += int(body.get("prompt_eval_count", 0) or 0)
-            output_tokens += int(body.get("eval_count", 0) or 0)
+                warnings.append(warning)
+                logger.warning(
+                    "DeepSeek OCR region skipped: model=%s region=%d label=%s",
+                    model,
+                    region_index,
+                    region.label,
+                )
+                if consecutive_failures >= DEEPSEEK_MAX_CONSECUTIVE_FAILURES:
+                    raise OllamaRequestError(
+                        "DeepSeek OCR stopped after three consecutive region failures"
+                    )
+                continue
+            consecutive_failures = 0
             if not content and chunk_type not in {"figure", "chart"}:
                 continue
             if chunk_type in {"figure", "chart"}:
@@ -218,6 +277,7 @@ class OllamaDocumentAdapter:
             usage=OpenAIUsage(input_tokens=input_tokens, output_tokens=output_tokens),
             latency_ms=(time.perf_counter() - started) * 1000,
             presegmented=True,
+            warnings=warnings,
         )
 
 
@@ -251,7 +311,15 @@ class ChainedStructuredAdapter:
                 cache_write_tokens=refined.usage.cache_write_tokens,
             ),
             latency_ms=local.latency_ms + refined.latency_ms,
+            warnings=[*local.warnings, *refined.warnings],
         )
+
+
+def _retryable_ocr_error(exc: Exception) -> bool:
+    if isinstance(exc, httpx.HTTPStatusError):
+        status = exc.response.status_code
+        return status in {408, 429} or status >= 500
+    return isinstance(exc, (httpx.RequestError, KeyError, TypeError, ValueError))
 
 
 __all__ = [

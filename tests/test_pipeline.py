@@ -102,6 +102,7 @@ class _PresegmentedAdapter:
             usage=OpenAIUsage(),
             latency_ms=1,
             presegmented=True,
+            warnings=["DeepSeek OCR skipped text region 2 after two attempts"],
         )
 
 
@@ -778,6 +779,7 @@ async def test_presegmented_ocr_page_skips_reconciliation_and_crop_verification(
     assert result.markdown == "PWS Id: MO1010001"
     assert result.chunks[0].verification_status == VerificationStatus.CANDIDATE
     assert result.chunks[0].warnings == ["single_model_candidate"]
+    assert result.warnings == ["DeepSeek OCR skipped text region 2 after two attempts"]
 
 
 async def test_scanned_table_is_verified_by_full_page_reconciliation() -> None:

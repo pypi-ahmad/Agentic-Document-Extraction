@@ -200,6 +200,7 @@ class PageResult(BaseModel):
     application_cache_hit: bool = False
     audit_calls: list[dict[str, Any]] = Field(default_factory=list)
     evidence_artifacts: dict[str, bytes] = Field(default_factory=dict, exclude=True)
+    warnings: list[str] = Field(default_factory=list)
 
 
 def _cache_key(prefix: str, source_sha256: str) -> str:
@@ -561,6 +562,7 @@ class V2PageProcessor:
             prompt_cache_key=_cache_key("page-draft", source_sha256),
         )
         chunks: list[GroundedChunk] = []
+        page_warnings = list(draft.warnings)
         evidence_artifacts: dict[str, bytes] = {}
         total_usage = draft.usage.model_copy()
         model_usage = {self.model: draft.usage.model_copy()}
@@ -957,6 +959,7 @@ class V2PageProcessor:
             cache_write_tokens=total_usage.cache_write_tokens,
             model_usage=model_usage,
             evidence_artifacts=evidence_artifacts,
+            warnings=page_warnings,
         )
 
     async def _verify_crop(
