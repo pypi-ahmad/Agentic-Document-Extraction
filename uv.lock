@@ -49,6 +49,7 @@ dependencies = [
     { name = "pymupdf" },
     { name = "python-dotenv" },
     { name = "streamlit", extra = ["pdf"] },
+    { name = "transformers" },
 ]
 
 [package.optional-dependencies]
@@ -98,6 +99,7 @@ requires-dist = [
     { name = "torch", marker = "extra == 'cu130'", specifier = ">=2.11", index = "https://download.pytorch.org/whl/cu130", conflict = { package = "agentic-document-extraction", extra = "cu130" } },
     { name = "torchvision", marker = "extra == 'cpu'", specifier = ">=0.26", index = "https://download.pytorch.org/whl/cpu", conflict = { package = "agentic-document-extraction", extra = "cpu" } },
     { name = "torchvision", marker = "extra == 'cu130'", specifier = ">=0.26", index = "https://download.pytorch.org/whl/cu130", conflict = { package = "agentic-document-extraction", extra = "cu130" } },
+    { name = "transformers", specifier = ">=5.3.1,<6" },
 ]
 provides-extras = ["test", "lint", "docs", "cpu", "cu130"]
 

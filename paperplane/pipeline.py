@@ -566,6 +566,7 @@ class V2PageProcessor:
         model_usage = {self.model: draft.usage.model_copy()}
         draft_raw_chunks = list(draft.value.get("chunks", []))
         raw_chunks = draft_raw_chunks
+        presegmented = draft.presegmented
         scan_like = _is_scan_like(filename, page)
         provisional: list[tuple[GroundedChunk, BoundingBox]] = []
         for order, raw in enumerate(draft_raw_chunks, start=1):
@@ -589,8 +590,8 @@ class V2PageProcessor:
                 )
             )
         quality = assess_page_quality(provisional, page.image_png)
-        reconcile_page = mode == ProcessingMode.AUDIT or (
-            mode == ProcessingMode.BALANCED and quality.flagged
+        reconcile_page = not presegmented and (
+            mode == ProcessingMode.AUDIT or (mode == ProcessingMode.BALANCED and quality.flagged)
         )
         reconciliation_failed = False
         if reconcile_page and verification_calls < budget.max_verification_calls_per_page:
@@ -632,7 +633,8 @@ class V2PageProcessor:
             model_usage[self.model].cache_write_tokens += reconciliation.usage.cache_write_tokens
             verification_calls += 1
         if (
-            mode == ProcessingMode.AUDIT
+            not presegmented
+            and mode == ProcessingMode.AUDIT
             and _needs_figure_reconciliation(raw_chunks)
             and verification_calls < budget.max_verification_calls_per_page
         ):
@@ -705,6 +707,19 @@ class V2PageProcessor:
                 warnings = ["invalid_draft_box"]
                 if preserve:
                     warnings.append("scan_fallback_used")
+            elif presegmented:
+                grounding = Grounding(
+                    page=page.page_number,
+                    box=box,
+                    method=GroundingMethod.VISION_REFINED,
+                    source_box=_source_box(box, page),
+                    source_unit=_source_unit(filename),
+                    evidence_artifact_id=f"page:{source_sha256}:{page.page_number}",
+                )
+                status = VerificationStatus.CANDIDATE
+                final_text = text
+                final_markdown = str(raw["markdown"])
+                warnings = ["single_model_candidate"]
             elif reconcile_page:
                 assert box is not None
                 grounding = Grounding(

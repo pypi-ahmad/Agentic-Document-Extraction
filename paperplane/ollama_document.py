@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import asyncio
 import base64
+import html
 import json
 import time
 from dataclasses import dataclass
@@ -10,6 +12,15 @@ from typing import Any, Literal
 
 import httpx
 
+from paperplane.ollama_ocr import (
+    LayoutDetector,
+    OcrProfile,
+    chunk_type_for_label,
+    clean_ocr_output,
+    crop_region,
+    get_layout_detector,
+    profile_for_family,
+)
 from paperplane.openai_document import OpenAIUsage, StructuredGeneration
 
 DEFAULT_OLLAMA_BASE_URL = "http://127.0.0.1:11434"
@@ -19,6 +30,7 @@ DEFAULT_OLLAMA_BASE_URL = "http://127.0.0.1:11434"
 class OllamaModel:
     name: str
     capabilities: tuple[str, ...]
+    family: str | None = None
 
     @property
     def vision_capable(self) -> bool:
@@ -30,9 +42,17 @@ class OllamaRequestError(RuntimeError):
 
 
 class OllamaDocumentAdapter:
-    def __init__(self, http: httpx.AsyncClient, *, base_url: str = DEFAULT_OLLAMA_BASE_URL) -> None:
+    def __init__(
+        self,
+        http: httpx.AsyncClient,
+        *,
+        base_url: str = DEFAULT_OLLAMA_BASE_URL,
+        layout_detector: LayoutDetector | None = None,
+    ) -> None:
         self.http = http
         self.base_url = base_url.rstrip("/")
+        self.layout_detector = layout_detector
+        self._families: dict[str, str | None] = {}
 
     async def list_models(self) -> list[OllamaModel]:
         try:
@@ -43,8 +63,11 @@ class OllamaDocumentAdapter:
             for name in names:
                 detail = await self.http.post(f"{self.base_url}/api/show", json={"model": name})
                 detail.raise_for_status()
-                capabilities = tuple(str(item) for item in detail.json().get("capabilities", []))
-                models.append(OllamaModel(name=name, capabilities=capabilities))
+                body = detail.json()
+                capabilities = tuple(str(item) for item in body.get("capabilities", []))
+                family = str(body.get("details", {}).get("family", "")) or None
+                self._families[name] = family
+                models.append(OllamaModel(name=name, capabilities=capabilities, family=family))
             return models
         except (httpx.HTTPError, KeyError, TypeError, ValueError) as exc:
             raise OllamaRequestError(
@@ -65,6 +88,10 @@ class OllamaDocumentAdapter:
         prompt_cache_key: str,
     ) -> StructuredGeneration:
         del schema_name, reasoning_effort, detail, prompt_cache_key
+        family = await self._model_family(model)
+        profile = profile_for_family(family)
+        if image is not None and profile is not None and "chunks" in schema.get("properties", {}):
+            return await self._generate_ocr_page(model, image, profile)
         content = instructions
         if context:
             content += f"\n\nPrior/local document context:\n{context}"
@@ -98,6 +125,99 @@ class OllamaDocumentAdapter:
                 output_tokens=int(body.get("eval_count", 0)),
             ),
             latency_ms=(time.perf_counter() - started) * 1000,
+        )
+
+    async def _model_family(self, model: str) -> str | None:
+        if model in self._families:
+            return self._families[model]
+        try:
+            response = await self.http.post(f"{self.base_url}/api/show", json={"model": model})
+            response.raise_for_status()
+            family = str(response.json().get("details", {}).get("family", "")) or None
+        except (httpx.HTTPError, TypeError, ValueError) as exc:
+            raise OllamaRequestError("Ollama could not inspect the selected model") from exc
+        self._families[model] = family
+        return family
+
+    async def _generate_ocr_page(
+        self, model: str, image: bytes, profile: OcrProfile
+    ) -> StructuredGeneration:
+        detector = self.layout_detector or get_layout_detector()
+        started = time.perf_counter()
+        try:
+            regions = await asyncio.to_thread(detector.detect, image)
+        except Exception as exc:
+            raise OllamaRequestError("Ollama layout detection failed") from exc
+        if not regions:
+            raise OllamaRequestError("Ollama layout detection found no document regions")
+
+        chunks: list[dict[str, Any]] = []
+        input_tokens = 0
+        output_tokens = 0
+        for region in regions:
+            prompt = profile.prompt_for(region.label)
+            chunk_type = chunk_type_for_label(region.label)
+            region_area = (region.right - region.left) * (region.bottom - region.top)
+            max_tokens = 512 if chunk_type == "table" else 256 if region_area > 0.03 else 128
+            encoded = base64.b64encode(crop_region(image, region)).decode("ascii")
+            try:
+                response = await self.http.post(
+                    f"{self.base_url}/api/chat",
+                    json={
+                        "model": model,
+                        "messages": [{"role": "user", "content": prompt, "images": [encoded]}],
+                        "stream": False,
+                        "options": {
+                            "temperature": 0,
+                            "num_ctx": 4096,
+                            "num_predict": max_tokens,
+                        },
+                    },
+                )
+                response.raise_for_status()
+                body = response.json()
+                content = clean_ocr_output(str(body["message"]["content"]))
+            except (httpx.HTTPError, KeyError, TypeError, ValueError) as exc:
+                raise OllamaRequestError(
+                    f"Ollama OCR failed for {region.label} region {len(chunks) + 1}"
+                ) from exc
+            input_tokens += int(body.get("prompt_eval_count", 0) or 0)
+            output_tokens += int(body.get("eval_count", 0) or 0)
+            if not content and chunk_type not in {"figure", "chart"}:
+                continue
+            if chunk_type in {"figure", "chart"}:
+                description = (
+                    f"<description>{html.escape(content)}</description>" if content else ""
+                )
+                markdown = f'<figure type="{chunk_type}">{description}</figure>'
+            else:
+                markdown = content
+            chunks.append(
+                {
+                    "type": chunk_type,
+                    "text": content,
+                    "markdown": markdown,
+                    "box": {
+                        "left": region.left,
+                        "top": region.top,
+                        "right": region.right,
+                        "bottom": region.bottom,
+                    },
+                    "parent_order": None,
+                    "atomic_lines": [],
+                    "row": None,
+                    "col": None,
+                    "rowspan": None,
+                    "colspan": None,
+                }
+            )
+        if not chunks:
+            raise OllamaRequestError("Ollama OCR returned no document content")
+        return StructuredGeneration(
+            value={"chunks": chunks},
+            usage=OpenAIUsage(input_tokens=input_tokens, output_tokens=output_tokens),
+            latency_ms=(time.perf_counter() - started) * 1000,
+            presegmented=True,
         )
 
 

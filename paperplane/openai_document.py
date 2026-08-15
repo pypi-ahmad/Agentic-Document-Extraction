@@ -53,6 +53,7 @@ class StructuredGeneration(BaseModel):
     value: dict[str, Any]
     usage: OpenAIUsage
     latency_ms: float = Field(ge=0)
+    presegmented: bool = False
 
 
 def _responses_url(base_url: str) -> str:

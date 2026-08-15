@@ -36,6 +36,7 @@ dependencies = [
   "python-dotenv>=1.1,<2",
   "pymupdf>=1.28,<2",
   "Pillow>=12.3.0,<13",
+  "transformers>=5.3.1,<6",
   "docling[rapidocr]>=2.66,<3",
   "pdf-inspector>=1.14.2,<2",
   "bleach>=6,<7",
