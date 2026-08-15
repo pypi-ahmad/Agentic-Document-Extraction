@@ -1,6 +1,6 @@
 # Paperplane capabilities
 
-Paperplane 5.2.1 is an open-source, local-first multipage Streamlit workspace for converting PDFs, images,
+Paperplane 5.3.0 is an open-source, local-first multipage Streamlit workspace for converting PDFs, images,
 and modern Office files into reading-order Markdown, grounded JSON, annotated PDFs, and
 cited downstream data.
 

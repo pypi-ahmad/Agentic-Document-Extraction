@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-## Paperplane 5.2.1
+## Paperplane 5.3.0
 
 - Added dedicated Support and Disclaimer documents, clearer manual smoke-test guidance,
   current bug-report fields, and direct community contribution links.
