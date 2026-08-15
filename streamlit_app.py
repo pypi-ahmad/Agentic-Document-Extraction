@@ -26,7 +26,12 @@ from paperplane.contracts import (
     ProcessingStrategy,
     StructureNode,
 )
-from paperplane.ingest import IMAGE_EXTENSIONS, OFFICE_EXTENSIONS, inspect_document
+from paperplane.ingest import (
+    IMAGE_EXTENSIONS,
+    OFFICE_EXTENSIONS,
+    inspect_document,
+    subset_pdf_pages,
+)
 from paperplane.jobs import JobStore
 from paperplane.model_catalog import (
     DEFAULT_DOCUMENT_MODEL,
@@ -320,10 +325,24 @@ def _render_result_overview(outcome: runtime.BatchParseOutcome) -> None:
             st.caption(f"Estimate only. {ai_model.pricing_note}")
 
 
-def _render_source_preview(filename: str, data: bytes) -> None:
+@st.cache_data(show_spinner=False, max_entries=40)
+def _cached_pdf_subset(data: bytes, page_start: int, page_end: int | None) -> bytes:
+    return subset_pdf_pages(data, page_start, page_end)
+
+
+def _render_source_preview(
+    filename: str, data: bytes, page_range: tuple[int, int | None]
+) -> None:
     suffix = Path(filename).suffix.casefold()
     if suffix == ".pdf":
-        st.pdf(data, height=760, key=f"source_pdf_{hashlib.sha256(data).hexdigest()[:12]}")
+        preview_data = _cached_pdf_subset(data, *page_range)
+        selected_end = page_range[1] or page_range[0]
+        st.caption(f"Previewing source pages {page_range[0]}-{selected_end}.")
+        st.pdf(
+            preview_data,
+            height=760,
+            key=f"source_pdf_{hashlib.sha256(preview_data).hexdigest()[:12]}",
+        )
     elif suffix in IMAGE_EXTENSIONS:
         st.image(data, caption=filename, width="stretch")
     else:
@@ -778,7 +797,7 @@ if input_tab.open:
             )
         else:
             filename, source_data = uploads_by_id[selected_id]
-            _render_source_preview(filename, source_data)
+            _render_source_preview(filename, source_data, page_ranges[selected_id])
 
 if output_tab.open:
     with output_tab:
@@ -814,13 +833,33 @@ if output_tab.open:
 if pdf_tab.open:
     with pdf_tab:
         if selected_artifact is not None and selected_id is not None:
+            preview_data = selected_artifact.data
             if selected_artifact.kind == "source_overlay":
                 st.caption(
                     f"{selected_artifact.annotated_blocks} grounded blocks are overlaid on source pages."
                 )
+                if (
+                    selected_outcome is not None
+                    and Path(selected_outcome.filename).suffix.casefold() == ".pdf"
+                    and selected_result is not None
+                    and selected_result.metadata.page_range is not None
+                ):
+                    page_range = selected_result.metadata.page_range
+                    preview_data = _cached_pdf_subset(preview_data, *page_range)
+                    st.caption(
+                        f"Previewing annotated source pages {page_range[0]}-{page_range[1]}. "
+                        "The downloaded annotated PDF remains complete."
+                    )
             else:
                 st.caption("Semantic-only blocks are listed without invented coordinates.")
-            st.pdf(selected_artifact.data, height=720, key=f"annotated_pdf_{selected_id}")
+            st.pdf(
+                preview_data,
+                height=720,
+                key=(
+                    f"annotated_pdf_{selected_id}_"
+                    f"{hashlib.sha256(preview_data).hexdigest()[:12]}"
+                ),
+            )
         elif selected_artifact_error:
             st.error(selected_artifact_error)
         else:

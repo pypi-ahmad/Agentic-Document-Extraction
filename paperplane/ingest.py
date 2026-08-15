@@ -131,6 +131,20 @@ def select_page_range(page_count: int, start: int = 1, end: int | None = None) -
     return tuple(range(start, selected_end + 1))
 
 
+def subset_pdf_pages(data: bytes, start: int = 1, end: int | None = None) -> bytes:
+    """Return PDF bytes containing only an inclusive one-based page range."""
+
+    document = fitz.open(stream=data, filetype="pdf")
+    try:
+        selected_pages = select_page_range(document.page_count, start, end)
+        if len(selected_pages) == document.page_count:
+            return data
+        document.select([page_number - 1 for page_number in selected_pages])
+        return document.tobytes(garbage=3, deflate=True)
+    finally:
+        document.close()
+
+
 def _office_mime_type(suffix: str) -> str:
     return {
         ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",

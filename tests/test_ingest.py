@@ -9,6 +9,7 @@ from paperplane.ingest import (
     inspect_document,
     render_page,
     select_page_range,
+    subset_pdf_pages,
 )
 
 
@@ -78,6 +79,32 @@ def test_select_page_range_is_inclusive_and_defaults_to_last_page() -> None:
         select_page_range(5, 4, 3)
     with pytest.raises(DocumentInputError, match="invalid_page_range"):
         select_page_range(5, 1, 6)
+
+
+def test_subset_pdf_pages_keeps_only_the_requested_source_pages() -> None:
+    document = fitz.open()
+    for page_number in range(1, 4):
+        page = document.new_page(width=300, height=400)
+        page.insert_text((50, 80), f"Source page {page_number}")
+    data = document.tobytes()
+    document.close()
+
+    subset = subset_pdf_pages(data, 2, 3)
+
+    preview = fitz.open(stream=subset, filetype="pdf")
+    try:
+        assert preview.page_count == 2
+        assert [page.get_text().strip() for page in preview] == ["Source page 2", "Source page 3"]
+    finally:
+        preview.close()
+
+
+def test_subset_pdf_pages_reuses_full_document_and_validates_range() -> None:
+    data = _pdf_bytes()
+
+    assert subset_pdf_pages(data, 1, 1) is data
+    with pytest.raises(DocumentInputError, match="invalid_page_range"):
+        subset_pdf_pages(data, 2, 2)
 
 
 def test_inspect_rejects_oversized_or_unsupported_input() -> None:

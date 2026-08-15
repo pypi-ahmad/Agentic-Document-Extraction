@@ -1,6 +1,7 @@
 from io import BytesIO
 from pathlib import Path
 
+import fitz
 from PIL import Image
 from streamlit.testing.v1 import AppTest
 
@@ -32,6 +33,16 @@ def _png() -> bytes:
     output = BytesIO()
     Image.new("RGB", (20, 20), "white").save(output, format="PNG")
     return output.getvalue()
+
+
+def _pdf(page_count: int = 3) -> bytes:
+    document = fitz.open()
+    for page_number in range(1, page_count + 1):
+        page = document.new_page(width=300, height=400)
+        page.insert_text((50, 80), f"Source page {page_number}")
+    data = document.tobytes()
+    document.close()
+    return data
 
 
 def _select_engine(app: AppTest, label: str) -> AppTest:
@@ -153,6 +164,55 @@ def test_app_parses_upload_and_exposes_downloads(monkeypatch) -> None:
     app.session_state["workspace_view"] = "JSON"
     app.run()
     assert app.json
+
+
+def test_pdf_viewers_follow_selected_range_while_download_stays_complete(monkeypatch) -> None:
+    async def fake_parse_document(**kwargs):
+        return assemble_parse_response(
+            document_id="document",
+            job_id="request",
+            model=kwargs["model"],
+            processing_strategy="docling",
+            source_page_count=3,
+            page_range=(2, 3),
+            pages=[
+                AgenticPageInput(page_number=2, blocks=[]),
+                AgenticPageInput(page_number=3, blocks=[]),
+            ],
+            duration_ms=25,
+        )
+
+    monkeypatch.setattr(runtime, "parse_document", fake_parse_document)
+    source = _pdf()
+    app = AppTest.from_file(APP_PATH).run()
+    app = _select_engine(app, "Docling ADE")
+    app.file_uploader[0].set_value([("report.pdf", source, "application/pdf")]).run()
+    next(item for item in app.number_input if item.label.startswith("Start page")).set_value(2)
+    next(item for item in app.number_input if item.label.startswith("End page")).set_value(3)
+    app.run()
+
+    assert any("Previewing source pages 2-3" in caption.value for caption in app.caption)
+
+    next(button for button in app.button if button.label == "Parse files").click().run(timeout=20)
+    app.session_state["workspace_view"] = "Annotated PDF"
+    app.session_state["workspace_view_widget"] = "Annotated PDF"
+    app.run()
+
+    captions = [caption.value for caption in app.caption]
+    assert any("Previewing annotated source pages 2-3" in caption for caption in captions), (
+        captions,
+        [error.value for error in app.error],
+        [exception.value for exception in app.exception],
+    )
+    assert any(
+        button.label == "Download annotated PDF" for button in app.download_button
+    )
+    artifact = next(iter(app.session_state["annotated_pdfs"].values()))
+    downloaded = fitz.open(stream=artifact.data, filetype="pdf")
+    try:
+        assert downloaded.page_count == 3
+    finally:
+        downloaded.close()
 
 
 def test_failed_batch_still_reaches_full_progress(monkeypatch) -> None:
