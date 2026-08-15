@@ -160,6 +160,45 @@ async def test_parser_processes_only_requested_pages() -> None:
 
 
 @pytest.mark.asyncio
+async def test_parser_reports_each_finalized_page_once() -> None:
+    processor = FakeProcessor()
+    parser = AgenticDocumentParser(processor, FakeDocling(), vision_enabled=True)  # type: ignore[arg-type]
+    completed_pages: list[int] = []
+
+    await parser.parse(
+        data=_pdf(3),
+        filename="report.pdf",
+        model="paperplane-ade-fast-latest",
+        strategy="ai",
+        page_start=2,
+        page_end=3,
+        progress_callback=completed_pages.append,
+    )
+
+    assert completed_pages == [2, 3]
+
+
+@pytest.mark.asyncio
+async def test_parser_reports_native_pages_after_docling_finishes() -> None:
+    parser = AgenticDocumentParser(
+        FakeProcessor(),
+        FakeDocling(),
+        vision_enabled=False,  # type: ignore[arg-type]
+    )
+    completed_pages: list[int] = []
+
+    await parser.parse(
+        data=_pdf(2),
+        filename="report.pdf",
+        model="paperplane-ade-latest",
+        strategy="docling",
+        progress_callback=completed_pages.append,
+    )
+
+    assert completed_pages == [1, 2]
+
+
+@pytest.mark.asyncio
 async def test_docling_strategy_never_calls_ai() -> None:
     processor = FakeProcessor()
     docling = FakeDocling()

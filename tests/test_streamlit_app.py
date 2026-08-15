@@ -131,6 +131,11 @@ def test_app_parses_upload_and_exposes_downloads(monkeypatch) -> None:
         "Download ADE v2 JSON",
         "Download batch ZIP",
     }
+    progress = app.get("progress")
+    assert len(progress) == 1
+    assert progress[0].proto.value == 100
+    assert "100%" in progress[0].proto.text
+    assert not any("Private local workspace" in str(element.value) for element in app.get("badge"))
 
     app.session_state["workspace_view"] = "Annotated PDF"
     app.run()
@@ -148,6 +153,23 @@ def test_app_parses_upload_and_exposes_downloads(monkeypatch) -> None:
     app.session_state["workspace_view"] = "JSON"
     app.run()
     assert app.json
+
+
+def test_failed_batch_still_reaches_full_progress(monkeypatch) -> None:
+    async def fake_parse_document(**_kwargs):
+        raise ValueError("Unreadable document")
+
+    monkeypatch.setenv("OPENAI_API_KEY", "test-key")
+    monkeypatch.setattr(runtime, "parse_document", fake_parse_document)
+    app = AppTest.from_file(APP_PATH).run()
+    app = _select_engine(app, "Cloud AI ADE")
+    app.file_uploader[0].set_value([("broken.png", _png(), "image/png")]).run()
+    next(button for button in app.button if button.label == "Parse files").click().run(timeout=20)
+
+    progress = app.get("progress")
+    assert progress[0].proto.value == 100
+    assert progress[0].proto.text == "Batch complete — 100%"
+    assert any("Unreadable document" in error.value for error in app.error)
 
 
 def test_app_allows_private_agnes_visual_parse(monkeypatch) -> None:

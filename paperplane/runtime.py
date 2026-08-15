@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import asyncio
 import logging
+from collections.abc import Callable
 from dataclasses import dataclass
 from functools import lru_cache
+from typing import Literal
 
 import httpx
 
@@ -76,6 +78,14 @@ class BatchParseOutcome:
     error: str | None = None
 
 
+@dataclass(frozen=True)
+class BatchProgressEvent:
+    file_id: str
+    filename: str
+    stage: Literal["started", "page_complete", "document_complete"]
+    page_number: int | None = None
+
+
 async def parse_document(
     *,
     data: bytes,
@@ -89,6 +99,7 @@ async def parse_document(
     page_end: int | None = None,
     ollama_model: str = "glm-ocr:latest",
     ollama_base_url: str = DEFAULT_OLLAMA_BASE_URL,
+    progress_callback: Callable[[int], None] | None = None,
 ) -> ParseResponse:
     """Parse one document without retaining a client, upload, or result."""
     if model not in MODEL_MODES:
@@ -150,6 +161,7 @@ async def parse_document(
             strategy=strategy,
             page_start=page_start,
             page_end=page_end,
+            progress_callback=progress_callback,
         )
 
 
@@ -157,6 +169,7 @@ async def parse_documents(
     requests: list[BatchParseRequest],
     *,
     max_concurrency: int = MAX_BATCH_CONCURRENCY,
+    progress_callback: Callable[[BatchProgressEvent], None] | None = None,
 ) -> list[BatchParseOutcome]:
     """Process an in-memory batch concurrently while isolating file failures."""
 
@@ -169,8 +182,17 @@ async def parse_documents(
     concurrency = max(1, min(max_concurrency, MAX_BATCH_CONCURRENCY))
     semaphore = asyncio.Semaphore(concurrency)
 
+    def emit(event: BatchProgressEvent) -> None:
+        if progress_callback is None:
+            return
+        try:
+            progress_callback(event)
+        except Exception:
+            logger.exception("Batch progress callback failed")
+
     async def run(request: BatchParseRequest) -> BatchParseOutcome:
         async with semaphore:
+            emit(BatchProgressEvent(request.file_id, request.filename, "started"))
             try:
                 result = await parse_document(
                     data=request.data,
@@ -184,6 +206,14 @@ async def parse_documents(
                     page_end=request.page_end,
                     ollama_model=request.ollama_model,
                     ollama_base_url=request.ollama_base_url,
+                    progress_callback=lambda page_number: emit(
+                        BatchProgressEvent(
+                            request.file_id,
+                            request.filename,
+                            "page_complete",
+                            page_number,
+                        )
+                    ),
                 )
                 return BatchParseOutcome(
                     file_id=request.file_id,
@@ -203,6 +233,8 @@ async def parse_documents(
                     filename=request.filename,
                     error="Parsing failed unexpectedly. Check the local logs.",
                 )
+            finally:
+                emit(BatchProgressEvent(request.file_id, request.filename, "document_complete"))
 
     return list(await asyncio.gather(*(run(request) for request in requests)))
 
@@ -216,6 +248,7 @@ __all__ = [
     "MAX_BATCH_FILES",
     "BatchParseOutcome",
     "BatchParseRequest",
+    "BatchProgressEvent",
     "get_docling_parser",
     "parse_document",
     "parse_documents",

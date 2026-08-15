@@ -113,11 +113,47 @@ async def test_batch_runtime_limits_concurrency_and_isolates_failures(monkeypatc
 
 
 @pytest.mark.asyncio
+async def test_batch_runtime_reports_page_and_document_progress(monkeypatch) -> None:
+    async def fake_parse_document(**kwargs):
+        kwargs["progress_callback"](1)
+        kwargs["progress_callback"](2)
+        return assemble_parse_response(
+            document_id=kwargs["filename"],
+            job_id=kwargs["filename"],
+            model=kwargs["model"],
+            pages=[AgenticPageInput(page_number=1), AgenticPageInput(page_number=2)],
+        )
+
+    monkeypatch.setattr(runtime, "parse_document", fake_parse_document)
+    events: list[runtime.BatchProgressEvent] = []
+    request = BatchParseRequest(
+        file_id="report",
+        data=b"pdf",
+        filename="report.pdf",
+        model="paperplane-ade-latest",
+        api_key="",
+        page_start=1,
+        page_end=2,
+    )
+
+    await runtime.parse_documents([request], progress_callback=events.append)
+
+    assert [(event.stage, event.page_number) for event in events] == [
+        ("started", None),
+        ("page_complete", 1),
+        ("page_complete", 2),
+        ("document_complete", None),
+    ]
+    assert all(event.file_id == "report" for event in events)
+
+
+@pytest.mark.asyncio
 async def test_batch_runtime_surfaces_safe_ollama_error(monkeypatch) -> None:
     async def fake_parse_document(**_kwargs):
         raise OllamaRequestError("DeepSeek OCR stopped after three consecutive region failures")
 
     monkeypatch.setattr(runtime, "parse_document", fake_parse_document)
+    events: list[runtime.BatchProgressEvent] = []
     outcome = (
         await runtime.parse_documents(
             [
@@ -129,8 +165,10 @@ async def test_batch_runtime_surfaces_safe_ollama_error(monkeypatch) -> None:
                     api_key="",
                     strategy="ollama",
                 )
-            ]
+            ],
+            progress_callback=events.append,
         )
     )[0]
 
     assert outcome.error == "DeepSeek OCR stopped after three consecutive region failures"
+    assert [event.stage for event in events] == ["started", "document_complete"]

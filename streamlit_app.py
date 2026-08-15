@@ -6,6 +6,7 @@ import asyncio
 import hashlib
 import json
 import os
+from collections.abc import Callable
 from dataclasses import dataclass
 from decimal import Decimal
 from pathlib import Path
@@ -230,15 +231,16 @@ def _cached_ollama_models(base_url: str) -> list[OllamaModel]:
 async def _build_artifacts(
     outcomes: list[runtime.BatchParseOutcome],
     sources: dict[str, tuple[bytes, str]],
+    progress_callback: Callable[[str], None] | None = None,
 ) -> tuple[dict[str, AnnotatedPdfArtifact], dict[str, str]]:
     artifacts: dict[str, AnnotatedPdfArtifact] = {}
     errors: dict[str, str] = {}
 
     async def build(outcome: runtime.BatchParseOutcome) -> None:
-        if outcome.result is None:
-            return
-        data, filename = sources[outcome.file_id]
         try:
+            if outcome.result is None:
+                return
+            data, filename = sources[outcome.file_id]
             artifacts[outcome.file_id] = await asyncio.to_thread(
                 build_annotated_pdf,
                 source=data,
@@ -249,6 +251,9 @@ async def _build_artifacts(
             errors[outcome.file_id] = (
                 "The parse completed, but the annotated PDF could not be generated."
             )
+        finally:
+            if progress_callback is not None:
+                progress_callback(outcome.file_id)
 
     await asyncio.gather(*(build(outcome) for outcome in outcomes))
     return artifacts, errors
@@ -396,9 +401,7 @@ openai_base_url = _setting("OPENAI_BASE_URL", runtime.DEFAULT_OPENAI_BASE_URL)
 job_store = _job_store()
 job_store.purge_expired()
 
-with st.container(horizontal=True, vertical_alignment="center"):
-    st.title("Paperplane")
-    st.badge("Private local workspace", icon=":material/lock:", color="blue")
+st.title("Paperplane")
 st.caption(
     "Turn PDFs, images, and modern Office documents into layout-aware Markdown "
     "with hierarchical grounding JSON."
@@ -642,12 +645,57 @@ if parse_clicked:
         for file_id, upload, data in uploads
     ]
     with processing_slot, st.status("Processing documents in parallel…", expanded=True) as status:
-        outcomes = asyncio.run(runtime.parse_documents(requests))
+        progress_bar = st.progress(0, text="Preparing documents — 0%")
+        expected_pages: dict[str, set[int]] = {
+            request.file_id: set(
+                range(request.page_start, (request.page_end or request.page_start) + 1)
+            )
+            for request in requests
+        }
+        completed_pages: dict[str, set[int]] = {request.file_id: set() for request in requests}
+        progress_state = {"percent": 0}
+
+        def update_progress(percent: int, label: str) -> None:
+            percent = max(progress_state["percent"], min(percent, 100))
+            progress_state["percent"] = percent
+            progress_bar.progress(percent, text=f"{label} — {percent}%")
+
+        def report_batch_progress(event: runtime.BatchProgressEvent) -> None:
+            if event.stage == "page_complete" and event.page_number is not None:
+                if event.page_number in expected_pages[event.file_id]:
+                    completed_pages[event.file_id].add(event.page_number)
+                label = f"Parsing {event.filename}: page {event.page_number}"
+            elif event.stage == "document_complete":
+                completed_pages[event.file_id].update(expected_pages[event.file_id])
+                label = f"Finished parsing {event.filename}"
+            else:
+                label = f"Starting {event.filename}"
+            completed = sum(len(pages) for pages in completed_pages.values())
+            total = max(1, sum(len(pages) for pages in expected_pages.values()))
+            update_progress(5 + round(85 * completed / total), label)
+
+        update_progress(5, "Preparing documents")
+        outcomes = asyncio.run(
+            runtime.parse_documents(requests, progress_callback=report_batch_progress)
+        )
+        update_progress(90, "Parsing complete")
         sources = {
             file_id: (data, Path(upload.name).name or "document")
             for file_id, upload, data in uploads
         }
-        artifacts, artifact_errors = asyncio.run(_build_artifacts(outcomes, sources))
+        completed_artifacts: set[str] = set()
+
+        def report_artifact_progress(file_id: str) -> None:
+            completed_artifacts.add(file_id)
+            percent = 90 + round(9 * len(completed_artifacts) / max(1, len(outcomes)))
+            update_progress(
+                percent,
+                f"Building outputs: {len(completed_artifacts)} of {len(outcomes)} documents",
+            )
+
+        artifacts, artifact_errors = asyncio.run(
+            _build_artifacts(outcomes, sources, report_artifact_progress)
+        )
         st.session_state.batch_outcomes = outcomes
         st.session_state.annotated_pdfs = artifacts
         st.session_state.artifact_errors = artifact_errors
@@ -676,6 +724,7 @@ if parse_clicked:
                     "engine": outcome.result.metadata.engine,
                 },
             )
+        update_progress(100, "Batch complete")
         selected = next((item for item in outcomes if item.result is not None), outcomes[0])
         st.session_state.selected_document_id = selected.file_id
         st.session_state.workspace_view = "Output"

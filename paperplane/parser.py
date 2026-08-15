@@ -6,6 +6,7 @@ import asyncio
 import hashlib
 import time
 import uuid
+from collections.abc import Callable
 from typing import Any, Literal
 
 from paperplane.contracts import (
@@ -190,6 +191,7 @@ class AgenticDocumentParser:
         strategy: ProcessingStrategy = "ai",
         page_start: int = 1,
         page_end: int | None = None,
+        progress_callback: Callable[[int], None] | None = None,
     ) -> ParseResponse:
         original_suffix = filename.lower().rsplit(".", 1)[-1]
         original_format = original_suffix if "." in filename else "unknown"
@@ -244,6 +246,13 @@ class AgenticDocumentParser:
         cached_input_tokens = 0
         cache_write_tokens = 0
         model_usage: dict[str, ModelTokenUsage] = {}
+        reported_pages: set[int] = set()
+
+        def report_page_complete(page_number: int) -> None:
+            if progress_callback is None or page_number in reported_pages:
+                return
+            reported_pages.add(page_number)
+            progress_callback(page_number)
 
         docling_confidence: dict[int, float | None] = {}
         inspector_result: PdfInspectorParseResult | None = None
@@ -310,6 +319,10 @@ class AgenticDocumentParser:
                     or not pages[page_number].blocks
                 )
 
+        for page_number in selected_pages:
+            if page_number not in ai_pages:
+                report_page_complete(page_number)
+
         refined_pages: list[int] = []
         for page_number in ai_pages:
             rendered = await asyncio.to_thread(
@@ -347,6 +360,7 @@ class AgenticDocumentParser:
                 ):
                     raise
                 warnings.append(f"AI refinement failed for page {page_number}; local output kept")
+                report_page_complete(page_number)
                 continue
             input_tokens += result.input_tokens
             output_tokens += result.output_tokens
@@ -369,6 +383,7 @@ class AgenticDocumentParser:
             warnings.extend(f"Page {page_number}: {warning}" for warning in result.warnings)
             pages[page_number] = _agentic_page(result, parser=self.vision_parser)
             refined_pages.append(page_number)
+            report_page_complete(page_number)
 
         if not pages:
             raise DocumentInputError("empty_document", "Document produced no readable pages")
@@ -381,6 +396,7 @@ class AgenticDocumentParser:
                     parser=("pdf_inspector" if strategy.startswith("pdf_inspector") else "docling"),
                 ),
             )
+            report_page_complete(page_number)
         ordered_pages = [pages[page_number] for page_number in selected_pages]
         engines = {page.parser for page in ordered_pages}
         engine: Literal[
