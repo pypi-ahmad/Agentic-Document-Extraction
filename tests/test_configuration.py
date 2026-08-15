@@ -48,6 +48,9 @@ def test_windows_launcher_skips_completed_setup() -> None:
 
     assert 'set "UV_LINK_MODE=copy"' in launcher
     assert launcher.count("--link-mode copy") == 3
+    assert 'set "PAPERPLANE_ROOT=%CD%"' in launcher
+    assert "\\Paperplane.cmd*" in launcher
+    assert "taskkill.exe /PID" in launcher
     assert "Stopped the previous Paperplane run." in launcher
     assert "Port 8551 is used by another application." in launcher
     assert "*streamlit run workspace_app.py*" in launcher
@@ -60,6 +63,7 @@ def test_windows_launcher_skips_completed_setup() -> None:
     assert "sync --check --locked --python 3.12.10 --extra cpu" in launcher
     assert "if defined MODELS_READY goto :models_ready" in launcher
     assert 'reg.exe query "HKCU\\Environment" /v GOOGLE_API_KEY' in launcher
+    assert "Google API credential is available to Paperplane." in launcher
     assert '"%VENV_PYTHON%" -m paperplane.ollama_ocr --check' in launcher
     assert '"%VENV_PYTHON%" -m paperplane.ollama_ocr --download' in launcher
     assert '"%VENV_PYTHON%" -m streamlit cache clear' in launcher

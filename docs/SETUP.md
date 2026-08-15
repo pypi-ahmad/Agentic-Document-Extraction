@@ -15,7 +15,9 @@ and a C++ compiler are not required. Python-Markdown and Bleach are runtime depe
 sanitized standalone HTML output and are installed through the same locked environment.
 Before launch, Paperplane imports Torch, Transformers, and Docling to verify that binary
 dependencies are complete; it automatically reinstalls Torch and Torchvision if that health
-check fails.
+check fails. Starting a new launcher stops any earlier Paperplane launcher tree before
+dependency checks, preventing an older app from restarting and locking `.venv` DLLs during
+repair.
 
 ## Automatic Linux setup
 
@@ -57,7 +59,8 @@ and loopback Ollama use do not require a cloud API key.
 Gemini uses `GOOGLE_API_KEY`. Existing `GEMINI_API_KEY` configurations remain a fallback
 only when the canonical variable is absent. On Windows, `Paperplane.cmd` refreshes both
 values from the current user's environment before launch; `GOOGLE_API_KEY` wins when both
-exist. An ignored `.env` and Streamlit secrets use the same names.
+exist. The launcher confirms credential availability without printing its value. An ignored
+`.env` and Streamlit secrets use the same names.
 
 `AGNES_API_KEY` enables both text and private visual workflows. Paperplane sends selected
 page PNGs inline, so no public image host is required.

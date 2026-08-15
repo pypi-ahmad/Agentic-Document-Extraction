@@ -3,6 +3,7 @@ setlocal EnableExtensions DisableDelayedExpansion
 cd /d "%~dp0" || goto :failure
 title Paperplane
 set "UV_LINK_MODE=copy"
+set "PAPERPLANE_ROOT=%CD%"
 
 echo.
 echo ========================================
@@ -10,8 +11,8 @@ echo   Paperplane launcher
 echo ========================================
 echo.
 
-rem A new launcher run replaces only an existing Paperplane Streamlit process.
-powershell.exe -NoProfile -Command "$connection = Get-NetTCPConnection -LocalPort 8551 -State Listen -ErrorAction SilentlyContinue | Select-Object -First 1; if (-not $connection) { exit 0 }; $owner = Get-CimInstance Win32_Process -Filter ('ProcessId = ' + $connection.OwningProcess); if (($owner.CommandLine -like '*streamlit run workspace_app.py*') -or ($owner.CommandLine -like '*paperplane.streamlit_runner run workspace_app.py*')) { Stop-Process -Id $connection.OwningProcess -Force; Wait-Process -Id $connection.OwningProcess -ErrorAction SilentlyContinue; exit 10 }; exit 20"
+rem A new launcher replaces prior Paperplane launcher trees before touching .venv.
+powershell.exe -NoProfile -Command "$root = [IO.Path]::GetFullPath($env:PAPERPLANE_ROOT); $shell = Get-CimInstance Win32_Process -Filter ('ProcessId = ' + $PID); $currentLauncher = $shell.ParentProcessId; $stopped = $false; $processes = Get-CimInstance Win32_Process; $oldLaunchers = @($processes | Where-Object { $_.ProcessId -ne $currentLauncher -and $_.Name -eq 'cmd.exe' -and $_.CommandLine -like ('*' + $root + '\Paperplane.cmd*') }); foreach ($launcher in $oldLaunchers) { taskkill.exe /PID $launcher.ProcessId /T /F *> $null; $stopped = $true }; $connection = Get-NetTCPConnection -LocalPort 8551 -State Listen -ErrorAction SilentlyContinue | Select-Object -First 1; if ($connection) { $owner = Get-CimInstance Win32_Process -Filter ('ProcessId = ' + $connection.OwningProcess); if (($owner.CommandLine -like '*streamlit run workspace_app.py*') -or ($owner.CommandLine -like '*paperplane.streamlit_runner run workspace_app.py*')) { Stop-Process -Id $connection.OwningProcess -Force; Wait-Process -Id $connection.OwningProcess -ErrorAction SilentlyContinue; $stopped = $true } }; $remaining = Get-NetTCPConnection -LocalPort 8551 -State Listen -ErrorAction SilentlyContinue | Select-Object -First 1; if ($remaining) { exit 20 }; if ($stopped) { exit 10 }; exit 0"
 set "PORT_RESULT=%ERRORLEVEL%"
 if "%PORT_RESULT%"=="10" echo Stopped the previous Paperplane run.
 if "%PORT_RESULT%"=="20" goto :port_in_use
@@ -40,6 +41,7 @@ for /f "tokens=1,2,*" %%A in ('reg.exe query "HKCU\Environment" /v GEMINI_API_KE
 for /f "tokens=1,2,*" %%A in ('reg.exe query "HKCU\Environment" /v ANTHROPIC_API_KEY 2^>nul') do if /i "%%A"=="ANTHROPIC_API_KEY" set "ANTHROPIC_API_KEY=%%C"
 for /f "tokens=1,2,*" %%A in ('reg.exe query "HKCU\Environment" /v AGNES_API_KEY 2^>nul') do if /i "%%A"=="AGNES_API_KEY" set "AGNES_API_KEY=%%C"
 for /f "tokens=1,2,*" %%A in ('reg.exe query "HKCU\Environment" /v OLLAMA_BASE_URL 2^>nul') do if /i "%%A"=="OLLAMA_BASE_URL" set "OLLAMA_BASE_URL=%%C"
+if defined GOOGLE_API_KEY echo Google API credential is available to Paperplane.
 
 call :find_uv
 if not defined UV_EXE (
