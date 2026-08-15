@@ -11,17 +11,22 @@ and this project aims to follow [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
-- Limited on-screen source and annotated PDF previews to the selected or successfully
-  parsed page range while preserving complete annotated-PDF downloads and batch archives.
-
 ### Fixed
 
-- Prevented Windows system CUDA Toolkit DLLs from mixing with PyTorch's bundled cuDNN,
-  strengthened launcher repair detection for missing Torch metadata and CUDA failures, and
-  stopped runtime synchronization from uninstalling optional development tools.
-- Connected Docling cloud enhancement to figure descriptions with token accounting, while
-  treating plain Docling's local figure placeholder as expected behavior rather than failure.
+## [5.3.0] - 2026-08-15
 
+### Added
+- Permanent versioned storage for Docling, RapidOCR, and PP-DocLayoutV3 weights with offline migration and fast launch validation.
+- Session Cost reporting by model, live parse progress with percentages, and persistent workspace navigation state.
+- Community Support and Disclaimer documents, manual smoke-test guidance, and current structured bug reporting.
+
+### Changed
+- PDF source and annotated previews now follow the selected or successfully parsed page range.
+- Launchers preserve optional development tools and isolate PyTorch's bundled CUDA runtime from incompatible system DLLs.
+
+### Fixed
+- Docling cloud enhancement now describes figures and records their token usage without treating local placeholders as failures.
+- Gemini structured-output enums, stale Windows launcher replacement, and CUDA/torch repair detection.
 ## [5.2.0] - 2026-08-15
 
 ### Added
