@@ -6,15 +6,15 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks for taking the time to file a bug. Please fill in every
-        section below so we can reproduce and fix it quickly.
+        Thanks for taking the time to file a bug. Use synthetic or redacted
+        examples only. Never attach private documents, provider responses, or keys.
 
   - type: input
     id: version
     attributes:
       label: Affected version
       description: "Copy the Paperplane version shown in the Streamlit footer."
-      placeholder: "4.2.1"
+      placeholder: "5.2.0"
     validations:
       required: true
 
@@ -31,12 +31,12 @@ body:
     attributes:
       label: Steps to reproduce
       description: |
-        Minimal steps that trigger the bug. Include the document
-        type, selected AI model, processing mode, and whether the affected
-        PDF pages are native, scanned, or mixed.
+        Minimal steps that trigger the bug. Include the document type,
+        selected AI model, processing mode, and whether affected PDF pages
+        are native, scanned, or mixed.
       placeholder: |
         1. Select GPT-5.6 Luna and Balanced mode.
-        2. Upload `invoice.png` (1.2 MB, 1 page).
+        2. Upload a synthetic one-page invoice image.
         3. Choose Parse document.
         4. ...
     validations:
@@ -59,9 +59,9 @@ body:
   - type: textarea
     id: logs
     attributes:
-      label: Relevant logs / error output
+      label: Relevant logs or error output
       description: |
-        Copy the safe UI error and relevant launcher/terminal output.
+        Copy the safe UI error and relevant launcher or terminal output.
         Remove document content, provider responses, and API keys.
 
   - type: textarea
@@ -69,9 +69,8 @@ body:
     attributes:
       label: Environment
       description: |
-        OS, Python version (`uv run python -V`), `uv --version`, selected
-        model and mode, input type, and configured environment-variable
-        names. Never include their values.
+        OS, Python version, uv version, selected model and mode, input type,
+        and configured environment-variable names. Never include their values.
 
   - type: checkboxes
     id: checklist
@@ -81,4 +80,6 @@ body:
         - label: I searched existing issues and this is not a duplicate.
           required: true
         - label: I can reproduce the bug on `main` at the version above.
+          required: true
+        - label: I removed credentials, private data, and non-redistributable documents.
           required: true

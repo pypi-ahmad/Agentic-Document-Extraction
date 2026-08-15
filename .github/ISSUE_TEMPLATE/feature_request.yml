@@ -6,16 +6,14 @@ body:
   - type: markdown
     attributes:
       value: |
-        Use this template for new inputs, output-contract changes,
-        processing behavior, evidence views, or other user-visible changes.
+        Use this form for new inputs, output-contract changes, processing
+        behaviour, evidence views, or other user-visible changes.
 
   - type: textarea
     id: problem
     attributes:
       label: Problem
-      description: |
-        What user-facing problem does this solve? Why is the current
-        behaviour insufficient?
+      description: What user-facing problem does this solve, and why is the current behaviour insufficient?
     validations:
       required: true
 
@@ -24,7 +22,7 @@ body:
     attributes:
       label: Proposed solution
       description: |
-        Describe the user-visible behavior, parser stage, Streamlit workflow,
+        Describe the user-visible behaviour, parser stage, Streamlit workflow,
         or downloaded artifact that would change.
     validations:
       required: true
@@ -33,15 +31,14 @@ body:
     id: alternatives
     attributes:
       label: Alternatives considered
-      description: |
-        What else did you look at, and why is this the better path?
+      description: What else did you consider, and why is this the better path?
 
   - type: textarea
     id: impact
     attributes:
       label: Impact
       description: |
-        Who benefits? Does it change a supported input, the Markdown/JSON
+        Who benefits? Does it change a supported input, the Markdown or JSON
         contract, provider usage, a UI view, or an artifact?
 
   - type: checkboxes
@@ -51,4 +48,6 @@ body:
       options:
         - label: I searched existing issues and this is not a duplicate.
           required: true
-        - label: I would be willing to open a PR for this.
+        - label: I have not included credentials or private document content.
+          required: true
+        - label: I would be willing to open a pull request.

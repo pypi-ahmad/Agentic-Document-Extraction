@@ -6,8 +6,8 @@ body:
   - type: markdown
     attributes:
       value: |
-        Use this template to propose a provider-native vision adapter and
-        catalog entry for scanned pages, images, and figure descriptions.
+        Propose a provider-native vision adapter and catalog entry for scans,
+        images, and figure descriptions. Never include an API key value.
 
   - type: input
     id: name
@@ -49,7 +49,7 @@ body:
       label: Configuration
       description: |
         Which credential environment variable is required? Include only its
-        name, never a key value. Are any safe endpoint overrides necessary?
+        name, never a key value. Are safe endpoint overrides necessary?
 
   - type: checkboxes
     id: checklist
@@ -58,4 +58,6 @@ body:
       options:
         - label: I searched existing issues and this is not a duplicate.
           required: true
-        - label: I would be willing to open a PR for this.
+        - label: I have not included credentials or private document content.
+          required: true
+        - label: I would be willing to open a pull request.
