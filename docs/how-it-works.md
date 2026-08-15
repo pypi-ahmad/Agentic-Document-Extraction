@@ -13,8 +13,10 @@ upload up to 20 files
   -> align native-PDF or RapidOCR-observed words; omit unmatched words
   -> infer section, repeated marginalia, table continuation, and range-boundary relations
   -> export strict ADE v2-style JSON and Paperplane v5 JSON
+  -> attribute provider-reported tokens to each model used in the parse
   -> render sanitized HTML on a responsive white paper surface and package it in a manifest ZIP
   -> optionally Classify, Split, or Section in Organize
+  -> accumulate per-model token and configured-cost totals for the browser session
   -> retain local job metadata and artifacts for seven days
 ```
 
@@ -34,5 +36,8 @@ v5. The UI directly calls Python services in the same Streamlit process.
 The Parse sidebar owns engine, model, upload, and page-range controls. A single selected
 document drives six full-width main views. Individual downloads always follow that
 selection; the batch archive covers all outcomes and lists failures only in its manifest.
+Uploads, results, Organize inputs, and page selections survive navigation among Parse,
+Organize, Jobs, and Cost. **New parse** resets the active Parse workspace while preserving
+the Cost ledger; **Stop and clear**, restart, or session end clears both session surfaces.
 The HTML view and exported HTML use the same black-on-white, print-friendly presentation;
 the surrounding Streamlit workspace remains red/black.

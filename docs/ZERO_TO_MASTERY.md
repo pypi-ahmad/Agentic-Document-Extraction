@@ -32,6 +32,10 @@ words, confidence state, provenance, warnings, and document relations. Standalon
 sanitized. The batch ZIP groups every successful document's available outputs and records
 failures in a versioned manifest without copying source uploads.
 
+Uploads, engine settings, page ranges, and results remain in the browser session when you
+move between Parse, Organize, Jobs, and Cost. **New parse** clears the active Parse
+workspace but does not reset the session Cost ledger.
+
 ## 3. Organize
 
 Organize runs Classify, Split, and Section over the grounded Parse response. Results retain
@@ -44,13 +48,20 @@ atomic line grounding; table cells carry row/column/span data. Native PDF words 
 RapidOCR word observations are emitted only when their text aligns exactly. IDs are
 zero-based and response-local in strict ADE v2 output.
 
-## 5. Jobs and privacy
+## 5. Jobs, cost, and privacy
 
 SQLite metadata and private artifacts live under `%LOCALAPPDATA%\Paperplane` for seven
 days. Jobs exposes status, cancellation state, per-job deletion, and clear-all. Credentials
 are never stored there. Cloud engines, including Agnes, transmit only selected pages.
 Agnes sends page PNGs inline instead of publishing them at public URLs. Ollama, Docling,
 PDF Inspector, and storage remain local.
+
+Cost shows provider-reported input, cached-input, and output tokens for successful parses
+in the current browser session. It groups usage by the model that consumed the tokens,
+including separate Ollama and cloud-enhancement rows, then shows a total. Local and free
+models still show token usage at $0 API cost. Estimates use configured rates and are not
+provider invoices. **Stop and clear**, server restart, or session end resets this ledger;
+it is not written to retained job storage.
 
 Paperplane is self-hosted, MIT-licensed software. Operators provide their own optional
 cloud API keys and are responsible for the files they process, permission to process them,
@@ -61,7 +72,7 @@ the project.
 ## 6. Follow the code
 
 1. `workspace_app.py` — navigation.
-2. `streamlit_app.py` and `app_pages/` — UI flows.
+2. `streamlit_app.py` and `app_pages/` — UI flows, retained session state, and Cost.
 3. `paperplane/runtime.py` — batch/provider composition.
 4. `paperplane/parser.py` — range and page orchestration.
 5. `paperplane/ollama_document.py` and `ollama_ocr.py` — Ollama discovery, layout regions,

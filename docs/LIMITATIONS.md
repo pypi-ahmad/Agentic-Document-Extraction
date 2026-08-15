@@ -21,7 +21,8 @@
 - Classify/Split/Section deterministic local results may be partial and carry warnings.
 - The initial locked benchmark corpus is too small for a comparative accuracy claim. No
   LandingAI parity or production-accuracy claim is made.
-- Provider/model IDs and prices may change. UI cost is an estimate, not an invoice.
+- Provider/model IDs and prices may change. Cost includes only successful usage returned
+  by providers, applies configured rates, and is an estimate rather than an invoice.
 - Batch ZIPs exclude original uploads. If annotated-PDF generation fails for an otherwise
   successful parse, the other four outputs remain downloadable and the manifest records the
   artifact warning.

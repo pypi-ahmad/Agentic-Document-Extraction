@@ -15,6 +15,11 @@ seven-day TTL. Deleting a job removes its artifact directory; **Clear all** remo
 retained job. Provider credentials remain in environment variables/secrets and are never
 written to job storage.
 
+Uploads, active results, Organize form values, page selections, and Cost totals live only
+in the current Streamlit browser session. Page navigation preserves them, but they are not
+durable job records. **New parse** keeps Cost totals; **Stop and clear**, restart, or
+session end removes the session data.
+
 Cloud AI transmits only selected pages, but that content leaves the machine. Agnes receives
 selected images inline without public hosting. Ollama, Docling, PDF Inspector, SQLite, and
 artifact storage remain local.

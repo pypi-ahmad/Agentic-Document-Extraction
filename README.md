@@ -62,8 +62,8 @@ the project.
 - Bootstrap missing requirements once with `Paperplane.cmd` on Windows or `Paperplane.sh`
   on Linux, then skip completed setup on later launches. The platform runner avoids noisy
   Windows connection-reset tracebacks without changing Linux event-loop behavior.
-- Start every launch and parse with empty UI caches so previous results never remain in the
-  output tabs.
+- Start every launcher run with empty UI caches and replace the active output when a new
+  parse begins. Normal page navigation preserves the current workspace.
 - Use **Stop and clear** from any page to clear Streamlit and session caches, blank every
   Paperplane tab in the same browser, and stop the local backend and launcher. Downloaded
   models, job history, and saved artifacts remain available.
