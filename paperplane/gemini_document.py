@@ -21,7 +21,7 @@ from paperplane.openai_document import (
 logger = logging.getLogger("paperplane.gemini_document")
 
 DEFAULT_GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta"
-GEMINI_MODELS = {"gemini-3.5-flash-lite", "gemini-3.6-flash"}
+GEMINI_MODELS = {"gemini-3.5-flash-lite", "gemini-3.7-flash"}
 
 
 class GeminiRequestError(OpenAIRequestError):

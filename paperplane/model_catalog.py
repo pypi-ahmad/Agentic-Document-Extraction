@@ -58,7 +58,7 @@ DOCUMENT_MODELS: tuple[DocumentModel, ...] = (
         label="Gemini 3.5 Flash-Lite",
         model_id="gemini-3.5-flash-lite",
         provider="google",
-        api_key_env="GEMINI_API_KEY",
+        api_key_env="GOOGLE_API_KEY",
         help_text="Google's low-latency model optimized for document parsing.",
         docs_url="https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash-lite",
         input_price_per_million=Decimal("0.30"),
@@ -66,18 +66,15 @@ DOCUMENT_MODELS: tuple[DocumentModel, ...] = (
         pricing_note="Standard rate; Batch API discounts are not applied.",
     ),
     DocumentModel(
-        label="Gemini 3.6 Flash",
-        model_id="gemini-3.6-flash",
+        label="Gemini 3.7 Flash",
+        model_id="gemini-3.7-flash",
         provider="google",
-        api_key_env="GEMINI_API_KEY",
-        help_text="Google's current stable Flash model for stronger multimodal reasoning.",
-        docs_url="https://ai.google.dev/gemini-api/docs/models/gemini-3.6-flash",
-        input_price_per_million=Decimal("1.50"),
-        output_price_per_million=Decimal("7.50"),
-        pricing_note=(
-            "Derived from the supplied claim that a $0.75/$3.75 Gemini 3.7 promotion is "
-            "half the Gemini 3.6 rate."
-        ),
+        api_key_env="GOOGLE_API_KEY",
+        help_text="Google's capable Flash model for agentic and multimodal workflows.",
+        docs_url="https://ai.google.dev/gemini-api/docs/models/gemini-3.7-flash",
+        input_price_per_million=Decimal("0.75"),
+        output_price_per_million=Decimal("3.75"),
+        pricing_note="Promotional standard rate through December 31, 2026.",
     ),
     DocumentModel(
         label="Claude Sonnet 5",

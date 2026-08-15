@@ -7,7 +7,7 @@ from paperplane.gemini_document import GeminiDocumentAdapter
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("model", ["gemini-3.5-flash-lite", "gemini-3.6-flash"])
+@pytest.mark.parametrize("model", ["gemini-3.5-flash-lite", "gemini-3.7-flash"])
 async def test_gemini_uses_native_multimodal_structured_output(model: str) -> None:
     captured: dict = {}
 

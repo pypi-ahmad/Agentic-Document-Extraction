@@ -35,6 +35,7 @@ rem This avoids stale values inherited from a long-running Explorer process.
 for /f "tokens=1,2,*" %%A in ('reg.exe query "HKCU\Environment" /v OPENAI_API_KEY 2^>nul') do if /i "%%A"=="OPENAI_API_KEY" set "OPENAI_API_KEY=%%C"
 for /f "tokens=1,2,*" %%A in ('reg.exe query "HKCU\Environment" /v OPENAI_BASE_URL 2^>nul') do if /i "%%A"=="OPENAI_BASE_URL" set "OPENAI_BASE_URL=%%C"
 for /f "tokens=1,2,*" %%A in ('reg.exe query "HKCU\Environment" /v XAI_API_KEY 2^>nul') do if /i "%%A"=="XAI_API_KEY" set "XAI_API_KEY=%%C"
+for /f "tokens=1,2,*" %%A in ('reg.exe query "HKCU\Environment" /v GOOGLE_API_KEY 2^>nul') do if /i "%%A"=="GOOGLE_API_KEY" set "GOOGLE_API_KEY=%%C"
 for /f "tokens=1,2,*" %%A in ('reg.exe query "HKCU\Environment" /v GEMINI_API_KEY 2^>nul') do if /i "%%A"=="GEMINI_API_KEY" set "GEMINI_API_KEY=%%C"
 for /f "tokens=1,2,*" %%A in ('reg.exe query "HKCU\Environment" /v ANTHROPIC_API_KEY 2^>nul') do if /i "%%A"=="ANTHROPIC_API_KEY" set "ANTHROPIC_API_KEY=%%C"
 for /f "tokens=1,2,*" %%A in ('reg.exe query "HKCU\Environment" /v AGNES_API_KEY 2^>nul') do if /i "%%A"=="AGNES_API_KEY" set "AGNES_API_KEY=%%C"
@@ -167,7 +168,7 @@ echo Starting Paperplane...
 echo Open http://127.0.0.1:8551 in your browser.
 echo Close this window or press Ctrl+C to stop the app.
 echo.
-if not defined OPENAI_API_KEY if not defined XAI_API_KEY if not defined GEMINI_API_KEY if not defined ANTHROPIC_API_KEY if not defined AGNES_API_KEY (
+if not defined OPENAI_API_KEY if not defined XAI_API_KEY if not defined GOOGLE_API_KEY if not defined GEMINI_API_KEY if not defined ANTHROPIC_API_KEY if not defined AGNES_API_KEY (
     echo Note: No supported model API key is set in this terminal.
     echo Cloud AI and cloud enhancement require the key for the selected model.
     echo Docling, PDF Inspector, and a running local Ollama can work without a cloud key.

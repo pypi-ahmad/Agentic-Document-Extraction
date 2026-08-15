@@ -39,8 +39,8 @@ async def test_runtime_rejects_unknown_model() -> None:
     ("ai_model", "key_name"),
     [
         ("grok-4.6", "XAI_API_KEY"),
-        ("gemini-3.5-flash-lite", "GEMINI_API_KEY"),
-        ("gemini-3.6-flash", "GEMINI_API_KEY"),
+        ("gemini-3.5-flash-lite", "GOOGLE_API_KEY"),
+        ("gemini-3.7-flash", "GOOGLE_API_KEY"),
         ("claude-sonnet-5", "ANTHROPIC_API_KEY"),
         ("agnes-2.5-flash", "AGNES_API_KEY"),
     ],

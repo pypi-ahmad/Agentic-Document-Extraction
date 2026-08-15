@@ -16,6 +16,7 @@ APP_PATH = Path(__file__).resolve().parents[1] / "streamlit_app.py"
 API_KEY_NAMES = [
     "OPENAI_API_KEY",
     "XAI_API_KEY",
+    "GOOGLE_API_KEY",
     "GEMINI_API_KEY",
     "ANTHROPIC_API_KEY",
     "AGNES_API_KEY",
@@ -169,10 +170,51 @@ def test_app_lists_only_supported_document_models(monkeypatch) -> None:
         "Grok 4.6",
         "GPT-5.6 Luna",
         "Gemini 3.5 Flash-Lite",
-        "Gemini 3.6 Flash",
+        "Gemini 3.7 Flash",
         "Claude Sonnet 5",
         "Agnes 2.5 Flash",
     ]
+
+
+def test_app_accepts_legacy_gemini_key_as_fallback(monkeypatch) -> None:
+    _clear_api_keys(monkeypatch)
+    monkeypatch.setenv("GEMINI_API_KEY", "legacy-test")
+    app = AppTest.from_file(APP_PATH).run()
+    app = _select_engine(app, "Cloud AI ADE")
+    app.selectbox[0].select("Gemini 3.7 Flash").run()
+    app.file_uploader[0].set_value([("invoice.png", _png(), "image/png")]).run()
+
+    assert not next(button for button in app.button if button.label == "Parse files").disabled
+    assert not any("GOOGLE_API_KEY" in warning.value for warning in app.warning)
+
+
+def test_google_key_takes_precedence_over_legacy_gemini_key(monkeypatch) -> None:
+    observed: dict[str, str] = {}
+
+    async def fake_parse_document(**kwargs):
+        observed["api_key"] = kwargs["api_key"]
+        return assemble_parse_response(
+            document_id="document",
+            job_id="request",
+            model=kwargs["model"],
+            ai_model=kwargs["ai_model"],
+            processing_strategy="ai",
+            source_page_count=1,
+            page_range=(1, 1),
+            pages=[AgenticPageInput(page_number=1)],
+        )
+
+    _clear_api_keys(monkeypatch)
+    monkeypatch.setenv("GOOGLE_API_KEY", "google-test")
+    monkeypatch.setenv("GEMINI_API_KEY", "legacy-test")
+    monkeypatch.setattr(runtime, "parse_document", fake_parse_document)
+    app = AppTest.from_file(APP_PATH).run()
+    app = _select_engine(app, "Cloud AI ADE")
+    app.selectbox[0].select("Gemini 3.7 Flash").run()
+    app.file_uploader[0].set_value([("invoice.png", _png(), "image/png")]).run()
+    next(button for button in app.button if button.label == "Parse files").click().run(timeout=20)
+
+    assert observed["api_key"] == "google-test"
 
 
 def test_app_exposes_four_exclusive_engines_and_per_file_ranges(monkeypatch) -> None:

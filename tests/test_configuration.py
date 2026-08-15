@@ -36,7 +36,7 @@ def test_env_example_contains_only_safe_placeholders() -> None:
         "OPENAI_API_KEY": "replace-with-your-openai-api-key",
         "OPENAI_BASE_URL": "https://api.openai.com",
         "XAI_API_KEY": "replace-with-your-xai-api-key",
-        "GEMINI_API_KEY": "replace-with-your-gemini-api-key",
+        "GOOGLE_API_KEY": "replace-with-your-google-api-key",
         "ANTHROPIC_API_KEY": "replace-with-your-anthropic-api-key",
         "AGNES_API_KEY": "replace-with-your-agnes-api-key",
         "OLLAMA_BASE_URL": "http://127.0.0.1:11434",
@@ -59,6 +59,7 @@ def test_windows_launcher_skips_completed_setup() -> None:
     assert "sync --check --locked --python 3.12.10 --extra %TORCH_EXTRA%" in launcher
     assert "sync --check --locked --python 3.12.10 --extra cpu" in launcher
     assert "if defined MODELS_READY goto :models_ready" in launcher
+    assert 'reg.exe query "HKCU\\Environment" /v GOOGLE_API_KEY' in launcher
     assert '"%VENV_PYTHON%" -m paperplane.ollama_ocr --check' in launcher
     assert '"%VENV_PYTHON%" -m paperplane.ollama_ocr --download' in launcher
     assert '"%VENV_PYTHON%" -m streamlit cache clear' in launcher
@@ -90,6 +91,7 @@ def test_linux_launcher_skips_completed_setup() -> None:
     assert "models download layout tableformer rapidocr --quiet" in launcher
     assert '"$venv_python" -m paperplane.ollama_ocr --check' in launcher
     assert '"$venv_python" -m paperplane.ollama_ocr --download' in launcher
+    assert '&& -z "${GOOGLE_API_KEY:-}"' in launcher
     assert '"$venv_python" -m streamlit cache clear' in launcher
     assert (
         'exec "$venv_python" -m paperplane.streamlit_runner run workspace_app.py '

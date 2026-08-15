@@ -177,6 +177,7 @@ printf 'Press Ctrl+C to stop the app.\n\n'
 
 if [[ -z "${OPENAI_API_KEY:-}" \
     && -z "${XAI_API_KEY:-}" \
+    && -z "${GOOGLE_API_KEY:-}" \
     && -z "${GEMINI_API_KEY:-}" \
     && -z "${ANTHROPIC_API_KEY:-}" \
     && -z "${AGNES_API_KEY:-}" ]]; then

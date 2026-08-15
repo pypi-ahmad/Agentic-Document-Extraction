@@ -26,6 +26,7 @@ from paperplane.model_catalog import (
     DOCUMENT_MODEL_BY_ID,
     DOCUMENT_MODEL_BY_LABEL,
     DOCUMENT_MODELS,
+    DocumentModel,
     estimate_model_cost,
 )
 from paperplane.ollama_document import OllamaDocumentAdapter, OllamaModel, OllamaRequestError
@@ -101,6 +102,13 @@ def _secret(name: str) -> str:
 
 def _setting(name: str, default: str = "") -> str:
     return os.environ.get(name, "").strip() or _secret(name) or default
+
+
+def _model_api_key(model: DocumentModel) -> str:
+    value = _setting(model.api_key_env)
+    if value or model.provider != "google":
+        return value
+    return _setting("GEMINI_API_KEY")
 
 
 def _job_store() -> JobStore:
@@ -333,7 +341,7 @@ for key, default in {
 }.items():
     st.session_state.setdefault(key, default)
 
-api_keys = {model.api_key_env: _setting(model.api_key_env) for model in DOCUMENT_MODELS}
+api_keys = {model.model_id: _model_api_key(model) for model in DOCUMENT_MODELS}
 openai_base_url = _setting("OPENAI_BASE_URL", runtime.DEFAULT_OPENAI_BASE_URL)
 job_store = _job_store()
 job_store.purge_expired()
@@ -423,7 +431,7 @@ with st.sidebar, st.container(border=True):
             index=AI_MODEL_LABELS.index(selected_ai_model.label),
         )
         selected_ai_model = DOCUMENT_MODEL_BY_LABEL[selected_ai_label]
-        api_key = api_keys[selected_ai_model.api_key_env]
+        api_key = api_keys[selected_ai_model.model_id]
         if not api_key:
             st.warning(
                 f"Set `{selected_ai_model.api_key_env}` to use this AI strategy.",
