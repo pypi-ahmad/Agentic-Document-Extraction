@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## Paperplane 5.2.1
+
+- Added dedicated Support and Disclaimer documents, clearer manual smoke-test guidance,
+  current bug-report fields, and direct community contribution links.
 - Added a permanent versioned model store for Docling, RapidOCR, and PP-DocLayoutV3.
   Existing caches migrate without downloading; later launches perform an offline manifest
   and size check. Repository, virtual-environment, job, and cache cleanup do not remove the
