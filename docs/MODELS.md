@@ -72,6 +72,11 @@ use $4/$12. Paperplane does not invoke Batch or Grok fast mode, and aggregate do
 cannot determine whether one individual request crossed a long-context threshold, so these
 modifiers are not applied to the UI estimate.
 
+The Cost page accumulates provider-reported usage for successful parses in the current
+browser session and groups it by actual model. Ollama-plus-cloud enhancement is split into
+separate local and cloud rows. Free and local models retain their token counts at $0 API
+cost; **New parse** keeps the ledger, while **Stop and clear** or session end removes it.
+
 ## Official references
 
 - [xAI models](https://docs.x.ai/developers/models)

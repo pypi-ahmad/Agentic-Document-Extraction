@@ -51,8 +51,12 @@ GLM-OCR, PaddleOCR-VL, and DeepSeek-OCR are automatically run on PP-DocLayoutV3 
 regions with their native prompts. DeepSeek retries one empty or transiently failed text
 crop before skipping it with a visible warning.
 
-The pages are Parse, Organize, Jobs, and Benchmarks. Select one Parse engine before
+The pages are Parse, Organize, Jobs, and Cost. Select one Parse engine before
 uploading. Parse controls remain in the sidebar; the full-width canvas shares one document
 selector across Input preview, Output, Annotated PDF, Markdown, HTML, and JSON. Download one
 selected document at a time or the whole result batch as a ZIP. Job metadata and artifacts
 are private to `%LOCALAPPDATA%\Paperplane` and expire after seven days.
+
+Workspace data remains in the current browser session while changing pages. Cost keeps a
+per-model token and configured-price ledger across **New parse** actions until **Stop and
+clear**, restart, or session end.

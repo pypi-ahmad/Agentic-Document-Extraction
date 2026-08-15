@@ -2,7 +2,7 @@
 
 ## Is Paperplane Streamlit?
 
-Yes. `workspace_app.py` provides the Parse, Organize, Jobs, and Benchmarks pages.
+Yes. `workspace_app.py` provides the Parse, Organize, Jobs, and Cost pages.
 
 ## Does it use LandingAI ADE?
 
@@ -20,6 +20,10 @@ optional after a local engine; there is no automatic routing.
 The active batch remains in Streamlit session state. Durable job metadata, source files,
 result JSON, and annotated PDFs are retained under `%LOCALAPPDATA%\Paperplane` for seven
 days. Use Jobs to delete one job or clear all.
+
+Changing workspace pages does not clear the active upload, Parse output, Organize values,
+or session Cost ledger. **New parse** clears the active Parse workspace but keeps Cost;
+**Stop and clear**, a server restart, or ending the browser session clears both.
 
 ## Who is responsible for documents and API keys?
 

@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- Preserved uploads, Parse outputs, Organize values, tabs, and selections across workspace
+  navigation within one browser session.
+- Replaced the Benchmarks UI page with a Cost page that aggregates input, cached-input,
+  output tokens, and configured estimates by model plus a session total.
+- Preserved separate local Ollama and cloud-enhancement usage attribution. Free and local
+  models contribute tokens at $0 API cost.
+
 ## Paperplane 5.2.0
 
 - Replaced whole-page JSON generation for GLM-OCR, PaddleOCR-VL, and DeepSeek-OCR with

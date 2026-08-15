@@ -73,7 +73,7 @@ the project.
 ### Stop and clear from any page
 
 The shared sidebar includes a confirmation-protected **Stop and clear** control on Parse,
-Organize, Jobs, and Benchmarks. Confirming it clears in-memory Streamlit data and resource
+Organize, Jobs, and Cost. Confirming it clears in-memory Streamlit data and resource
 caches plus the active session, notifies other Paperplane tabs in the same browser to close
 their UI, and exits the local server successfully. Browsers with JavaScript disabled show a
 disconnected page instead. Local models and retained job artifacts are not deleted.
@@ -193,13 +193,16 @@ Execution still occurs inside the Streamlit process. Closing the app stops activ
 computation; retained records remain available when Paperplane is reopened. This is not a
 remote queue or multi-user database.
 
-### Transparent benchmarks and confidence calibration
+### Session cost and transparent benchmarks
 
-The **Benchmarks** page validates the version-pinned corpus manifest, document hashes,
-licenses, engine matrix, and metric list. It displays a measured result bundle only when
-one exists; missing results are never replaced with accuracy claims. Metrics cover text,
-reading order, tables, continuation, grounding, workflows, calibration, latency, tokens,
-and cost.
+The **Cost** page accumulates provider-reported input, cached-input, and output tokens for
+successful parses in the current browser session. It groups usage and configured price
+estimates by model and shows a combined total. Free and local models contribute token
+counts at $0 API cost. **New parse** keeps this ledger; **Stop and clear** or ending the
+session removes it.
+
+Version-pinned benchmark manifests, document hashes, metrics, and result bundles remain
+available in the checked-in benchmark workflow without a dedicated workspace page.
 
 Confidence remains explicitly raw and uncalibrated unless the engine, model, recipe
 version, and corpus hash match a checked-in calibration profile. The initial corpus is too
@@ -212,7 +215,7 @@ small for a comparative accuracy claim, and Paperplane does not inherit LandingA
 | Parse | Sidebar setup, parallel processing, full-width previews/outputs, and downloads |
 | Organize | Classify, Split, and Section workflows with source ranges |
 | Jobs | Seven-day local history, status, cancellation state, and deletion |
-| Benchmarks | Corpus integrity, engine matrix, metrics, and measured result bundles |
+| Cost | Per-session tokens and configured cost estimates grouped by model, plus totals |
 
 ## Supported inputs
 
@@ -253,7 +256,7 @@ LibreOffice, uv, Pytest, Ruff, Pyright, and GitHub Actions.
 Agentic-Document-Extraction/
 ├── workspace_app.py             # Multipage Streamlit entrypoint
 ├── streamlit_app.py             # Parse page
-├── app_pages/                   # Organize, Jobs, Benchmarks
+├── app_pages/                   # Organize, Jobs, Cost
 ├── Paperplane.cmd               # One-file Windows setup and launcher
 ├── Paperplane.sh                # One-file Linux setup and launcher
 ├── paperplane/

@@ -11,7 +11,7 @@ flowchart LR
   Navigation --> Parse
   Navigation --> Organize
   Navigation --> Jobs
-  Navigation --> Benchmarks
+  Navigation --> Cost[session usage and cost]
   Parse --> Runtime[bounded parallel runtime]
   Runtime --> Engines{explicit engine}
   Engines --> Docling
@@ -29,6 +29,7 @@ flowchart LR
   Contracts --> Outputs[Markdown / HTML / JSON / annotated PDF / batch ZIP]
   Contracts --> Workflows[Classify/Split/Section]
   Contracts --> Store[(SQLite + private artifacts)]
+  Contracts --> Cost
 ```
 
 ## Boundaries
@@ -46,6 +47,8 @@ flowchart LR
   page processing.
 - `contracts.py` is the internal grounded representation; `ade_contracts.py` produces
   strict zero-based ADE v2-style JSON and the namespaced Paperplane export.
+- Per-model token usage flows through the grounded contract into a browser-session ledger;
+  Cost applies configured rates without retaining document content.
 - `ade_workflows.py` implements cited Classify, Split, and Section organization workflows.
 - `jobs.py` is a future-HTTP-wrappable service boundary for durable lifecycle, checkpoints,
   retention, and deletion.

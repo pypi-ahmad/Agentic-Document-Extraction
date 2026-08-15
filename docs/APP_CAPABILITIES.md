@@ -43,9 +43,14 @@ cited downstream data.
 
 ## Workspace and retention
 
-Parse, Organize, Jobs, and Benchmarks are separate pages. SQLite job metadata and
+Parse, Organize, Jobs, and Cost are separate pages. SQLite job metadata and
 private artifacts are stored under `%LOCALAPPDATA%\Paperplane` for seven days. Users can
 cancel job state, delete one job, or clear all retained jobs.
+
+Uploads, Parse outputs, Organize values, and selections remain available while navigating
+inside one browser session. Cost accumulates successful provider-reported input,
+cached-input, and output tokens by model and applies the configured rates. Free and local
+models remain visible with $0 API cost.
 
 Parse configuration appears vertically in the sidebar. One main-canvas document selector
 drives Input preview, Output, Annotated PDF, Markdown, HTML, and JSON tabs. Selected-document

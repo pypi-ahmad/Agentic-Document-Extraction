@@ -2,7 +2,7 @@
   "name": "Paperplane 5.2.0",
   "description": "Private multipage Streamlit document intelligence with explicit engines and durable local jobs",
   "nodes": [
-    {"id": "ui", "type": "application", "label": "Streamlit workspace", "sublabel": "Parse, Organize, Jobs, Benchmarks", "sources": [{"path": "workspace_app.py", "line": 1}]},
+    {"id": "ui", "type": "application", "label": "Streamlit workspace", "sublabel": "Parse, Organize, Jobs, Cost", "sources": [{"path": "workspace_app.py", "line": 1}]},
     {"id": "runtime", "type": "service", "label": "Parallel runtime", "sublabel": "Six isolated file tasks and explicit page ranges", "sources": [{"path": "paperplane/runtime.py", "line": 1}]},
     {"id": "engines", "type": "service", "label": "Explicit engines", "sublabel": "Docling, PDF Inspector, Cloud AI, Ollama"},
     {"id": "ollama_layout", "type": "service", "label": "Ollama OCR regions", "sublabel": "CPU PP-DocLayoutV3 plus family-native crop recognition", "sources": [{"path": "paperplane/ollama_ocr.py", "line": 1}]},
@@ -11,6 +11,7 @@
     {"id": "contracts", "type": "service", "label": "Public contracts", "sublabel": "Strict ADE v2-style and Paperplane v5 JSON", "sources": [{"path": "paperplane/ade_contracts.py", "line": 1}]},
     {"id": "workflows", "type": "service", "label": "Cited workflows", "sublabel": "Classify, Split, Section", "sources": [{"path": "paperplane/ade_workflows.py", "line": 1}]},
     {"id": "jobs", "type": "database", "label": "Local durable jobs", "sublabel": "SQLite metadata, checkpoints, private artifacts, 7-day TTL", "sources": [{"path": "paperplane/jobs.py", "line": 1}]},
+    {"id": "cost", "type": "service", "label": "Session cost", "sublabel": "Per-model tokens and configured estimates", "sources": [{"path": "app_pages/cost.py", "line": 1}]},
     {"id": "providers", "type": "external", "label": "Optional cloud providers", "sublabel": "OpenAI, xAI, Google, Anthropic, Agnes"}
   ],
   "edges": [
@@ -24,6 +25,8 @@
     {"from": "intelligence", "to": "contracts", "label": "relations + evidence"},
     {"from": "contracts", "to": "workflows", "label": "cited downstream data"},
     {"from": "contracts", "to": "jobs", "label": "local retention"},
+    {"from": "contracts", "to": "cost", "label": "per-model usage"},
+    {"from": "cost", "to": "ui", "label": "session totals"},
     {"from": "jobs", "to": "ui", "label": "history + deletion"}
   ],
   "boundaries": {

@@ -17,12 +17,17 @@ and this project aims to follow [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- Added a session Cost page with input, cached-input, output, per-model, and total estimates.
+
 - Added CPU PP-DocLayoutV3 region detection for GLM-OCR, PaddleOCR-VL, and DeepSeek-OCR,
   including automatic launcher setup and detector-box candidate grounding.
 - Added Gemini 3.7 Flash with canonical `GOOGLE_API_KEY` support and legacy
   `GEMINI_API_KEY` fallback.
 
 ### Changed
+
+- Replaced the Benchmarks workspace page with Cost while retaining benchmark tooling and
+  checked-in evaluation assets.
 
 - Profiled Ollama OCR models now receive family-native region crops instead of a forced
   whole-page JSON schema; RapidOCR remains only for exact final word-box alignment.
@@ -33,6 +38,8 @@ and this project aims to follow [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
+- Preserved uploads, Parse and Organize state, selections, and outputs across page changes.
+- Split Ollama and cloud-enhancement usage by actual model for accurate session estimates.
 - Fixed Gemini Cloud AI requests by sending Google's REST-native structured-output MIME
   enum and enforcing each selected model's minimum supported thinking level.
 
