@@ -203,6 +203,31 @@ class PageResult(BaseModel):
     warnings: list[str] = Field(default_factory=list)
 
 
+def _generation_model_usage(
+    generation: StructuredGeneration, default_model: str
+) -> dict[str, OpenAIUsage]:
+    source = generation.model_usage or {default_model: generation.usage}
+    return {model: usage.model_copy() for model, usage in source.items()}
+
+
+def _add_generation_usage(
+    total: OpenAIUsage,
+    by_model: dict[str, OpenAIUsage],
+    generation: StructuredGeneration,
+    default_model: str,
+) -> None:
+    total.input_tokens += generation.usage.input_tokens
+    total.output_tokens += generation.usage.output_tokens
+    total.cached_input_tokens += generation.usage.cached_input_tokens
+    total.cache_write_tokens += generation.usage.cache_write_tokens
+    for model, usage in _generation_model_usage(generation, default_model).items():
+        aggregate = by_model.setdefault(model, OpenAIUsage())
+        aggregate.input_tokens += usage.input_tokens
+        aggregate.output_tokens += usage.output_tokens
+        aggregate.cached_input_tokens += usage.cached_input_tokens
+        aggregate.cache_write_tokens += usage.cache_write_tokens
+
+
 def _cache_key(prefix: str, source_sha256: str) -> str:
     shard = int(source_sha256[:8], 16) % 4
     return f"{prefix}:{PROMPT_VERSION}:shard-{shard}"
@@ -565,7 +590,7 @@ class V2PageProcessor:
         page_warnings = list(draft.warnings)
         evidence_artifacts: dict[str, bytes] = {}
         total_usage = draft.usage.model_copy()
-        model_usage = {self.model: draft.usage.model_copy()}
+        model_usage = _generation_model_usage(draft, self.model)
         draft_raw_chunks = list(draft.value.get("chunks", []))
         raw_chunks = draft_raw_chunks
         presegmented = draft.presegmented
@@ -625,14 +650,7 @@ class V2PageProcessor:
             else:
                 raw_chunks = draft_raw_chunks
                 reconciliation_failed = True
-            total_usage.input_tokens += reconciliation.usage.input_tokens
-            total_usage.output_tokens += reconciliation.usage.output_tokens
-            total_usage.cached_input_tokens += reconciliation.usage.cached_input_tokens
-            total_usage.cache_write_tokens += reconciliation.usage.cache_write_tokens
-            model_usage[self.model].input_tokens += reconciliation.usage.input_tokens
-            model_usage[self.model].output_tokens += reconciliation.usage.output_tokens
-            model_usage[self.model].cached_input_tokens += reconciliation.usage.cached_input_tokens
-            model_usage[self.model].cache_write_tokens += reconciliation.usage.cache_write_tokens
+            _add_generation_usage(total_usage, model_usage, reconciliation, self.model)
             verification_calls += 1
         if (
             not presegmented
@@ -661,18 +679,7 @@ class V2PageProcessor:
             figure_groups = list(figure_reconciliation.value.get("chunks", []))
             if figure_groups:
                 raw_chunks = _merge_figure_groups(raw_chunks, figure_groups)
-            total_usage.input_tokens += figure_reconciliation.usage.input_tokens
-            total_usage.output_tokens += figure_reconciliation.usage.output_tokens
-            total_usage.cached_input_tokens += figure_reconciliation.usage.cached_input_tokens
-            total_usage.cache_write_tokens += figure_reconciliation.usage.cache_write_tokens
-            model_usage[self.model].input_tokens += figure_reconciliation.usage.input_tokens
-            model_usage[self.model].output_tokens += figure_reconciliation.usage.output_tokens
-            model_usage[
-                self.model
-            ].cached_input_tokens += figure_reconciliation.usage.cached_input_tokens
-            model_usage[
-                self.model
-            ].cache_write_tokens += figure_reconciliation.usage.cache_write_tokens
+            _add_generation_usage(total_usage, model_usage, figure_reconciliation, self.model)
             verification_calls += 1
         previous_heading_text: str | None = None
         for order, raw in enumerate(raw_chunks, start=1):
@@ -824,15 +831,8 @@ class V2PageProcessor:
                         candidate_source_model=candidate_source_model,
                         candidate_source_pass=candidate_source_pass,
                     )
-                    for usage in usages:
-                        total_usage.input_tokens += usage.input_tokens
-                        total_usage.output_tokens += usage.output_tokens
-                        total_usage.cached_input_tokens += usage.cached_input_tokens
-                        total_usage.cache_write_tokens += usage.cache_write_tokens
-                        model_usage[self.model].input_tokens += usage.input_tokens
-                        model_usage[self.model].output_tokens += usage.output_tokens
-                        model_usage[self.model].cached_input_tokens += usage.cached_input_tokens
-                        model_usage[self.model].cache_write_tokens += usage.cache_write_tokens
+                    for generation in usages:
+                        _add_generation_usage(total_usage, model_usage, generation, self.model)
                     evidence_artifacts.update(evidence)
                     crop_calls += len(usages)
                     verification_calls += len(usages)
@@ -883,15 +883,8 @@ class V2PageProcessor:
                     candidate_source_model=self.model,
                     candidate_source_pass="page_draft",
                 )
-                for usage in usages:
-                    total_usage.input_tokens += usage.input_tokens
-                    total_usage.output_tokens += usage.output_tokens
-                    total_usage.cached_input_tokens += usage.cached_input_tokens
-                    total_usage.cache_write_tokens += usage.cache_write_tokens
-                    model_usage[self.model].input_tokens += usage.input_tokens
-                    model_usage[self.model].output_tokens += usage.output_tokens
-                    model_usage[self.model].cached_input_tokens += usage.cached_input_tokens
-                    model_usage[self.model].cache_write_tokens += usage.cache_write_tokens
+                for generation in usages:
+                    _add_generation_usage(total_usage, model_usage, generation, self.model)
                 evidence_artifacts.update(evidence)
                 crop_calls += len(usages)
                 verification_calls += len(usages)
@@ -1070,7 +1063,7 @@ class V2PageProcessor:
                 detail="original",
                 prompt_cache_key=_cache_key("crop-verification", source_sha256),
             )
-            usages.append(result.usage)
+            usages.append(result)
             last_value = result.value
             relative = _parse_model_box(result.value.get("box"))
             if relative is None:

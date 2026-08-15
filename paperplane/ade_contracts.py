@@ -7,7 +7,7 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, Field, model_validator
 
-from paperplane.contracts import ParseResponse, StructureNode
+from paperplane.contracts import ModelTokenUsage, ParseResponse, StructureNode
 from paperplane.document_intelligence import infer_document_relations
 
 EngineKind = Literal["docling", "pdf_inspector", "cloud_ai", "ollama"]
@@ -126,6 +126,7 @@ class PaperplaneParseExport(BaseModel):
     words: list[WordGrounding] = Field(default_factory=list)
     relations: list[dict[str, Any]] = Field(default_factory=list)
     warnings: list[str] = Field(default_factory=list)
+    model_usage: dict[str, ModelTokenUsage] = Field(default_factory=dict)
 
 
 def _box(node: StructureNode) -> ADEBox:
@@ -266,6 +267,7 @@ def to_paperplane_export(
         words=exported_words,
         relations=relations if relations is not None else infer_document_relations(response),
         warnings=response.metadata.warnings,
+        model_usage=response.metadata.model_usage,
     )
 
 

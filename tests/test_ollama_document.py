@@ -376,6 +376,10 @@ async def test_chained_adapter_preserves_local_and_cloud_warnings() -> None:
 
     assert result.warnings == ["local warning", "cloud warning"]
     assert result.usage == OpenAIUsage(input_tokens=2, output_tokens=3)
+    assert result.model_usage == {
+        "deepseek-ocr:latest": OpenAIUsage(input_tokens=2),
+        "gemini-3.7-flash": OpenAIUsage(output_tokens=3),
+    }
 
 
 @pytest.mark.parametrize(

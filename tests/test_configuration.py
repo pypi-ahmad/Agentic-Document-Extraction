@@ -112,3 +112,10 @@ def test_workspace_exposes_shared_stop_and_clear_control() -> None:
     assert "st.cache_resource.clear()" in workspace
     assert "st.session_state.clear()" in workspace
     assert workspace.index("with st.sidebar:") < workspace.index("navigation.run()")
+
+
+def test_workspace_replaces_benchmarks_with_session_cost() -> None:
+    workspace = (ROOT / "workspace_app.py").read_text(encoding="utf-8")
+
+    assert 'st.Page("app_pages/cost.py", title="Cost"' in workspace
+    assert "app_pages/benchmarks.py" not in workspace

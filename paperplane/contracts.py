@@ -140,6 +140,13 @@ class StructureNode(BaseModel):
         return self
 
 
+class ModelTokenUsage(BaseModel):
+    input_tokens: int = Field(default=0, ge=0)
+    output_tokens: int = Field(default=0, ge=0)
+    cached_input_tokens: int = Field(default=0, ge=0)
+    cache_write_tokens: int = Field(default=0, ge=0)
+
+
 class ParseMetadata(BaseModel):
     job_id: str = Field(min_length=1)
     model: str = Field(min_length=1)
@@ -150,6 +157,7 @@ class ParseMetadata(BaseModel):
     output_tokens: int = Field(default=0, ge=0)
     cached_input_tokens: int = Field(default=0, ge=0)
     cache_write_tokens: int = Field(default=0, ge=0)
+    model_usage: dict[str, ModelTokenUsage] = Field(default_factory=dict)
     range_units: Literal["unicode_codepoints"] = "unicode_codepoints"
     failed_pages: list[int] = Field(default_factory=list)
     duration_ms: int | None = Field(default=None, ge=0)
@@ -370,6 +378,7 @@ def assemble_parse_response(
     output_tokens: int = 0,
     cached_input_tokens: int = 0,
     cache_write_tokens: int = 0,
+    model_usage: dict[str, ModelTokenUsage] | None = None,
 ) -> ParseResponse:
     """Assemble page-agent observations into globally grounded Markdown without model calls."""
 
@@ -476,6 +485,7 @@ def assemble_parse_response(
             output_tokens=output_tokens,
             cached_input_tokens=cached_input_tokens,
             cache_write_tokens=cache_write_tokens,
+            model_usage=model_usage or {},
             failed_pages=failed_pages or [],
             duration_ms=duration_ms,
             source_format=source_format,
@@ -526,6 +536,7 @@ __all__ = [
     "BlockType",
     "CodepointRange",
     "GroundedWord",
+    "ModelTokenUsage",
     "NormalizedBox",
     "ParseMetadata",
     "ParseResponse",

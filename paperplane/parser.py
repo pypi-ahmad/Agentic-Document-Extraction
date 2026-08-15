@@ -15,6 +15,7 @@ from paperplane.contracts import (
     BlockType,
     CodepointRange,
     GroundedWord,
+    ModelTokenUsage,
     NormalizedBox,
     ParserEngine,
     ParseResponse,
@@ -242,6 +243,7 @@ class AgenticDocumentParser:
         output_tokens = 0
         cached_input_tokens = 0
         cache_write_tokens = 0
+        model_usage: dict[str, ModelTokenUsage] = {}
 
         docling_confidence: dict[int, float | None] = {}
         inspector_result: PdfInspectorParseResult | None = None
@@ -350,6 +352,20 @@ class AgenticDocumentParser:
             output_tokens += result.output_tokens
             cached_input_tokens += result.cached_input_tokens
             cache_write_tokens += result.cache_write_tokens
+            page_model_usage = result.model_usage or {
+                self.processor.model: ModelTokenUsage(
+                    input_tokens=result.input_tokens,
+                    output_tokens=result.output_tokens,
+                    cached_input_tokens=result.cached_input_tokens,
+                    cache_write_tokens=result.cache_write_tokens,
+                )
+            }
+            for model_id, usage in page_model_usage.items():
+                aggregate = model_usage.setdefault(model_id, ModelTokenUsage())
+                aggregate.input_tokens += usage.input_tokens
+                aggregate.output_tokens += usage.output_tokens
+                aggregate.cached_input_tokens += usage.cached_input_tokens
+                aggregate.cache_write_tokens += usage.cache_write_tokens
             warnings.extend(f"Page {page_number}: {warning}" for warning in result.warnings)
             pages[page_number] = _agentic_page(result, parser=self.vision_parser)
             refined_pages.append(page_number)
@@ -416,6 +432,7 @@ class AgenticDocumentParser:
             output_tokens=output_tokens,
             cached_input_tokens=cached_input_tokens,
             cache_write_tokens=cache_write_tokens,
+            model_usage=model_usage,
         )
         response.words = await asyncio.to_thread(
             _word_grounding,

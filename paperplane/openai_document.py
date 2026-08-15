@@ -52,6 +52,7 @@ class StructuredGeneration(BaseModel):
     response_id: str | None = None
     value: dict[str, Any]
     usage: OpenAIUsage
+    model_usage: dict[str, OpenAIUsage] = Field(default_factory=dict)
     latency_ms: float = Field(ge=0)
     presegmented: bool = False
     warnings: list[str] = Field(default_factory=list)

@@ -7,6 +7,7 @@ from PIL import Image
 import paperplane.parser as parser_module
 from paperplane.contracts import AgenticBlockInput, AgenticPageInput, NormalizedBox
 from paperplane.docling_parser import DoclingParseResult
+from paperplane.openai_document import OpenAIUsage
 from paperplane.parser import (
     DEFAULT_MAX_DOCUMENT_PAGES,
     DEFAULT_MAX_UPLOAD_BYTES,
@@ -59,6 +60,13 @@ class FakeProcessor:
             input_tokens=1_200,
             output_tokens=300,
             cached_input_tokens=200,
+            model_usage={
+                "gpt-5.6-luna": OpenAIUsage(
+                    input_tokens=1_200,
+                    output_tokens=300,
+                    cached_input_tokens=200,
+                )
+            },
             warnings=self.warnings,
         )
 
@@ -107,6 +115,8 @@ async def test_parser_returns_one_grounded_response_without_persistence() -> Non
     assert result.metadata.input_tokens == 1_200
     assert result.metadata.output_tokens == 300
     assert result.metadata.cached_input_tokens == 200
+    assert result.metadata.model_usage["gpt-5.6-luna"].input_tokens == 1_200
+    assert result.metadata.model_usage["gpt-5.6-luna"].cached_input_tokens == 200
     assert result.metadata.processing_strategy == "ai"
     assert result.metadata.page_range == (1, 1)
     assert "Invoice total: 42" in result.markdown

@@ -99,7 +99,11 @@ class _PresegmentedAdapter:
                     }
                 ]
             },
-            usage=OpenAIUsage(),
+            usage=OpenAIUsage(input_tokens=12, output_tokens=5),
+            model_usage={
+                "deepseek-ocr:latest": OpenAIUsage(input_tokens=2, output_tokens=3),
+                "gemini-3.7-flash": OpenAIUsage(input_tokens=10, output_tokens=2),
+            },
             latency_ms=1,
             presegmented=True,
             warnings=["DeepSeek OCR skipped text region 2 after two attempts"],
@@ -780,6 +784,10 @@ async def test_presegmented_ocr_page_skips_reconciliation_and_crop_verification(
     assert result.chunks[0].verification_status == VerificationStatus.CANDIDATE
     assert result.chunks[0].warnings == ["single_model_candidate"]
     assert result.warnings == ["DeepSeek OCR skipped text region 2 after two attempts"]
+    assert result.model_usage == {
+        "deepseek-ocr:latest": OpenAIUsage(input_tokens=2, output_tokens=3),
+        "gemini-3.7-flash": OpenAIUsage(input_tokens=10, output_tokens=2),
+    }
 
 
 async def test_scanned_table_is_verified_by_full_page_reconciliation() -> None:

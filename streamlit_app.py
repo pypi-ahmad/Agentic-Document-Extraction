@@ -6,6 +6,7 @@ import asyncio
 import hashlib
 import json
 import os
+from dataclasses import dataclass
 from decimal import Decimal
 from pathlib import Path
 from typing import Any
@@ -18,7 +19,12 @@ from dotenv import load_dotenv
 import paperplane.runtime as runtime
 from paperplane.ade_contracts import EngineOptions, to_ade_v2_parse, to_paperplane_export
 from paperplane.annotated_pdf import AnnotatedPdfArtifact, build_annotated_pdf
-from paperplane.contracts import ParseResponse, ProcessingStrategy, StructureNode
+from paperplane.contracts import (
+    ModelTokenUsage,
+    ParseResponse,
+    ProcessingStrategy,
+    StructureNode,
+)
 from paperplane.ingest import IMAGE_EXTENSIONS, OFFICE_EXTENSIONS, inspect_document
 from paperplane.jobs import JobStore
 from paperplane.model_catalog import (
@@ -92,6 +98,13 @@ SAFE_HTML_ATTRIBUTES = {
 load_dotenv(override=False)
 
 
+@dataclass(frozen=True, slots=True)
+class RetainedUpload:
+    name: str
+    mime_type: str
+    data: bytes
+
+
 def _secret(name: str) -> str:
     try:
         value: Any = st.secrets.get(name, "")
@@ -151,12 +164,47 @@ def _reset_results() -> None:
 def _clear_workspace() -> None:
     st.session_state.upload_generation += 1
     st.session_state.upload_signature = None
+    st.session_state.retained_uploads = []
     _reset_results()
 
 
 def _start_parse() -> None:
     st.cache_data.clear()
     _reset_results()
+
+
+def _capture_uploads(widget_key: str) -> None:
+    selected = st.session_state.get(widget_key) or []
+    st.session_state.retained_uploads = [
+        RetainedUpload(
+            name=Path(upload.name).name or "document",
+            mime_type=str(upload.type or "application/octet-stream"),
+            data=upload.getvalue(),
+        )
+        for upload in selected
+    ]
+
+
+def _record_session_usage(result: ParseResponse) -> None:
+    usage = result.metadata.model_usage
+    if not usage and result.metadata.ai_model:
+        usage = {
+            result.metadata.ai_model: ModelTokenUsage(
+                input_tokens=result.metadata.input_tokens,
+                output_tokens=result.metadata.output_tokens,
+                cached_input_tokens=result.metadata.cached_input_tokens,
+                cache_write_tokens=result.metadata.cache_write_tokens,
+            )
+        }
+    if usage:
+        st.session_state.session_usage.setdefault(
+            result.metadata.job_id,
+            {model: tokens.model_copy() for model, tokens in usage.items()},
+        )
+
+
+def _save_workspace_view() -> None:
+    st.session_state.workspace_view = st.session_state.workspace_view_widget
 
 
 def _activate_engine(engine: str) -> None:
@@ -327,6 +375,7 @@ def _cached_output_archive(entries: tuple[OutputArchiveEntry, ...]) -> bytes:
 for key, default in {
     "upload_generation": 0,
     "upload_signature": None,
+    "retained_uploads": [],
     "batch_outcomes": [],
     "annotated_pdfs": {},
     "artifact_errors": {},
@@ -338,6 +387,7 @@ for key, default in {
     "engine_cloud_ai": False,
     "engine_ollama": False,
     "cloud_enhancement": False,
+    "session_usage": {},
 }.items():
     st.session_state.setdefault(key, default)
 
@@ -363,6 +413,7 @@ with st.sidebar, st.container(border=True):
             key=f"engine_{engine_name}",
             on_change=_activate_engine,
             args=(engine_name,),
+            persist_state="session",
         )
     options = EngineOptions(
         docling=st.session_state.engine_docling,
@@ -380,6 +431,7 @@ with st.sidebar, st.container(border=True):
         cloud_enhancement = st.toggle(
             "Enhance with cloud AI after the selected engine",
             key="cloud_enhancement",
+            persist_state="session",
         )
     elif st.session_state.cloud_enhancement:
         st.session_state.cloud_enhancement = False
@@ -415,7 +467,14 @@ with st.sidebar, st.container(border=True):
             st.warning(str(exc), icon=":material/computer_off:")
         if ollama_models:
             names = [item.name for item in ollama_models]
-            ollama_model = st.selectbox("Ollama model", names)
+            if st.session_state.get("ollama_model") not in {None, *names}:
+                del st.session_state["ollama_model"]
+            ollama_model = st.selectbox(
+                "Ollama model",
+                names,
+                key="ollama_model",
+                persist_state="session",
+            )
             selected_local = next(item for item in ollama_models if item.name == ollama_model)
             if not selected_local.vision_capable:
                 ollama_ready = False
@@ -429,6 +488,8 @@ with st.sidebar, st.container(border=True):
             "Cloud AI model",
             AI_MODEL_LABELS,
             index=AI_MODEL_LABELS.index(selected_ai_model.label),
+            key="cloud_ai_model",
+            persist_state="session",
         )
         selected_ai_model = DOCUMENT_MODEL_BY_LABEL[selected_ai_label]
         api_key = api_keys[selected_ai_model.model_id]
@@ -443,23 +504,33 @@ with st.sidebar, st.container(border=True):
             list(QUALITY_LABELS),
             default="Balanced",
             key="processing_mode",
+            persist_state="session",
         )
         if selected_quality not in QUALITY_LABELS:
             st.error("Select an AI quality mode.")
             st.stop()
         st.caption(QUALITY_HELP[selected_quality])
 
-    uploaded_files = st.file_uploader(
+    uploader_key = f"document_upload_{st.session_state.upload_generation}"
+    st.file_uploader(
         "Choose documents",
         type=SUPPORTED_EXTENSIONS,
         accept_multiple_files=True,
         max_upload_size=200,
-        key=f"document_upload_{st.session_state.upload_generation}",
+        key=uploader_key,
+        on_change=_capture_uploads,
+        args=(uploader_key,),
         help="Up to 20 files and 1 GiB combined; maximum 200 MiB and 500 pages per file.",
     )
+    retained_uploads: list[RetainedUpload] = st.session_state.retained_uploads
+    if retained_uploads:
+        st.caption(
+            "Retained in this browser session: "
+            + ", ".join(upload.name for upload in retained_uploads)
+        )
     uploads = [
-        (_file_id(index, Path(upload.name).name, upload.getvalue()), upload, upload.getvalue())
-        for index, upload in enumerate(uploaded_files)
+        (_file_id(index, upload.name, upload.data), upload, upload.data)
+        for index, upload in enumerate(retained_uploads)
     ]
     signature = tuple(file_id for file_id, _upload, _data in uploads)
     if signature != st.session_state.upload_signature:
@@ -492,6 +563,7 @@ with st.sidebar, st.container(border=True):
                 value=1,
                 step=1,
                 key=f"page_start_{file_id}",
+                persist_state="session",
             )
             page_end = st.number_input(
                 f"End page — {filename}",
@@ -500,6 +572,7 @@ with st.sidebar, st.container(border=True):
                 step=1,
                 key=f"page_end_{file_id}",
                 placeholder="Last page",
+                persist_state="session",
             )
             page_ranges[file_id] = (
                 int(page_start),
@@ -583,6 +656,7 @@ if parse_clicked:
             if outcome.result is None:
                 job_store.fail_job(durable_id, outcome.error or "Parsing failed")
                 continue
+            _record_session_usage(outcome.result)
             result_payload = to_paperplane_export(outcome.result).model_dump(
                 mode="json", exclude_none=True
             )
@@ -605,6 +679,7 @@ if parse_clicked:
         selected = next((item for item in outcomes if item.result is not None), outcomes[0])
         st.session_state.selected_document_id = selected.file_id
         st.session_state.workspace_view = "Output"
+        st.session_state.pop("workspace_view_widget", None)
         status.update(label="Batch complete", state="complete", expanded=False)
 
 outcomes = st.session_state.batch_outcomes
@@ -625,14 +700,16 @@ if document_ids:
             else outcomes_by_id[file_id].filename
         ),
         key="selected_document_id",
+        persist_state="session",
     )
 else:
     selected_id = None
 
 input_tab, output_tab, pdf_tab, markdown_tab, html_tab, json_tab = st.tabs(
     ["Input preview", "Output", "Annotated PDF", "Markdown", "HTML", "JSON"],
-    key="workspace_view",
-    on_change="rerun",
+    default=st.session_state.workspace_view,
+    key="workspace_view_widget",
+    on_change=_save_workspace_view,
 )
 selected_outcome = outcomes_by_id.get(selected_id) if selected_id is not None else None
 selected_result = selected_outcome.result if selected_outcome is not None else None
@@ -722,6 +799,7 @@ if json_tab.open:
                 "JSON format",
                 ["Paperplane", "ADE v2"],
                 key="json_format",
+                persist_state="session",
             )
             payload = (
                 to_ade_v2_parse(selected_result).model_dump(mode="json")

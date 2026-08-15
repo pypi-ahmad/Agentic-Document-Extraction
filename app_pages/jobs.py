@@ -39,7 +39,17 @@ else:
         ],
         hide_index=True,
     )
-    selected = st.selectbox("Job", jobs, format_func=lambda job: f"{job.filename} · {job.status}")
+    jobs_by_id = {job.id: job for job in jobs}
+    if st.session_state.get("jobs_selected_id") not in {None, *jobs_by_id}:
+        del st.session_state["jobs_selected_id"]
+    selected_id = st.selectbox(
+        "Job",
+        list(jobs_by_id),
+        format_func=lambda job_id: f"{jobs_by_id[job_id].filename} · {jobs_by_id[job_id].status}",
+        key="jobs_selected_id",
+        persist_state="session",
+    )
+    selected = jobs_by_id[selected_id]
     if selected.status in {"pending", "running"} and st.button("Cancel selected job"):
         store.cancel_job(selected.id)
         st.rerun()

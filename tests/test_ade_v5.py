@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from paperplane.ade_contracts import EngineOptions, to_ade_v2_parse
+from paperplane.ade_contracts import EngineOptions, to_ade_v2_parse, to_paperplane_export
 from paperplane.ade_workflows import (
     ClassDefinition,
     classify_document,
@@ -16,6 +16,7 @@ from paperplane.contracts import (
     AgenticBlockInput,
     AgenticPageInput,
     AtomicLineInput,
+    ModelTokenUsage,
     NormalizedBox,
     assemble_parse_response,
 )
@@ -86,6 +87,27 @@ def test_strict_ade_v2_parse_export_has_inline_grounding_and_zero_based_ids() ->
     assert len(block["atomic_grounding"]) == 2
     assert payload["metadata"]["page_count"] == 4
     assert payload["metadata"]["range_units"] == "unicode_codepoints"
+
+
+def test_paperplane_export_includes_per_model_usage_without_changing_ade() -> None:
+    response = _response()
+    response.metadata.model_usage = {
+        "gpt-5.6-luna": ModelTokenUsage(
+            input_tokens=100,
+            cached_input_tokens=10,
+            output_tokens=20,
+        )
+    }
+
+    payload = to_paperplane_export(response).model_dump(mode="json")
+
+    assert payload["model_usage"]["gpt-5.6-luna"] == {
+        "input_tokens": 100,
+        "output_tokens": 20,
+        "cached_input_tokens": 10,
+        "cache_write_tokens": 0,
+    }
+    assert "model_usage" not in payload["ade"]["metadata"]
 
 
 def test_classify_split_and_section_return_cited_deterministic_results() -> None:

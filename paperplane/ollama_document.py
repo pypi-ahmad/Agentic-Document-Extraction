@@ -290,6 +290,7 @@ class ChainedStructuredAdapter:
         self.cloud_model = cloud_model
 
     async def generate_structured(self, **kwargs: Any) -> StructuredGeneration:
+        local_model = str(kwargs["model"])
         local = await self.local.generate_structured(**kwargs)
         cloud_kwargs = dict(kwargs)
         cloud_kwargs["model"] = self.cloud_model
@@ -310,6 +311,10 @@ class ChainedStructuredAdapter:
                 cached_input_tokens=refined.usage.cached_input_tokens,
                 cache_write_tokens=refined.usage.cache_write_tokens,
             ),
+            model_usage={
+                local_model: local.usage,
+                self.cloud_model: refined.usage,
+            },
             latency_ms=local.latency_ms + refined.latency_ms,
             warnings=[*local.warnings, *refined.warnings],
         )

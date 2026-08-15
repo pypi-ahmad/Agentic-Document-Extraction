@@ -17,9 +17,11 @@ navigation = st.navigation(
         ),
         st.Page("app_pages/organize.py", title="Organize", icon=":material/account_tree:"),
         st.Page("app_pages/jobs.py", title="Jobs", icon=":material/work_history:"),
-        st.Page("app_pages/benchmarks.py", title="Benchmarks", icon=":material/analytics:"),
+        st.Page("app_pages/cost.py", title="Cost", icon=":material/payments:"),
     ]
 )
+
+st.session_state.setdefault("session_usage", {})
 
 
 def _stop_and_clear() -> None:

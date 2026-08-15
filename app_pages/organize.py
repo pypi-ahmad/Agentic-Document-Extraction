@@ -21,8 +21,28 @@ if not completed:
     st.info("Parse at least one document first.", icon=":material/document_scanner:")
     st.stop()
 
-selected = st.selectbox("Parsed document", completed, format_func=lambda item: item.filename)
-classify_tab, split_tab, section_tab = st.tabs(["Classify", "Split", "Section"])
+if st.session_state.get("organize_document") not in [None, *completed]:
+    del st.session_state["organize_document"]
+selected = st.selectbox(
+    "Parsed document",
+    completed,
+    format_func=lambda item: item.filename,
+    key="organize_document",
+    persist_state="session",
+)
+st.session_state.setdefault("organize_view", "Classify")
+
+
+def save_organize_view() -> None:
+    st.session_state.organize_view = st.session_state.organize_view_widget
+
+
+classify_tab, split_tab, section_tab = st.tabs(
+    ["Classify", "Split", "Section"],
+    default=st.session_state.organize_view,
+    key="organize_view_widget",
+    on_change=save_organize_view,
+)
 
 
 def classes_from_text(value: str) -> list[ClassDefinition]:
@@ -31,7 +51,12 @@ def classes_from_text(value: str) -> list[ClassDefinition]:
 
 
 with classify_tab:
-    class_text = st.text_area("Allowed classes", value="invoice\nletter\nreport")
+    class_text = st.text_area(
+        "Allowed classes",
+        value="invoice\nletter\nreport",
+        key="organize_classify_classes",
+        persist_state="session",
+    )
     if st.button("Classify pages"):
         try:
             st.session_state.classify_result = classify_document(
@@ -43,7 +68,12 @@ with classify_tab:
         st.json(result.model_dump(mode="json"))
 
 with split_tab:
-    split_text = st.text_area("Split classes", value="invoice\nletter\nreport")
+    split_text = st.text_area(
+        "Split classes",
+        value="invoice\nletter\nreport",
+        key="organize_split_classes",
+        persist_state="session",
+    )
     if st.button("Split document"):
         try:
             st.session_state.split_result = split_document(
