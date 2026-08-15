@@ -1,6 +1,6 @@
 [project]
 name = "agentic-document-extraction"
-version = "5.1.1"
+version = "5.2.0"
 description = "A local Streamlit app for layout-aware Markdown from PDFs, images, and Office files."
 authors = [
   { name = "Ahmad" },

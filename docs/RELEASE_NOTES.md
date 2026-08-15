@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## Paperplane 5.2.0
+
 - Replaced whole-page JSON generation for GLM-OCR, PaddleOCR-VL, and DeepSeek-OCR with
   CPU PP-DocLayoutV3 region detection and family-native Ollama crop recognition.
 - Added detector-box candidate grounding, vertical marginal-text rotation, repeated-tail

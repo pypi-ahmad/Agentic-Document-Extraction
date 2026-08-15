@@ -1,6 +1,6 @@
 # Paperplane capabilities
 
-Paperplane 5.1.1 is a private multipage Streamlit workspace for converting PDFs, images,
+Paperplane 5.2.0 is a private multipage Streamlit workspace for converting PDFs, images,
 and modern Office files into reading-order Markdown, grounded JSON, annotated PDFs, and
 cited downstream data.
 

@@ -9,17 +9,27 @@ and this project aims to follow [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+### Changed
+
+### Fixed
+
+## [5.2.0] - 2026-08-15
+
+### Added
+
 - Added CPU PP-DocLayoutV3 region detection for GLM-OCR, PaddleOCR-VL, and DeepSeek-OCR,
   including automatic launcher setup and detector-box candidate grounding.
+- Added Gemini 3.7 Flash with canonical `GOOGLE_API_KEY` support and legacy
+  `GEMINI_API_KEY` fallback.
 
 ### Changed
 
 - Profiled Ollama OCR models now receive family-native region crops instead of a forced
   whole-page JSON schema; RapidOCR remains only for exact final word-box alignment.
-- Replaced Gemini 3.6 Flash with Gemini 3.7 Flash and made `GOOGLE_API_KEY` canonical while
-  preserving `GEMINI_API_KEY` as a compatibility fallback.
 - Updated configured synchronous cost estimates from the supplied model rates, including
   Gemini 3.7 at $0.75/$3.75 per million input/output tokens and Luna cache reads at $0.02.
+- Synchronized README, setup, security, model, engine, troubleshooting, and generated
+  HTML/PDF documentation.
 
 ### Fixed
 

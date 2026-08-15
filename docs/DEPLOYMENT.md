@@ -1,6 +1,6 @@
 # Deployment
 
-Paperplane 5.1.1 supports local, single-user use. The supported one-file entry points are
+Paperplane 5.2.0 supports local, single-user use. The supported one-file entry points are
 `Paperplane.cmd` on Windows and `Paperplane.sh` on Linux. Both repair missing or out-of-date
 prerequisites when possible and otherwise launch `workspace_app.py` directly on
 `127.0.0.1:8551`. Automatic Linux system-package installation is limited to APT-based

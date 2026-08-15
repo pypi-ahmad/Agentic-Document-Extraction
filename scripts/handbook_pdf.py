@@ -79,7 +79,7 @@ class HandbookTemplate(BaseDocTemplate):
             bottomMargin=18 * mm,
             title="Paperplane Zero to Mastery",
             author="Ahmad",
-            subject="Code-grounded tutorial for mastering Paperplane v5.1.1",
+            subject="Code-grounded tutorial for mastering Paperplane v5.2.0",
         )
         frame = Frame(
             self.leftMargin,
