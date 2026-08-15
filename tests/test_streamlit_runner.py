@@ -3,7 +3,45 @@ import sys
 
 import pytest
 
-from paperplane.streamlit_runner import configure_event_loop
+from paperplane.streamlit_runner import (
+    configure_event_loop,
+    isolate_external_cuda_toolkit,
+    validate_torch_runtime,
+)
+
+
+def test_isolate_external_cuda_toolkit_removes_only_toolkit_paths(monkeypatch) -> None:
+    monkeypatch.setattr(sys, "platform", "win32")
+    monkeypatch.setenv(
+        "PATH",
+        ";".join(
+            [
+                r"C:\Windows\System32",
+                r"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v13.3\bin",
+                r"D:\tools",
+            ]
+        ),
+    )
+
+    isolate_external_cuda_toolkit()
+
+    assert sys.platform == "win32"
+    assert __import__("os").environ["PATH"] == r"C:\Windows\System32;D:\tools"
+
+
+def test_validate_torch_runtime_rejects_missing_record(monkeypatch) -> None:
+    class IncompleteDistribution:
+        @staticmethod
+        def read_text(_filename):
+            return None
+
+    monkeypatch.setattr(
+        "paperplane.streamlit_runner.importlib.metadata.distribution",
+        lambda _name: IncompleteDistribution(),
+    )
+
+    with pytest.raises(RuntimeError, match="RECORD is missing"):
+        validate_torch_runtime()
 
 
 def test_configure_event_loop_is_a_noop_outside_windows() -> None:

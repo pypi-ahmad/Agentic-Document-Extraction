@@ -90,10 +90,10 @@ venv_docling="$script_dir/.venv/bin/docling-tools"
 
 printf 'Checking the locked Python environment...\n'
 dependencies_ready=""
-if "$uv_exe" sync --check --locked --python 3.12.10 --extra "$torch_extra" >/dev/null 2>&1; then
+if "$uv_exe" sync --check --locked --python 3.12.10 --extra "$torch_extra" --inexact >/dev/null 2>&1; then
     dependencies_ready=1
 elif [[ "$torch_extra" == "cu130" ]] \
-    && "$uv_exe" sync --check --locked --python 3.12.10 --extra cpu >/dev/null 2>&1; then
+    && "$uv_exe" sync --check --locked --python 3.12.10 --extra cpu --inexact >/dev/null 2>&1; then
     torch_extra="cpu"
     dependencies_ready=1
 fi
@@ -106,13 +106,13 @@ if [[ -z "$dependencies_ready" ]]; then
     fi
 
     printf 'Synchronizing locked dependencies with the %s PyTorch backend...\n' "$torch_extra"
-    if ! "$uv_exe" sync --locked --python 3.12.10 --extra "$torch_extra" --link-mode copy; then
+    if ! "$uv_exe" sync --locked --python 3.12.10 --extra "$torch_extra" --link-mode copy --inexact; then
         if [[ "$torch_extra" != "cu130" ]]; then
             fail "Locked dependency synchronization failed."
         fi
         printf 'CUDA dependency setup failed. Retrying with the CPU backend...\n'
         torch_extra="cpu"
-        "$uv_exe" sync --locked --python 3.12.10 --extra cpu --link-mode copy \
+        "$uv_exe" sync --locked --python 3.12.10 --extra cpu --link-mode copy --inexact \
             || fail "Locked CPU dependency synchronization failed."
     fi
 fi
@@ -120,14 +120,14 @@ fi
 [[ -x "$venv_python" ]] || fail "The locked environment does not contain Python."
 [[ -x "$venv_docling" ]] || fail "The locked environment does not contain docling-tools."
 if ! "$venv_python" -c \
-    "import torch.backends; from docling.datamodel.base_models import DocumentStream; from transformers import AutoModelForObjectDetection" \
+    "from paperplane.streamlit_runner import validate_torch_runtime; validate_torch_runtime(); from docling.datamodel.base_models import DocumentStream; from transformers import AutoModelForObjectDetection" \
     >/dev/null 2>&1; then
     printf 'The Torch or Docling installation is incomplete. Repairing it...\n'
     "$uv_exe" sync --locked --python 3.12.10 --extra "$torch_extra" --link-mode copy \
-        --reinstall-package torch --reinstall-package torchvision \
+        --inexact --reinstall-package torch --reinstall-package torchvision \
         || fail "Torch and Docling repair failed."
     "$venv_python" -c \
-        "import torch.backends; from docling.datamodel.base_models import DocumentStream; from transformers import AutoModelForObjectDetection" \
+        "from paperplane.streamlit_runner import validate_torch_runtime; validate_torch_runtime(); from docling.datamodel.base_models import DocumentStream; from transformers import AutoModelForObjectDetection" \
         >/dev/null 2>&1 || fail "Torch or Docling remains unusable after repair."
 fi
 printf 'Locked Python environment is ready.\n'

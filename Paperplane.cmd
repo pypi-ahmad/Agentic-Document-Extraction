@@ -93,10 +93,10 @@ set "VENV_PYTHON=%CD%\.venv\Scripts\python.exe"
 set "VENV_DOCLING=%CD%\.venv\Scripts\docling-tools.exe"
 
 echo Checking the locked Python environment...
-"%UV_EXE%" sync --check --locked --python 3.12.10 --extra %TORCH_EXTRA% >nul 2>&1
+"%UV_EXE%" sync --check --locked --python 3.12.10 --extra %TORCH_EXTRA% --inexact >nul 2>&1
 if not errorlevel 1 goto :dependencies_ready
 if /i "%TORCH_EXTRA%"=="cu130" (
-    "%UV_EXE%" sync --check --locked --python 3.12.10 --extra cpu >nul 2>&1
+    "%UV_EXE%" sync --check --locked --python 3.12.10 --extra cpu --inexact >nul 2>&1
     if not errorlevel 1 (
         set "TORCH_EXTRA=cpu"
         goto :dependencies_ready
@@ -112,23 +112,23 @@ if errorlevel 1 (
 )
 
 echo Synchronizing locked dependencies with the %TORCH_EXTRA% PyTorch backend...
-"%UV_EXE%" sync --locked --python 3.12.10 --extra %TORCH_EXTRA% --link-mode copy
+"%UV_EXE%" sync --locked --python 3.12.10 --extra %TORCH_EXTRA% --link-mode copy --inexact
 if errorlevel 1 if /i "%TORCH_EXTRA%"=="cu130" (
     echo CUDA dependency setup failed. Retrying with the CPU backend...
     set "TORCH_EXTRA=cpu"
-    "%UV_EXE%" sync --locked --python 3.12.10 --extra cpu --link-mode copy
+    "%UV_EXE%" sync --locked --python 3.12.10 --extra cpu --link-mode copy --inexact
 )
 if errorlevel 1 goto :setup_failure
 
 :dependencies_ready
 if not exist "%VENV_PYTHON%" goto :setup_failure
 if not exist "%VENV_DOCLING%" goto :setup_failure
-"%VENV_PYTHON%" -c "import torch.backends; from docling.datamodel.base_models import DocumentStream; from transformers import AutoModelForObjectDetection" >nul 2>&1
+"%VENV_PYTHON%" -c "from paperplane.streamlit_runner import validate_torch_runtime; validate_torch_runtime(); from docling.datamodel.base_models import DocumentStream; from transformers import AutoModelForObjectDetection" >nul 2>&1
 if not errorlevel 1 goto :runtime_ready
 echo The Torch or Docling installation is incomplete. Repairing it...
-"%UV_EXE%" sync --locked --python 3.12.10 --extra %TORCH_EXTRA% --link-mode copy --reinstall-package torch --reinstall-package torchvision
+"%UV_EXE%" sync --locked --python 3.12.10 --extra %TORCH_EXTRA% --link-mode copy --inexact --reinstall-package torch --reinstall-package torchvision
 if errorlevel 1 goto :setup_failure
-"%VENV_PYTHON%" -c "import torch.backends; from docling.datamodel.base_models import DocumentStream; from transformers import AutoModelForObjectDetection" >nul 2>&1
+"%VENV_PYTHON%" -c "from paperplane.streamlit_runner import validate_torch_runtime; validate_torch_runtime(); from docling.datamodel.base_models import DocumentStream; from transformers import AutoModelForObjectDetection" >nul 2>&1
 if errorlevel 1 goto :setup_failure
 
 :runtime_ready
