@@ -52,6 +52,12 @@ are never stored there. Cloud engines, including Agnes, transmit only selected p
 Agnes sends page PNGs inline instead of publishing them at public URLs. Ollama, Docling,
 PDF Inspector, and storage remain local.
 
+Paperplane is self-hosted, MIT-licensed software. Operators provide their own optional
+cloud API keys and are responsible for the files they process, permission to process them,
+provider terms and charges, compliance requirements, output review, and deletion of
+retained artifacts. The maintainers do not receive user documents or credentials through
+the project.
+
 ## 6. Follow the code
 
 1. `workspace_app.py` — navigation.

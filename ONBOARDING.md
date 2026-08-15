@@ -1,8 +1,13 @@
 # Paperplane contributor onboarding
 
-Paperplane 5 is a local, multipage Streamlit document-intelligence workspace. It produces
+Paperplane 5 is an open-source, local-first, multipage Streamlit document-intelligence
+workspace. It produces
 reading-order Markdown, annotated evidence, strict ADE v2-style JSON, a richer Paperplane
 v5 contract, and cited Classify/Split/Section results.
+
+Forks, local modifications, and pull requests are welcome under the MIT License. Submitted
+fixtures must be synthetic, redacted, or redistributable; contributors are responsible for
+the data and credentials used on their own machines.
 
 ## Start
 

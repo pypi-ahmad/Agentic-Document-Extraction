@@ -1,6 +1,6 @@
 # Paperplane capabilities
 
-Paperplane 5.2.0 is a private multipage Streamlit workspace for converting PDFs, images,
+Paperplane 5.2.0 is an open-source, local-first multipage Streamlit workspace for converting PDFs, images,
 and modern Office files into reading-order Markdown, grounded JSON, annotated PDFs, and
 cited downstream data.
 
@@ -57,3 +57,11 @@ surface with black text. The preview, individual HTML download, and ZIP copy mat
 
 There is no public/local HTTP API in v5. ADE compatibility refers to versioned JSON and
 Pydantic contracts and async/durable job semantics, not a client drop-in claim.
+
+## Open-source operation
+
+Paperplane is MIT-licensed and intended to run on the operator's own machine. Operators
+provide any cloud credentials they choose to use and are responsible for their files,
+permission to process them, provider terms and charges, compliance obligations, output
+review, and retained-data deletion. Local engines keep content local; Cloud AI and cloud
+enhancement send selected pages to the chosen provider.

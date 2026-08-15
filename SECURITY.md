@@ -1,12 +1,25 @@
 # Security
 
-Report vulnerabilities privately through GitHub Security Advisories. Do not open a public
-issue for an unpatched vulnerability.
+Report vulnerabilities through the repository's private GitHub vulnerability-reporting
+form. Do not open a public issue for an unpatched vulnerability and never include a real
+document, provider response, or credential unless a maintainer explicitly requests a safe
+reproduction through the private report.
 
 ## Supported surface
 
 Paperplane v5 is a localhost-only Streamlit application. It has no public HTTP API,
 authentication system, remote database, or external worker.
+
+## Operator responsibility
+
+Paperplane is self-hosted software, not a hosted document service. Operators are
+responsible for the files they process, their authority to process them, the selected
+local or cloud path, provider terms and data practices, API usage charges, output review,
+and applicable privacy, copyright, contractual, and regulatory requirements.
+
+The project maintainers do not receive user documents or credentials through Paperplane.
+Cloud AI and optional cloud enhancement send selected page content to the chosen provider;
+Docling, PDF Inspector, and loopback Ollama processing remain local.
 
 Operators must:
 

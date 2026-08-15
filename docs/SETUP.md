@@ -50,6 +50,10 @@ Set only the provider variables you use: `OPENAI_API_KEY`, `OPENAI_BASE_URL`,
 `XAI_API_KEY`, `GOOGLE_API_KEY`, `ANTHROPIC_API_KEY`, or `AGNES_API_KEY`. Paperplane also
 accepts `OLLAMA_BASE_URL`, defaulting to `http://127.0.0.1:11434`.
 
+Each operator supplies and secures their own provider credentials and is responsible for
+the associated provider terms, data handling, and charges. Local Docling, PDF Inspector,
+and loopback Ollama use do not require a cloud API key.
+
 Gemini uses `GOOGLE_API_KEY`. Existing `GEMINI_API_KEY` configurations remain a fallback
 only when the canonical variable is absent. On Windows, `Paperplane.cmd` refreshes both
 values from the current user's environment before launch; `GOOGLE_API_KEY` wins when both

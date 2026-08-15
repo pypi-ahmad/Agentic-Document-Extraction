@@ -21,6 +21,14 @@ The active batch remains in Streamlit session state. Durable job metadata, sourc
 result JSON, and annotated PDFs are retained under `%LOCALAPPDATA%\Paperplane` for seven
 days. Use Jobs to delete one job or clear all.
 
+## Who is responsible for documents and API keys?
+
+The operator is responsible for every file they choose to process, having permission to
+process it, choosing whether selected pages may be sent to a cloud provider, securing their
+own API keys, accepting provider terms and charges, validating outputs, and deleting local
+artifacts when required. Paperplane is self-hosted; its maintainers do not receive user
+documents or credentials through the project.
+
 ## Does it have an API or database?
 
 It uses local SQLite for job metadata and filesystem artifacts. There is no HTTP API in

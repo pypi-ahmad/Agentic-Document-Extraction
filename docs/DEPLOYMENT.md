@@ -19,6 +19,11 @@ Cloud AI transmits only selected pages, but that content leaves the machine. Agn
 selected images inline without public hosting. Ollama, Docling, PDF Inspector, SQLite, and
 artifact storage remain local.
 
+Operators are responsible for the documents they process, permission to process them,
+provider selection and terms, credentials, charges, regulatory obligations, output review,
+and deletion of retained artifacts. Paperplane is self-hosted; the project maintainers do
+not receive documents or API keys through the application.
+
 The PP-DocLayoutV3 weights are downloaded from Hugging Face during setup and then loaded
 locally on CPU. Ollama OCR crops remain local and are sent only to the configured Ollama
 server; keep `OLLAMA_BASE_URL` on loopback when local-only processing is required.

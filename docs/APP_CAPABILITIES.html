@@ -31,13 +31,14 @@ table{width:100%;border-collapse:collapse;display:block;overflow-x:auto;margin:1
 <li><a href="#processing">Processing</a></li>
 <li><a href="#evidence-and-contracts">Evidence and contracts</a></li>
 <li><a href="#workspace-and-retention">Workspace and retention</a></li>
+<li><a href="#open-source-operation">Open-source operation</a></li>
 </ul>
 </li>
 </ul>
 </div>
 </aside>
     <main id="content"><h1 id="paperplane-capabilities">Paperplane capabilities<a class="headerlink" href="#paperplane-capabilities" title="Permanent link">&para;</a></h1>
-<p>Paperplane 5.2.0 is a private multipage Streamlit workspace for converting PDFs, images,
+<p>Paperplane 5.2.0 is an open-source, local-first multipage Streamlit workspace for converting PDFs, images,
 and modern Office files into reading-order Markdown, grounded JSON, annotated PDFs, and
 cited downstream data.</p>
 <h2 id="processing">Processing<a class="headerlink" href="#processing" title="Permanent link">&para;</a></h2>
@@ -89,7 +90,13 @@ The checked-in Streamlit theme uses near-black surfaces, charcoal panels, and re
 Within that dark workspace, HTML results use a responsive, print-friendly white paper
 surface with black text. The preview, individual HTML download, and ZIP copy match.</p>
 <p>There is no public/local HTTP API in v5. ADE compatibility refers to versioned JSON and
-Pydantic contracts and async/durable job semantics, not a client drop-in claim.</p></main>
+Pydantic contracts and async/durable job semantics, not a client drop-in claim.</p>
+<h2 id="open-source-operation">Open-source operation<a class="headerlink" href="#open-source-operation" title="Permanent link">&para;</a></h2>
+<p>Paperplane is MIT-licensed and intended to run on the operator's own machine. Operators
+provide any cloud credentials they choose to use and are responsible for their files,
+permission to process them, provider terms and charges, compliance obligations, output
+review, and retained-data deletion. Local engines keep content local; Cloud AI and cloud
+enhancement send selected pages to the chosen provider.</p></main>
   </div>
   <footer class="footer">Paperplane 5 · Local grounded document parsing</footer>
 </body>

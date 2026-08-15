@@ -6,7 +6,7 @@
 [![Streamlit 1.61+](https://img.shields.io/badge/Streamlit-1.61%2B-FF4B4B?logo=streamlit&logoColor=white)](https://streamlit.io/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-**A private, local Streamlit workspace for turning PDFs, images, and modern Office files
+**An open-source, local-first Streamlit workspace for turning PDFs, images, and modern Office files
 into context-aware Markdown, grounded JSON, cited organization results, and annotated PDFs.**
 
 Repository: [github.com/pypi-ahmad/Agentic-Document-Extraction](https://github.com/pypi-ahmad/Agentic-Document-Extraction)
@@ -14,6 +14,24 @@ Repository: [github.com/pypi-ahmad/Agentic-Document-Extraction](https://github.c
 Paperplane 5 is inspired by LandingAI ADE's observable Parse workflow and evidence model. It is
 an independent implementation: it does not call LandingAI, promise API drop-in
 compatibility, or claim LandingAI accuracy parity.
+
+## Open source and user responsibility
+
+Paperplane is MIT-licensed software intended to run on your own machine. Cloning, forking,
+using, modifying, and contributing are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) and
+the [Code of Conduct](CODE_OF_CONDUCT.md) before opening a pull request.
+
+You are responsible for every document and other file you choose to process, including
+having the necessary rights or permission, deciding whether its contents may be sent to a
+cloud provider, and complying with applicable privacy, copyright, contractual, and
+regulatory requirements. You also provide and secure any third-party API keys you choose
+to use, accept the provider's terms, data practices, and charges, validate generated
+outputs, and delete retained local artifacts when required.
+
+Docling, PDF Inspector, and loopback Ollama processing remain local. Cloud AI and optional
+cloud enhancement transmit selected page content to the chosen provider. Paperplane is not
+a hosted service, and its maintainers do not receive your documents or credentials through
+the project.
 
 ## Features
 
@@ -408,7 +426,8 @@ uv run pytest -q
 
 ## License
 
-[MIT](LICENSE)
+[MIT](LICENSE). You may use, copy, modify, and redistribute Paperplane under its terms.
+Contributions are accepted under the same license.
 
 ## Acknowledgements
 

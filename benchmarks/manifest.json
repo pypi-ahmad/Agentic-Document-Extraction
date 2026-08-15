@@ -5,7 +5,7 @@
       "id": "public-water-mass-mailing",
       "path": "Sample-PDF/PublicWaterMassMailing.pdf",
       "sha256": "780668c60178a66e31394f81ad09256d6a9dca31b7578eac87477e9e3fcddc0b",
-      "license": "Upstream public DocETL test asset; verify upstream terms before redistribution",
+      "license": "MIT-licensed upstream DocETL test asset; see Sample-PDF/README.md",
       "tags": ["pdf", "public", "layout", "multi-page"]
     }
   ],
