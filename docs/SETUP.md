@@ -29,8 +29,8 @@ If needed, restore execute permission with `chmod +x Paperplane.sh`. The launche
 missing uv and Python in the current user's environment, uses APT and sudo only when
 LibreOffice is absent, selects CUDA when `nvidia-smi` succeeds, falls back to CPU when
 necessary, synchronizes the locked environment, downloads missing Docling/RapidOCR and
-PP-DocLayoutV3 models, and starts the same localhost app. On non-APT distributions, install LibreOffice with the
-distribution's package manager before running the launcher.
+PP-DocLayoutV3 models, and starts the same localhost app. On non-APT distributions,
+install LibreOffice with the distribution's package manager before running the launcher.
 
 ## Manual developer setup
 

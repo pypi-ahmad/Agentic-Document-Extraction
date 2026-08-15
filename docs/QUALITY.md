@@ -14,6 +14,9 @@ Paperplane validates structure and evidence independently of model fluency.
   and isolated per-file/artifact failure.
 - Native-PDF words and RapidOCR word boxes are emitted only after exact Markdown alignment;
   no synthetic word geometry.
+- Profiled Ollama OCR families use PP-DocLayoutV3 detector boxes as candidate block
+  grounding. Vertical marginal text is rotated before recognition, repeated model tails
+  are cleaned, and a missed crop does not discard successful regions from the page.
 - Later selected AI pages receive bounded earlier-page context. Files never share context,
   and pages outside a chosen range are not inspected.
 - Classify, Split, and Section local results identify deterministic partials.

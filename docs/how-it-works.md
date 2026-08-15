@@ -7,6 +7,7 @@ upload up to 20 files
   -> process up to six files concurrently; files remain isolated
   -> keep selected pages in physical reading order
   -> Docling / PDF Inspector / Cloud AI / Ollama
+     -> profiled Ollama OCR families: CPU layout regions -> native crop recognition
      -> optional cloud enhancement for local engines
   -> assemble global Markdown, blocks, atomic lines, cells, and citations
   -> align native-PDF or RapidOCR-observed words; omit unmatched words

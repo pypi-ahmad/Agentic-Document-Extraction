@@ -17,6 +17,11 @@ Docling. Scans and images use `V2PageProcessor` with the selected provider adapt
 selected catalog model handles drafting and any verification calls. Fast, Balanced, and
 Audit bound the work for every provider.
 
+Profiled Ollama OCR families are the bounded exception to whole-page schema generation:
+PP-DocLayoutV3 detects regions on CPU, Ollama recognizes each crop with a native prompt,
+and the page processor accepts those detector-grounded candidates without a redundant
+whole-page reconciliation pass.
+
 The active path is explicit:
 
 ```text
@@ -33,5 +38,6 @@ the parser.
 - One parse computes inside the Streamlit process while files run concurrently.
 - Selected pages remain ordered. Checkpoints survive restart, but compute resumes only
   while the local app is running.
-- Model work remains schema-constrained and bounded.
+- Model work remains bounded. Cloud and generic vision paths are schema-constrained;
+  profiled Ollama OCR paths use bounded native crop responses.
 - Adding distributed execution or an HTTP API requires a new ADR and product-scope decision.

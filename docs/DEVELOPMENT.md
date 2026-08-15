@@ -6,6 +6,13 @@ uv sync --locked --extra cpu --extra test --extra lint --extra docs
 uv run --extra cpu streamlit run workspace_app.py --server.port=8551
 ```
 
+Prepare or verify the local detector used by profiled Ollama OCR families:
+
+```powershell
+uv run --locked --extra cpu python -m paperplane.ollama_ocr --download
+uv run --locked --extra cpu python -m paperplane.ollama_ocr --check
+```
+
 `workspace_app.py` defines Streamlit navigation; `streamlit_app.py` remains the Parse page.
 Other pages are under `app_pages/`. Core modules are framework-neutral and must not import
 Streamlit.

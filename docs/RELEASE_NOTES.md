@@ -1,5 +1,13 @@
 # Release notes
 
+## Unreleased
+
+- Replaced whole-page JSON generation for GLM-OCR, PaddleOCR-VL, and DeepSeek-OCR with
+  CPU PP-DocLayoutV3 region detection and family-native Ollama crop recognition.
+- Added detector-box candidate grounding, vertical marginal-text rotation, repeated-tail
+  cleanup, bounded crop output, and partial-page tolerance for empty OCR regions.
+- Added automatic PP-DocLayoutV3 checking and download to both launchers.
+
 ## Paperplane 5.1.1
 
 - Requested Agnes structured extraction through schema-shaped tool calls while accepting

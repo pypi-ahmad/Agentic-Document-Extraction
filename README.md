@@ -24,6 +24,8 @@ compatibility, or claim LandingAI accuracy parity.
 - Optionally run cloud enhancement after Docling, PDF Inspector, or Ollama.
 - Discover every installed Ollama model and disable Parse when the selected model does not
   advertise vision support.
+- Run GLM-OCR, PaddleOCR-VL, and DeepSeek-OCR through local PP-DocLayoutV3 page regions
+  and family-native crop prompts instead of whole-page structured JSON.
 - Keep reading order and prior selected-page context; infer section starts, repeated
   marginalia, and conservative continued-table relationships across pages.
 - Export layout-aware Markdown, an annotated PDF, strict ADE v2-style Parse JSON, and a
@@ -71,9 +73,10 @@ three off, so users always know where document content is processed.
 - **Cloud AI ADE** renders selected pages and sends them to one explicitly selected
   multimodal provider. It is intended for scans, images, and documents where visual
   interpretation is more important than local-only processing.
-- **Ollama ADE** sends selected pages to an installed local Ollama model. Paperplane lists
-  every installed model but enables Parse only when Ollama reports the `vision`
-  capability.
+- **Ollama ADE** uses an installed local Ollama model. Paperplane lists every installed
+  model but enables Parse only when Ollama reports the `vision` capability. GLM-OCR,
+  PaddleOCR-VL, and DeepSeek-OCR first receive CPU-detected PP-DocLayoutV3 regions with
+  family-native prompts; detector boxes ground the assembled blocks.
 
 For Docling, PDF Inspector, and Ollama, **Enhance with cloud AI** can pass the local result
 to a selected cloud model for refinement. Enhancement is opt-in and requires that
@@ -223,8 +226,8 @@ durable job semantics. Paperplane does not expose a local/public HTTP API in thi
 ## Tech stack
 
 Python 3.12, Streamlit, Pydantic, SQLite, HTTPX, PyMuPDF, Pillow, Python-Markdown,
-Bleach, Docling + RapidOCR, Firecrawl PDF Inspector, LibreOffice, uv, Pytest, Ruff,
-Pyright, and GitHub Actions.
+Bleach, Docling + RapidOCR, Transformers + PP-DocLayoutV3, Firecrawl PDF Inspector,
+LibreOffice, uv, Pytest, Ruff, Pyright, and GitHub Actions.
 
 ## Project structure
 
@@ -240,6 +243,7 @@ Agentic-Document-Extraction/
 │   ├── ade_workflows.py         # Classify, Split, Section
 │   ├── jobs.py                  # SQLite job lifecycle and artifact retention
 │   ├── ollama_document.py       # Ollama discovery, vision, and cloud chaining
+│   ├── ollama_ocr.py            # Local layout detection and OCR-family prompts
 │   ├── document_intelligence.py # Cross-page semantic relationships
 │   ├── calibration.py           # Profile-pinned confidence calibration
 │   ├── benchmark.py             # Locked manifests and metric helpers
@@ -265,9 +269,9 @@ Agentic-Document-Extraction/
 2. Double-click `Paperplane.cmd`.
 3. Open [http://127.0.0.1:8551](http://127.0.0.1:8551) if the browser does not open.
 
-The launcher installs uv, Python 3.12.10, LibreOffice, locked CPU/CUDA dependencies, and
-Docling/RapidOCR models only when they are missing or out of date. Once ready, it skips
-setup and starts `workspace_app.py` directly on port `8551`.
+The launcher installs uv, Python 3.12.10, LibreOffice, locked CPU/CUDA dependencies,
+Docling/RapidOCR models, and the PP-DocLayoutV3 detector only when missing or out of date.
+Once ready, it skips setup and starts `workspace_app.py` directly on port `8551`.
 
 ### Linux one-file setup
 
@@ -279,10 +283,11 @@ On Ubuntu or Debian:
 
 If the executable bit was lost while downloading an archive, run
 `chmod +x Paperplane.sh` once. The launcher installs missing `uv`, Python 3.12.10,
-LibreOffice through APT, locked CPU/CUDA dependencies, and Docling/RapidOCR models. It
-selects CUDA when `nvidia-smi` works and falls back to CPU if the locked CUDA environment
-cannot be synchronized. On other Linux distributions, install LibreOffice first and rerun
-the same launcher; it does not guess privileged package-manager commands.
+LibreOffice through APT, locked CPU/CUDA dependencies, Docling/RapidOCR models, and the
+PP-DocLayoutV3 detector. It selects CUDA when `nvidia-smi` works and falls back to CPU if
+the locked CUDA environment cannot be synchronized. On other Linux distributions, install
+LibreOffice first and rerun the same launcher; it does not guess privileged package-manager
+commands.
 
 ### Manual setup
 
@@ -292,6 +297,7 @@ cd Agentic-Document-Extraction
 uv python install 3.12.10
 uv sync --locked --extra cpu
 uv run --locked --extra cpu docling-tools models download layout tableformer rapidocr --quiet
+uv run --locked --extra cpu python -m paperplane.ollama_ocr --download
 uv run --locked --extra cpu streamlit run workspace_app.py --server.port=8551
 ```
 
@@ -299,6 +305,10 @@ Install and start [Ollama](https://ollama.com/) separately for Ollama ADE. Paper
 the models returned by the local server; `glm-ocr:latest` and
 `AuditAid/PaddleOCR-VL-1.6-0.9B:latest` are the initial calibration targets, not required
 hard-coded choices.
+
+The three profiled OCR families use PP-DocLayoutV3 on CPU for region detection. RapidOCR
+does not replace their recognition output; it is retained only for exact final word-box
+alignment.
 
 ## Environment variables
 
@@ -346,7 +356,9 @@ flowchart LR
     D --> A[Grounded assembler]
     P --> A
     C --> A
-    O --> A
+    O --> L[PP-DocLayoutV3 regions]
+    L --> R[Ollama crop recognition]
+    R --> A
     A --> I[Cross-page intelligence]
     I --> X[Markdown + ADE v2 + Paperplane v5]
     X --> W[Classify / Split / Section]
@@ -389,8 +401,9 @@ uv run pytest -q
 
 ## Acknowledgements
 
-Paperplane builds on Streamlit, Docling, RapidOCR, Firecrawl PDF Inspector, LibreOffice,
-PyMuPDF, Ollama, and provider-native multimodal APIs. LandingAI ADE inspired the observable
-workflow and evidence contract, while Paperplane remains independent.
+Paperplane builds on Streamlit, Docling, RapidOCR, Transformers, PP-DocLayoutV3, Firecrawl
+PDF Inspector, LibreOffice, PyMuPDF, Ollama, and provider-native multimodal APIs. LandingAI
+ADE inspired the observable workflow and evidence contract, while Paperplane remains
+independent.
 
 <p align="center">Made with ❤️ by Ahmad Mujtaba</p>

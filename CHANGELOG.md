@@ -9,9 +9,18 @@ and this project aims to follow [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- Added CPU PP-DocLayoutV3 region detection for GLM-OCR, PaddleOCR-VL, and DeepSeek-OCR,
+  including automatic launcher setup and detector-box candidate grounding.
+
 ### Changed
 
+- Profiled Ollama OCR models now receive family-native region crops instead of a forced
+  whole-page JSON schema; RapidOCR remains only for exact final word-box alignment.
+
 ### Fixed
+
+- Prevented repeated GLM Markdown tails, vertical marginal-text failures, empty visual
+  responses, and isolated empty OCR crops from aborting or inflating a page result.
 
 ## [5.1.1] - 2026-08-15
 

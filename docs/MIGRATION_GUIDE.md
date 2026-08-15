@@ -16,6 +16,9 @@ Version 5 changes the UI, public export contract, and retention model.
   Classify, Split, and Section workflows.
 - Configure `OLLAMA_BASE_URL` when the local server is not at
   `http://127.0.0.1:11434`.
+- Current launchers download PP-DocLayoutV3 automatically. Manual installations must run
+  `python -m paperplane.ollama_ocr --download`; GLM-OCR, PaddleOCR-VL, and DeepSeek-OCR now
+  use its regions instead of whole-page JSON generation.
 - Agnes private visual Parse/enhancement now sends images inline; no public image URL is
   required.
 

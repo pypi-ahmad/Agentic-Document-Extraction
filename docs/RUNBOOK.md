@@ -20,6 +20,16 @@ uv run --extra cpu streamlit run workspace_app.py --server.port=8551
   LibreOffice installation requires APT; otherwise install it with the distribution's
   package manager.
 
+For GLM-OCR, PaddleOCR-VL, or DeepSeek-OCR detector errors, verify or repair the local
+layout model:
+
+```powershell
+uv run --locked --extra cpu python -m paperplane.ollama_ocr --check
+uv run --locked --extra cpu python -m paperplane.ollama_ocr --download
+```
+
+Use `--extra cu130` instead of `--extra cpu` when that is the synchronized environment.
+
 ## Parsing or artifact generation fails
 
 Check file integrity, page range, the 20-file/1-GiB batch limit, 200-MiB/500-page file

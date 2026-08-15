@@ -5,8 +5,8 @@
 Double-click `Paperplane.cmd`. It verifies `workspace_app.py`, `pyproject.toml`, and
 `uv.lock`; installs uv, Python 3.12.10, and LibreOffice when needed; selects CUDA 13.0 or
 CPU; and checks the locked environment and required Docling/RapidOCR and PP-DocLayoutV3
-model files. It
-synchronizes dependencies or downloads models only when they are missing or out of date.
+model files. It synchronizes dependencies or downloads models only when they are missing
+or out of date.
 Otherwise it launches the multipage app directly at `http://127.0.0.1:8551`.
 
 Close the launcher window or press Ctrl+C to stop it.
