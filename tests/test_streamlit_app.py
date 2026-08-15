@@ -204,9 +204,7 @@ def test_pdf_viewers_follow_selected_range_while_download_stays_complete(monkeyp
         [error.value for error in app.error],
         [exception.value for exception in app.exception],
     )
-    assert any(
-        button.label == "Download annotated PDF" for button in app.download_button
-    )
+    assert any(button.label == "Download annotated PDF" for button in app.download_button)
     artifact = next(iter(app.session_state["annotated_pdfs"].values()))
     downloaded = fitz.open(stream=artifact.data, filetype="pdf")
     try:

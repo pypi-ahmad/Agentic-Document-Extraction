@@ -53,7 +53,10 @@ async def test_plain_docling_uses_figure_placeholder_without_failure_warning() -
     parser = DoclingDocumentParser(object())  # type: ignore[arg-type]
 
     markdown = await parser._figure_markdown(
-        object(), Picture(), describe_figure=None, warnings=warnings  # type: ignore[arg-type]
+        object(),
+        Picture(),
+        describe_figure=None,
+        warnings=warnings,  # type: ignore[arg-type]
     )
 
     assert "description unavailable" in markdown

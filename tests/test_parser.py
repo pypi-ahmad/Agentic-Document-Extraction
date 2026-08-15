@@ -138,7 +138,9 @@ async def test_parser_returns_one_grounded_response_without_persistence() -> Non
 @pytest.mark.asyncio
 async def test_docling_ai_describes_figures_and_counts_their_usage() -> None:
     parser = AgenticDocumentParser(
-        FakeProcessor(), FakeFigureDocling(), vision_enabled=True  # type: ignore[arg-type]
+        FakeProcessor(),
+        FakeFigureDocling(),
+        vision_enabled=True,  # type: ignore[arg-type]
     )
 
     result = await parser.parse(

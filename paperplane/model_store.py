@@ -164,7 +164,11 @@ def _sha256(path: Path) -> str:
 
 def _legacy_docling_models() -> Path:
     configured = os.environ.get("DOCLING_CACHE_DIR")
-    return Path(configured).expanduser() / "models" if configured else Path.home() / ".cache" / "docling" / "models"
+    return (
+        Path(configured).expanduser() / "models"
+        if configured
+        else Path.home() / ".cache" / "docling" / "models"
+    )
 
 
 def _legacy_layout_snapshot() -> Path | None:
@@ -187,16 +191,16 @@ def _download_docling(store: ModelStore, *, force: bool = False) -> None:
         "docling-tools.exe" if sys.platform == "win32" else "docling-tools"
     )
     command = [
-            str(executable),
-            "models",
-            "download",
-            "layout",
-            "tableformer",
-            "rapidocr",
-            "--output-dir",
-            str(store.docling_models),
-            "--quiet",
-        ]
+        str(executable),
+        "models",
+        "download",
+        "layout",
+        "tableformer",
+        "rapidocr",
+        "--output-dir",
+        str(store.docling_models),
+        "--quiet",
+    ]
     if force:
         command.append("--force")
     subprocess.run(command, check=True)

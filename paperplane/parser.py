@@ -284,9 +284,7 @@ class AgenticDocumentParser:
                     max_bytes=self.max_upload_bytes,
                     max_pages=self.max_document_pages,
                     requested_pages=selected_page_set,
-                    describe_figure=(
-                        describe_docling_figure if strategy == "docling_ai" else None
-                    ),
+                    describe_figure=(describe_docling_figure if strategy == "docling_ai" else None),
                 )
                 pages.update(docling_result.pages)
                 warnings.extend(docling_result.warnings)

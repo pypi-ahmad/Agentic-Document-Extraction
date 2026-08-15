@@ -330,9 +330,7 @@ def _cached_pdf_subset(data: bytes, page_start: int, page_end: int | None) -> by
     return subset_pdf_pages(data, page_start, page_end)
 
 
-def _render_source_preview(
-    filename: str, data: bytes, page_range: tuple[int, int | None]
-) -> None:
+def _render_source_preview(filename: str, data: bytes, page_range: tuple[int, int | None]) -> None:
     suffix = Path(filename).suffix.casefold()
     if suffix == ".pdf":
         preview_data = _cached_pdf_subset(data, *page_range)
@@ -856,8 +854,7 @@ if pdf_tab.open:
                 preview_data,
                 height=720,
                 key=(
-                    f"annotated_pdf_{selected_id}_"
-                    f"{hashlib.sha256(preview_data).hexdigest()[:12]}"
+                    f"annotated_pdf_{selected_id}_{hashlib.sha256(preview_data).hexdigest()[:12]}"
                 ),
             )
         elif selected_artifact_error:
