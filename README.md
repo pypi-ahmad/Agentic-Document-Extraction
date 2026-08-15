@@ -21,6 +21,12 @@ Paperplane is MIT-licensed software intended to run on your own machine. Cloning
 using, modifying, and contributing are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) and
 the [Code of Conduct](CODE_OF_CONDUCT.md) before opening a pull request.
 
+Testers and users can [report bugs](https://github.com/pypi-ahmad/Agentic-Document-Extraction/issues/new?template=bug_report.yml),
+[request features](https://github.com/pypi-ahmad/Agentic-Document-Extraction/issues/new?template=feature_request.yml),
+or support the project by starring, sharing, testing, and contributing.
+See [Support](SUPPORT.md), [Security](SECURITY.md), and the canonical
+[Disclaimer and User Responsibility](DISCLAIMER.md).
+
 You are responsible for every document and other file you choose to process, including
 having the necessary rights or permission, deciding whether its contents may be sent to a
 cloud provider, and complying with applicable privacy, copyright, contractual, and

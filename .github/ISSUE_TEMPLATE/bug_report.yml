@@ -32,12 +32,12 @@ body:
       label: Steps to reproduce
       description: |
         Minimal steps that trigger the bug. Include the document type,
-        selected AI model, processing mode, and whether affected PDF pages
-        are native, scanned, or mixed.
+        processing engine, selected model, page range, and whether affected
+        PDF pages are native, scanned, or mixed.
       placeholder: |
-        1. Select GPT-5.6 Luna and Balanced mode.
+        1. Select Ollama ADE and glm-ocr:latest.
         2. Upload a synthetic one-page invoice image.
-        3. Choose Parse document.
+        3. Select page 1 and choose Parse files.
         4. ...
     validations:
       required: true
@@ -69,8 +69,9 @@ body:
     attributes:
       label: Environment
       description: |
-        OS, Python version, uv version, selected model and mode, input type,
-        and configured environment-variable names. Never include their values.
+        OS, CPU/GPU, Python version, uv version, processing engine, selected
+        model, input type, and configured environment-variable names. Never
+        include their values.
 
   - type: checkboxes
     id: checklist
