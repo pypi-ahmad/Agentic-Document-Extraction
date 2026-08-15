@@ -61,6 +61,7 @@ out/
 frontend/.next/
 frontend/node_modules/
 .playwright-cli/
+.firecrawl/
 
 # OS
 .DS_Store
