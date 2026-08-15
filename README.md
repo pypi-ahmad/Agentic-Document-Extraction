@@ -159,15 +159,17 @@ The checked-in Streamlit theme uses a near-black canvas, charcoal panels, red co
 dark-red borders, and high-contrast text. Parse configuration stays in the sidebar while a
 single selected-document control drives six full-width views:
 
-- **Input preview** shows the selected source document.
+- **Input preview** shows only the current inclusive page range for PDFs.
 - **Output** presents the assembled result and usage summary.
-- **Annotated PDF** overlays grounded regions when source geometry is available.
+- **Annotated PDF** overlays grounded regions and previews only the successfully parsed PDF
+  range when source geometry is available.
 - **Markdown** exposes the reading-order document text.
 - **HTML** renders allowlist-sanitized content on a responsive white paper surface with
   black text, matching the standalone download.
 - **JSON** switches between strict ADE v2-style and richer Paperplane v5 exports.
 
-Downloads always follow the selected document. The batch ZIP instead includes every
+Preview filtering is display-only: the annotated-PDF download remains the complete source
+PDF with overlays on parsed pages. Downloads always follow the selected document. The batch ZIP instead includes every
 successful document's available artifacts plus a versioned manifest describing successes,
 failures, and artifact warnings; it intentionally does not duplicate original uploads.
 

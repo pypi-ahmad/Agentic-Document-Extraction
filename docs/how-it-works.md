@@ -38,6 +38,9 @@ v5. The UI directly calls Python services in the same Streamlit process.
 The Parse sidebar owns engine, model, upload, and page-range controls. A single selected
 document drives six full-width main views. Individual downloads always follow that
 selection; the batch archive covers all outcomes and lists failures only in its manifest.
+PDF source preview uses the current inclusive range, while annotated preview uses the range
+recorded by the successful parse. Stored artifacts are not sliced, so annotated-PDF
+downloads and batch archives retain the complete source PDF.
 Uploads, results, Organize inputs, and page selections survive navigation among Parse,
 Organize, Jobs, and Cost. **New parse** resets the active Parse workspace while preserving
 the Cost ledger; **Stop and clear**, restart, or session end clears both session surfaces.

@@ -57,6 +57,10 @@ selector across Input preview, Output, Annotated PDF, Markdown, HTML, and JSON. 
 selected document at a time or the whole result batch as a ZIP. Job metadata and artifacts
 are private to `%LOCALAPPDATA%\Paperplane` and expire after seven days.
 
+For PDF uploads, Input preview shows the currently selected inclusive page range. After a
+successful parse, Annotated PDF preview shows that parsed range. The annotated-PDF download
+and batch ZIP still contain the complete source PDF, with overlays on parsed pages.
+
 While a batch runs, a live progress bar reports the current document, finalized page, or
 output-building stage and shows the overall percentage. The percentage represents completed
 work units rather than a time estimate; native whole-document engines can advance in larger

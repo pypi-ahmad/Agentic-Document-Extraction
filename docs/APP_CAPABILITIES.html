@@ -90,6 +90,9 @@ models remain visible with $0 API cost.</p>
 drives Input preview, Output, Annotated PDF, Markdown, HTML, and JSON tabs. Selected-document
 downloads sit in one responsive row. The batch ZIP contains all successful documents'
 available outputs and a versioned success/failure manifest, but no original uploads.
+For PDFs, Input preview follows the current page controls and Annotated PDF preview follows
+the successfully parsed range. This filtering is preview-only; the individual annotated-PDF
+download and batch ZIP retain the complete annotated source PDF.
 During processing, one batch-wide bar reports the active document/page or output stage and
 a monotonic percentage. It reaches 100% after job metadata is saved, including batches with
 failed documents; it is a completed-work indicator rather than a remaining-time estimate.

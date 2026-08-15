@@ -32,6 +32,10 @@ words, confidence state, provenance, warnings, and document relations. Standalon
 sanitized. The batch ZIP groups every successful document's available outputs and records
 failures in a versioned manifest without copying source uploads.
 
+For PDFs, Input preview immediately follows the current inclusive page controls. Annotated
+PDF preview follows the range saved by the successful parse. These are display-only slices:
+the annotated-PDF download and batch ZIP keep the complete source PDF.
+
 While processing, one batch-wide progress bar shows the current document, finalized page,
 or output-building stage with a percentage. The value measures completed work rather than
 remaining time, so native whole-document engines may advance in larger jumps. Completed

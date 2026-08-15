@@ -11,6 +11,9 @@ and this project aims to follow [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- Limited on-screen source and annotated PDF previews to the selected or successfully
+  parsed page range while preserving complete annotated-PDF downloads and batch archives.
+
 ### Fixed
 
 ## [5.2.0] - 2026-08-15

@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- PDF source preview now follows the current page range, and annotated preview follows the
+  successfully parsed range. Annotated-PDF downloads and batch ZIP artifacts remain complete.
 - Added a live batch progress bar covering preparation, finalized pages, output generation,
   and completion. Failed documents still complete their share of the batch progress.
 - Removed the "Private local workspace" badge from the Parse header.
