@@ -1,17 +1,18 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Paperplane 5.1.0 architecture</title>
+<title>Paperplane 5.1.1 architecture</title>
 <style>body{font:16px system-ui;background:#111827;color:#e5e7eb;max-width:1100px;margin:3rem auto;padding:0 1rem}h1,h2{color:#fff}.flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem}.node{border:1px solid #475569;border-radius:12px;padding:1rem;background:#1e293b}.node span{display:block;color:#cbd5e1;margin-top:.4rem}.boundary{margin-top:1rem;border-left:4px solid #38bdf8;padding:1rem;background:#0f172a}code{color:#7dd3fc}</style></head>
-<body><h1>Paperplane 5.1.0 architecture</h1><p>Private multipage Streamlit document intelligence with explicit engines, grounded contracts, cited workflows, and durable local jobs.</p>
+<body><h1>Paperplane 5.1.1 architecture</h1><p>Private multipage Streamlit document intelligence with explicit engines, grounded contracts, cited workflows, and durable local jobs.</p>
 <div class="flow">
 <div class="node"><b>1 · Workspace</b><span>Parse, Organize, Jobs, Benchmarks</span></div>
 <div class="node"><b>2 · Parallel runtime</b><span>Isolated files and selected page ranges</span></div>
 <div class="node"><b>3 · Explicit engine</b><span>Docling, PDF Inspector, Cloud AI, or Ollama</span></div>
-<div class="node"><b>4 · Grounded assembler</b><span>Markdown, blocks, atomic lines, cells, observed words</span></div>
-<div class="node"><b>5 · Document intelligence</b><span>Sections, repeated labels, continued tables, boundaries</span></div>
-<div class="node"><b>6 · Contracts</b><span>Strict ADE v2-style and Paperplane v5 JSON</span></div>
-<div class="node"><b>7 · Cited workflows</b><span>Classify, Split, Section</span></div>
-<div class="node"><b>8 · Durable local jobs</b><span>SQLite, checkpoints, private artifacts, seven-day TTL</span></div>
+<div class="node"><b>4 · Ollama OCR regions</b><span>CPU PP-DocLayoutV3 and family-native crop recognition</span></div>
+<div class="node"><b>5 · Grounded assembler</b><span>Markdown, blocks, atomic lines, cells, observed words</span></div>
+<div class="node"><b>6 · Document intelligence</b><span>Sections, repeated labels, continued tables, boundaries</span></div>
+<div class="node"><b>7 · Contracts</b><span>Strict ADE v2-style and Paperplane v5 JSON</span></div>
+<div class="node"><b>8 · Cited workflows</b><span>Classify, Split, Section</span></div>
+<div class="node"><b>9 · Durable local jobs</b><span>SQLite, checkpoints, private artifacts, seven-day TTL</span></div>
 </div>
 <div class="boundary"><b>Trust boundary</b><span>Streamlit binds to <code>127.0.0.1:8551</code>. There is no HTTP API. Files never share context, pages outside a selected range are not inspected, and missing evidence/calibration/scores remain missing.</span></div>
 </body></html>
