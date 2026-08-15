@@ -132,42 +132,10 @@ if ! "$venv_python" -c \
 fi
 printf 'Locked Python environment is ready.\n'
 
-cache_root="${DOCLING_CACHE_DIR:-${XDG_CACHE_HOME:-$HOME/.cache}/docling}"
-model_root="$cache_root/models"
-model_files=(
-    "docling-project--docling-layout-heron/model.safetensors"
-    "docling-project--docling-models/model_artifacts/tableformer/accurate/tableformer_accurate.safetensors"
-    "docling-project--docling-models/model_artifacts/tableformer/accurate/tm_config.json"
-    "RapidOcr/PP-OCRv6_det_small.pth"
-    "RapidOcr/PP-OCRv6_rec_small.pth"
-    "RapidOcr/ch_ptocr_mobile_v2.0_cls_mobile.pth"
-    "RapidOcr/PP-OCRv6_det_small.onnx"
-    "RapidOcr/PP-OCRv6_rec_small.onnx"
-    "RapidOcr/ch_ppocr_mobile_v2.0_cls_mobile.onnx"
-    "RapidOcr/ppocrv6_dict.txt"
-)
-
-models_ready=1
-for model_file in "${model_files[@]}"; do
-    if [[ ! -f "$model_root/$model_file" ]]; then
-        models_ready=""
-        break
-    fi
-done
-
-if [[ -z "$models_ready" ]]; then
-    printf 'Downloading local layout, table, and OCR models because they are not available...\n'
-    "$venv_docling" models download layout tableformer rapidocr --quiet \
-        || fail "Local document model download failed."
-fi
-
-printf 'Local document models are ready.\n'
-if ! "$venv_python" -m paperplane.ollama_ocr --check >/dev/null 2>&1; then
-    printf 'Downloading PP-DocLayoutV3 for Ollama OCR region detection...\n'
-    "$venv_python" -m paperplane.ollama_ocr --download \
-        || fail "Ollama OCR layout model download failed."
-fi
-printf 'Ollama OCR layout model is ready.\n'
+printf 'Checking permanent model weights...\n'
+"$venv_python" -m paperplane.model_store --prepare \
+    || fail "Permanent Paperplane model preparation failed."
+printf 'Permanent Paperplane model weights are ready.\n'
 printf 'Clearing previous Streamlit cache...\n'
 "$venv_python" -m streamlit cache clear >/dev/null \
     || fail "Streamlit cache cleanup failed."

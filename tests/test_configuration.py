@@ -60,11 +60,10 @@ def test_windows_launcher_skips_completed_setup() -> None:
     assert "--inexact" in launcher
     assert "sync --check --locked --python 3.12.10 --extra %TORCH_EXTRA%" in launcher
     assert "sync --check --locked --python 3.12.10 --extra cpu" in launcher
-    assert "if defined MODELS_READY goto :models_ready" in launcher
+    assert '"%VENV_PYTHON%" -m paperplane.model_store --prepare' in launcher
     assert 'reg.exe query "HKCU\\Environment" /v GOOGLE_API_KEY' in launcher
     assert "Google API credential is available to Paperplane." in launcher
-    assert '"%VENV_PYTHON%" -m paperplane.ollama_ocr --check' in launcher
-    assert '"%VENV_PYTHON%" -m paperplane.ollama_ocr --download' in launcher
+    assert "models download layout tableformer rapidocr" not in launcher
     assert '"%VENV_PYTHON%" -m streamlit cache clear' in launcher
     assert "*paperplane.streamlit_runner run workspace_app.py*" in launcher
     assert (
@@ -90,9 +89,8 @@ def test_linux_launcher_skips_completed_setup() -> None:
     assert '"$uv_exe" sync --check --locked --python 3.12.10 --extra "$torch_extra"' in launcher
     assert "sudo apt-get install -y libreoffice" in launcher
     assert "nvidia-smi" in launcher
-    assert "models download layout tableformer rapidocr --quiet" in launcher
-    assert '"$venv_python" -m paperplane.ollama_ocr --check' in launcher
-    assert '"$venv_python" -m paperplane.ollama_ocr --download' in launcher
+    assert '"$venv_python" -m paperplane.model_store --prepare' in launcher
+    assert "models download layout tableformer rapidocr" not in launcher
     assert '&& -z "${GOOGLE_API_KEY:-}"' in launcher
     assert '"$venv_python" -m streamlit cache clear' in launcher
     assert (

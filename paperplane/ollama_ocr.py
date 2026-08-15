@@ -13,7 +13,8 @@ from typing import Protocol
 
 from PIL import Image
 
-LAYOUT_MODEL_ID = "PaddlePaddle/PP-DocLayoutV3_safetensors"
+from paperplane.model_store import ModelStore, prepare_model_store
+
 LAYOUT_THRESHOLD = 0.3
 MAX_REGIONS_PER_PAGE = 256
 
@@ -183,10 +184,11 @@ class PPDocLayoutDetector:
         import torch
         from transformers import AutoImageProcessor, AutoModelForObjectDetection
 
+        model_path = ModelStore().layout_root
         self._torch = torch
-        self._processor = AutoImageProcessor.from_pretrained(LAYOUT_MODEL_ID, local_files_only=True)
+        self._processor = AutoImageProcessor.from_pretrained(model_path, local_files_only=True)
         self._model = AutoModelForObjectDetection.from_pretrained(
-            LAYOUT_MODEL_ID, local_files_only=True
+            model_path, local_files_only=True
         ).eval()
         self._lock = threading.Lock()
 
@@ -233,9 +235,9 @@ def get_layout_detector() -> PPDocLayoutDetector:
 
 
 def ensure_layout_model(*, download: bool) -> None:
-    from huggingface_hub import snapshot_download
-
-    snapshot_download(repo_id=LAYOUT_MODEL_ID, local_files_only=not download)
+    status = prepare_model_store(download_missing=download)
+    if not status.ready:
+        raise RuntimeError("Permanent PP-DocLayoutV3 model files are incomplete")
 
 
 def main() -> int:

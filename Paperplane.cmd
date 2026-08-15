@@ -134,35 +134,10 @@ if errorlevel 1 goto :setup_failure
 :runtime_ready
 echo Locked Python environment is ready.
 
-set "MODEL_ROOT=%USERPROFILE%\.cache\docling\models"
-if defined DOCLING_CACHE_DIR set "MODEL_ROOT=%DOCLING_CACHE_DIR%\models"
-set "MODELS_READY=1"
-if not exist "%MODEL_ROOT%\docling-project--docling-layout-heron\model.safetensors" set "MODELS_READY="
-if not exist "%MODEL_ROOT%\docling-project--docling-models\model_artifacts\tableformer\accurate\tableformer_accurate.safetensors" set "MODELS_READY="
-if not exist "%MODEL_ROOT%\docling-project--docling-models\model_artifacts\tableformer\accurate\tm_config.json" set "MODELS_READY="
-if not exist "%MODEL_ROOT%\RapidOcr\PP-OCRv6_det_small.pth" set "MODELS_READY="
-if not exist "%MODEL_ROOT%\RapidOcr\PP-OCRv6_rec_small.pth" set "MODELS_READY="
-if not exist "%MODEL_ROOT%\RapidOcr\ch_ptocr_mobile_v2.0_cls_mobile.pth" set "MODELS_READY="
-if not exist "%MODEL_ROOT%\RapidOcr\PP-OCRv6_det_small.onnx" set "MODELS_READY="
-if not exist "%MODEL_ROOT%\RapidOcr\PP-OCRv6_rec_small.onnx" set "MODELS_READY="
-if not exist "%MODEL_ROOT%\RapidOcr\ch_ppocr_mobile_v2.0_cls_mobile.onnx" set "MODELS_READY="
-if not exist "%MODEL_ROOT%\RapidOcr\ppocrv6_dict.txt" set "MODELS_READY="
-if defined MODELS_READY goto :models_ready
-
-echo Downloading local layout, table, and OCR models because they are not available...
-"%VENV_DOCLING%" models download layout tableformer rapidocr --quiet
+echo Checking permanent model weights...
+"%VENV_PYTHON%" -m paperplane.model_store --prepare
 if errorlevel 1 goto :setup_failure
-
-:models_ready
-echo Local document models are ready.
-"%VENV_PYTHON%" -m paperplane.ollama_ocr --check >nul 2>&1
-if not errorlevel 1 goto :ollama_layout_ready
-echo Downloading PP-DocLayoutV3 for Ollama OCR region detection...
-"%VENV_PYTHON%" -m paperplane.ollama_ocr --download
-if errorlevel 1 goto :setup_failure
-
-:ollama_layout_ready
-echo Ollama OCR layout model is ready.
+echo Permanent Paperplane model weights are ready.
 echo Clearing previous Streamlit cache...
 "%VENV_PYTHON%" -m streamlit cache clear >nul
 if errorlevel 1 goto :setup_failure

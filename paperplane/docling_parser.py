@@ -1,5 +1,8 @@
 """Local Docling conversion into Paperplane's deterministic parse inputs."""
 
+# Docling reads its cache location while its modules are imported.
+# ruff: noqa: E402
+
 from __future__ import annotations
 
 import asyncio
@@ -9,6 +12,10 @@ from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from io import BytesIO
 from typing import Any
+
+from paperplane.model_store import ModelStore
+
+ModelStore().configure_environment()
 
 from docling.datamodel.accelerator_options import AcceleratorDevice, AcceleratorOptions
 from docling.datamodel.base_models import DocumentStream, InputFormat
