@@ -18,6 +18,10 @@ Ollama ADE. Optionally add cloud enhancement to a local engine. Upload up to 20 
 choose each one-based inclusive page range, then parse. Files run concurrently but remain
 context-isolated.
 
+GLM-OCR, PaddleOCR-VL, and DeepSeek-OCR use a local CPU PP-DocLayoutV3 detector. Ollama
+recognizes each region with its family-native prompt, and Paperplane uses detector boxes
+for candidate grounding. RapidOCR contributes only exact final word-box alignment.
+
 All Parse controls sit below navigation in the sidebar. One main document selector drives
 Input preview, Output, Annotated PDF, Markdown, HTML, and JSON. Download strict ADE v2 JSON
 when you need the compatibility-shaped hierarchy; download Paperplane JSON for observed
@@ -51,11 +55,13 @@ PDF Inspector, and storage remain local.
 2. `streamlit_app.py` and `app_pages/` — UI flows.
 3. `paperplane/runtime.py` — batch/provider composition.
 4. `paperplane/parser.py` — range and page orchestration.
-5. `paperplane/contracts.py` and `ade_contracts.py` — internal and public contracts.
-6. `paperplane/ade_workflows.py` — cited workflows.
-7. `paperplane/jobs.py` — durable lifecycle.
-8. `paperplane/outputs.py` — sanitized HTML and safe batch archive assembly.
-9. `document_intelligence.py`, `calibration.py`, `benchmark.py` — semantic and evaluation
+5. `paperplane/ollama_document.py` and `ollama_ocr.py` — Ollama discovery, layout regions,
+   prompts, and crop recognition.
+6. `paperplane/contracts.py` and `ade_contracts.py` — internal and public contracts.
+7. `paperplane/ade_workflows.py` — cited workflows.
+8. `paperplane/jobs.py` — durable lifecycle.
+9. `paperplane/outputs.py` — sanitized HTML and safe batch archive assembly.
+10. `document_intelligence.py`, `calibration.py`, `benchmark.py` — semantic and evaluation
    layers.
 
 ## 7. Verify

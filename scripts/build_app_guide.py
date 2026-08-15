@@ -43,16 +43,16 @@ def build() -> None:
 <body>
   <a class="skip" href="#content">Skip to content</a>
   <header class="hero"><div class="hero-inner">
-    <div class="eyebrow">Paperplane V4.1 technical guide</div>
+    <div class="eyebrow">Paperplane 5 technical guide</div>
     <h1>From document pages to grounded Markdown</h1>
-    <p>A concise guide to local Docling conversion, selectable cloud vision parsing, the evidence contract, and the session boundary.</p>
-    <div class="badges"><span class="badge">Stateless</span><span class="badge">Docling + vision</span><span class="badge">Layout aware</span><span class="badge">Grounded JSON</span></div>
+    <p>A concise guide to local document engines, selectable cloud vision, grounded contracts, and private retained jobs.</p>
+    <div class="badges"><span class="badge">Private local jobs</span><span class="badge">Docling + Ollama OCR</span><span class="badge">Layout aware</span><span class="badge">Grounded JSON</span></div>
   </div></header>
   <div class="layout">
     <aside class="sidebar"><strong>On this page</strong>{toc}</aside>
     <main id="content">{body}</main>
   </div>
-  <footer class="footer">Paperplane V4.1 · Local grounded document parsing</footer>
+  <footer class="footer">Paperplane 5 · Local grounded document parsing</footer>
 </body>
 </html>
 """

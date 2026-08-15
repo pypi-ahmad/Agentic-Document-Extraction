@@ -20,6 +20,9 @@ cited downstream data.
   one bounded correction attempt so valid regions reach annotated PDFs.
 - Ollama discovery includes every installed model and checks the reported `vision`
   capability before enabling Parse.
+- GLM-OCR, PaddleOCR-VL, and DeepSeek-OCR use CPU PP-DocLayoutV3 regions, native crop
+  prompts, detector-box grounding, bounded output cleanup, and non-fatal empty-region
+  handling. RapidOCR is used only for final exact word-box alignment.
 - Prior selected-page context, ordered assembly, section starts, repeated marginalia, and
   conservative continued-table relationships.
 - Idempotent one-file setup and launch on Windows and Linux.

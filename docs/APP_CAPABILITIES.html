@@ -19,10 +19,10 @@ table{width:100%;border-collapse:collapse;display:block;overflow-x:auto;margin:1
 <body>
   <a class="skip" href="#content">Skip to content</a>
   <header class="hero"><div class="hero-inner">
-    <div class="eyebrow">Paperplane V4.1 technical guide</div>
+    <div class="eyebrow">Paperplane 5 technical guide</div>
     <h1>From document pages to grounded Markdown</h1>
-    <p>A concise guide to local Docling conversion, selectable cloud vision parsing, the evidence contract, and the session boundary.</p>
-    <div class="badges"><span class="badge">Stateless</span><span class="badge">Docling + vision</span><span class="badge">Layout aware</span><span class="badge">Grounded JSON</span></div>
+    <p>A concise guide to local document engines, selectable cloud vision, grounded contracts, and private retained jobs.</p>
+    <div class="badges"><span class="badge">Private local jobs</span><span class="badge">Docling + Ollama OCR</span><span class="badge">Layout aware</span><span class="badge">Grounded JSON</span></div>
   </div></header>
   <div class="layout">
     <aside class="sidebar"><strong>On this page</strong><div class="toc">
@@ -56,6 +56,9 @@ cited downstream data.</p>
   one bounded correction attempt so valid regions reach annotated PDFs.</li>
 <li>Ollama discovery includes every installed model and checks the reported <code>vision</code>
   capability before enabling Parse.</li>
+<li>GLM-OCR, PaddleOCR-VL, and DeepSeek-OCR use CPU PP-DocLayoutV3 regions, native crop
+  prompts, detector-box grounding, bounded output cleanup, and non-fatal empty-region
+  handling. RapidOCR is used only for final exact word-box alignment.</li>
 <li>Prior selected-page context, ordered assembly, section starts, repeated marginalia, and
   conservative continued-table relationships.</li>
 <li>Idempotent one-file setup and launch on Windows and Linux.</li>
@@ -85,6 +88,6 @@ surface with black text. The preview, individual HTML download, and ZIP copy mat
 <p>There is no public/local HTTP API in v5. ADE compatibility refers to versioned JSON and
 Pydantic contracts and async/durable job semantics, not a client drop-in claim.</p></main>
   </div>
-  <footer class="footer">Paperplane V4.1 · Local grounded document parsing</footer>
+  <footer class="footer">Paperplane 5 · Local grounded document parsing</footer>
 </body>
 </html>

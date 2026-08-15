@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="author" content="Ahmad">
-  <meta name="description" content="A code-grounded tutorial for mastering Paperplane v5.1.0">
+  <meta name="description" content="A code-grounded tutorial for mastering Paperplane v5.1.1">
   <title>Paperplane Zero to Mastery</title>
   <style>
 @page {
@@ -149,6 +149,9 @@ entrypoint:</p>
 Ollama ADE. Optionally add cloud enhancement to a local engine. Upload up to 20 files,
 choose each one-based inclusive page range, then parse. Files run concurrently but remain
 context-isolated.</p>
+<p>GLM-OCR, PaddleOCR-VL, and DeepSeek-OCR use a local CPU PP-DocLayoutV3 detector. Ollama
+recognizes each region with its family-native prompt, and Paperplane uses detector boxes
+for candidate grounding. RapidOCR contributes only exact final word-box alignment.</p>
 <p>All Parse controls sit below navigation in the sidebar. One main document selector drives
 Input preview, Output, Annotated PDF, Markdown, HTML, and JSON. Download strict ADE v2 JSON
 when you need the compatibility-shaped hierarchy; download Paperplane JSON for observed
@@ -175,6 +178,8 @@ PDF Inspector, and storage remain local.</p>
 <li><code>streamlit_app.py</code> and <code>app_pages/</code> — UI flows.</li>
 <li><code>paperplane/runtime.py</code> — batch/provider composition.</li>
 <li><code>paperplane/parser.py</code> — range and page orchestration.</li>
+<li><code>paperplane/ollama_document.py</code> and <code>ollama_ocr.py</code> — Ollama discovery, layout regions,
+   prompts, and crop recognition.</li>
 <li><code>paperplane/contracts.py</code> and <code>ade_contracts.py</code> — internal and public contracts.</li>
 <li><code>paperplane/ade_workflows.py</code> — cited workflows.</li>
 <li><code>paperplane/jobs.py</code> — durable lifecycle.</li>
