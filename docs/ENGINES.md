@@ -21,5 +21,11 @@ For GLM-OCR, PaddleOCR-VL, and DeepSeek-OCR, PP-DocLayoutV3 first detects region
 on CPU. Ollama recognizes the resulting crops with family-specific native prompts instead
 of being forced to emit a whole-page JSON schema.
 
+DeepSeek-OCR retries an empty text crop once with a stricter transcription prompt. It also
+retries transient transport, malformed-response, HTTP 408/429, and server failures once
+after 500 ms. One exhausted crop becomes a page warning while successful sibling regions
+remain; three consecutive exhausted regions stop the page. Other OCR profiles retain their
+existing behavior.
+
 Local semantic workflows use the shared contracts and return deterministic partials with
 warnings when evidence is insufficient. They never silently invoke another engine.

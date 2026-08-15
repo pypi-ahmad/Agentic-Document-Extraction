@@ -17,6 +17,8 @@ Paperplane validates structure and evidence independently of model fluency.
 - Profiled Ollama OCR families use PP-DocLayoutV3 detector boxes as candidate block
   grounding. Vertical marginal text is rotated before recognition, repeated model tails
   are cleaned, and a missed crop does not discard successful regions from the page.
+  DeepSeek retries one empty or transient failure, records skipped regions in page warnings,
+  and stops after three consecutive exhausted regions.
 - Later selected AI pages receive bounded earlier-page context. Files never share context,
   and pages outside a chosen range are not inspected.
 - Classify, Split, and Section local results identify deterministic partials.

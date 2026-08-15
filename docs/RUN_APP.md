@@ -44,9 +44,12 @@ uv run --locked --extra cpu python -m paperplane.streamlit_runner run workspace_
 For Ollama ADE, start Ollama first and optionally set
 `OLLAMA_BASE_URL=http://127.0.0.1:11434`. Cloud credentials are read from the current
 process environment, Windows user environment, an ignored `.env`, or Streamlit secrets.
+Gemini uses `GOOGLE_API_KEY`; legacy `GEMINI_API_KEY` is checked only when the canonical
+variable is absent.
 Agnes 2.5 Flash accepts selected page images inline for Parse and cloud enhancement.
 GLM-OCR, PaddleOCR-VL, and DeepSeek-OCR are automatically run on PP-DocLayoutV3 page
-regions with their native prompts.
+regions with their native prompts. DeepSeek retries one empty or transiently failed text
+crop before skipping it with a visible warning.
 
 The pages are Parse, Organize, Jobs, and Benchmarks. Select one Parse engine before
 uploading. Parse controls remain in the sidebar; the full-width canvas shares one document

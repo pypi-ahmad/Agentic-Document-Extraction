@@ -7,8 +7,8 @@ model and checks its live `vision` capability.
 |---|---|---:|---:|---|
 | Grok 4.6 | `grok-4.6` | $2.00 | $6.00 | `XAI_API_KEY` |
 | GPT-5.6 Luna | `gpt-5.6-luna` | $0.20 | $1.20 | `OPENAI_API_KEY` |
-| Gemini 3.5 Flash-Lite | `gemini-3.5-flash-lite` | $0.30 | $2.50 | `GEMINI_API_KEY` |
-| Gemini 3.6 Flash | `gemini-3.6-flash` | $1.50 | $7.50 | `GEMINI_API_KEY` |
+| Gemini 3.5 Flash-Lite | `gemini-3.5-flash-lite` | $0.30 | $2.50 | `GOOGLE_API_KEY` |
+| Gemini 3.7 Flash | `gemini-3.7-flash` | $0.75 | $3.75 | `GOOGLE_API_KEY` |
 | Claude Sonnet 5 | `claude-sonnet-5` | $2.00 | $10.00 | `ANTHROPIC_API_KEY` |
 | Agnes 2.5 Flash | `agnes-2.5-flash` | Free | Free | `AGNES_API_KEY` |
 
@@ -35,16 +35,21 @@ GLM-OCR, PaddleOCR-VL, and DeepSeek-OCR use a layout-first path. The local
 selected Ollama model receives each crop with its native OCR prompt. Detector boxes ground
 the assembled blocks; RapidOCR is used only for final word-box alignment.
 
-## Gemini 3.7 correction
+DeepSeek-OCR retries an empty text crop once with a strict transcription-only prompt and
+retries transient transport, malformed-response, HTTP 408/429, and server failures once
+after 500 ms. It skips an isolated exhausted crop with a page warning, but stops after
+three consecutive exhausted regions. Empty detected figures remain grounded. GLM-OCR and
+PaddleOCR-VL keep their existing prompt and failure behavior.
 
-Google's current official model catalog does not contain a model named “Gemini Flash
-3.7” or an API ID named `gemini-3.7-flash`. The current stable Flash model is Gemini 3.6
-Flash, with the API ID `gemini-3.6-flash`. Paperplane uses that real ID instead of sending
-requests to an unverified model name.
+## Gemini credentials and 3.7 pricing
 
-The Gemini 3.6 estimate is derived from the supplied pricing statement that the proposed
-$0.75/$3.75 Gemini 3.7 promotion is half the Gemini 3.6 rate. GPT-5.6 Terra is not in the
-supported catalog, so its supplied rate is not used.
+Paperplane uses `GOOGLE_API_KEY` for both Gemini models. The launcher, ignored `.env`, and
+Streamlit secrets accept that canonical name. Existing `GEMINI_API_KEY` configurations
+remain a fallback only when `GOOGLE_API_KEY` is absent.
+
+Gemini 3.7 Flash uses the supplied promotional standard rate of $0.75/1M input tokens and
+$3.75/1M output tokens through December 31, 2026. GPT-5.6 Terra is not in the supported
+catalog, so its supplied rate is not used.
 
 ## Cost estimates
 
@@ -57,9 +62,15 @@ input cost + output cost
 ```
 
 GPT-5.6 Luna cached input tokens use the supplied $0.02/1M rate. Paperplane applies the
-listed standard rates only. It does not infer Batch API discounts, promotional Gemini 3.7
-pricing, Grok fast/long-context surcharges, or other account-specific adjustments. The
-displayed amount is an estimate; the provider invoice is authoritative.
+listed synchronous base rates only. It does not infer Batch API discounts, Grok
+fast/long-context surcharges, Claude Batch discounts, or other account-specific
+adjustments. The displayed amount is an estimate; the provider invoice is authoritative.
+
+The supplied non-default rates remain informational: Claude Sonnet 5 Batch is 50% off;
+Gemini 3.5 Flash-Lite Batch is $0.15/$1.25; Grok 4.6 fast mode or prompts above 200k tokens
+use $4/$12. Paperplane does not invoke Batch or Grok fast mode, and aggregate document usage
+cannot determine whether one individual request crossed a long-context threshold, so these
+modifiers are not applied to the UI estimate.
 
 ## Official references
 

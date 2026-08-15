@@ -34,6 +34,16 @@ uncalibrated. GLM-OCR, PaddleOCR-VL, and DeepSeek-OCR first receive crops from t
 PP-DocLayoutV3 detector, so their native OCR prompts are not constrained by a whole-page
 JSON schema.
 
+DeepSeek retries one empty or transiently failed text crop. A single exhausted crop is
+skipped with a visible warning; three consecutive failures stop the page and return a
+specific Ollama error instead of the generic unexpected-failure message.
+
+## Which key does Gemini use?
+
+Use `GOOGLE_API_KEY` in the Windows user environment, process environment, ignored `.env`,
+or Streamlit secrets. `GEMINI_API_KEY` remains a legacy fallback only when
+`GOOGLE_API_KEY` is absent.
+
 ## Can Agnes process private uploads?
 
 Yes. Paperplane sends selected page images inline to Agnes and does not publish them at a

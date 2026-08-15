@@ -21,6 +21,9 @@ context-isolated.
 GLM-OCR, PaddleOCR-VL, and DeepSeek-OCR use a local CPU PP-DocLayoutV3 detector. Ollama
 recognizes each region with its family-native prompt, and Paperplane uses detector boxes
 for candidate grounding. RapidOCR contributes only exact final word-box alignment.
+DeepSeek retries one empty or transiently failed text crop. An isolated exhausted region is
+reported as a warning while successful regions remain; three consecutive failures stop the
+page and surface an actionable Ollama error.
 
 All Parse controls sit below navigation in the sidebar. One main document selector drives
 Input preview, Output, Annotated PDF, Markdown, HTML, and JSON. Download strict ADE v2 JSON

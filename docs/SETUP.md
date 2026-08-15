@@ -47,8 +47,13 @@ Use `--extra cu130` instead of `--extra cpu` on a compatible NVIDIA system.
 ## Credentials and Ollama
 
 Set only the provider variables you use: `OPENAI_API_KEY`, `OPENAI_BASE_URL`,
-`XAI_API_KEY`, `GEMINI_API_KEY`, `ANTHROPIC_API_KEY`, or `AGNES_API_KEY`. Paperplane also
+`XAI_API_KEY`, `GOOGLE_API_KEY`, `ANTHROPIC_API_KEY`, or `AGNES_API_KEY`. Paperplane also
 accepts `OLLAMA_BASE_URL`, defaulting to `http://127.0.0.1:11434`.
+
+Gemini uses `GOOGLE_API_KEY`. Existing `GEMINI_API_KEY` configurations remain a fallback
+only when the canonical variable is absent. On Windows, `Paperplane.cmd` refreshes both
+values from the current user's environment before launch; `GOOGLE_API_KEY` wins when both
+exist. An ignored `.env` and Streamlit secrets use the same names.
 
 `AGNES_API_KEY` enables both text and private visual workflows. Paperplane sends selected
 page PNGs inline, so no public image host is required.
@@ -56,6 +61,7 @@ page PNGs inline, so no public image host is required.
 ```powershell
 [Environment]::SetEnvironmentVariable("OPENAI_API_KEY", "your-key", "User")
 [Environment]::SetEnvironmentVariable("OPENAI_BASE_URL", "https://api.openai.com", "User")
+[Environment]::SetEnvironmentVariable("GOOGLE_API_KEY", "your-key", "User")
 ```
 
 Linux shells can export the variables before launch:

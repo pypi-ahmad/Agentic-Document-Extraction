@@ -19,6 +19,9 @@ Version 5 changes the UI, public export contract, and retention model.
 - Current launchers download PP-DocLayoutV3 automatically. Manual installations must run
   `python -m paperplane.ollama_ocr --download`; GLM-OCR, PaddleOCR-VL, and DeepSeek-OCR now
   use its regions instead of whole-page JSON generation.
+- Rename new Gemini configurations to `GOOGLE_API_KEY`. Legacy `GEMINI_API_KEY` remains a
+  fallback, but all UI guidance and examples use the canonical name. Gemini 3.7 Flash
+  replaces Gemini 3.6 Flash in the supported catalog.
 - Agnes private visual Parse/enhancement now sends images inline; no public image URL is
   required.
 

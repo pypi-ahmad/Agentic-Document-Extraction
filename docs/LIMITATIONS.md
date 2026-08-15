@@ -15,8 +15,9 @@
   checked-in profile exists.
 - The PP-DocLayoutV3 detector runs on CPU. Region-based Ollama OCR adds one recognition
   request per detected region; latency therefore grows with page density and model size.
-- Empty OCR text regions are omitted while empty detected figures retain their grounded
-  figure block. The page fails only when no document content is produced.
+- DeepSeek retries an empty or transiently failed text crop once, then omits that region
+  with a warning. Empty detected figures retain their grounded figure block. Three
+  consecutive exhausted DeepSeek regions or a page with no content still fail.
 - Classify/Split/Section deterministic local results may be partial and carry warnings.
 - The initial locked benchmark corpus is too small for a comparative accuracy claim. No
   LandingAI parity or production-accuracy claim is made.

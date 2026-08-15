@@ -7,6 +7,10 @@
 - Added detector-box candidate grounding, vertical marginal-text rotation, repeated-tail
   cleanup, bounded crop output, and partial-page tolerance for empty OCR regions.
 - Added automatic PP-DocLayoutV3 checking and download to both launchers.
+- Added one bounded DeepSeek retry for empty and transiently failed text regions, partial
+  page warnings for isolated failures, and an abort after three consecutive failures.
+- Replaced Gemini 3.6 Flash with Gemini 3.7 Flash at the supplied $0.75/$3.75 promotional
+  rate and made `GOOGLE_API_KEY` canonical with legacy `GEMINI_API_KEY` fallback.
 
 ## Paperplane 5.1.1
 

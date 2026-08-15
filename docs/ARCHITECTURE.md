@@ -40,6 +40,8 @@ flowchart LR
   it does not publish uploads at separate URLs.
 - `ollama_ocr.py` detects PP-DocLayoutV3 regions on CPU, selects family-native OCR prompts,
   crops/rotates regions, and cleans bounded local model output.
+- `ollama_document.py` bounds DeepSeek retries, skips isolated exhausted regions with
+  warnings, and stops sustained local failures before processing every remaining crop.
 - `parser.py` applies page ranges and allows only previous selected pages to inform later
   page processing.
 - `contracts.py` is the internal grounded representation; `ade_contracts.py` produces

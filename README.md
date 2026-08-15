@@ -98,7 +98,7 @@ output contract.
 
 ### Supported cloud models and private visual input
 
-The Cloud AI selector contains Grok 4.6, GPT-5.6 Luna, Gemini 3.5 Flash-Lite, Gemini 3.6
+The Cloud AI selector contains Grok 4.6, GPT-5.6 Luna, Gemini 3.5 Flash-Lite, Gemini 3.7
 Flash, Claude Sonnet 5, and Agnes 2.5 Flash. Each provider uses its native API boundary and
 only its corresponding environment variable. The UI records provider-reported input and
 output tokens and shows a configured cost estimate; that estimate is not an invoice.
@@ -306,9 +306,19 @@ the models returned by the local server; `glm-ocr:latest` and
 `AuditAid/PaddleOCR-VL-1.6-0.9B:latest` are the initial calibration targets, not required
 hard-coded choices.
 
-The three profiled OCR families use PP-DocLayoutV3 on CPU for region detection. RapidOCR
-does not replace their recognition output; it is retained only for exact final word-box
-alignment.
+The three profiled OCR families use PP-DocLayoutV3 on CPU for region detection. This is
+intentional: it preserves GPU VRAM for the selected Ollama model, which usually dominates
+end-to-end latency because dense pages require many crop-recognition calls. PP-DocLayoutV3
+could technically run on CUDA, but sharing an 8 GB-class GPU can force Ollama offloading or
+cause out-of-memory failures for comparatively little total speedup. RapidOCR does not
+replace the selected model's recognition output; it is retained only for exact final
+word-box alignment.
+
+DeepSeek-OCR retries an empty text crop once with a strict transcription prompt. It also
+retries transient connection, timeout, malformed-response, HTTP 408/429, and server errors
+once. An isolated exhausted crop is skipped with a page warning; three consecutive failures
+stop the page so an unavailable Ollama server cannot trigger requests for every remaining
+region. GLM-OCR and PaddleOCR-VL retain their existing family-native behavior.
 
 ## Environment variables
 
@@ -317,13 +327,14 @@ alignment.
 | `OPENAI_API_KEY` | GPT-5.6 Luna and compatible OpenAI endpoint authentication |
 | `OPENAI_BASE_URL` | Optional OpenAI-compatible base URL; default `https://api.openai.com` |
 | `XAI_API_KEY` | Grok 4.6 |
-| `GEMINI_API_KEY` | Gemini 3.5 Flash-Lite and Gemini 3.6 Flash |
+| `GOOGLE_API_KEY` | Gemini 3.5 Flash-Lite and Gemini 3.7 Flash |
 | `ANTHROPIC_API_KEY` | Claude Sonnet 5 |
 | `AGNES_API_KEY` | Agnes 2.5 Flash text and visual workflows |
 | `OLLAMA_BASE_URL` | Local Ollama server; default `http://127.0.0.1:11434` |
 
 Paperplane reads the process environment, including missing values loaded from an ignored
 `.env`, before Streamlit secrets. `.env.example` remains available for other machines.
+`GEMINI_API_KEY` remains a compatibility fallback only when `GOOGLE_API_KEY` is absent.
 Never commit a real credential.
 
 Paperplane sends Agnes visual inputs inline as private PNG data URLs. Agnes usage is

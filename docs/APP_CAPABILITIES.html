@@ -57,8 +57,11 @@ cited downstream data.</p>
 <li>Ollama discovery includes every installed model and checks the reported <code>vision</code>
   capability before enabling Parse.</li>
 <li>GLM-OCR, PaddleOCR-VL, and DeepSeek-OCR use CPU PP-DocLayoutV3 regions, native crop
-  prompts, detector-box grounding, bounded output cleanup, and non-fatal empty-region
-  handling. RapidOCR is used only for final exact word-box alignment.</li>
+  prompts, detector-box grounding, and bounded output cleanup. DeepSeek retries one empty
+  or transiently failed text region, exposes skipped regions as warnings, and stops after
+  three consecutive failures. RapidOCR is used only for final exact word-box alignment.</li>
+<li>Gemini uses <code>GOOGLE_API_KEY</code>, with legacy <code>GEMINI_API_KEY</code> fallback, and exposes Gemini
+  3.5 Flash-Lite plus Gemini 3.7 Flash.</li>
 <li>Prior selected-page context, ordered assembly, section starts, repeated marginalia, and
   conservative continued-table relationships.</li>
 <li>Idempotent one-file setup and launch on Windows and Linux.</li>

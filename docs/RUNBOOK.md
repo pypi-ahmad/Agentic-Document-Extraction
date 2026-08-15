@@ -30,6 +30,12 @@ uv run --locked --extra cpu python -m paperplane.ollama_ocr --download
 
 Use `--extra cu130` instead of `--extra cpu` when that is the synchronized environment.
 
+DeepSeek automatically retries one empty or transiently failed region. A completed parse
+may show `DeepSeek OCR skipped ... after two attempts`; inspect that page for missing text.
+`DeepSeek OCR stopped after three consecutive region failures` indicates sustained local
+model/server trouble: confirm Ollama is responsive, confirm the selected model remains
+loaded, and retry the page.
+
 ## Parsing or artifact generation fails
 
 Check file integrity, page range, the 20-file/1-GiB batch limit, 200-MiB/500-page file
@@ -50,8 +56,10 @@ again before resuming work.
 
 ## Cost differs from an invoice
 
-The UI multiplies provider-reported tokens by configured standard rates. It does not infer
-batch discounts, promotions, taxes, long-context/fast surcharges, or account entitlements.
+The UI multiplies provider-reported tokens by configured synchronous base rates. Gemini
+3.7 uses $0.75/$3.75 per million input/output tokens through December 31, 2026; Luna cache
+reads use $0.02/1M. It does not infer Batch discounts, taxes, Grok long-context/fast
+surcharges, or account entitlements.
 
 ## Verify the checkout
 
