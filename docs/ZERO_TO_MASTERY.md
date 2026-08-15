@@ -8,8 +8,14 @@ Streamlit app at `http://127.0.0.1:8551`. Once ready, later launches skip setup.
 entrypoint:
 
 ```powershell
+uv run --locked --extra cpu python -m paperplane.model_store --prepare
 uv run --locked --extra cpu streamlit run workspace_app.py --server.port=8551
 ```
+
+The model command migrates existing Docling, RapidOCR, and PP-DocLayoutV3 caches when
+possible, then keeps the pinned set outside the checkout and virtual environment. Later
+launches reuse healthy weights offline after a manifest and size check. Ollama models stay
+in Ollama's separate store.
 
 ## 2. Parse
 
@@ -84,13 +90,14 @@ the project.
 2. `streamlit_app.py` and `app_pages/` — UI flows, retained session state, and Cost.
 3. `paperplane/runtime.py` — batch/provider composition.
 4. `paperplane/parser.py` — range and page orchestration.
-5. `paperplane/ollama_document.py` and `ollama_ocr.py` — Ollama discovery, layout regions,
+5. `paperplane/model_store.py` — permanent versioned Docling/RapidOCR/layout weights.
+6. `paperplane/ollama_document.py` and `ollama_ocr.py` — Ollama discovery, layout regions,
    prompts, and crop recognition.
-6. `paperplane/contracts.py` and `ade_contracts.py` — internal and public contracts.
-7. `paperplane/ade_workflows.py` — cited workflows.
-8. `paperplane/jobs.py` — durable lifecycle.
-9. `paperplane/outputs.py` — sanitized HTML and safe batch archive assembly.
-10. `document_intelligence.py`, `calibration.py`, `benchmark.py` — semantic and evaluation
+7. `paperplane/contracts.py` and `ade_contracts.py` — internal and public contracts.
+8. `paperplane/ade_workflows.py` — cited workflows.
+9. `paperplane/jobs.py` — durable lifecycle.
+10. `paperplane/outputs.py` — sanitized HTML and safe batch archive assembly.
+11. `document_intelligence.py`, `calibration.py`, `benchmark.py` — semantic and evaluation
    layers.
 
 ## 7. Verify

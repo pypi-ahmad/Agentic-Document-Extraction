@@ -10,11 +10,14 @@ context-aware Markdown, grounded evidence, cited organization results, and durab
 Double-click `Paperplane.cmd`, or run:
 
 ```powershell
+uv run --locked --extra cpu python -m paperplane.model_store --prepare
 uv run --locked --extra cpu streamlit run workspace_app.py --server.port=8551
 ```
 
-Open `http://127.0.0.1:8551` and explore Parse, Organize, Jobs, and Benchmarks.
-The launcher installs only missing or out-of-date prerequisites; later launches skip setup.
+Open `http://127.0.0.1:8551` and explore Parse, Organize, Jobs, and Cost.
+The launcher installs only missing prerequisites. Docling, RapidOCR, and PP-DocLayoutV3
+weights remain in a permanent versioned user-data store; later launches validate and reuse
+them without downloading. Ollama keeps its own model store.
 
 Parse setup stays below navigation in the sidebar. The main workspace uses one document
 selector across Input preview, Output, Annotated PDF, Markdown, HTML, and JSON.
@@ -50,6 +53,10 @@ guide later selected AI pages. Pages outside the chosen range are never inspecte
 `document_intelligence.py` records conservative section, repeated-label, continued-table,
 and selection-boundary relationships.
 
+Input preview follows the selected PDF range and Annotated PDF preview follows the
+successfully parsed range. A live percentage reports completed documents, pages, and output
+stages; finished failures still count so a completed batch reaches 100%.
+
 ## Workflow lesson
 
 Organize provides cited Classify, Split, and Section results, including explicit
@@ -69,6 +76,10 @@ does not duplicate original uploads. `paperplane/outputs.py` owns this boundary.
 are discoverable, and users can cancel state or delete retained data. There is no HTTP API
 in v5.
 
+Cost keeps provider-reported input, cached-input, and output tokens by model for the current
+browser session. Local and free models remain visible at $0 API cost. New parse preserves
+the ledger; Stop and clear, restart, or session end resets it.
+
 ## Confidence and benchmark lesson
 
 Raw confidence is not calibrated confidence. A calibration profile must match engine,
@@ -81,11 +92,12 @@ score or claim parity.
 1. `workspace_app.py` and `app_pages/`
 2. `paperplane/runtime.py`
 3. `paperplane/parser.py`
-4. `paperplane/contracts.py` and `ade_contracts.py`
-5. `paperplane/ade_workflows.py`
-6. `paperplane/jobs.py`
-7. `document_intelligence.py`, `calibration.py`, `benchmark.py`
-8. tests matching each module
+4. `paperplane/model_store.py`
+5. `paperplane/contracts.py` and `ade_contracts.py`
+6. `paperplane/ade_workflows.py`
+7. `paperplane/jobs.py`
+8. `document_intelligence.py`, `calibration.py`, `benchmark.py`
+9. tests matching each module
 
 ## Verification
 

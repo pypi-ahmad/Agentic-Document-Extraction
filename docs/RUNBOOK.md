@@ -25,8 +25,11 @@ layout model:
 
 ```powershell
 uv run --locked --extra cpu python -m paperplane.ollama_ocr --check
-uv run --locked --extra cpu python -m paperplane.ollama_ocr --download
+uv run --locked --extra cpu python -m paperplane.model_store --prepare
 ```
+
+The repair command validates the complete permanent model set and downloads only missing or
+incomplete pinned files. It does not modify models managed by Ollama.
 
 Use `--extra cu130` instead of `--extra cpu` when that is the synchronized environment.
 

@@ -8,6 +8,9 @@ days.
 ```mermaid
 flowchart LR
   Browser --> Navigation[Streamlit navigation]
+  Launcher --> ModelStore[versioned permanent weights]
+  ModelStore --> Docling
+  ModelStore --> Layout
   Navigation --> Parse
   Navigation --> Organize
   Navigation --> Jobs
@@ -35,6 +38,9 @@ flowchart LR
 ## Boundaries
 
 - `workspace_app.py` owns navigation; `streamlit_app.py` is the Parse page.
+- `model_store.py` owns pinned Docling, RapidOCR, and PP-DocLayoutV3 weights outside the
+  checkout and virtual environment. Launchers migrate existing caches, validate manifest
+  paths and sizes, and repair only incomplete sets; Ollama storage remains separate.
 - `runtime.py` composes providers and processes files concurrently; files never share
   context. Optional progress events identify document start, finalized pages, and document
   completion without coupling the runtime to Streamlit.

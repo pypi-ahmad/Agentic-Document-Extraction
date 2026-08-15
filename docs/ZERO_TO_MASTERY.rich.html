@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="author" content="Ahmad">
-  <meta name="description" content="A code-grounded tutorial for mastering Paperplane v5.2.0">
+  <meta name="description" content="A code-grounded tutorial for mastering Paperplane v5.3.0">
   <title>Paperplane Zero to Mastery</title>
   <style>
 @page {
@@ -142,8 +142,13 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 1.2em 0; }
 installs only missing or out-of-date supported prerequisites and opens the multipage
 Streamlit app at <code>http://127.0.0.1:8551</code>. Once ready, later launches skip setup. Manual
 entrypoint:</p>
-<pre><code class="language-powershell">uv run --locked --extra cpu streamlit run workspace_app.py --server.port=8551
+<pre><code class="language-powershell">uv run --locked --extra cpu python -m paperplane.model_store --prepare
+uv run --locked --extra cpu streamlit run workspace_app.py --server.port=8551
 </code></pre>
+<p>The model command migrates existing Docling, RapidOCR, and PP-DocLayoutV3 caches when
+possible, then keeps the pinned set outside the checkout and virtual environment. Later
+launches reuse healthy weights offline after a manifest and size check. Ollama models stay
+in Ollama's separate store.</p>
 <h2 id="2-parse">2. Parse</h2>
 <p>All four engine toggles start off. Choose Docling ADE, PDF Inspector ADE, Cloud AI ADE, or
 Ollama ADE. Optionally add cloud enhancement to a local engine. Upload up to 20 files,
@@ -202,6 +207,7 @@ the project.</p>
 <li><code>streamlit_app.py</code> and <code>app_pages/</code> — UI flows, retained session state, and Cost.</li>
 <li><code>paperplane/runtime.py</code> — batch/provider composition.</li>
 <li><code>paperplane/parser.py</code> — range and page orchestration.</li>
+<li><code>paperplane/model_store.py</code> — permanent versioned Docling/RapidOCR/layout weights.</li>
 <li><code>paperplane/ollama_document.py</code> and <code>ollama_ocr.py</code> — Ollama discovery, layout regions,
    prompts, and crop recognition.</li>
 <li><code>paperplane/contracts.py</code> and <code>ade_contracts.py</code> — internal and public contracts.</li>

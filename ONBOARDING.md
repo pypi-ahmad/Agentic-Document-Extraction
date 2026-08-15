@@ -13,12 +13,15 @@ the data and credentials used on their own machines.
 
 ```powershell
 uv sync --locked --extra cpu --extra test --extra lint --extra docs
+uv run --locked --extra cpu python -m paperplane.model_store --prepare
 uv run --extra cpu streamlit run workspace_app.py --server.port=8551
 ```
 
 Windows users can double-click `Paperplane.cmd`. On the first run it installs any missing
-uv, Python 3.12.10, LibreOffice, CPU/CUDA dependencies, and Docling/RapidOCR models. Later
-runs verify the locked environment and model files, then launch directly on port 8551.
+uv, Python 3.12.10, LibreOffice, CPU/CUDA dependencies, and the permanent versioned
+Docling/RapidOCR/PP-DocLayoutV3 model set. Later runs verify the locked environment,
+manifest, and file sizes, then launch directly on port 8551. Ollama manages its own models
+separately.
 
 Credentials come from Windows user/process variables, ignored `.env`, or Streamlit
 secrets. `OLLAMA_BASE_URL` defaults to `http://127.0.0.1:11434`. Never log or commit keys.
@@ -45,9 +48,10 @@ missing. Local workflows return warnings/partials instead of silently calling cl
 |---|---|
 | `workspace_app.py` | Multipage navigation |
 | `streamlit_app.py` | Parse page |
-| `app_pages/` | Organize, Jobs, Benchmarks |
+| `app_pages/` | Organize, Jobs, Cost |
 | `paperplane/runtime.py` | Concurrent batch/provider composition |
 | `paperplane/parser.py` | Page-range and cross-page orchestration |
+| `paperplane/model_store.py` | Permanent versioned local model weights |
 | `paperplane/ade_contracts.py` | Engine options and public exports |
 | `paperplane/ade_workflows.py` | Classify/Split/Section |
 | `paperplane/jobs.py` | SQLite lifecycle/checkpoints/artifacts |

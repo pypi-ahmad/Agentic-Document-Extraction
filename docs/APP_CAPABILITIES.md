@@ -32,7 +32,10 @@ cited downstream data.
   system and wheel-bundled cuDNN libraries. Launcher sync preserves optional developer tools.
 - Docling cloud enhancement describes detected figure crops with the selected provider and
   counts their tokens. Plain Docling uses a local figure placeholder without a failure warning.
-- Idempotent one-file setup and launch on Windows and Linux.
+- Idempotent one-file setup and launch on Windows and Linux. Required Docling, RapidOCR,
+  and PP-DocLayoutV3 weights live in a permanent versioned user-data store, migrate from
+  existing caches when possible, and are reused offline after manifest and size validation.
+  Ollama continues to manage its own models.
 
 ## Evidence and contracts
 

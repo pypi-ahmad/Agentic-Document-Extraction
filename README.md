@@ -11,6 +11,8 @@ into context-aware Markdown, grounded JSON, cited organization results, and anno
 
 Repository: [github.com/pypi-ahmad/Agentic-Document-Extraction](https://github.com/pypi-ahmad/Agentic-Document-Extraction)
 
+Current stable release: [Paperplane v5.3.0](https://github.com/pypi-ahmad/Agentic-Document-Extraction/releases/tag/v5.3.0)
+
 Paperplane 5 is inspired by LandingAI ADE's observable Parse workflow and evidence model. It is
 an independent implementation: it does not call LandingAI, promise API drop-in
 compatibility, or claim LandingAI accuracy parity.
@@ -41,8 +43,9 @@ the project.
 
 ## Features
 
-- Upload up to 20 files and process up to six concurrently, with an independent one-based
-  page range for every file.
+- Upload up to 20 files and 1 GiB per batch, process up to six files concurrently, and use
+  an independent one-based page range for every file. Each file may contain up to 500 pages
+  and occupy up to 200 MiB.
 - Follow a live batch progress bar with the current document, page or output stage, and a
   monotonic completion percentage that reaches 100% even when a document fails.
 - Choose exactly one engine: **Docling ADE**, **PDF Inspector ADE**, **Cloud AI ADE**, or
@@ -126,8 +129,9 @@ output contract.
 
 The Cloud AI selector contains Grok 4.6, GPT-5.6 Luna, Gemini 3.5 Flash-Lite, Gemini 3.7
 Flash, Claude Sonnet 5, and Agnes 2.5 Flash. Each provider uses its native API boundary and
-only its corresponding environment variable. The UI records provider-reported input and
-output tokens and shows a configured cost estimate; that estimate is not an invoice.
+only its corresponding environment variable. GPT-5.6 Luna is selected by default. The UI
+records provider-reported input and output tokens and shows a configured cost estimate;
+that estimate is not an invoice.
 
 Agnes visual Parse and enhancement use inline PNG data URLs. Uploaded images do not need
 to be published at a public URL. Paperplane requests schema tool calls from Agnes and also
@@ -281,6 +285,7 @@ Agentic-Document-Extraction/
 │   ├── ade_contracts.py         # ADE v2 + Paperplane v5 exports and engine options
 │   ├── ade_workflows.py         # Classify, Split, Section
 │   ├── jobs.py                  # SQLite job lifecycle and artifact retention
+│   ├── model_store.py           # Permanent versioned Docling/RapidOCR/layout weights
 │   ├── ollama_document.py       # Ollama discovery, vision, and cloud chaining
 │   ├── ollama_ocr.py            # Local layout detection and OCR-family prompts
 │   ├── document_intelligence.py # Cross-page semantic relationships
@@ -310,8 +315,11 @@ Agentic-Document-Extraction/
 
 The launcher installs uv, Python 3.12.10, LibreOffice, locked CPU/CUDA dependencies, and
 the required Docling, RapidOCR, and PP-DocLayoutV3 weights. Existing caches are migrated
-without a download. The weights then remain in the versioned Paperplane model store and
-each launch performs a fast manifest/size check before starting on port `8551`.
+without a network download. The weights then remain in the versioned Paperplane model
+store. Each launch verifies every manifest path and file size before starting on port
+`8551`; SHA-256 hashes are calculated when migration or download finalizes a model set, or
+when a missing manifest is rebuilt. A healthy pinned set is reused offline, while missing
+or incomplete files are repaired or downloaded.
 
 ### Linux one-file setup
 
