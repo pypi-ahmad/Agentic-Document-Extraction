@@ -58,6 +58,9 @@ _test_uploads/
 node_modules/
 .next/
 out/
+
+# Local tool caches
+/.ua/
 frontend/.next/
 frontend/node_modules/
 .playwright-cli/
