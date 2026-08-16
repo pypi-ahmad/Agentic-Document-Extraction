@@ -31,9 +31,10 @@ Paperplane validates structure and evidence independently of model fluency.
 ## Confidence
 
 Raw confidence may combine OCR score, engine agreement, geometric alignment, and contract
-validation. A value is labeled **calibrated** only when engine, model, version, and the
-checked-in calibration corpus hash match. Arbitrary Ollama models show raw uncalibrated
-confidence and an empty calibrated value.
+validation. `paperplane/calibration.py` implements calibration matching on engine, model,
+version, and a checked-in corpus hash, but no calibration profile ships with Paperplane and
+the parse/export pipeline does not call it yet. Every result — including arbitrary Ollama
+models — reports raw, uncalibrated confidence today.
 
 ## Benchmark policy
 

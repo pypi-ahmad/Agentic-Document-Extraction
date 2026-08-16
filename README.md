@@ -17,6 +17,46 @@ Paperplane 5 is inspired by LandingAI ADE's observable Parse workflow and eviden
 an independent implementation: it does not call LandingAI, promise API drop-in
 compatibility, or claim LandingAI accuracy parity.
 
+## What is Paperplane?
+
+Paperplane turns PDFs, images, scans, and modern Office files (DOCX, PPTX, XLSX, and their
+OpenDocument equivalents) into structured, evidence-backed output: reading-order Markdown, an
+annotated PDF, and two JSON flavors — an ADE v2-style export and a richer `paperplane.parse.v5`
+export with full provenance. Every emitted block carries grounding back to the source page and
+text range wherever that evidence exists, instead of silently guessing.
+
+You explicitly pick exactly one processing engine per run — **Docling ADE** (local layout, table,
+and OCR), **PDF Inspector ADE** (local PDF-only inspection), **Cloud AI ADE** (a selected
+multimodal provider), or **Ollama ADE** (a locally installed vision model) — with optional cloud
+enhancement layered on top of a local engine. Nothing is auto-routed or silently escalated to the
+cloud. Everything runs on your own machine (`127.0.0.1:8551`), keeps uploads and results
+session-only in the browser, and uses only the API keys and credentials you supply. See
+[Disclaimer and User Responsibility](DISCLAIMER.md) for what that means in practice.
+
+Downstream, the **Organize** page runs deterministic, citation-grounded Classify, Split, and
+Section workflows directly on a completed Parse result — no second model call, no re-inference.
+
+## Contents
+
+- [What is Paperplane?](#what-is-paperplane)
+- [Open source and user responsibility](#open-source-and-user-responsibility)
+- [Features](#features)
+- [Feature guide](#feature-guide)
+- [Workspace pages](#workspace-pages)
+- [Supported inputs](#supported-inputs)
+- [Outputs and contracts](#outputs-and-contracts)
+- [Tech stack](#tech-stack)
+- [Project structure](#project-structure)
+- [Setup](#setup)
+- [Environment variables](#environment-variables)
+- [Usage](#usage)
+- [High-level architecture](#high-level-architecture)
+- [Quality and benchmarks](#quality-and-benchmarks)
+- [Development](#development)
+- [Documentation](#documentation)
+- [License](#license)
+- [Acknowledgements](#acknowledgements)
+
 ## Open source and user responsibility
 
 Paperplane is MIT-licensed software intended to run on your own machine. Cloning, forking,
@@ -228,9 +268,10 @@ session removes it.
 Version-pinned benchmark manifests, document hashes, metrics, and result bundles remain
 available in the checked-in benchmark workflow without a dedicated workspace page.
 
-Confidence remains explicitly raw and uncalibrated unless the engine, model, recipe
-version, and corpus hash match a checked-in calibration profile. The initial corpus is too
-small for a comparative accuracy claim, and Paperplane does not inherit LandingAI scores.
+Confidence calibration logic exists in `paperplane/calibration.py`, but no calibration profile
+ships with Paperplane and the parse/export pipeline does not yet call it. Every result reports
+raw, uncalibrated confidence today. The initial corpus is too small for a comparative accuracy
+claim, and Paperplane does not inherit LandingAI scores.
 
 ## Workspace pages
 
@@ -460,10 +501,59 @@ uv run pytest -q
 
 ## Documentation
 
-- [Setup](docs/SETUP.md) · [Run guide](docs/RUN_APP.md) · [Architecture](docs/ARCHITECTURE.md)
-- [Engines](docs/ENGINES.md) · [Models](docs/MODELS.md) · [Quality](docs/QUALITY.md)
-- [Limitations](docs/LIMITATIONS.md) · [Runbook](docs/RUNBOOK.md)
-- [Contributor onboarding](ONBOARDING.md) · [Release process](RELEASE.md)
+### Getting started
+
+- [Setup](docs/SETUP.md) · [Run guide](docs/RUN_APP.md) · [Deployment](docs/DEPLOYMENT.md)
+- [Migration from 4.2 to 5.0](docs/MIGRATION_GUIDE.md) · [FAQ](docs/FAQ.md)
+- [Zero to mastery walkthrough](docs/ZERO_TO_MASTERY.md)
+
+### Concepts and architecture
+
+- [Architecture overview](docs/ARCHITECTURE.md) · [How Paperplane works](docs/how-it-works.md)
+- [Codebase deep dive](docs/CODEBASE_DEEP_DIVE.md) — cited, file-and-line architecture reference
+- [Engines](docs/ENGINES.md) · [Models](docs/MODELS.md) · [Capabilities](docs/APP_CAPABILITIES.md)
+- [Quality and benchmarks](docs/QUALITY.md) · [Limitations](docs/LIMITATIONS.md)
+- [Architecture decision records](docs/adr/)
+
+### Tutorials
+
+Learning-oriented walkthroughs for a specific outcome:
+
+- [Add a cloud AI provider](docs/tutorials/add-a-provider.md)
+- [Organize a document (Classify → Split → Section)](docs/tutorials/organize-a-document.md)
+- [Read the JSON output](docs/tutorials/read-the-json-output.md)
+
+### How-to guides
+
+Problem-oriented recipes:
+
+- [Extend an existing provider](docs/how-to/extend-a-provider.md)
+- [Tune Classify class definitions](docs/how-to/tune-classify-classes.md)
+- [Extract grounding and confidence](docs/how-to/extract-grounding-and-confidence.md)
+
+### Reference
+
+Field-by-field, cited to source:
+
+- [Provider contract](docs/reference/provider-contract.md)
+- [Organize workflow schemas](docs/reference/organize-schemas.md)
+- [ADE v2 / v5 JSON schema](docs/reference/ade-json-schema.md)
+
+### Explanation
+
+Why the system is shaped the way it is:
+
+- [Why explicit, non-auto-routed providers](docs/explanation/why-explicit-providers.md)
+- [Why Organize is deterministic](docs/explanation/why-organize-is-deterministic.md)
+- [Why two JSON contracts](docs/explanation/why-two-json-contracts.md)
+
+### Operations and project
+
+- [Runbook](docs/RUNBOOK.md) · [Development setup](docs/DEVELOPMENT.md)
+- [Contributing](CONTRIBUTING.md) · [Contributor onboarding](ONBOARDING.md)
+- [Release process](RELEASE.md) · [Release notes](docs/RELEASE_NOTES.md) · [Changelog](CHANGELOG.md)
+- [Security](SECURITY.md) · [Support](SUPPORT.md) · [Disclaimer](DISCLAIMER.md)
+- [Code of conduct](CODE_OF_CONDUCT.md)
 
 ## License
 
