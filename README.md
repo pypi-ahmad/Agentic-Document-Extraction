@@ -30,8 +30,12 @@ and OCR), **PDF Inspector ADE** (local PDF-only inspection), **Cloud AI ADE** (a
 multimodal provider), or **Ollama ADE** (a locally installed vision model) — with optional cloud
 enhancement layered on top of a local engine. Nothing is auto-routed or silently escalated to the
 cloud. Everything runs on your own machine (`127.0.0.1:8551`), keeps uploads and results
-session-only in the browser, and uses only the API keys and credentials you supply. See
-[Disclaimer and User Responsibility](DISCLAIMER.md) for what that means in practice.
+session-only in the browser, and uses only the API keys and credentials you supply.
+
+> [!IMPORTANT]
+> Cloud AI and cloud enhancement send selected page content to the provider you choose.
+> You are responsible for the documents you process and for that provider's terms and data
+> practices. See [Disclaimer and User Responsibility](DISCLAIMER.md) for the full terms.
 
 Downstream, the **Organize** page runs deterministic, citation-grounded Classify, Split, and
 Section workflows directly on a completed Parse result — no second model call, no re-inference.
@@ -54,7 +58,6 @@ Section workflows directly on a completed Parse result — no second model call,
 - [Quality and benchmarks](#quality-and-benchmarks)
 - [Development](#development)
 - [Documentation](#documentation)
-- [License](#license)
 - [Acknowledgements](#acknowledgements)
 
 ## Open source and user responsibility
@@ -66,8 +69,11 @@ the [Code of Conduct](CODE_OF_CONDUCT.md) before opening a pull request.
 Testers and users can [report bugs](https://github.com/pypi-ahmad/Agentic-Document-Extraction/issues/new?template=bug_report.yml),
 [request features](https://github.com/pypi-ahmad/Agentic-Document-Extraction/issues/new?template=feature_request.yml),
 or support the project by starring, sharing, testing, and contributing.
-Paperplane does not accept donations, sponsorships, or any other financial support — the
-project is free and community-driven, and it stays that way.
+
+> [!NOTE]
+> Paperplane does not accept donations, sponsorships, or any other financial support — the
+> project is free and community-driven, and it stays that way.
+
 See [Support](SUPPORT.md), [Security](SECURITY.md), and the canonical
 [Disclaimer and User Responsibility](DISCLAIMER.md).
 
@@ -553,12 +559,7 @@ Why the system is shaped the way it is:
 - [Contributing](CONTRIBUTING.md) · [Contributor onboarding](ONBOARDING.md)
 - [Release process](RELEASE.md) · [Release notes](docs/RELEASE_NOTES.md) · [Changelog](CHANGELOG.md)
 - [Security](SECURITY.md) · [Support](SUPPORT.md) · [Disclaimer](DISCLAIMER.md)
-- [Code of conduct](CODE_OF_CONDUCT.md)
-
-## License
-
-[MIT](LICENSE). You may use, copy, modify, and redistribute Paperplane under its terms.
-Contributions are accepted under the same license.
+- [Code of conduct](CODE_OF_CONDUCT.md) · [License](LICENSE)
 
 ## Acknowledgements
 
