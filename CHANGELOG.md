@@ -13,6 +13,9 @@ and this project aims to follow [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
+## [5.3.1] - 2026-08-17
+
+Documentation corrections: expanded README overview and index, corrected calibration claims, added codebase deep dive and Diataxis guides, refreshed the code knowledge graph.
 ## [5.3.0] - 2026-08-15
 
 ### Added
