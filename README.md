@@ -26,6 +26,8 @@ the [Code of Conduct](CODE_OF_CONDUCT.md) before opening a pull request.
 Testers and users can [report bugs](https://github.com/pypi-ahmad/Agentic-Document-Extraction/issues/new?template=bug_report.yml),
 [request features](https://github.com/pypi-ahmad/Agentic-Document-Extraction/issues/new?template=feature_request.yml),
 or support the project by starring, sharing, testing, and contributing.
+Paperplane does not accept donations, sponsorships, or any other financial support — the
+project is free and community-driven, and it stays that way.
 See [Support](SUPPORT.md), [Security](SECURITY.md), and the canonical
 [Disclaimer and User Responsibility](DISCLAIMER.md).
 
