@@ -92,7 +92,7 @@ requires-dist = [
     { name = "pytest-asyncio", marker = "extra == 'test'", specifier = ">=0.24.0" },
     { name = "pytest-cov", marker = "extra == 'test'", specifier = ">=5.0" },
     { name = "python-dotenv", specifier = ">=1.1,<2" },
-    { name = "reportlab", marker = "extra == 'docs'", specifier = ">=4.4,<5" },
+    { name = "reportlab", marker = "extra == 'docs'", specifier = ">=4.4,<6" },
     { name = "ruff", marker = "extra == 'lint'", specifier = ">=0.6.0" },
     { name = "streamlit", extras = ["pdf"], specifier = ">=1.61.1,<2" },
     { name = "torch", marker = "extra == 'cpu'", specifier = ">=2.11", index = "https://download.pytorch.org/whl/cpu", conflict = { package = "agentic-document-extraction", extra = "cpu" } },
