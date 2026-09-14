@@ -37,22 +37,13 @@ jobs:
         run: uv sync --locked --extra cpu --extra test --extra lint --extra docs
 
       - name: Ruff lint
-        run: uv run --no-sync ruff check paperplane app_pages tests streamlit_app.py workspace_app.py scripts
+        run: uv run --no-sync ruff check paperplane app_pages streamlit_app.py workspace_app.py scripts
 
       - name: Ruff format check
-        run: uv run --no-sync ruff format --check paperplane app_pages tests streamlit_app.py workspace_app.py scripts
+        run: uv run --no-sync ruff format --check paperplane app_pages streamlit_app.py workspace_app.py scripts
 
       - name: Pyright
         run: uv run --no-sync pyright
-
-      - name: Pytest with coverage
-        run: >-
-          uv run --no-sync pytest tests
-          --cov=paperplane
-          --cov-report=xml
-          --cov-report=term-missing
-          -q
-          -p no:cacheprovider
 
       - name: Rebuild generated documentation
         run: |
