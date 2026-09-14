@@ -40,8 +40,14 @@ logger = logging.getLogger("paperplane.runtime")
 
 @lru_cache(maxsize=2)
 def get_docling_parser(device: str = "auto") -> DoclingDocumentParser:
-    """Reuse Docling's heavyweight converter and loaded models across Streamlit reruns."""
+    """Reuse Docling's heavyweight converter and loaded models across Streamlit reruns.
 
+    maxsize=2 covers the two distinct call sites: device="auto" (default) and
+    device="cpu" (explicit). More than two entries is not expected.
+
+    When CUDA is available, a CPU fallback converter is created first so that a
+    GPU OOM during parsing can retry on CPU without reloading model weights from disk.
+    """
     fallback = None
     if device == "auto":
         try:
@@ -188,6 +194,7 @@ async def parse_documents(
         try:
             progress_callback(event)
         except Exception:
+            # A UI callback (e.g. Streamlit widget update) must not abort the whole batch.
             logger.exception("Batch progress callback failed")
 
     async def run(request: BatchParseRequest) -> BatchParseOutcome:

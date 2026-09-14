@@ -52,6 +52,7 @@ class JobStore:
 
     def _initialize(self) -> None:
         with self._connect() as connection:
+            # WAL allows the Streamlit UI (reader) to query while a parse result is being written.
             connection.execute("PRAGMA journal_mode=WAL")
             connection.execute(
                 """

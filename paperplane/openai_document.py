@@ -18,6 +18,8 @@ from pydantic import BaseModel, Field
 logger = logging.getLogger("paperplane.openai_document")
 
 AuditSink = Callable[[dict[str, Any]], None]
+# ContextVar isolates the audit sink per async task, not per thread, so concurrent
+# document parses running in the same event loop each capture their own calls.
 _audit_sink: ContextVar[AuditSink | None] = ContextVar("openai_audit_sink", default=None)
 
 
@@ -155,6 +157,8 @@ class OpenAIDocumentAdapter:
                 }
             },
         }
+        # xAI does not support explicit prompt caching; explicit_prompt_cache=False strips
+        # the cache fields so the request is accepted by the xAI Responses endpoint.
         if self.explicit_prompt_cache:
             payload["prompt_cache_key"] = prompt_cache_key
             payload["prompt_cache_options"] = {"mode": "explicit", "ttl": "30m"}

@@ -95,6 +95,9 @@ class OllamaDocumentAdapter:
         del schema_name, reasoning_effort, detail, prompt_cache_key
         family = await self._model_family(model)
         profile = profile_for_family(family)
+        # Known OCR families (glmocr, paddleocr, deepseekocr) use region-based prompts via
+        # _generate_ocr_page instead of whole-page structured JSON, because they are not
+        # instruction-following models and do not produce a reliable schema response.
         if image is not None and profile is not None and "chunks" in schema.get("properties", {}):
             return await self._generate_ocr_page(model, image, profile)
         content = instructions
@@ -160,11 +163,12 @@ class OllamaDocumentAdapter:
         warnings: list[str] = []
         input_tokens = 0
         output_tokens = 0
-        consecutive_failures = 0
+        consecutive_failures = 0  # circuit-breaker; resets to 0 whenever a region succeeds
         for region_index, region in enumerate(regions, start=1):
             prompt = profile.prompt_for(region.label)
             chunk_type = chunk_type_for_label(region.label)
             region_area = (region.right - region.left) * (region.bottom - region.top)
+            # Area threshold (3 % of page) distinguishes large text blocks from small labels.
             max_tokens = 512 if chunk_type == "table" else 256 if region_area > 0.03 else 128
             encoded = base64.b64encode(crop_region(image, region)).decode("ascii")
             content = ""
@@ -190,6 +194,8 @@ class OllamaDocumentAdapter:
                     input_tokens += int(body.get("prompt_eval_count", 0) or 0)
                     output_tokens += int(body.get("eval_count", 0) or 0)
                 except (httpx.HTTPError, KeyError, TypeError, ValueError) as exc:
+                    # Only DeepSeek retries transient errors; other families raise immediately
+                    # because their prompts are not idempotent or they fail deterministically.
                     if profile.family != "deepseekocr" or not _retryable_ocr_error(exc):
                         raise OllamaRequestError(
                             f"Ollama OCR failed for {region.label} region {region_index}"

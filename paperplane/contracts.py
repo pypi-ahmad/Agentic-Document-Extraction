@@ -471,6 +471,9 @@ def assemble_parse_response(
             )
         )
 
+    # The doc_id trailer is an HTML comment at the end of the Markdown. It is part of
+    # the content length counted by output_characters and must not be stripped before
+    # the ParseResponse is constructed or the validator will reject the mismatch.
     append(f"\n\n<!-- doc_id={document_id} -->")
     markdown = "".join(parts)
     return ParseResponse(
