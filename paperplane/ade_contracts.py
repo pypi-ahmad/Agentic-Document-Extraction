@@ -130,6 +130,8 @@ class PaperplaneParseExport(BaseModel):
 
 
 def _box(node: StructureNode) -> ADEBox:
+    # Semantic-only nodes have no physical geometry; the full-page box is a sentinel
+    # so the ADE field is always populated, not absent or null.
     if node.box is None:
         return ADEBox(xmin=0, ymin=0, xmax=1, ymax=1)
     return ADEBox(
@@ -151,8 +153,13 @@ def to_ade_v2_parse(
     *,
     model_version: str = "paperplane-5.0.0",
 ) -> ADEParseResponse:
-    """Convert the internal grounded response to the documented ADE v2 shape."""
+    """Convert the internal grounded response to the documented ADE v2 shape.
 
+    ADE v2 uses zero-based sequential IDs ("page-0", "text-0", …), whereas the
+    internal ParseResponse uses one-based IDs ("page-1", "text-1", …). The
+    counters here are intentionally zero-based; do not change them to match the
+    internal convention.
+    """
     counters: defaultdict[str, int] = defaultdict(int)
 
     def node_id(node_type: str) -> str:

@@ -21,6 +21,8 @@ MAX_REGIONS_PER_PAGE = 256
 
 @dataclass(frozen=True, slots=True)
 class LayoutRegion:
+    """A detected page region. All coordinates are normalized to [0, 1] relative to the page."""
+
     label: str
     score: float
     left: float
@@ -87,6 +89,11 @@ _MARKDOWN_BLOCK = re.compile(r"<\|md_start\|>(.*?)<\|md_end\|>", re.DOTALL)
 
 
 def clean_ocr_output(value: str) -> str:
+    """Strip model control tokens, fences, and repeated lines from raw OCR output.
+
+    Some models emit the prompt text back at the end ("Type the text:…"); the early
+    break prevents that prompt bleed from appearing in the final document.
+    """
     blocks = [block.strip() for block in _MARKDOWN_BLOCK.findall(value) if block.strip()]
     if blocks:
         deduplicated: list[str] = []
@@ -134,6 +141,11 @@ def clean_ocr_output(value: str) -> str:
 
 
 def crop_region(image_png: bytes, region: LayoutRegion, padding: float = 0.05) -> bytes:
+    """Crop a layout region from a page PNG, with proportional padding.
+
+    ``aside_text`` regions are usually vertical text printed sideways; the 90°
+    rotation presents them left-to-right so model OCR prompts work correctly.
+    """
     with Image.open(BytesIO(image_png)) as image:
         rgb = image.convert("RGB")
         width, height = rgb.size
@@ -180,6 +192,12 @@ def deduplicate_regions(regions: list[LayoutRegion]) -> list[LayoutRegion]:
 
 
 class PPDocLayoutDetector:
+    """Singleton-safe PP-DocLayoutV3 layout detector that runs on CPU.
+
+    PP-DocLayoutV3 is intentionally kept on CPU so that the selected Ollama model
+    retains GPU VRAM. Sharing an 8 GB GPU causes offloading or OOM failures.
+    """
+
     def __init__(self) -> None:
         import torch
         from transformers import AutoImageProcessor, AutoModelForObjectDetection
@@ -190,6 +208,8 @@ class PPDocLayoutDetector:
         self._model = AutoModelForObjectDetection.from_pretrained(
             model_path, local_files_only=True
         ).eval()
+        # Torch inference is not re-entrant; detect() is called from asyncio.to_thread,
+        # which may run on any thread-pool worker, so a lock is required.
         self._lock = threading.Lock()
 
     def detect(self, image_png: bytes) -> list[LayoutRegion]:

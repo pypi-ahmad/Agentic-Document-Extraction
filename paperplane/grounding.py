@@ -48,6 +48,12 @@ def align_text_to_native_words(text: str, words: list[NativeWord]) -> BoundingBo
 
 
 def map_crop_box_to_page(crop: BoundingBox, relative: BoundingBox) -> BoundingBox:
+    """Convert a box in crop-local [0, 1] space to full-page [0, 1] space.
+
+    ``crop`` is the padded region that was sent to the model (page-relative).
+    ``relative`` is what the model returned (crop-relative). The result is
+    the model's box expressed in the original page coordinate space.
+    """
     width = crop.right - crop.left
     height = crop.bottom - crop.top
     return BoundingBox(
@@ -93,7 +99,8 @@ def render_crop(
                 page_box.bottom * height,
             )
             clip = fitz.Rect(*source_box)
-            pixmap = page.get_pixmap(matrix=fitz.Matrix(dpi / 72, dpi / 72), clip=clip, alpha=False)
+            # PDF coordinates are in points (1 pt = 1/72 inch); scale factor converts to target DPI.
+        pixmap = page.get_pixmap(matrix=fitz.Matrix(dpi / 72, dpi / 72), clip=clip, alpha=False)
             return RenderedCrop(
                 page_number=page_number,
                 image_png=pixmap.tobytes("png"),

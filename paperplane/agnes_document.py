@@ -57,6 +57,8 @@ def _structured_value(body: dict[str, Any], schema_name: str) -> dict[str, Any]:
     if not isinstance(message, dict):
         raise ValueError("Agnes response did not contain a message")
     message_data = cast(dict[str, Any], message)
+    # Agnes may return structured output via tool_calls (preferred) or as JSON in
+    # message content (fallback). Both paths are valid; tool_calls take precedence.
     tool_calls = message_data.get("tool_calls")
     if isinstance(tool_calls, list) and tool_calls:
         if not isinstance(tool_calls[0], dict):
