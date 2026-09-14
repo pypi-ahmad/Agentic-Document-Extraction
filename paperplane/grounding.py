@@ -100,7 +100,7 @@ def render_crop(
             )
             clip = fitz.Rect(*source_box)
             # PDF coordinates are in points (1 pt = 1/72 inch); scale factor converts to target DPI.
-        pixmap = page.get_pixmap(matrix=fitz.Matrix(dpi / 72, dpi / 72), clip=clip, alpha=False)
+            pixmap = page.get_pixmap(matrix=fitz.Matrix(dpi / 72, dpi / 72), clip=clip, alpha=False)
             return RenderedCrop(
                 page_number=page_number,
                 image_png=pixmap.tobytes("png"),
