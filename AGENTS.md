@@ -1,19 +1,11 @@
 <!-- code-review-graph MCP tools -->
 # Paperplane project contract
 
-Paperplane is a local, database-free Streamlit document parser. Native content uses
-Docling; scans, images, and optional figure descriptions use one AI model selected in the
-UI. The supported catalog is defined in `paperplane/model_catalog.py` and documented in
-`docs/MODELS.md`. Keep uploads and results session-only, run the app on `127.0.0.1:8551`,
-and update affected documentation with every code change.
+Paperplane = local, no-DB Streamlit doc parser. Native content use Docling; scans/images/figure descriptions use AI model picked in UI. Catalog in `paperplane/model_catalog.py`, docs in `docs/MODELS.md`. Uploads/results session-only. Run on `127.0.0.1:8551`. Update docs with every code change.
 
 ## MCP Tools: code-review-graph
 
-**IMPORTANT: This project has a knowledge graph. ALWAYS use the
-code-review-graph MCP tools BEFORE using Grep/Glob/Read to explore
-the codebase.** The graph is faster, cheaper (fewer tokens), and gives
-you structural context (callers, dependents, test coverage) that file
-scanning cannot.
+**IMPORTANT: Project has knowledge graph. ALWAYS use code-review-graph MCP tools BEFORE Grep/Glob/Read.** Graph faster, cheaper (fewer tokens), gives structural context (callers, dependents, test coverage) file scanning cannot.
 
 ### When to use graph tools FIRST
 
@@ -23,7 +15,7 @@ scanning cannot.
 - **Finding relationships**: `query_graph_tool` with callers_of/callees_of/imports_of/tests_for
 - **Architecture questions**: `get_architecture_overview_tool` + `list_communities_tool`
 
-Fall back to Grep/Glob/Read **only** when the graph doesn't cover what you need.
+Fall back to Grep/Glob/Read only when graph no cover what you need.
 
 ### Key Tools
 
@@ -40,7 +32,34 @@ Fall back to Grep/Glob/Read **only** when the graph doesn't cover what you need.
 
 ### Workflow
 
-1. The graph auto-updates on file changes (via hooks).
+1. Graph auto-updates on file changes (via hooks).
 2. Use `detect_changes_tool` for code review.
 3. Use `get_affected_flows_tool` to understand impact.
 4. Use `query_graph_tool` pattern="tests_for" to check coverage.
+
+
+<!-- SHARED-ENGINEERING-POLICY:START -->
+## Shared engineering policy
+
+- Senior engineer. Ground decisions in repo instructions, code, tests, authoritative docs.
+- Stay factual. Insufficient evidence → state what unknown, never guess. Surface consequential assumptions and competing interpretations.
+- Non-trivial work: define observable success criteria + brief `step -> check` plan. Pause only for plan-only requests, material choices, or risky/irreversible actions.
+- Small coherent increments. Verify one unit before next. Split changes before diff hard to review.
+- Minimum sufficient implementation. No speculative features, one-use abstractions, unrequested configurability, or defensive branches without evidenced failure mode.
+- Edits surgical, consistent with local style. No adjacent cleanup. Remove only artifacts made unused by current change.
+- Run narrowest relevant verification. Report what passed, what not run, remaining risk.
+- Production prompts: Role, Never Guess, Background, ordered Steps, locked Output contract. Parseable tags only when downstream tool needs them.
+- Prefer deterministic workflow when decision tree known. Agent only when ambiguity, token cost, step capability, and failure observability justify it. High-stakes hard-to-detect failures stay read-only or human-reviewed.
+- Persist correction only when user explicitly asks, using appropriate instruction file not another tool's command syntax.
+<!-- SHARED-ENGINEERING-POLICY:END -->
+
+<!-- okf:start -->
+## Open Knowledge Format v0.2
+
+Canonical governed project knowledge lives in `knowledge/index.md`.
+
+- Read the index before architecture, policy, runbook, or domain work.
+- Load only concepts relevant to the current task.
+- Warn before relying on draft, deprecated, stale, or unverified concepts.
+- Native instructions govern behavior; current source and tests govern factual conflicts.
+<!-- okf:end -->
