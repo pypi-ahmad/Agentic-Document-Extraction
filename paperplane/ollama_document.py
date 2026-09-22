@@ -23,6 +23,7 @@ from paperplane.ollama_ocr import (
     profile_for_family,
 )
 from paperplane.openai_document import OpenAIUsage, StructuredGeneration
+from paperplane.prompt_loader import load_prompt
 
 DEFAULT_OLLAMA_BASE_URL = "http://127.0.0.1:11434"
 DEEPSEEK_RETRY_DELAY_SECONDS = 0.5
@@ -223,10 +224,7 @@ class OllamaDocumentAdapter:
                 if profile.family != "deepseekocr":
                     break
                 if attempt == 1:
-                    prompt = (
-                        "Transcribe all visible text in this crop exactly. Return only the "
-                        "transcription; do not explain or add Markdown fences."
-                    )
+                    prompt = load_prompt("ollama-ocr-retry.md")
                     continue
                 exhausted = True
                 break

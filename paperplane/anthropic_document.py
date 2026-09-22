@@ -17,6 +17,7 @@ from paperplane.openai_document import (
     StructuredGeneration,
     _emit_audit,
 )
+from paperplane.prompt_loader import load_prompt
 
 logger = logging.getLogger("paperplane.anthropic_document")
 
@@ -85,7 +86,9 @@ class AnthropicDocumentAdapter:
                 }
             )
         prompt = (
-            instructions if context is None else f"{instructions}\n\nDocument context:\n{context}"
+            instructions
+            if context is None
+            else load_prompt("document-context.md", instructions=instructions, context=context)
         )
         content.append({"type": "text", "text": prompt})
         output_config: dict[str, Any] = {"format": {"type": "json_schema", "schema": schema}}

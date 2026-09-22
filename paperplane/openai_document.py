@@ -10,10 +10,12 @@ import time
 from collections.abc import Callable, Iterator
 from contextlib import contextmanager
 from contextvars import ContextVar
-from typing import Any, Literal
+from typing import Any, Literal, cast
 
 import httpx
 from pydantic import BaseModel, Field
+
+from paperplane.prompt_loader import load_prompt
 
 logger = logging.getLogger("paperplane.openai_document")
 
@@ -40,7 +42,9 @@ def _emit_audit(record: dict[str, Any]) -> None:
 
 
 class OpenAIRequestError(RuntimeError):
-    pass
+    def __init__(self, message: str, *, usage: OpenAIUsage | None = None) -> None:
+        super().__init__(message)
+        self.usage = usage or OpenAIUsage()
 
 
 class OpenAIUsage(BaseModel):
@@ -63,6 +67,36 @@ class StructuredGeneration(BaseModel):
 def _responses_url(base_url: str) -> str:
     normalized = base_url.rstrip("/")
     return f"{normalized}/responses" if normalized.endswith("/v1") else f"{normalized}/v1/responses"
+
+
+def _usage_from_body(body: dict[str, Any]) -> OpenAIUsage:
+    raw_usage = body.get("usage")
+    usage_data = cast(dict[str, Any], raw_usage) if isinstance(raw_usage, dict) else {}
+    raw_details = usage_data.get("input_tokens_details")
+    input_details = cast(dict[str, Any], raw_details) if isinstance(raw_details, dict) else {}
+    return OpenAIUsage(
+        input_tokens=usage_data.get("input_tokens") or 0,
+        output_tokens=usage_data.get("output_tokens") or 0,
+        cached_input_tokens=input_details.get("cached_tokens") or 0,
+        cache_write_tokens=input_details.get("cache_write_tokens") or 0,
+    )
+
+
+def _add_usage(left: OpenAIUsage, right: OpenAIUsage) -> OpenAIUsage:
+    return OpenAIUsage(
+        input_tokens=left.input_tokens + right.input_tokens,
+        output_tokens=left.output_tokens + right.output_tokens,
+        cached_input_tokens=left.cached_input_tokens + right.cached_input_tokens,
+        cache_write_tokens=left.cache_write_tokens + right.cache_write_tokens,
+    )
+
+
+def _incomplete_reason(body: dict[str, Any]) -> str | None:
+    details = body.get("incomplete_details")
+    if not isinstance(details, dict):
+        return None
+    reason = cast(dict[str, Any], details).get("reason")
+    return str(reason) if reason is not None else None
 
 
 class OpenAIDocumentAdapter:
@@ -167,14 +201,39 @@ class OpenAIDocumentAdapter:
         else:
             content[0].pop("prompt_cache_breakpoint", None)
         started = time.perf_counter()
+        retry_usage = OpenAIUsage()
+        content_filter_retry = False
+        first_response_id: str | None = None
         try:
-            response = await self.http.post(
-                _responses_url(self.base_url),
-                headers={"Authorization": f"Bearer {self.api_key}"},
-                json=payload,
-            )
-            response.raise_for_status()
-            body = response.json()
+
+            async def request(request_payload: dict[str, Any]) -> dict[str, Any]:
+                response = await self.http.post(
+                    _responses_url(self.base_url),
+                    headers={"Authorization": f"Bearer {self.api_key}"},
+                    json=request_payload,
+                )
+                response.raise_for_status()
+                raw_result = response.json()
+                if not isinstance(raw_result, dict):
+                    raise TypeError("Responses API body must be an object")
+                return cast(dict[str, Any], raw_result)
+
+            body = await request(payload)
+            incomplete_reason = _incomplete_reason(body)
+            if (
+                model == "gpt-6-sol"
+                and self.provider_name == "OpenAI"
+                and body.get("status") == "incomplete"
+                and incomplete_reason == "content_filter"
+            ):
+                content_filter_retry = True
+                first_response_id = body.get("id")
+                retry_usage = _usage_from_body(body)
+                retry_payload = json.loads(json.dumps(payload))
+                retry_payload["input"][0]["content"][0]["text"] = load_prompt(
+                    "content-filter-retry.md"
+                )
+                body = await request(retry_payload)
         except (httpx.HTTPError, ValueError, TypeError) as exc:
             _emit_audit(
                 {
@@ -192,13 +251,42 @@ class OpenAIDocumentAdapter:
             )
             raise OpenAIRequestError(f"{self.provider_name} document request failed") from exc
 
+        incomplete_reason = _incomplete_reason(body)
+        if body.get("status") == "incomplete":
+            error_type = f"incomplete_{incomplete_reason or 'unknown'}"
+            _emit_audit(
+                {
+                    **audit_record,
+                    "status": "error",
+                    "error_type": error_type,
+                    "content_filter_retry": content_filter_retry,
+                    "response_id": body.get("id"),
+                }
+            )
+            if incomplete_reason == "content_filter":
+                raise OpenAIRequestError(
+                    f"{self.provider_name} content filter interrupted structured output",
+                    usage=_add_usage(retry_usage, _usage_from_body(body)),
+                )
+            raise OpenAIRequestError(f"{self.provider_name} returned incomplete structured output")
+
         texts: list[str] = []
         refused = False
-        for output in body.get("output", []):
-            for content in output.get("content", []):
-                if content.get("type") == "output_text":
-                    texts.append(str(content.get("text", "")))
-                elif content.get("type") == "refusal":
+        raw_outputs = body.get("output")
+        outputs = cast(list[Any], raw_outputs) if isinstance(raw_outputs, list) else []
+        for output in outputs:
+            if not isinstance(output, dict):
+                continue
+            output_body = cast(dict[str, Any], output)
+            raw_content = output_body.get("content")
+            content_items = cast(list[Any], raw_content) if isinstance(raw_content, list) else []
+            for item in content_items:
+                if not isinstance(item, dict):
+                    continue
+                response_item = cast(dict[str, Any], item)
+                if response_item.get("type") == "output_text":
+                    texts.append(str(response_item.get("text", "")))
+                elif response_item.get("type") == "refusal":
                     refused = True
         if refused:
             _emit_audit({**audit_record, "status": "error", "error_type": "refusal"})
@@ -221,15 +309,10 @@ class OpenAIDocumentAdapter:
             raise OpenAIRequestError(
                 f"{self.provider_name} structured output must be a JSON object"
             )
+        value = cast(dict[str, Any], value)
 
-        usage_data = body.get("usage") or {}
-        input_details = usage_data.get("input_tokens_details") or {}
-        usage = OpenAIUsage(
-            input_tokens=usage_data.get("input_tokens") or 0,
-            output_tokens=usage_data.get("output_tokens") or 0,
-            cached_input_tokens=input_details.get("cached_tokens") or 0,
-            cache_write_tokens=input_details.get("cache_write_tokens") or 0,
-        )
+        usage = _add_usage(retry_usage, _usage_from_body(body))
+        warnings = ["content_filter_retry_used"] if content_filter_retry else []
         latency_ms = (time.perf_counter() - started) * 1000
         logger.info(
             "%s document request completed: model=%s effort=%s detail=%s "
@@ -250,11 +333,17 @@ class OpenAIDocumentAdapter:
                 **audit_record,
                 "status": "completed",
                 "response_id": body.get("id"),
+                "first_response_id": first_response_id,
+                "content_filter_retry": content_filter_retry,
                 "value": value,
                 "usage": usage.model_dump(),
                 "latency_ms": latency_ms,
             }
         )
         return StructuredGeneration(
-            response_id=body.get("id"), value=value, usage=usage, latency_ms=latency_ms
+            response_id=body.get("id"),
+            value=value,
+            usage=usage,
+            latency_ms=latency_ms,
+            warnings=warnings,
         )

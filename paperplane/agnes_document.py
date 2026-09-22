@@ -19,6 +19,7 @@ from paperplane.openai_document import (
     StructuredGeneration,
     _emit_audit,
 )
+from paperplane.prompt_loader import load_prompt
 
 logger = logging.getLogger("paperplane.agnes_document")
 
@@ -207,9 +208,9 @@ class AgnesDocumentAdapter:
         if not self.api_key:
             _emit_audit({**audit_record, "status": "error", "error_type": "missing_api_key"})
             raise AgnesRequestError("Agnes API key is not configured")
-        prompt_parts = [instructions, f"Call the {schema_name} function with the complete result."]
+        prompt = load_prompt("agnes-call.md", instructions=instructions, schema_name=schema_name)
         if context is not None:
-            prompt_parts.extend(["Document context:", context])
+            prompt = load_prompt("document-context.md", instructions=prompt, context=context)
         content: list[dict[str, Any]] = []
         if image is not None:
             encoded = base64.b64encode(image).decode("ascii")
@@ -219,7 +220,7 @@ class AgnesDocumentAdapter:
                     "image_url": {"url": f"data:image/png;base64,{encoded}"},
                 }
             )
-        content.append({"type": "text", "text": "\n\n".join(prompt_parts)})
+        content.append({"type": "text", "text": prompt})
         started = time.perf_counter()
         total_usage = OpenAIUsage()
         validation_feedback: str | None = None
@@ -229,9 +230,9 @@ class AgnesDocumentAdapter:
                 request_content.append(
                     {
                         "type": "text",
-                        "text": (
-                            "Previous structured response was invalid: "
-                            f"{validation_feedback}. Return corrected function arguments."
+                        "text": load_prompt(
+                            "agnes-validation-retry.md",
+                            validation_feedback=validation_feedback,
                         ),
                     }
                 )
@@ -243,7 +244,7 @@ class AgnesDocumentAdapter:
                         "type": "function",
                         "function": {
                             "name": schema_name,
-                            "description": "Return the requested structured document result.",
+                            "description": load_prompt("agnes-tool-description.md"),
                             "parameters": schema,
                         },
                     }

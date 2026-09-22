@@ -14,6 +14,7 @@ from typing import Protocol
 from PIL import Image
 
 from paperplane.model_store import ModelStore, prepare_model_store
+from paperplane.prompt_loader import load_prompt
 
 LAYOUT_THRESHOLD = 0.3
 MAX_REGIONS_PER_PAGE = 256
@@ -43,19 +44,19 @@ class OcrProfile:
         normalized = label.casefold()
         if self.family == "glmocr":
             if "table" in normalized:
-                return "Table Recognition:"
+                return load_prompt("ollama-glm-table.md")
             if "formula" in normalized:
-                return "Formula Recognition:"
+                return load_prompt("ollama-glm-formula.md")
             if normalized in {"chart", "image", "seal"}:
-                return "Figure Recognition:"
-            return "Text Recognition:"
+                return load_prompt("ollama-glm-figure.md")
+            return load_prompt("ollama-glm-text.md")
         if self.family == "deepseekocr":
             if normalized in {"chart", "image", "seal"}:
-                return "Parse the figure."
+                return load_prompt("ollama-deepseek-figure.md")
             if "table" in normalized or "formula" in normalized:
-                return "<|grounding|>Convert the document to markdown."
-            return "Free OCR."
-        return "OCR:"
+                return load_prompt("ollama-deepseek-document.md")
+            return load_prompt("ollama-deepseek-text.md")
+        return load_prompt("ollama-generic.md")
 
 
 def profile_for_family(family: str | None) -> OcrProfile | None:
