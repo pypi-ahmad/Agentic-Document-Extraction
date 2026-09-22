@@ -44,6 +44,9 @@ All model-facing prompts are Markdown files in `paperplane/prompts/`. Python cod
 files and supplies only runtime values such as document context, quality findings, and candidate
 text. Update the Markdown source when changing extraction behavior; do not embed prompts in code.
 
+Table cells remain separate grounded child chunks in structured output. Page Markdown renders the
+parent HTML table and omits its child-cell Markdown, so each value appears once.
+
 ## Ollama models
 
 `OLLAMA_BASE_URL` defaults to `http://127.0.0.1:11434`. Paperplane queries `/api/tags` and

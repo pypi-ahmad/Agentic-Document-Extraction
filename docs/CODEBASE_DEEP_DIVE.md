@@ -449,7 +449,9 @@ runs a multi-stage pipeline per page:
    (`_merge_reconciled_chunks`), duplicate chunks are suppressed
    (`suppress_duplicate_chunks`), and `parent_order` pointers are remapped to the new
    sequence, dropping any parent reference that would point forward or to a removed chunk
-   ([`paperplane/pipeline.py:330-349`](../paperplane/pipeline.py)).
+   ([`paperplane/pipeline.py:330-349`](../paperplane/pipeline.py)). Grounded table cells stay
+   in the structured result, while page Markdown renders their parent HTML table once
+   ([`paperplane/pipeline.py:1024-1040`](../paperplane/pipeline.py)).
 
 ```mermaid
 flowchart TD
