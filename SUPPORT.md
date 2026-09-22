@@ -1,8 +1,8 @@
 # Support
 
-Paperplane is a free, community-driven, open-source project. Support is best-effort; there
-is no paid support service or guaranteed response time. Thanks for trying it out — bug
-reports, feature ideas, and pull requests are genuinely welcome.
+Paperplane is a free, community-driven, open-source project. Support is best effort, with no
+paid service or guaranteed response time. Bug reports, feature ideas, and pull requests are
+welcome.
 
 ## No donations, please
 

@@ -1,8 +1,7 @@
 # Tutorial: organize a document
 
-This tutorial walks through the full **Organize** workflow — Classify, then Split, then
-Section — on a document you have already parsed. By the end you will have downloaded a
-`sections.json` file and understand what each Organize tab produced and why.
+This tutorial covers the **Organize** workflow: Classify, Split, and Section, using a document
+you have already parsed. It produces a `sections.json` file and explains each Organize tab.
 
 Organize never re-parses your file. It only reads the Markdown, structure, and grounding
 already produced by Parse, so everything you do here is fast, local, and repeatable.
@@ -10,8 +9,8 @@ already produced by Parse, so everything you do here is fast, local, and repeata
 ## Prerequisites
 
 - Paperplane running at [http://127.0.0.1:8551](http://127.0.0.1:8551).
-- At least one document already parsed on the **Parse** page. Any engine works — Organize
-  only needs the resulting Markdown and structure, not the original file.
+- At least one document already parsed on the **Parse** page. Any engine works. Organize only
+  needs the resulting Markdown and structure, not the original file.
 
 If you have not parsed anything yet, do that first: open **Parse**, activate one engine,
 upload a document (the bundled `Sample-PDF/` works), and select **Parse files**.
@@ -22,8 +21,8 @@ upload a document (the bundled `Sample-PDF/` works), and select **Parse files**.
 2. Use the **Parsed document** selector at the top to choose the document you parsed
    earlier. Organize lists every document from your current session that finished parsing.
 
-If nothing appears here, Organize shows "Parse at least one document first" and stops —
-go back to Parse.
+If nothing appears, Organize shows "Parse at least one document first" and stops. Go back to
+Parse.
 
 ## Step 2: classify pages
 
@@ -64,8 +63,8 @@ classification warnings from Step 2 carry over into the split result's `warnings
 
 ## Step 4: detect sections
 
-The **Section** tab does not use your class list at all — it looks for a heading-like block
-at the start of each page.
+The **Section** tab looks for a heading-like block at the start of each page. It does not use
+your class list.
 
 1. Select **Detect sections**.
 2. Read the JSON result. Each entry under `sections` has a `title`, a `section_number`, the
@@ -84,8 +83,8 @@ it as the section title and adds a warning noting that the result is a partial
 - A downloaded `sections.json` file listing every detected section with its grounded start
   reference.
 
-Every result you produced traces back to specific page and character ranges in your
-original Parse output — nothing here was re-inferred by a model. See
+Every result traces back to specific page and character ranges in the original Parse output.
+Organize does not re-infer it with a model. See
 [why Organize is deterministic](../explanation/why-organize-is-deterministic.md) for the
 reasoning behind that design, or [the schema reference](../reference/organize-schemas.md)
 for the exact shape of every field you just saw.

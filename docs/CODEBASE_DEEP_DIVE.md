@@ -200,8 +200,11 @@ migration already in progress, not a dependency risk.
   `scripts/build_app_guide.py`) and fails the build on any diff — generated docs must be
   committed in sync with the code that produces them
   ([`.github/workflows/ci.yml:57-61`](../.github/workflows/ci.yml)).
-- The Windows launcher actively **kills a previous Paperplane launcher tree** and anything
-  bound to port 8551 before starting, to avoid `.venv` DLL locks during dependency repair
+- The Windows launcher clears a previous Paperplane launcher tree and its port-8551 listener,
+  then waits up to five seconds for Windows to release the port before starting. This avoids
+  `.venv` DLL locks during dependency repair
+- Model downloads use the Windows certificate store, so a corporate root certificate trusted by
+  Windows is also trusted when Docling retrieves its weights.
   ([`Paperplane.cmd:15`](../Paperplane.cmd)).
 - `uv sync` for this project is **inexact** by design — the docs explicitly note that
   separately installed `test`/`lint`/`docs` extras are not removed by a plain sync
@@ -301,11 +304,10 @@ sequenceDiagram
   `ade_contracts.py` (public ADE v2 + Paperplane v5 export) →
   `document_intelligence.py` (relation inference over the exported structure)
   ([`paperplane/ade_contracts.py:10-11`](../paperplane/ade_contracts.py)).
-- **`EngineOptions` enforces "exactly one engine" at the model layer**, not just in the UI —
-  a Pydantic validator rejects more than one enabled engine, and rejects combining Cloud AI
-  with cloud enhancement (redundant) ([`paperplane/ade_contracts.py:25-31`](../paperplane/ade_contracts.py)).
-  This means the "one explicit engine" rule from `CLAUDE.md` is structurally enforced, not
-  just a UI convention.
+- **`EngineOptions` enforces "exactly one engine" at the model layer.** A Pydantic validator
+  rejects more than one enabled engine and rejects combining Cloud AI with cloud enhancement
+  ([`paperplane/ade_contracts.py:25-31`](../paperplane/ade_contracts.py)). The rule from
+  `CLAUDE.md` is enforced by the model rather than only by the UI.
 - **Files never share context; pages within one file may.** `parser.py` is cited in
   `docs/ARCHITECTURE.md:53-54` as applying page ranges and allowing only *previous selected
   pages* to inform later pages — a one-directional, intra-file-only context window.
@@ -320,7 +322,7 @@ sequenceDiagram
 | Logging | Standard `logging` module, e.g. `logging.getLogger("paperplane.runtime")` | [`paperplane/runtime.py:38`](../paperplane/runtime.py) |
 | Error isolation | Per-file try/except in batch runtime; one file's failure does not abort the batch | [`paperplane/runtime.py:223-235`](../paperplane/runtime.py) |
 | HTML sanitization | Bleach allowlist before rendering/exporting HTML | [`docs/QUALITY.md:25-26`](QUALITY.md) |
-| Cost/usage tracking | Per-model token ledger accumulated in browser session, priced via `model_catalog.estimate_model_cost` | [`paperplane/model_catalog.py:116-138`](../paperplane/model_catalog.py) |
+| Cost/usage tracking | Per-model browser-session ledger for input, cached-read, cache-write, and output tokens; `model_catalog.estimate_model_cost` prices each configured category once | [`paperplane/model_catalog.py:121-147`](../paperplane/model_catalog.py) |
 | Confidence calibration | Profile pinned to `(engine, model, version, corpus_sha256)` tuple; anything else reports raw/uncalibrated | [`paperplane/calibration.py:45-51`](../paperplane/calibration.py) |
 
 ### Inferred ADRs

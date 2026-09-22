@@ -6,14 +6,17 @@ model and checks its live `vision` capability.
 | UI name | API model ID | Input/1M | Output/1M | Required environment variable |
 |---|---|---:|---:|---|
 | Grok 4.6 | `grok-4.6` | $2.00 | $6.00 | `XAI_API_KEY` |
-| GPT-5.6 Luna | `gpt-5.6-luna` | $0.20 | $1.20 | `OPENAI_API_KEY` |
+| GPT-6 Sol | `gpt-6-sol` | $2.00 | $10.00 | `OPENAI_API_KEY` |
 | Gemini 3.5 Flash-Lite | `gemini-3.5-flash-lite` | $0.30 | $2.50 | `GOOGLE_API_KEY` |
 | Gemini 3.7 Flash | `gemini-3.7-flash` | $0.75 | $3.75 | `GOOGLE_API_KEY` |
 | Claude Sonnet 5 | `claude-sonnet-5` | $2.00 | $10.00 | `ANTHROPIC_API_KEY` |
 | Agnes 2.5 Flash | `agnes-2.5-flash` | Free | Free | `AGNES_API_KEY` |
 
-`GPT-5.6 Luna` is the default. `OPENAI_BASE_URL` is an optional OpenAI-only override; it
-does not change the endpoints for other providers.
+`GPT-6 Sol` is the default. `OPENAI_BASE_URL` is an optional OpenAI-only override; it
+does not change the endpoints for other providers. GPT-6 Sol uses medium reasoning for
+every request, including drafts, verification, repairs, figure descriptions, and cloud
+enhancement. Fast, Balanced, and Audit still control image resolution, verification scope,
+and repair limits; other providers keep their existing reasoning policies.
 
 Agnes uses its current configured $0 rate, while still recording tokens and pricing
 entitlement. Paperplane sends private visual inputs inline as PNG data URLs, enabling Parse
@@ -48,23 +51,36 @@ Streamlit secrets accept that canonical name. Existing `GEMINI_API_KEY` configur
 remain a fallback only when `GOOGLE_API_KEY` is absent.
 
 Gemini 3.7 Flash uses the supplied promotional standard rate of $0.75/1M input tokens and
-$3.75/1M output tokens through December 31, 2026. GPT-5.6 Terra is not in the supported
-catalog, so its supplied rate is not used.
+$3.75/1M output tokens through December 31, 2026.
 
 ## Cost estimates
 
-After a parse, the UI displays provider-reported input and output tokens and calculates:
+After a parse, the UI displays provider-reported usage and estimates cost with `Decimal`.
+GPT-6 Sol uses these standard rates per million tokens:
+
+| Token category | USD/1M |
+|---|---:|
+| Ordinary input | $2.00 |
+| Cached input reads | $0.20 |
+| Cache writes | $2.50 |
+| Output | $10.00 |
 
 ```text
-input cost + output cost
-= input tokens × input rate / 1,000,000
-+ output tokens × output rate / 1,000,000
+ordinary input = total input - cached input reads - cache writes
+cost = (ordinary input × 2.00 + cached input reads × 0.20
+        + cache writes × 2.50 + output × 10.00) / 1,000,000
 ```
 
-GPT-5.6 Luna cached input tokens use the supplied $0.02/1M rate. Paperplane applies the
-listed synchronous base rates only. It does not infer Batch API discounts, Grok
-fast/long-context surcharges, Claude Batch discounts, or other account-specific
-adjustments. The displayed amount is an estimate; the provider invoice is authoritative.
+Cache writes are part of total input, so they are charged once at the cache-write rate.
+For example, 1,000 input tokens including 200 cached reads and 300 writes, plus 100 output
+tokens, cost $0.00279. Both the Parse page and session Cost page include cache writes.
+Providers without a configured cache-write rate retain their existing cost calculation.
+
+Paperplane applies synchronous short-context base rates only. For GPT-6 Sol, requests
+above 272K input tokens have higher rates, but aggregate document usage cannot identify
+which individual request crossed that threshold. Long-context, Batch, Flex, Fast, regional,
+and account-specific adjustments are not applied. The displayed amount is an estimate;
+the provider invoice is authoritative.
 
 The supplied non-default rates remain informational: Claude Sonnet 5 Batch is 50% off;
 Gemini 3.5 Flash-Lite Batch is $0.15/$1.25; Grok 4.6 fast mode or prompts above 200k tokens
@@ -80,7 +96,9 @@ cost; **New parse** keeps the ledger, while **Stop and clear** or session end re
 ## Official references
 
 - [xAI models](https://docs.x.ai/developers/models)
-- [OpenAI latest models](https://developers.openai.com/api/docs/guides/latest-model)
+- [GPT-6 Sol](https://developers.openai.com/api/docs/models/gpt-6-sol)
+- [OpenAI pricing](https://developers.openai.com/api/docs/pricing)
+- [OpenAI prompt caching and usage accounting](https://developers.openai.com/api/docs/guides/prompt-caching)
 - [Google Gemini models](https://ai.google.dev/gemini-api/docs/models)
 - [Anthropic model overview](https://platform.claude.com/docs/en/about-claude/models/overview)
 - [Agnes AI model catalog](https://github.com/AgnesAI-Labs/AgnesAI-Models/blob/main/MODEL_CATALOG.md)

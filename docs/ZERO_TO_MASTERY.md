@@ -71,12 +71,12 @@ are never stored there. Cloud engines, including Agnes, transmit only selected p
 Agnes sends page PNGs inline instead of publishing them at public URLs. Ollama, Docling,
 PDF Inspector, and storage remain local.
 
-Cost shows provider-reported input, cached-input, and output tokens for successful parses
-in the current browser session. It groups usage by the model that consumed the tokens,
-including separate Ollama and cloud-enhancement rows, then shows a total. Local and free
-models still show token usage at $0 API cost. Estimates use configured rates and are not
-provider invoices. **Stop and clear**, server restart, or session end resets this ledger;
-it is not written to retained job storage.
+Cost shows provider-reported input, cached-read, cache-write, and output tokens for
+successful parses in the current browser session. It groups usage by the model that consumed
+the tokens, including separate Ollama and cloud-enhancement rows, then shows a total. Local
+and free models still show token usage at $0 API cost. Estimates use configured rates and
+are not provider invoices. **Stop and clear**, server restart, or session end resets this
+ledger; it is not written to retained job storage.
 
 Paperplane is self-hosted, MIT-licensed software. Operators provide their own optional
 cloud API keys and are responsible for the files they process, permission to process them,
