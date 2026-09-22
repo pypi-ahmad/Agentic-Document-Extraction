@@ -18,12 +18,31 @@ every request, including drafts, verification, repairs, figure descriptions, and
 enhancement. Fast, Balanced, and Audit still control image resolution, verification scope,
 and repair limits; other providers keep their existing reasoning policies.
 
+If GPT-6 Sol's content filter interrupts schema output, Paperplane retries once. For forms with
+personal or health data, the retry asks the model to replace those values with
+`[CONTENT OMITTED]` while keeping their labels and the rest of the page. A successful retry adds
+`content_filter_retry_used` to the page warnings. A second interruption stops the cloud request
+instead of reporting malformed JSON. For a PDF with a native text layer, Paperplane then returns
+locally extracted text with
+`openai_content_filter_native_pdf_fallback`. For scans and images, it uses the bundled local OCR
+and adds `openai_content_filter_local_ocr_fallback`. If neither path finds text, Paperplane keeps
+the content-filter error.
+
+For scan pages with at least 500 model-output tokens, Paperplane compares output volume with
+locally observed OCR words. If GPT-6 Sol returns more than four times the observed word count,
+Paperplane replaces the overgenerated page with grounded local text lines and adds
+`model_output_overgeneration_local_text_fallback`.
+
 Agnes uses its current configured $0 rate, while still recording tokens and pricing
 entitlement. Paperplane sends private visual inputs inline as PNG data URLs, enabling Parse
 and enhancement without publishing uploaded images. Paperplane requests schema-shaped tool
-calls and accepts Agnes's JSON content fallback. It normalizes equivalent 0–1000 boxes and
+calls and accepts Agnes's JSON content fallback. It normalizes equivalent 0-1000 boxes and
 omitted nullable chunk fields before strict local validation and one bounded correction attempt. Missing, out-of-range, or reversed geometry therefore
 cannot silently reach the annotated-PDF renderer.
+
+All model-facing prompts are Markdown files in `paperplane/prompts/`. Python code loads those
+files and supplies only runtime values such as document context, quality findings, and candidate
+text. Update the Markdown source when changing extraction behavior; do not embed prompts in code.
 
 ## Ollama models
 

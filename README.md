@@ -169,7 +169,7 @@ Cloud processing and cloud enhancement expose three inspection depths:
 | Audit | 250 DPI draft, 400 DPI crops, expanded verification, and up to three repair rounds | Difficult scans, tables, identifiers, and ambiguous layouts |
 
 Balanced verifies only suspicious content; Audit inspects complex regions more broadly.
-These modes trade latency and provider usage for verification depth—they do not change the
+These modes trade latency and provider usage for verification depth while keeping the same
 output contract.
 
 ### Supported cloud models and private visual input
@@ -181,9 +181,16 @@ medium reasoning in every quality mode, including verification and enhancement. 
 records provider-reported input, cached-read, cache-write, and output tokens and shows a
 configured cost estimate; that estimate is not an invoice.
 
+If GPT-6 Sol's content filter interrupts structured output, Paperplane retries once with the
+redacted extraction prompt. A second interruption falls back to the PDF text layer or local OCR
+and records the fallback in the page warnings.
+Paperplane also rejects extreme scan-page overgeneration when GPT-6 Sol returns at least 500
+tokens and more than four times the locally observed word count. It replaces that output with
+grounded local text lines and records a warning.
+
 Agnes visual Parse and enhancement use inline PNG data URLs. Uploaded images do not need
 to be published at a public URL. Paperplane requests schema tool calls from Agnes and also
-accepts its JSON content response. Paperplane normalizes equivalent 0–1000 boxes and omitted
+accepts its JSON content response. Paperplane normalizes equivalent 0-1000 boxes and omitted
 nullable chunk fields before local validation and one bounded correction attempt. All cloud models still
 receive the selected page content, so use Docling, PDF Inspector, or Ollama when content
 must not leave the machine.
@@ -336,7 +343,9 @@ Agentic-Document-Extraction/
 │   ├── jobs.py                  # SQLite job lifecycle and artifact retention
 │   ├── model_store.py           # Permanent versioned Docling/RapidOCR/layout weights
 │   ├── ollama_document.py       # Ollama discovery, vision, and cloud chaining
-│   ├── ollama_ocr.py            # Local layout detection and OCR-family prompts
+│   ├── ollama_ocr.py            # Local layout detection and OCR-family dispatch
+│   ├── prompt_loader.py          # Markdown prompt loading and substitution
+│   ├── prompts/                  # Model-facing Markdown prompts
 │   ├── document_intelligence.py # Cross-page semantic relationships
 │   ├── calibration.py           # Profile-pinned confidence calibration
 │   ├── benchmark.py             # Locked manifests and metric helpers
@@ -516,7 +525,7 @@ uv run pytest -q
 ### Concepts and architecture
 
 - [Architecture overview](docs/ARCHITECTURE.md) · [How Paperplane works](docs/how-it-works.md)
-- [Codebase deep dive](docs/CODEBASE_DEEP_DIVE.md) — cited, file-and-line architecture reference
+- [Codebase deep dive](docs/CODEBASE_DEEP_DIVE.md), a cited architecture reference with file and line details
 - [Engines](docs/ENGINES.md) · [Models](docs/MODELS.md) · [Capabilities](docs/APP_CAPABILITIES.md)
 - [Quality and benchmarks](docs/QUALITY.md) · [Limitations](docs/LIMITATIONS.md)
 - [Architecture decision records](docs/adr/)

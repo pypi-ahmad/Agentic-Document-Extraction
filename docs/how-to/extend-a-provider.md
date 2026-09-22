@@ -75,18 +75,15 @@ Changing one provider's behavior belongs in that provider's adapter.
 
 ## Swap or edit a prompt
 
-Provider modules receive prompts from their callers. `instructions` and `context` are passed in
-by `pipeline.py`, for example at the figure-description call in
-[`paperplane/pipeline.py:520-524`](../../paperplane/pipeline.py)) as parameters to
-`generate_structured`. To change what's asked of a provider:
+Model-facing prompts are Markdown files in `paperplane/prompts/`. `prompt_loader.py` reads the
+selected file and substitutes runtime values before `pipeline.py` passes `instructions` and
+`context` to `generate_structured`. To change a prompt:
 
-1. Find the call site in `pipeline.py` that builds the `instructions` string for the
-   workflow you want to change (figure description, page draft, verification, repair).
-2. Edit the instructions text there.
+1. Find the `load_prompt(...)` call for the workflow you want to change.
+2. Edit its Markdown file in `paperplane/prompts/`.
 3. If the change should apply to only one provider, branch on the adapter type or a passed
-   flag at the call site; do not special-case it inside a shared prompt-builder used by all
-   providers.
-4. If the provider needs the prompt delivered differently (e.g. as a separate `system`
+   flag at the call site. Keep shared prompts provider-neutral.
+4. If the provider needs the prompt delivered differently, such as a separate `system`
    field instead of concatenated into `instructions`), that reshaping happens inside the
    provider module's `generate_structured`, using the same `instructions`/`context`
    parameters it already receives. The external contract does not change.

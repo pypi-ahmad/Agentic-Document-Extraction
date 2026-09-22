@@ -1,8 +1,8 @@
 # Reference: Organize schemas
 
 All models below are Pydantic models defined in `paperplane/ade_workflows.py` unless noted
-otherwise. All three workflow entry points — `classify_document`, `split_document`,
-`section_document` — take a `ParseResponse` (the Parse output, `paperplane/contracts.py:201`)
+otherwise. All three workflow entry points: `classify_document`, `split_document`,
+`section_document`: take a `ParseResponse` (the Parse output, `paperplane/contracts.py:201`)
 as their first argument and return one of the response models below.
 
 ## `ClassDefinition`
@@ -13,7 +13,7 @@ Input model. One entry per allowed class passed to `classify_document`/`split_do
 
 | Field | Type | Default | Notes |
 |---|---|---|---|
-| `name` | `str` | — (required, min length 1) | Label assigned to matching pages. Also used as matching-keyword source. |
+| `name` | `str` |: (required, min length 1) | Label assigned to matching pages. Also used as matching-keyword source. |
 | `description` | `str` | `""` | Additional matching-keyword source. In the Organize UI this is always set equal to `name` (`app_pages/organize.py:48-50`); calling `classify_document` directly lets you set it independently. |
 
 ## `ClassifiedPage`
@@ -74,7 +74,7 @@ One entry in `SectionResponse.sections`.
 | Field | Type | Notes |
 |---|---|---|
 | `title` | `str` | First line of the page's first grounded block's text, truncated to 160 characters; falls back to `"Untitled section"` if that text is empty. |
-| `level` | `int` | Always `1` — `section_document` does not currently infer heading depth. |
+| `level` | `int` | Always `1`: `section_document` does not currently infer heading depth. |
 | `section_number` | `int` | 1-based, incremented per detected section across the whole document. |
 | `start_reference` | `str` | The `id` of the `StructureNode` block this section's title came from. |
 | `page` | `int` | Page number, or a 1-based fallback index. |
@@ -97,7 +97,7 @@ grounded blocks at all is skipped (no section entry, no warning).
 
 The **Section** tab's download button (`app_pages/organize.py:92-97`) writes
 `SectionResponse.model_dump(mode="json")` directly to disk with two-space indentation. Its
-shape is identical to the `SectionResponse` table above — there is no separate export
+shape is identical to the `SectionResponse` table above: there is no separate export
 schema.
 
 ## Referenced shared types

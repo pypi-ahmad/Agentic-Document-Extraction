@@ -1,4 +1,4 @@
-# ADR 0001 — Record architecture decisions
+# ADR 0001: Record architecture decisions
 
 ## Status
 

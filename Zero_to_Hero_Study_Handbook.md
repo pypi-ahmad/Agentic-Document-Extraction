@@ -26,10 +26,10 @@ selector across Input preview, Output, Annotated PDF, Markdown, HTML, and JSON.
 
 All engines start off. Select exactly one:
 
-- Docling ADE — local layout, tables, and RapidOCR.
-- PDF Inspector ADE — local PDF analysis only.
-- Cloud AI ADE — selected cloud vision model.
-- Ollama ADE — installed local model that reports vision support.
+- Docling ADE: local layout, tables, and RapidOCR.
+- PDF Inspector ADE: local PDF analysis only.
+- Cloud AI ADE: selected cloud vision model.
+- Ollama ADE: installed local model that reports vision support.
 
 Cloud enhancement can follow Docling, PDF Inspector, or Ollama. There is no automatic
 routing. Agnes accepts private visual inputs as inline PNG data URLs. Its structured output

@@ -86,18 +86,18 @@ the project.
 
 ## 6. Follow the code
 
-1. `workspace_app.py` — navigation.
-2. `streamlit_app.py` and `app_pages/` — UI flows, retained session state, and Cost.
-3. `paperplane/runtime.py` — batch/provider composition.
-4. `paperplane/parser.py` — range and page orchestration.
-5. `paperplane/model_store.py` — permanent versioned Docling/RapidOCR/layout weights.
-6. `paperplane/ollama_document.py` and `ollama_ocr.py` — Ollama discovery, layout regions,
+1. `workspace_app.py`: navigation.
+2. `streamlit_app.py` and `app_pages/`: UI flows, retained session state, and Cost.
+3. `paperplane/runtime.py`: batch/provider composition.
+4. `paperplane/parser.py`: range and page orchestration.
+5. `paperplane/model_store.py`: permanent versioned Docling/RapidOCR/layout weights.
+6. `paperplane/ollama_document.py` and `ollama_ocr.py`: Ollama discovery, layout regions,
    prompts, and crop recognition.
-7. `paperplane/contracts.py` and `ade_contracts.py` — internal and public contracts.
-8. `paperplane/ade_workflows.py` — cited workflows.
-9. `paperplane/jobs.py` — durable lifecycle.
-10. `paperplane/outputs.py` — sanitized HTML and safe batch archive assembly.
-11. `document_intelligence.py`, `calibration.py`, `benchmark.py` — semantic and evaluation
+7. `paperplane/contracts.py` and `ade_contracts.py`: internal and public contracts.
+8. `paperplane/ade_workflows.py`: cited workflows.
+9. `paperplane/jobs.py`: durable lifecycle.
+10. `paperplane/outputs.py`: sanitized HTML and safe batch archive assembly.
+11. `document_intelligence.py`, `calibration.py`, `benchmark.py`: semantic and evaluation
    layers.
 
 ## 7. Verify

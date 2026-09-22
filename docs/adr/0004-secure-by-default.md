@@ -1,4 +1,4 @@
-# ADR 0004 — Secure local boundary
+# ADR 0004: Secure local boundary
 
 ## Status
 

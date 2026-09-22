@@ -5,7 +5,7 @@ Paperplane validates structure and evidence independently of model fluency.
 ## Runtime safeguards
 
 - Strict provider JSON Schema where supported, followed by Pydantic validation. Agnes tool
-  arguments and JSON content responses normalize equivalent 0–1000 boxes and omitted
+  arguments and JSON content responses normalize equivalent 0-1000 boxes and omitted
   nullable chunk fields before local JSON Schema and geometry validation, with one bounded
   correction attempt.
 - Exact Unicode range validation, normalized box validation, ordered hierarchy, and table
@@ -33,8 +33,8 @@ Paperplane validates structure and evidence independently of model fluency.
 Raw confidence may combine OCR score, engine agreement, geometric alignment, and contract
 validation. `paperplane/calibration.py` implements calibration matching on engine, model,
 version, and a checked-in corpus hash, but no calibration profile ships with Paperplane and
-the parse/export pipeline does not call it yet. Every result — including arbitrary Ollama
-models — reports raw, uncalibrated confidence today.
+the parse/export pipeline does not call it yet. Every result currently reports raw,
+uncalibrated confidence, including results from arbitrary Ollama models.
 
 ## Benchmark policy
 

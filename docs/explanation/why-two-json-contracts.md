@@ -32,7 +32,7 @@ ADE-shaped parsers or require the richer data to be reconstructed from a flatter
 The README is explicit about the boundary of this compatibility claim (see
 `README.md`'s "Outputs and contracts" section): "ADE-compatible" describes
 Paperplane's own versioned Python/Pydantic and JSON contracts and durable job
-semantics — it does not mean Paperplane calls LandingAI's API, promises a
+semantics: it does not mean Paperplane calls LandingAI's API, promises a
 drop-in replacement for it, or inherits LandingAI's accuracy numbers. Paperplane
 is, in the project's own words, "an independent implementation" inspired by
 LandingAI ADE's observable Parse workflow and evidence model, not a
@@ -42,7 +42,7 @@ Concretely, that means:
 
 - The ADE v2-style shape here (`markdown` / `metadata` / `structure`) mirrors
   the *documented style* of an ADE Parse response closely enough that tooling
-  built against that style of contract can read it — but every field's
+  built against that style of contract can read it: but every field's
   semantics (ID numbering, `range_units`, `billing`, `openapi_spec` string) is
   defined by Paperplane's own `ade_contracts.py`, not by calling out to an
   external service.
@@ -51,8 +51,8 @@ Concretely, that means:
   benchmark manifest publish only measurements taken against Paperplane's own
   outputs.
 
-Maintaining the honest, narrower framing — "compatible contract shape and job
-semantics," not "compatible product" — is why the two-export design stays
+Maintaining the honest, narrower framing: "compatible contract shape and job
+semantics," not "compatible product": is why the two-export design stays
 worth the extra file: it lets Paperplane be transparent about exactly how much
 compatibility it is and isn't claiming, one field at a time.
 

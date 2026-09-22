@@ -38,13 +38,13 @@ DocumentModel(
 ),
 ```
 
-Nothing else in `model_catalog.py` needs to change — `DOCUMENT_MODEL_BY_ID` and
+Nothing else in `model_catalog.py` needs to change because `DOCUMENT_MODEL_BY_ID` and
 `DOCUMENT_MODEL_BY_LABEL` are built automatically from the tuple.
 
 ## 2. Write the provider module
 
 Create `paperplane/echo_document.py`. The smallest real provider module in the codebase is
-[`paperplane/gemini_document.py`](../../paperplane/gemini_document.py) (166 lines) — use it
+[`paperplane/gemini_document.py`](../../paperplane/gemini_document.py) (166 lines): use it
 as your shape reference. A minimal stub:
 
 ```python
@@ -118,7 +118,7 @@ class EchoDocumentAdapter:
 __all__ = ["ECHO_MODELS", "EchoDocumentAdapter", "EchoRequestError"]
 ```
 
-This returns a fixed response instead of calling a real endpoint — enough to prove the
+This fixed response proves the
 wiring end to end. Real providers call an HTTP endpoint through `self.http`; see
 `GeminiDocumentAdapter.generate_structured`
 ([`paperplane/gemini_document.py:43-158`](../../paperplane/gemini_document.py)) for a
@@ -162,7 +162,7 @@ uv run --extra cpu streamlit run workspace_app.py --server.port=8551
 
 1. Open [http://127.0.0.1:8551](http://127.0.0.1:8551).
 2. On **Parse**, activate **Cloud AI ADE**.
-3. Open the model dropdown — **you should now see "Echo (tutorial)"** alongside Grok 4.6,
+3. Open the model dropdown. You should now see `Echo (tutorial)` alongside Grok 4.6,
    GPT-6 Sol, Gemini 3.5 Flash-Lite, Gemini 3.7 Flash, Claude Sonnet 5, and Agnes 2.5
    Flash.
 4. Select it, upload any sample document, choose a page range, and select **Parse files**.
@@ -174,7 +174,7 @@ implementation, environment variable, and a live parse through the UI.
 
 ## Next steps
 
-- Make the model actually call an endpoint — see
+- Make the model actually call an endpoint: see
   [`docs/how-to/extend-a-provider.md`](../how-to/extend-a-provider.md) for narrower recipes
   once you have a real provider.
 - Read [`docs/reference/provider-contract.md`](../reference/provider-contract.md) for the

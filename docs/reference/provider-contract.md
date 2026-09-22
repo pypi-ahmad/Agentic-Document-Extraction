@@ -1,7 +1,7 @@
 # Provider contract reference
 
 This page describes exactly what a cloud AI provider module and its `model_catalog.py`
-entry must expose. It is a dictionary, not a walkthrough — see
+entry must expose. For a walkthrough, see
 [`docs/tutorials/add-a-provider.md`](../tutorials/add-a-provider.md) for a worked example.
 
 ## Catalog entry: `DocumentModel`
@@ -27,7 +27,7 @@ Defined in [`paperplane/model_catalog.py:12-23`](../../paperplane/model_catalog.
 Adding an entry requires updating three places that read `DOCUMENT_MODELS`:
 `DOCUMENT_MODEL_BY_ID`, `DOCUMENT_MODEL_BY_LABEL`
 ([`paperplane/model_catalog.py:104-105`](../../paperplane/model_catalog.py)) are built
-automatically from the tuple, so appending one `DocumentModel` is sufficient — no other
+automatically from the tuple, so appending one `DocumentModel` is sufficient: no other
 catalog-side registration exists.
 
 ## Adapter class: the `StructuredAdapter` protocol
@@ -52,7 +52,7 @@ class StructuredAdapter(Protocol):
     ) -> StructuredGeneration: ...
 ```
 
-There is no shared base class — this is Python structural typing (`Protocol`). A provider
+Providers use Python structural typing (`Protocol`) without a shared base class. A provider
 module satisfies the contract by implementing a class with a matching
 `generate_structured` method; it does not need to inherit from anything.
 
@@ -74,7 +74,7 @@ def __init__(
 
 `runtime.py`'s `cloud_adapter()` helper
 ([`paperplane/runtime.py:108-125`](../../paperplane/runtime.py)) constructs each adapter
-with exactly this shape — one `if provider == "..."` branch per provider, calling
+with exactly this shape: one `if provider == "..."` branch per provider, calling
 `AdapterClass(client, api_key=api_key)` (or with an extra `base_url=`/`provider_name=`
 keyword, as xAI does by reusing `OpenAIDocumentAdapter` with a different base URL).
 
@@ -100,15 +100,15 @@ re-exported/reused by every other provider module:
 | Field | Type | Notes |
 |---|---|---|
 | `response_id` | `str \| None` | Provider's own response/request ID, for audit trails. |
-| `value` | `dict[str, Any]` | The parsed JSON object matching `schema`. Must be a `dict` — adapters raise their own request-error subclass if the provider returns anything else (e.g. [`paperplane/gemini_document.py:129-131`](../../paperplane/gemini_document.py)). |
-| `usage` | `OpenAIUsage` | Token usage — see below. Field name is historical (`OpenAIUsage`), reused by all providers. |
+| `value` | `dict[str, Any]` | The parsed JSON object matching `schema`. Must be a `dict`: adapters raise their own request-error subclass if the provider returns anything else (e.g. [`paperplane/gemini_document.py:129-131`](../../paperplane/gemini_document.py)). |
+| `usage` | `OpenAIUsage` | Token usage: see below. Field name is historical (`OpenAIUsage`), reused by all providers. |
 | `model_usage` | `dict[str, OpenAIUsage]` | Only populated by chained/hybrid adapters that call more than one model. |
 | `latency_ms` | `float` (`>= 0`) | Wall-clock request latency. |
 | `presegmented` | `bool` | Whether the provider returned page regions already segmented (default `False`). |
 | `warnings` | `list[str]` | Non-fatal issues to surface in the UI. |
 
 `OpenAIUsage` ([`paperplane/openai_document.py:44-48`](../../paperplane/openai_document.py)):
-`input_tokens`, `output_tokens`, `cached_input_tokens`, `cache_write_tokens` — all
+`input_tokens`, `output_tokens`, `cached_input_tokens`, `cache_write_tokens`: all
 `int`, default `0`, `ge=0`.
 
 ### Error handling
@@ -143,7 +143,7 @@ content.
 - [Tutorial: add a provider](../tutorials/add-a-provider.md)
 - [How-to: extend a provider](../how-to/extend-a-provider.md)
 - [Explanation: why explicit providers](../explanation/why-explicit-providers.md)
-- [`docs/MODELS.md`](../MODELS.md) — the user-facing catalog table
+- [`docs/MODELS.md`](../MODELS.md): the user-facing catalog table
 
 ## GPT-6 Sol effort and pricing
 

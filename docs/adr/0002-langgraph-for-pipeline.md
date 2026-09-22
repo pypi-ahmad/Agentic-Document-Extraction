@@ -1,4 +1,4 @@
-# ADR 0002 — Direct bounded page processing
+# ADR 0002: Direct bounded page processing
 
 ## Status
 

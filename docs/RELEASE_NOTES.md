@@ -45,7 +45,7 @@
   its validated JSON content response so bounding boxes reliably reach annotated PDFs.
 - Added local JSON Schema and geometry validation with one bounded correction attempt for
   missing, out-of-range, or reversed coordinates.
-- Normalized Agnes's equivalent 0–1000 boxes and omitted nullable chunk fields before strict
+- Normalized Agnes's equivalent 0-1000 boxes and omitted nullable chunk fields before strict
   validation, with precise validation reasons in launcher logs when correction still fails.
 - Preserved private inline PNG input and included all retry tokens in usage reporting.
 

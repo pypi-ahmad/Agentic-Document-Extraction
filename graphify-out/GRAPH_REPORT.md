@@ -121,18 +121,18 @@
 - None detected.
 
 ## Hyperedges (group relationships)
-- **Token Efficiency Rules Convention** — _claude_skills_debug_issue_skill_workflow, _claude_skills_explore_codebase_skill_workflow, _claude_skills_refactor_safely_skill_workflow, _claude_skills_review_changes_skill_workflow, concept_get_minimal_context_tool [INFERRED 0.85]
-- **Code-Review-Graph MCP Tool Family** — concept_query_graph_tool, concept_semantic_search_nodes_tool, concept_detect_changes_tool, concept_get_impact_radius_tool, concept_get_affected_flows_tool, concept_refactor_tool [INFERRED 0.85]
-- **GitHub Contribution Intake Templates** — _github_issue_template_bug_report_template, _github_issue_template_feature_request_template, _github_issue_template_provider_request_template, _github_pull_request_template_doc, _github_issue_template_config_template [EXTRACTED 1.00]
-- **Duplicate AI agent contract/instruction files** — agents, claude, codebuddy, qoder, kiro_steering_code_review_graph [INFERRED 0.85]
-- **Release and versioning flow** — release, changelog, scripts_release, streamlit_app [EXTRACTED 0.90]
-- **Open-source governance documentation set** — code_of_conduct, contributing, support, security, disclaimer [INFERRED 0.80]
-- **Exclusive Engine Selection Pattern Across Docs** — docs_codebase_deep_dive_enginesoptionsvalidator, docs_engines_enginetoggleexclusivity, docs_migration_guide_v4tov5enginereplacement, docs_adr_0002_langgraph_for_pipeline_directboundedpageprocessing [INFERRED 0.80]
-- **No Fabricated Accuracy Claim Stance** — docs_quality_benchmarkpolicy, docs_limitations_landingaidisclaimer, docs_codebase_deep_dive_confidencecalibrationmatch [INFERRED 0.80]
-- **Generated Documentation Drift Gate** — docs_codebase_deep_dive_codebasedeepdive, docs_zero_to_mastery_zerotomastery, docs_zero_to_mastery_rich_richhtml [INFERRED 0.75]
-- **Organize Workflow Documentation (Classify/Split/Section)** — docs_explanation_why_organize_is_deterministic_doc, docs_how_to_tune_classify_classes_doc, docs_reference_organize_schemas_doc, docs_tutorials_organize_a_document_doc [EXTRACTED 0.90]
-- **ADE v2 / Paperplane v5 JSON Contract Documentation** — docs_explanation_why_two_json_contracts_doc, docs_how_to_extract_grounding_and_confidence_doc, docs_reference_ade_json_schema_doc, docs_tutorials_read_the_json_output_doc [EXTRACTED 0.90]
-- **Provider Contract and Extension Documentation** — docs_reference_provider_contract_doc, docs_tutorials_add_a_provider_doc, docs_how_to_extend_a_provider_doc [EXTRACTED 0.90]
+- **Token Efficiency Rules Convention**: _claude_skills_debug_issue_skill_workflow, _claude_skills_explore_codebase_skill_workflow, _claude_skills_refactor_safely_skill_workflow, _claude_skills_review_changes_skill_workflow, concept_get_minimal_context_tool [INFERRED 0.85]
+- **Code-Review-Graph MCP Tool Family**: concept_query_graph_tool, concept_semantic_search_nodes_tool, concept_detect_changes_tool, concept_get_impact_radius_tool, concept_get_affected_flows_tool, concept_refactor_tool [INFERRED 0.85]
+- **GitHub Contribution Intake Templates**: _github_issue_template_bug_report_template, _github_issue_template_feature_request_template, _github_issue_template_provider_request_template, _github_pull_request_template_doc, _github_issue_template_config_template [EXTRACTED 1.00]
+- **Duplicate AI agent contract/instruction files**: agents, claude, codebuddy, qoder, kiro_steering_code_review_graph [INFERRED 0.85]
+- **Release and versioning flow**: release, changelog, scripts_release, streamlit_app [EXTRACTED 0.90]
+- **Open-source governance documentation set**: code_of_conduct, contributing, support, security, disclaimer [INFERRED 0.80]
+- **Exclusive Engine Selection Pattern Across Docs**: docs_codebase_deep_dive_enginesoptionsvalidator, docs_engines_enginetoggleexclusivity, docs_migration_guide_v4tov5enginereplacement, docs_adr_0002_langgraph_for_pipeline_directboundedpageprocessing [INFERRED 0.80]
+- **No Fabricated Accuracy Claim Stance**: docs_quality_benchmarkpolicy, docs_limitations_landingaidisclaimer, docs_codebase_deep_dive_confidencecalibrationmatch [INFERRED 0.80]
+- **Generated Documentation Drift Gate**: docs_codebase_deep_dive_codebasedeepdive, docs_zero_to_mastery_zerotomastery, docs_zero_to_mastery_rich_richhtml [INFERRED 0.75]
+- **Organize Workflow Documentation (Classify/Split/Section)**: docs_explanation_why_organize_is_deterministic_doc, docs_how_to_tune_classify_classes_doc, docs_reference_organize_schemas_doc, docs_tutorials_organize_a_document_doc [EXTRACTED 0.90]
+- **ADE v2 / Paperplane v5 JSON Contract Documentation**: docs_explanation_why_two_json_contracts_doc, docs_how_to_extract_grounding_and_confidence_doc, docs_reference_ade_json_schema_doc, docs_tutorials_read_the_json_output_doc [EXTRACTED 0.90]
+- **Provider Contract and Extension Documentation**: docs_reference_provider_contract_doc, docs_tutorials_add_a_provider_doc, docs_how_to_extend_a_provider_doc [EXTRACTED 0.90]
 
 ## Communities (83 total, 21 thin omitted)
 
@@ -389,7 +389,7 @@ Nodes (3): ClassDefinition, classes_from_text, app_pages/organize.py
 ## Knowledge Gaps
 - **157 isolated node(s):** `uvx`, `crg-session-start.sh script`, `crg-update.sh script`, `uvx`, `uvx` (+152 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **21 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **21 thin communities (<3 nodes) omitted from report**: run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_

@@ -21,7 +21,7 @@ You need a running Paperplane instance. If you have not set one up yet, follow
 1. Once parsing finishes, use the shared document selector to open the **JSON**
    tab.
 2. The tab switches between the strict **ADE v2-style** export and the richer
-   **Paperplane v5** export — select the ADE v2-style view first and download it.
+   **Paperplane v5** export: select the ADE v2-style view first and download it.
 3. Switch the selector to the Paperplane v5 view and download that file too.
 
 You now have two files, e.g. `result.ade.json` and `result.v5.json`, describing
@@ -39,8 +39,8 @@ Open the ADE v2 JSON file. Its top level has three keys:
 }
 ```
 
-1. Walk into `structure.children[0]` — this is the first `page` node.
-2. Walk into its own `children[0]` — this is the first content block (commonly a
+1. Walk into `structure.children[0]`: this is the first `page` node.
+2. Walk into its own `children[0]`: this is the first content block (commonly a
    `title` or `text` node with an `id` like `"text-0"`).
 3. Read its `grounding` object:
    ```json
@@ -52,7 +52,7 @@ Open the ADE v2 JSON file. Its top level has three keys:
    ```
    `range.start`/`range.end` are Unicode code-point offsets into the top-level
    `markdown` string. Slice `markdown[range.start:range.end]` and it will equal
-   that block's visible text exactly — Paperplane guarantees this alignment
+   that block's visible text exactly: Paperplane guarantees this alignment
    (`paperplane/contracts.py:255-257`, `paperplane/ade_contracts.py:143-146`).
    `box` is a normalized `[0, 1]` bounding box on the page image.
 
@@ -82,7 +82,7 @@ The Paperplane v5 export wraps the same ADE-shaped structure and adds a flat
 1. Find a word in `words` whose `grounding.range` falls inside the block range
    you read in step 3.
 2. Check its `confidence_kind`. On a fresh checkout this is always
-   `"raw_uncalibrated"` — Paperplane only reports `"calibrated"` when a
+   `"raw_uncalibrated"`: Paperplane only reports `"calibrated"` when a
    version- and corpus-pinned calibration profile exists for the exact engine,
    model, and version that produced the result
    (`paperplane/calibration.py:37-51`).

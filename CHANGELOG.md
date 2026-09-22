@@ -457,7 +457,7 @@ Fix Agnes annotated-PDF grounding with forced schema tool calls, local geometry 
   `schema_version`); Alembic migration `0003_prompt_schema_version`.
 - New table `extraction_judgments`; Alembic migration
   `0002_judgments`.
-- New columns on `extractions` (none — extraction_judgments
+- New columns on `extractions` (none: extraction_judgments
   is a separate table).
 - The pipeline now has 7 steps instead of 4
   (triage + parse + extract + validate + reflect +
@@ -468,10 +468,10 @@ Fix Agnes annotated-PDF grounding with forced schema tool calls, local geometry 
 
 ### Release notes
 
-# Release notes — v0.3.0
+# Release notes: v0.3.0
 
 **Release date:** 2026-06-22
-**Type:** Minor (backward-compatible; one bootstrap step required for existing deployments — see the [Migration Guide](docs/MIGRATION_GUIDE.md))
+**Type:** Minor (backward-compatible; one bootstrap step required for existing deployments: see the [Migration Guide](docs/MIGRATION_GUIDE.md))
 
 > v0.3.0 is the **modernization release**. We took a hard look at
 > every layer of the codebase and brought it up to current
@@ -573,14 +573,14 @@ Fix Agnes annotated-PDF grounding with forced schema tool calls, local geometry 
 
 ### Documentation
 
-- **`docs/DEPLOYMENT.md`** — Docker, systemd, Caddy, nginx,
+- **`docs/DEPLOYMENT.md`**: Docker, systemd, Caddy, nginx,
   observability, backup/restore, migrations, security checklist,
   troubleshooting.
-- **`docs/MIGRATION_GUIDE.md`** — v0.2.x → v0.3.0 step by step.
-- **`docs/RUNBOOK.md`** — operator reference for the on-call
+- **`docs/MIGRATION_GUIDE.md`**: v0.2.x → v0.3.0 step by step.
+- **`docs/RUNBOOK.md`**: operator reference for the on-call
   rotation.
-- **`docs/FAQ.md`** — twenty most-asked questions.
-- **`docs/adr/`** — Architecture Decision Records (LangGraph
+- **`docs/FAQ.md`**: twenty most-asked questions.
+- **`docs/adr/`**: Architecture Decision Records (LangGraph
   pipeline, SQLite default, secure-by-default).
 
 ### Developer experience
@@ -629,7 +629,7 @@ on existing v0.2.x databases, documented in the
   text-detection model; GLM-OCR is a vision-language model. The
   right choice depends on the document layout.
 - **No multi-user auth.** Authentication is the operator's
-  responsibility — use a reverse proxy.
+  responsibility: use a reverse proxy.
 
 ---
 
@@ -749,20 +749,20 @@ across eight logical phases.
 - **`pyright`** configuration in `pyproject.toml`.
 
 #### Documentation
-- [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) — Docker, systemd,
+- [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md): Docker, systemd,
   Caddy, nginx, observability, backup/restore, migrations,
   security checklist, troubleshooting.
-- [`docs/MIGRATION_GUIDE.md`](docs/MIGRATION_GUIDE.md) — v0.2.x →
+- [`docs/MIGRATION_GUIDE.md`](docs/MIGRATION_GUIDE.md): v0.2.x →
   v0.3.0.
-- [`docs/RELEASE_NOTES.md`](docs/RELEASE_NOTES.md) — full feature
+- [`docs/RELEASE_NOTES.md`](docs/RELEASE_NOTES.md): full feature
   list and breaking-change note.
-- `docs/UPGRADE_SUMMARY.md` — historical one-page table removed in v4.
-- [`docs/RUNBOOK.md`](docs/RUNBOOK.md) — operator reference.
-- [`docs/FAQ.md`](docs/FAQ.md) — frequently asked questions.
+- `docs/UPGRADE_SUMMARY.md`: historical one-page table removed in v4.
+- [`docs/RUNBOOK.md`](docs/RUNBOOK.md): operator reference.
+- [`docs/FAQ.md`](docs/FAQ.md): frequently asked questions.
 - [`docs/adr/0001-record-architecture-decisions.md`](docs/adr/0001-record-architecture-decisions.md)
-  — ADR index.
+: ADR index.
 - [`docs/adr/0002-langgraph-for-pipeline.md`](docs/adr/0002-langgraph-for-pipeline.md).
-- `docs/adr/0003-sqlite-wal-default.md` — historical database ADR removed in v4.
+- `docs/adr/0003-sqlite-wal-default.md`: historical database ADR removed in v4.
 - [`docs/adr/0004-secure-by-default.md`](docs/adr/0004-secure-by-default.md).
 - `CONTRIBUTING.md` moved to the repo root (GitHub convention).
 - `.editorconfig` for project-wide style defaults.
@@ -816,21 +816,21 @@ across eight logical phases.
 ### Changed
 
 - README rewritten as a professional, zero-to-hero guide.
-- `backend/app/models/enums.py` — `ParserEngine` now includes
+- `backend/app/models/enums.py`: `ParserEngine` now includes
   `GLMOCR = "glmocr"`.
-- `backend/app/services/ocr/registry.py` — `AUTO_PRIORITY` now
+- `backend/app/services/ocr/registry.py`: `AUTO_PRIORITY` now
   starts with GLM-OCR before PaddleOCR; `_import_builtin_providers`
   registers the new engine.
-- `backend/app/models/schemas.py` — `OCREngineFlags` exposes a
+- `backend/app/models/schemas.py`: `OCREngineFlags` exposes a
   `glm_ocr: bool` field.
-- `backend/app/routers/providers.py` — `/api/providers/config`
+- `backend/app/routers/providers.py`: `/api/providers/config`
   returns the new `glm_ocr` flag.
-- `backend/.env.example` — documents the new env vars
+- `backend/.env.example`: documents the new env vars
   (`ENABLE_GLM_OCR`, `OLLAMA_BASE_URL`, `OLLAMA_GLM_OCR_MODEL`,
   `GLM_OCR_TIMEOUT_SECONDS`).
-- `frontend/src/lib/api.ts` — `ParserEngine` mirror enum and
+- `frontend/src/lib/api.ts`: `ParserEngine` mirror enum and
   display-name map include `glmocr`.
-- `pyproject.toml` (root) — consolidated project metadata, deps,
+- `pyproject.toml` (root): consolidated project metadata, deps,
   pytest, and ruff configuration.
 
 ### Fixed
