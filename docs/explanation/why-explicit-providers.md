@@ -11,15 +11,13 @@ structure deliberately.
 
 ## No shared base class
 
-A `Protocol` (structural typing), not an abstract base class, defines the contract. Every
-adapter independently implements `generate_structured` with the same signature, but nothing
-forces them to share implementation. `GeminiDocumentAdapter` reuses `OpenAIRequestError`,
+A `Protocol` (structural typing) defines the contract. Every adapter independently implements
+`generate_structured` with the same signature. `GeminiDocumentAdapter` reuses `OpenAIRequestError`,
 `OpenAIUsage`, `StructuredGeneration`, and `_emit_audit` from `openai_document.py`
 ([`paperplane/gemini_document.py:14-19`](../../paperplane/gemini_document.py)) by direct
 import. This reuses shared types without inheritance.
 
-Providers genuinely differ in how they need to behave, and every existing provider bears
-that out:
+Each provider has different request behavior:
 
 - Gemini has no true "reasoning off". `reasoning_effort="none"` maps to a per-model minimum
   thinking level instead of a boolean toggle
@@ -69,7 +67,7 @@ This has costs:
 
 This design fits six providers with different request shapes that the maintainer adds only a
 few times a year. A registry may suit dozens of interchangeable providers with identical
-request shapes. Paperplane does not have that use case today.
+request shapes.
 
 ## Related pages
 
