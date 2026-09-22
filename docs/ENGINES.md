@@ -18,8 +18,7 @@ Ollama defaults to `http://127.0.0.1:11434`. Every installed model is visible, b
 disabled unless `/api/show` reports `vision`. `glm-ocr:latest` and
 `AuditAid/PaddleOCR-VL-1.6-0.9B:latest` are calibration targets, not a fixed allowlist.
 For GLM-OCR, PaddleOCR-VL, and DeepSeek-OCR, PP-DocLayoutV3 first detects regions locally
-on CPU. Ollama recognizes the resulting crops with family-specific native prompts instead
-of being forced to emit a whole-page JSON schema.
+on CPU. Ollama receives the resulting crops with family-specific native prompts.
 
 DeepSeek-OCR retries an empty text crop once with a stricter transcription prompt. It also
 retries transient transport, malformed-response, HTTP 408/429, and server failures once

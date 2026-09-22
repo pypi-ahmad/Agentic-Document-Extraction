@@ -273,6 +273,7 @@ def _result_cost(result: ParseResponse) -> Decimal | None:
         input_tokens=result.metadata.input_tokens,
         output_tokens=result.metadata.output_tokens,
         cached_input_tokens=result.metadata.cached_input_tokens,
+        cache_write_tokens=result.metadata.cache_write_tokens,
     ).total_cost_usd
 
 
@@ -312,12 +313,23 @@ def _render_result_overview(outcome: runtime.BatchParseOutcome) -> None:
                 input_tokens=result.metadata.input_tokens,
                 output_tokens=result.metadata.output_tokens,
                 cached_input_tokens=result.metadata.cached_input_tokens,
+                cache_write_tokens=result.metadata.cache_write_tokens,
             )
             st.write(f"**{ai_model.label}** (`{ai_model.model_id}`)")
             st.write(
-                f"Input: {_format_cost_usd(estimate.input_cost_usd)} at "
+                f"Input (including cache): {_format_cost_usd(estimate.input_cost_usd)}; ordinary input at "
                 f"${ai_model.input_price_per_million}/1M tokens"
             )
+            if ai_model.cached_input_price_per_million is not None:
+                st.write(
+                    f"Cached reads: {result.metadata.cached_input_tokens:,} tokens at "
+                    f"${ai_model.cached_input_price_per_million}/1M tokens"
+                )
+            if ai_model.cache_write_price_per_million is not None:
+                st.write(
+                    f"Cache writes: {result.metadata.cache_write_tokens:,} tokens at "
+                    f"${ai_model.cache_write_price_per_million}/1M tokens"
+                )
             st.write(
                 f"Output: {_format_cost_usd(estimate.output_cost_usd)} at "
                 f"${ai_model.output_price_per_million}/1M tokens"

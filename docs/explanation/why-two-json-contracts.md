@@ -1,9 +1,8 @@
 # Explanation: why two JSON contracts
 
-Every Parse result can be exported two ways: a strict **ADE v2-style** JSON and
-a richer **`paperplane.parse.v5`** JSON. This is not accidental duplication —
-the two files serve different consumers, and the code makes that split
-explicit rather than hiding it behind a single "kitchen sink" schema.
+Every Parse result has two exports: strict **ADE v2-style** JSON and
+**`paperplane.parse.v5`** JSON. They serve different consumers, and the code keeps their
+boundaries explicit.
 
 ## What each export optimizes for
 
@@ -11,8 +10,8 @@ The ADE v2-style export (`to_ade_v2_parse`, `paperplane/ade_contracts.py:149-234
 is deliberately minimal: `markdown`, `metadata`, and a `structure` tree with
 zero-based, per-type node IDs and inline `grounding`. It exists so that tooling
 written against a documented-style ADE Parse response shape has something
-stable to parse — no Paperplane-specific concepts like calibration status,
-raw observed words, or cross-page relations leak into it.
+stable to parse. It excludes Paperplane-specific concepts such as calibration status, raw
+observed words, and cross-page relations.
 
 The v5 export (`to_paperplane_export`, lines 237-271) wraps that same ADE
 structure and adds everything Paperplane knows that the v2 shape has no room
@@ -24,12 +23,9 @@ whole v5 document.
 
 Keeping them as two named contracts (`ADEParseResponse` vs.
 `PaperplaneParseExport`, distinguished by the v5 export's own
-`contract: "paperplane.parse.v5"` discriminator field) means a consumer never
-has to guess which fields are "the stable interop part" and which are "the
-Paperplane extension part" — the nesting boundary *is* that line. A single
-merged schema would either bloat the interop-facing shape with fields that
-break naive ADE-shaped parsers, or force the richer data to be reconstructed
-from a flatter, less explicit representation.
+`contract: "paperplane.parse.v5"` discriminator field) separates the stable interop fields
+from the Paperplane extension fields. A merged schema would add fields that can break simple
+ADE-shaped parsers or require the richer data to be reconstructed from a flatter structure.
 
 ## What "ADE-compatible" actually means here
 

@@ -12,6 +12,10 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
+import truststore
+
+truststore.inject_into_ssl()
+
 MODEL_SET_VERSION = "v1"
 LAYOUT_MODEL_ID = "PaddlePaddle/PP-DocLayoutV3_safetensors"
 LAYOUT_MODEL_REVISION = "97d101e6db2642e162a1d05392d1b0231c91033e"
@@ -187,12 +191,10 @@ def _legacy_layout_snapshot() -> Path | None:
 
 
 def _download_docling(store: ModelStore, *, force: bool = False) -> None:
-    executable = Path(sys.executable).with_name(
-        "docling-tools.exe" if sys.platform == "win32" else "docling-tools"
-    )
     command = [
-        str(executable),
-        "models",
+        sys.executable,
+        "-c",
+        "import truststore; truststore.inject_into_ssl(); from docling.cli.models import app; app()",
         "download",
         "layout",
         "tableformer",

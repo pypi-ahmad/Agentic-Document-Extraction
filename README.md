@@ -6,8 +6,8 @@
 [![Streamlit 1.61+](https://img.shields.io/badge/Streamlit-1.61%2B-FF4B4B?logo=streamlit&logoColor=white)](https://streamlit.io/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-**An open-source, local-first Streamlit workspace for turning PDFs, images, and modern Office files
-into context-aware Markdown, grounded JSON, cited organization results, and annotated PDFs.**
+**A local Streamlit workspace for turning PDFs, images, and modern Office files into Markdown,
+grounded JSON, cited Organize results, and annotated PDFs.**
 
 Repository: [github.com/pypi-ahmad/Agentic-Document-Extraction](https://github.com/pypi-ahmad/Agentic-Document-Extraction)
 
@@ -20,25 +20,24 @@ compatibility, or claim LandingAI accuracy parity.
 ## What is Paperplane?
 
 Paperplane turns PDFs, images, scans, and modern Office files (DOCX, PPTX, XLSX, and their
-OpenDocument equivalents) into structured, evidence-backed output: reading-order Markdown, an
-annotated PDF, and two JSON flavors — an ADE v2-style export and a richer `paperplane.parse.v5`
-export with full provenance. Every emitted block carries grounding back to the source page and
-text range wherever that evidence exists, instead of silently guessing.
+OpenDocument equivalents) into reading-order Markdown, an annotated PDF, and two JSON exports:
+an ADE v2-style export and `paperplane.parse.v5` with full provenance. Each emitted block keeps
+the source-page and text-range grounding when that evidence is available in the input.
 
-You explicitly pick exactly one processing engine per run — **Docling ADE** (local layout, table,
-and OCR), **PDF Inspector ADE** (local PDF-only inspection), **Cloud AI ADE** (a selected
-multimodal provider), or **Ollama ADE** (a locally installed vision model) — with optional cloud
-enhancement layered on top of a local engine. Nothing is auto-routed or silently escalated to the
-cloud. Everything runs on your own machine (`127.0.0.1:8551`), keeps uploads and results
-session-only in the browser, and uses only the API keys and credentials you supply.
+Choose one processing engine per run: **Docling ADE** for local layout, tables, and OCR;
+**PDF Inspector ADE** for local PDF inspection; **Cloud AI ADE** for a selected multimodal
+provider; or **Ollama ADE** for an installed vision model. A local engine can use cloud
+enhancement. The app does not auto-route files or escalate them to a cloud provider. It runs on
+your machine (`127.0.0.1:8551`), keeps uploads and results in the browser session, and uses the
+credentials you provide.
 
 > [!IMPORTANT]
 > Cloud AI and cloud enhancement send selected page content to the provider you choose.
 > You are responsible for the documents you process and for that provider's terms and data
 > practices. See [Disclaimer and User Responsibility](DISCLAIMER.md) for the full terms.
 
-Downstream, the **Organize** page runs deterministic, citation-grounded Classify, Split, and
-Section workflows directly on a completed Parse result — no second model call, no re-inference.
+The **Organize** page runs deterministic, citation-grounded Classify, Split, and Section
+workflows on a completed Parse result. It makes no second model call.
 
 ## Contents
 
@@ -71,8 +70,8 @@ Testers and users can [report bugs](https://github.com/pypi-ahmad/Agentic-Docume
 or support the project by starring, sharing, testing, and contributing.
 
 > [!NOTE]
-> Paperplane does not accept donations, sponsorships, or any other financial support — the
-> project is free and community-driven, and it stays that way.
+> Paperplane does not accept donations, sponsorships, or other financial support. The project is
+> free and community driven.
 
 See [Support](SUPPORT.md), [Security](SECURITY.md), and the canonical
 [Disclaimer and User Responsibility](DISCLAIMER.md).
@@ -167,7 +166,7 @@ Cloud processing and cloud enhancement expose three inspection depths:
 |---|---|---|
 | Fast | 150 DPI draft, deterministic grounding, no separate verification pass | Straightforward, high-volume documents |
 | Balanced | 200 DPI draft with 300 DPI verification crops for flagged regions | Most documents |
-| Audit | 250 DPI draft, 400 DPI crops, deeper reasoning, and up to three repair rounds | Difficult scans, tables, identifiers, and ambiguous layouts |
+| Audit | 250 DPI draft, 400 DPI crops, expanded verification, and up to three repair rounds | Difficult scans, tables, identifiers, and ambiguous layouts |
 
 Balanced verifies only suspicious content; Audit inspects complex regions more broadly.
 These modes trade latency and provider usage for verification depth—they do not change the
@@ -175,11 +174,12 @@ output contract.
 
 ### Supported cloud models and private visual input
 
-The Cloud AI selector contains Grok 4.6, GPT-5.6 Luna, Gemini 3.5 Flash-Lite, Gemini 3.7
+The Cloud AI selector contains Grok 4.6, GPT-6 Sol, Gemini 3.5 Flash-Lite, Gemini 3.7
 Flash, Claude Sonnet 5, and Agnes 2.5 Flash. Each provider uses its native API boundary and
-only its corresponding environment variable. GPT-5.6 Luna is selected by default. The UI
-records provider-reported input and output tokens and shows a configured cost estimate;
-that estimate is not an invoice.
+only its corresponding environment variable. GPT-6 Sol is selected by default and uses
+medium reasoning in every quality mode, including verification and enhancement. The UI
+records provider-reported input, cached-read, cache-write, and output tokens and shows a
+configured cost estimate; that estimate is not an invoice.
 
 Agnes visual Parse and enhancement use inline PNG data URLs. Uploaded images do not need
 to be published at a public URL. Paperplane requests schema tool calls from Agnes and also
@@ -259,15 +259,15 @@ annotated PDFs under `%LOCALAPPDATA%\Paperplane`. Retention is seven days; expir
 purged automatically. Users can inspect status, mark a pending/running job cancelled,
 delete one job and its artifact directory, or clear all retained jobs.
 
-Execution still occurs inside the Streamlit process. Closing the app stops active
-computation; retained records remain available when Paperplane is reopened. This is not a
-remote queue or multi-user database.
+Execution runs inside the Streamlit process. Closing the app stops active computation;
+retained records remain available when Paperplane reopens. Paperplane has no remote queue or
+multi-user database.
 
 ### Session cost and transparent benchmarks
 
-The **Cost** page accumulates provider-reported input, cached-input, and output tokens for
-successful parses in the current browser session. It groups usage and configured price
-estimates by model and shows a combined total. Free and local models contribute token
+The **Cost** page accumulates provider-reported input, cached-read, cache-write, and output
+tokens for successful parses in the current browser session. It groups usage and configured
+price estimates by model and shows a combined total. Free and local models contribute token
 counts at $0 API cost. **New parse** keeps this ledger; **Stop and clear** or ending the
 session removes it.
 
@@ -427,7 +427,7 @@ region. GLM-OCR and PaddleOCR-VL retain their existing family-native behavior.
 
 | Variable | Purpose |
 |---|---|
-| `OPENAI_API_KEY` | GPT-5.6 Luna and compatible OpenAI endpoint authentication |
+| `OPENAI_API_KEY` | GPT-6 Sol and compatible OpenAI endpoint authentication |
 | `OPENAI_BASE_URL` | Optional OpenAI-compatible base URL; default `https://api.openai.com` |
 | `XAI_API_KEY` | Grok 4.6 |
 | `GOOGLE_API_KEY` | Gemini 3.5 Flash-Lite and Gemini 3.7 Flash |

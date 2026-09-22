@@ -5,8 +5,8 @@ normalized box and Markdown range for a block, and tell whether a word's
 confidence is raw or calibrated.
 
 This assumes you are working in Python against Paperplane's internal objects
-(`paperplane.contracts`, `paperplane.ade_contracts`), not just the exported
-JSON files. If you only have the downloaded JSON, skip to
+(`paperplane.contracts`, `paperplane.ade_contracts`) as well as the exported JSON files. If
+you only have the downloaded JSON, skip to
 [From exported JSON](#from-exported-json) below.
 
 ## From a `ParseResponse` object

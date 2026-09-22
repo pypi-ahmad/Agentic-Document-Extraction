@@ -163,7 +163,7 @@ uv run --extra cpu streamlit run workspace_app.py --server.port=8551
 1. Open [http://127.0.0.1:8551](http://127.0.0.1:8551).
 2. On **Parse**, activate **Cloud AI ADE**.
 3. Open the model dropdown — **you should now see "Echo (tutorial)"** alongside Grok 4.6,
-   GPT-5.6 Luna, Gemini 3.5 Flash-Lite, Gemini 3.7 Flash, Claude Sonnet 5, and Agnes 2.5
+   GPT-6 Sol, Gemini 3.5 Flash-Lite, Gemini 3.7 Flash, Claude Sonnet 5, and Agnes 2.5
    Flash.
 4. Select it, upload any sample document, choose a page range, and select **Parse files**.
 5. Confirm the parse completes and the Output tab shows a result (in this stub, the fixed

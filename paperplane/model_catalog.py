@@ -21,6 +21,7 @@ class DocumentModel:
     output_price_per_million: Decimal
     cached_input_price_per_million: Decimal | None = None
     pricing_note: str = ""
+    cache_write_price_per_million: Decimal | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -43,16 +44,17 @@ DOCUMENT_MODELS: tuple[DocumentModel, ...] = (
         pricing_note="Standard rate; fast or very-long-context surcharges are not applied.",
     ),
     DocumentModel(
-        label="GPT-5.6 Luna",
-        model_id="gpt-5.6-luna",
+        label="GPT-6 Sol",
+        model_id="gpt-6-sol",
         provider="openai",
         api_key_env="OPENAI_API_KEY",
-        help_text="OpenAI's efficient GPT-5.6 model for high-volume workloads.",
-        docs_url="https://developers.openai.com/api/docs/guides/latest-model",
-        input_price_per_million=Decimal("0.20"),
-        output_price_per_million=Decimal("1.20"),
-        cached_input_price_per_million=Decimal("0.02"),
-        pricing_note="Configured rate includes the supplied cached-input discount.",
+        help_text="OpenAI document vision with medium reasoning in every quality mode.",
+        docs_url="https://developers.openai.com/api/docs/models/gpt-6-sol",
+        input_price_per_million=Decimal("2.00"),
+        output_price_per_million=Decimal("10.00"),
+        cached_input_price_per_million=Decimal("0.20"),
+        cache_write_price_per_million=Decimal("2.50"),
+        pricing_note="Standard short-context rates; long-context, service-tier, and regional adjustments are not applied.",
     ),
     DocumentModel(
         label="Gemini 3.5 Flash-Lite",
@@ -100,7 +102,7 @@ DOCUMENT_MODELS: tuple[DocumentModel, ...] = (
     ),
 )
 
-DEFAULT_DOCUMENT_MODEL = "gpt-5.6-luna"
+DEFAULT_DOCUMENT_MODEL = "gpt-6-sol"
 DOCUMENT_MODEL_BY_ID = {model.model_id: model for model in DOCUMENT_MODELS}
 DOCUMENT_MODEL_BY_LABEL = {model.label: model for model in DOCUMENT_MODELS}
 
@@ -119,16 +121,24 @@ def estimate_model_cost(
     input_tokens: int,
     output_tokens: int,
     cached_input_tokens: int = 0,
+    cache_write_tokens: int = 0,
 ) -> ModelCostEstimate:
     """Estimate one parse at the configured per-million-token rates."""
     model = get_document_model(model_id)
     cached_tokens = min(max(cached_input_tokens, 0), max(input_tokens, 0))
     regular_tokens = max(input_tokens, 0) - cached_tokens
+    write_tokens = (
+        min(max(cache_write_tokens, 0), regular_tokens)
+        if model.cache_write_price_per_million is not None
+        else 0
+    )
+    regular_tokens -= write_tokens
     cached_rate = model.cached_input_price_per_million or model.input_price_per_million
     scale = Decimal("1000000")
     input_cost = (
         Decimal(regular_tokens) * model.input_price_per_million
         + Decimal(cached_tokens) * cached_rate
+        + Decimal(write_tokens) * (model.cache_write_price_per_million or Decimal("0"))
     ) / scale
     output_cost = Decimal(max(output_tokens, 0)) * model.output_price_per_million / scale
     return ModelCostEstimate(

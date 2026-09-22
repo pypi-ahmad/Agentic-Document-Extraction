@@ -11,6 +11,10 @@ and this project aims to follow [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- Replaced the active GPT model with GPT-6 Sol, using medium reasoning for every parsing
+  and enhancement request. Updated standard input, cached-read, cache-write, and output
+  rates; Parse and Cost estimates now include GPT cache writes without double-counting.
+
 ### Fixed
 
 ## [5.3.1] - 2026-08-17

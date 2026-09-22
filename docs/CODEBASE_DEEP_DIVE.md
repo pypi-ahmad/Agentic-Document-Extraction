@@ -190,38 +190,36 @@ migration already in progress, not a dependency risk.
   never commit secrets/uploads, preserve the full model catalog, update docs in the same
   change) plus a manual smoke-test checklist for user-visible changes
   ([`CONTRIBUTING.md:11-54`](../CONTRIBUTING.md)).
-- **`README.md`** — the single largest source of truth for features, supported
-  inputs/outputs, environment variables, and setup; treated here as a claim set that was
-  spot-verified against `pyproject.toml`, `docs/MODELS.md`, and CI, not restated blindly.
+- `README.md` documents features, supported inputs and outputs, environment variables, and
+  setup. Its claims were checked against `pyproject.toml`, `docs/MODELS.md`, and CI.
 
 ### Developer gotchas (cited)
 
-- CI **rebuilds generated documentation** (`scripts/build_handbook.py`,
-  `scripts/build_app_guide.py`) and fails the build on any diff — generated docs must be
-  committed in sync with the code that produces them
+- CI rebuilds generated documentation (`scripts/build_handbook.py`,
+  `scripts/build_app_guide.py`) and fails on any diff. Commit generated docs with the code
+  that produces them
   ([`.github/workflows/ci.yml:57-61`](../.github/workflows/ci.yml)).
-- The Windows launcher actively **kills a previous Paperplane launcher tree** and anything
-  bound to port 8551 before starting, to avoid `.venv` DLL locks during dependency repair
-  ([`Paperplane.cmd:15`](../Paperplane.cmd)).
-- `uv sync` for this project is **inexact** by design — the docs explicitly note that
-  separately installed `test`/`lint`/`docs` extras are not removed by a plain sync
-  ([`docs/SETUP.md:57-58`](SETUP.md)) — a deliberate tradeoff, not a bug.
+- The Windows launcher clears a previous Paperplane launcher tree and its port-8551 listener,
+  then waits up to five seconds for Windows to release the port before starting. This avoids
+  `.venv` DLL locks during dependency repair
+- Model downloads use the Windows certificate store, so a corporate root certificate trusted by
+  Windows is also trusted when Docling retrieves its weights.
+  ([`paperplane/model_store.py:15`](../paperplane/model_store.py)).
+- `uv sync` is inexact: separately installed `test`/`lint`/`docs` extras remain after a plain
+  sync ([`docs/SETUP.md:57-58`](SETUP.md)).
 - `pyproject.toml` declares mutually exclusive `cpu`/`cu130` extras via `[tool.uv] conflicts`
-  ([`pyproject.toml:68-72`](../pyproject.toml)) — installing both is a resolver error, not a
-  silent merge.
+  ([`pyproject.toml:68-72`](../pyproject.toml)); installing both is a resolver error.
 
 ### Relationship to the wider ecosystem (as visible from disk)
 
-Paperplane's contracts are explicitly modeled after **LandingAI ADE's** observable Parse
-workflow and evidence model, but the project repeatedly and deliberately disclaims parity:
-"It is an independent implementation: it does not call LandingAI, promise API drop-in
-compatibility, or claim LandingAI accuracy parity" ([`README.md:16-18`](../README.md)). This
-framing recurs in `docs/QUALITY.md`, `docs/LIMITATIONS.md`, and `DISCLAIMER.md` — it is a
-consistent, intentional project stance rather than an oversight.
+Paperplane's contracts follow **LandingAI ADE's** observable Parse workflow and evidence model.
+The project states that it is an independent implementation and does not call LandingAI, promise
+API drop-in compatibility, or claim LandingAI accuracy parity ([`README.md:16-18`](../README.md)).
+`docs/QUALITY.md`, `docs/LIMITATIONS.md`, and `DISCLAIMER.md` use the same framing.
 
 ---
 
-## Part 3 — Architectural blueprint
+## Part 3: Architectural blueprint
 
 ### System context (C4 Level 1)
 
@@ -301,11 +299,10 @@ sequenceDiagram
   `ade_contracts.py` (public ADE v2 + Paperplane v5 export) →
   `document_intelligence.py` (relation inference over the exported structure)
   ([`paperplane/ade_contracts.py:10-11`](../paperplane/ade_contracts.py)).
-- **`EngineOptions` enforces "exactly one engine" at the model layer**, not just in the UI —
-  a Pydantic validator rejects more than one enabled engine, and rejects combining Cloud AI
-  with cloud enhancement (redundant) ([`paperplane/ade_contracts.py:25-31`](../paperplane/ade_contracts.py)).
-  This means the "one explicit engine" rule from `CLAUDE.md` is structurally enforced, not
-  just a UI convention.
+- **`EngineOptions` enforces "exactly one engine" at the model layer.** A Pydantic validator
+  rejects more than one enabled engine and rejects combining Cloud AI with cloud enhancement
+  ([`paperplane/ade_contracts.py:25-31`](../paperplane/ade_contracts.py)). The rule from
+  `CLAUDE.md` is enforced by the model rather than only by the UI.
 - **Files never share context; pages within one file may.** `parser.py` is cited in
   `docs/ARCHITECTURE.md:53-54` as applying page ranges and allowing only *previous selected
   pages* to inform later pages — a one-directional, intra-file-only context window.
@@ -320,7 +317,7 @@ sequenceDiagram
 | Logging | Standard `logging` module, e.g. `logging.getLogger("paperplane.runtime")` | [`paperplane/runtime.py:38`](../paperplane/runtime.py) |
 | Error isolation | Per-file try/except in batch runtime; one file's failure does not abort the batch | [`paperplane/runtime.py:223-235`](../paperplane/runtime.py) |
 | HTML sanitization | Bleach allowlist before rendering/exporting HTML | [`docs/QUALITY.md:25-26`](QUALITY.md) |
-| Cost/usage tracking | Per-model token ledger accumulated in browser session, priced via `model_catalog.estimate_model_cost` | [`paperplane/model_catalog.py:116-138`](../paperplane/model_catalog.py) |
+| Cost/usage tracking | Per-model browser-session ledger for input, cached-read, cache-write, and output tokens; `model_catalog.estimate_model_cost` prices each configured category once | [`paperplane/model_catalog.py:121-147`](../paperplane/model_catalog.py) |
 | Confidence calibration | Profile pinned to `(engine, model, version, corpus_sha256)` tuple; anything else reports raw/uncalibrated | [`paperplane/calibration.py:45-51`](../paperplane/calibration.py) |
 
 ### Inferred ADRs
@@ -331,8 +328,8 @@ sequenceDiagram
 - **Decision:** `EngineOptions` is a Pydantic model whose validator raises if more than one
   engine is enabled ([`paperplane/ade_contracts.py:25-31`](../paperplane/ade_contracts.py)).
   The UI enforces this by disabling the other toggles when one is active.
-- **Alternatives considered:** `[INFERRED]` — an automatic engine-selection heuristic (e.g.
-  route scans to cloud, native PDFs to Docling) would reduce clicks but would make the data
+- **Alternatives considered:** `[INFERRED]` An automatic engine-selection heuristic (for
+  example, routing scans to cloud and native PDFs to Docling) would reduce clicks but make the data
   path implicit, conflicting with the project's privacy stance (`DISCLAIMER.md`).
 - **Consequences:** More UI clicks per parse; users always have full data-path visibility.
 
@@ -344,9 +341,9 @@ sequenceDiagram
   prompt ([`paperplane/ollama_ocr.py:182-229`](../paperplane/ollama_ocr.py),
   [`paperplane/ollama_ocr.py:36-56`](../paperplane/ollama_ocr.py)).
 - **Alternatives considered:** Sending the whole page to the Ollama model and asking for
-  structured JSON directly — rejected implicitly, since the family-native prompt design only
+  structured JSON directly was rejected implicitly because the family-native prompt design only
   makes sense per-crop, per-region-type.
-- **Consequences:** One recognition call per detected region — latency scales with page
+- **Consequences:** One recognition call per detected region means latency scales with page
   density ([`docs/LIMITATIONS.md:16-17`](LIMITATIONS.md)). Detector runs on CPU
   deliberately, to preserve GPU VRAM for the Ollama model (`README.md:363-369`).
 
@@ -362,16 +359,17 @@ sequenceDiagram
 
 ### Governance & enforcement mechanisms
 
-- **CI gate** (lint, format, type-check, tests+coverage, generated-doc drift check, benchmark
-  corpus validation, live Streamlit boot smoke test) — see Commands & Verification Inventory.
+- **CI gate** covers lint, format, type-checking, tests and coverage, generated-doc drift,
+  benchmark-corpus validation, and a live Streamlit boot smoke test. See Commands & Verification
+  Inventory.
   Whether this is a *required* branch-protection check is `[UNVERIFIED]` from the checkout.
 - **`dependency-review.yml`** blocks PRs introducing high-severity dependency advisories and
   comments the summary directly on the PR ([`.github/workflows/dependency-review.yml:18-22`](../.github/workflows/dependency-review.yml)).
-- **Generated-doc-must-match-source gate**: `scripts/build_handbook.py` and
+- **Generated-doc-must-match-source gate:** `scripts/build_handbook.py` and
   `build_app_guide.py` regenerate `docs/APP_CAPABILITIES.html` and
   `docs/ZERO_TO_MASTERY.rich.html`; CI fails if regenerating produces a diff
-  ([`.github/workflows/ci.yml:57-61`](../.github/workflows/ci.yml)) — this is the project's
-  mechanism for keeping generated docs from silently drifting from code.
+  ([`.github/workflows/ci.yml:57-61`](../.github/workflows/ci.yml)). This keeps generated docs
+  aligned with code.
 - **CONTRIBUTING.md's manual smoke-test checklist** is a human governance step layered on
   top of automated CI for UI-visible changes ([`CONTRIBUTING.md:41-54`](../CONTRIBUTING.md)).
 
@@ -384,27 +382,25 @@ sequenceDiagram
    `ollama_document.py` for local Ollama).
 3. Wire it through `paperplane/parser.py` (`AgenticDocumentParser`) and, if it changes batch
    behavior, `paperplane/runtime.py`.
-4. Update the Streamlit page (`streamlit_app.py` or the relevant `app_pages/*.py`) — keep
-   page files as direct scripts, not function-wrapped, per this project's own convention
+4. Update the Streamlit page (`streamlit_app.py` or the relevant `app_pages/*.py`). Keep
+   page files as direct scripts, following this project's convention
    (visible throughout `app_pages/` and `streamlit_app.py`).
 5. Add a test module mirroring the pattern already in `tests/` (one file per subsystem).
-6. Update the affected doc in `docs/` in the same change — `CLAUDE.md` states this as a
-   hard project rule, and CI's generated-doc-diff check partially enforces the spirit of it
+6. Update the affected doc in `docs/` in the same change. `CLAUDE.md` states this as a
+   project rule, and CI's generated-doc-diff check enforces it for generated guides.
    for the handbook/app-guide pair.
 
-**Common pitfall:** touching `paperplane/model_catalog.py` without preserving every existing
-catalog entry and its provider-specific credential env var — `CONTRIBUTING.md` calls this out
-explicitly as a rule, not a suggestion ([`CONTRIBUTING.md:20-21`](../CONTRIBUTING.md)).
+When updating `paperplane/model_catalog.py`, preserve every existing catalog entry and its
+provider-specific credential environment variable. `CONTRIBUTING.md` states this rule
+explicitly ([`CONTRIBUTING.md:20-21`](../CONTRIBUTING.md)).
 
 ---
 
 ## Subsystem deep-dives
 
-Three subsystems were selected as the hardest to onboard onto — not by file size alone, but
-by how much implicit domain logic (verification budgets, geometric reconciliation, prompt
-family dispatch) a newcomer would need to reconstruct from scratch. `paperplane/pipeline.py`
-is in fact the single largest module in the package (1,241 lines) and was not in the
-original candidate shortlist — it earned its place here after inspection.
+This section focuses on three subsystems with the most implicit domain logic: verification
+budgets, geometric reconciliation, and prompt-family dispatch. `paperplane/pipeline.py` is the
+largest module in the package at 1,241 lines. Inspection added it to the original shortlist.
 
 ### 1. `paperplane/pipeline.py` — the cloud-vision draft/reconcile/verify pipeline
 

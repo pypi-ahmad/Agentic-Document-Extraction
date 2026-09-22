@@ -4,8 +4,8 @@
   client drop-in compatibility with LandingAI ADE.
 - Job execution still runs inside the Streamlit process. SQLite/checkpoints retain lifecycle
   state, but a stopped process cannot continue computing until the app is running again.
-- Retention is seven days under `%LOCALAPPDATA%\Paperplane`; this is not a multi-user
-  database or remote object store.
+- Retention is seven days under `%LOCALAPPDATA%\Paperplane`. Storage is local to one user;
+  Paperplane provides no multi-user database or remote object store.
 - PDF Inspector accepts PDF only. Legacy DOC/PPT/XLS and encrypted PDFs are unsupported.
 - Cloud engines, including Agnes, send selected page images to their provider.
 - Files are context-isolated. Only selected pages inside one file share ordered context.

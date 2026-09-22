@@ -7,8 +7,8 @@ referenced below, see [`docs/reference/provider-contract.md`](../reference/provi
 
 ## Add a new model to an existing provider
 
-Google's catalog already has two entries (Gemini 3.5 Flash-Lite and Gemini 3.7 Flash) that
-share one adapter module — this is the pattern to follow.
+Google's catalog already has two entries, Gemini 3.5 Flash-Lite and Gemini 3.7 Flash, that
+share one adapter module. Follow that pattern.
 
 1. Add the model ID to the adapter's allowlist. For Gemini, that's `GEMINI_MODELS` at
    [`paperplane/gemini_document.py:24`](../../paperplane/gemini_document.py):
@@ -28,8 +28,8 @@ share one adapter module — this is the pattern to follow.
 
 3. Append a new `DocumentModel` to `DOCUMENT_MODELS` in
    [`paperplane/model_catalog.py:33-101`](../../paperplane/model_catalog.py) with the same
-   `provider="google"` and `api_key_env="GOOGLE_API_KEY"` as the existing Gemini entries —
-   no adapter wiring in `runtime.py` is needed since the provider branch already exists.
+   `provider="google"` and `api_key_env="GOOGLE_API_KEY"` as the existing Gemini entries.
+   No adapter wiring in `runtime.py` is needed because the provider branch already exists.
 
 4. Add the model to [`docs/MODELS.md`](../MODELS.md)'s catalog table (required by
    `CONTRIBUTING.md`'s documentation rule).
@@ -55,9 +55,9 @@ _MODE_POLICIES = {
 }
 ```
 
-This is shared across every provider — you do not edit individual provider modules to
-change DPI, reasoning effort, verification scope, or repair-round limits. To change how one
-specific provider *responds* to a given mode (for example, a provider whose reasoning
+This is shared across every provider. Do not edit individual provider modules to change DPI,
+reasoning effort, verification scope, or repair-round limits. To change how one specific
+provider *responds* to a given mode, for example when its reasoning
 parameter needs a non-default mapping at a given effort level), branch inside that
 provider's `generate_structured`, the way Gemini maps `reasoning_effort="none"` to its
 per-model minimum thinking level instead of a true "off"
@@ -67,32 +67,34 @@ per-model minimum thinking level instead of a true "off"
 thinking_level = minimum_thinking_level if reasoning_effort == "none" else reasoning_effort
 ```
 
-Do not add a new `ProcessingMode` value unless you are changing the quality tiers offered
-to every provider — that is a bigger change than adjusting one provider's behavior within
-existing tiers.
+GPT-6 Sol overrides every requested effort to `medium` in the OpenAI adapter, including
+verification calls. Its modes still differ in DPI, verification scope, and repair limits.
+
+Add a `ProcessingMode` value only when changing the quality tiers offered to every provider.
+Changing one provider's behavior belongs in that provider's adapter.
 
 ## Swap or edit a prompt
 
-Provider modules don't own their own prompts — `instructions` and `context` are passed in
-by the caller (`pipeline.py`, see e.g. the figure-description call at
+Provider modules receive prompts from their callers. `instructions` and `context` are passed in
+by `pipeline.py`, for example at the figure-description call in
 [`paperplane/pipeline.py:520-524`](../../paperplane/pipeline.py)) as parameters to
 `generate_structured`. To change what's asked of a provider:
 
 1. Find the call site in `pipeline.py` that builds the `instructions` string for the
    workflow you want to change (figure description, page draft, verification, repair).
-2. Edit the instructions text there — not inside the provider module.
+2. Edit the instructions text there.
 3. If the change should apply to only one provider, branch on the adapter type or a passed
    flag at the call site; do not special-case it inside a shared prompt-builder used by all
    providers.
 4. If the provider needs the prompt delivered differently (e.g. as a separate `system`
    field instead of concatenated into `instructions`), that reshaping happens inside the
    provider module's `generate_structured`, using the same `instructions`/`context`
-   parameters it already receives — the external contract does not change.
+   parameters it already receives. The external contract does not change.
 
 ## Change a provider's error handling
 
-Every provider module defines its own error subclass inheriting from `OpenAIRequestError`
-(e.g. `GeminiRequestError` — [`paperplane/gemini_document.py:27-28`](../../paperplane/gemini_document.py)).
+Every provider module defines an error subclass that inherits from `OpenAIRequestError`, such
+as `GeminiRequestError` ([`paperplane/gemini_document.py:27-28`](../../paperplane/gemini_document.py)).
 To add a new failure case (say, a provider-specific rate-limit response):
 
 1. Catch the new failure inside `generate_structured`, alongside the existing
@@ -100,8 +102,8 @@ To add a new failure case (say, a provider-specific rate-limit response):
    ([`paperplane/gemini_document.py:118`](../../paperplane/gemini_document.py)).
 2. Call `_emit_audit` with `"status": "error"` and a descriptive `"error_type"` before
    raising, so the failure is traceable.
-3. Raise the module's own error subclass — never a bare exception — so
-   `runtime.py`'s shared `except (DocumentInputError, OpenAIRequestError, ...)` clause
+3. Raise the module's error subclass so `runtime.py`'s shared
+   `except (DocumentInputError, OpenAIRequestError, ...)` clause
    ([`paperplane/runtime.py:223`](../../paperplane/runtime.py)) still isolates the failure
    to one file in the batch.
 

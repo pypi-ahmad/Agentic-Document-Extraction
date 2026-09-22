@@ -20,7 +20,8 @@ Defined in [`paperplane/model_catalog.py:12-23`](../../paperplane/model_catalog.
 | `docs_url` | `str` | yes | Link to the provider's own model documentation. |
 | `input_price_per_million` | `Decimal` | yes | USD per 1M input tokens, for the Cost page estimate. |
 | `output_price_per_million` | `Decimal` | yes | USD per 1M output tokens. |
-| `cached_input_price_per_million` | `Decimal \| None` | no | Only if the provider bills cached input separately (see GPT-5.6 Luna). |
+| `cached_input_price_per_million` | `Decimal \| None` | no | Only if the provider bills cached input separately (see GPT-6 Sol). |
+| `cache_write_price_per_million` | `Decimal \| None` | no | Separate cache-write rate; GPT-6 Sol input totals include these tokens. |
 | `pricing_note` | `str` | no | One line documenting what the configured rate does *not* cover (batch discounts, surcharges, etc.). |
 
 Adding an entry requires updating three places that read `DOCUMENT_MODELS`:
@@ -143,3 +144,12 @@ content.
 - [How-to: extend a provider](../how-to/extend-a-provider.md)
 - [Explanation: why explicit providers](../explanation/why-explicit-providers.md)
 - [`docs/MODELS.md`](../MODELS.md) — the user-facing catalog table
+
+## GPT-6 Sol effort and pricing
+
+The OpenAI adapter forces `medium` for `gpt-6-sol` before request construction and audit
+recording. This applies to every pipeline stage; other providers retain their mode policies.
+`estimate_model_cost` accepts optional `cache_write_tokens=0`. When the catalog specifies
+a write rate, it subtracts cached reads and writes from total input before pricing each
+category once. Providers without a write rate retain their existing calculation. See
+[model pricing](../MODELS.md#cost-estimates) for rates and estimate limitations.
