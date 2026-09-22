@@ -41,6 +41,7 @@ dependencies = [
   "pdf-inspector>=1.14.2,<2",
   "bleach>=6,<7",
   "Markdown>=3.7,<4",
+  "truststore>=0.10,<1",
 ]
 
 [project.optional-dependencies]
