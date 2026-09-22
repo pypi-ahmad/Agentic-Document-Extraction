@@ -45,6 +45,9 @@ jobs:
       - name: Pyright
         run: uv run --no-sync pyright
 
+      - name: Model migration regression tests
+        run: uv run --no-sync pytest -q
+
       - name: Rebuild generated documentation
         run: |
           uv run --no-sync python scripts/build_handbook.py

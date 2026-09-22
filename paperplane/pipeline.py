@@ -20,6 +20,7 @@ from paperplane.grounding import (
     render_crop,
 )
 from paperplane.ingest import RenderedPage
+from paperplane.model_catalog import DEFAULT_DOCUMENT_MODEL
 from paperplane.openai_document import OpenAIUsage, StructuredGeneration
 from paperplane.pipeline_contracts import (
     AtomicLine,
@@ -489,7 +490,7 @@ def _source_box(box: BoundingBox, page: RenderedPage) -> tuple[float, float, flo
 
 
 class V2PageProcessor:
-    def __init__(self, adapter: StructuredAdapter, *, model: str = "gpt-5.6-luna") -> None:
+    def __init__(self, adapter: StructuredAdapter, *, model: str = DEFAULT_DOCUMENT_MODEL) -> None:
         self.adapter = adapter
         self.model = model
 

@@ -35,6 +35,7 @@ def estimated_cost(model_id: str, usage: ModelTokenUsage) -> Decimal:
         input_tokens=usage.input_tokens,
         output_tokens=usage.output_tokens,
         cached_input_tokens=usage.cached_input_tokens,
+        cache_write_tokens=usage.cache_write_tokens,
     ).total_cost_usd
 
 
@@ -47,6 +48,7 @@ st.caption(
 usage_by_model = aggregate_session_usage()
 total_input = sum(usage.input_tokens for usage in usage_by_model.values())
 total_cached = sum(usage.cached_input_tokens for usage in usage_by_model.values())
+total_written = sum(usage.cache_write_tokens for usage in usage_by_model.values())
 total_output = sum(usage.output_tokens for usage in usage_by_model.values())
 total_cost = sum(
     (estimated_cost(model_id, usage) for model_id, usage in usage_by_model.items()),
@@ -55,7 +57,8 @@ total_cost = sum(
 
 with st.container(horizontal=True):
     st.metric("Input tokens", f"{total_input:,}", border=True)
-    st.metric("Cache tokens", f"{total_cached:,}", border=True)
+    st.metric("Cached read tokens", f"{total_cached:,}", border=True)
+    st.metric("Cache write tokens", f"{total_written:,}", border=True)
     st.metric("Output tokens", f"{total_output:,}", border=True)
     st.metric("Estimated cost", format_cost(total_cost), border=True)
 
@@ -74,7 +77,8 @@ else:
             {
                 "Model": model.label if model is not None else model_id,
                 "Input tokens": usage.input_tokens,
-                "Cache tokens": usage.cached_input_tokens,
+                "Cached read tokens": usage.cached_input_tokens,
+                "Cache write tokens": usage.cache_write_tokens,
                 "Output tokens": usage.output_tokens,
                 "Estimated cost": format_cost(estimated_cost(model_id, usage)),
             }
@@ -83,7 +87,8 @@ else:
         {
             "Model": "Total",
             "Input tokens": total_input,
-            "Cache tokens": total_cached,
+            "Cached read tokens": total_cached,
+            "Cache write tokens": total_written,
             "Output tokens": total_output,
             "Estimated cost": format_cost(total_cost),
         }

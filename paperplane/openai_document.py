@@ -98,6 +98,8 @@ class OpenAIDocumentAdapter:
         detail: Literal["low", "high", "original"],
         prompt_cache_key: str,
     ) -> StructuredGeneration:
+        if model == "gpt-6-sol":
+            reasoning_effort = "medium"
         audit_record: dict[str, Any] = {
             "model": model,
             "provider": self.provider_name,
