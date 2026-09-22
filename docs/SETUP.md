@@ -20,6 +20,11 @@ check fails. Starting a new launcher stops any earlier Paperplane launcher tree 
 dependency checks, preventing an older app from restarting and locking `.venv` DLLs during
 repair.
 
+The Windows launcher also recognizes Paperplane started through the virtual environment's
+Python wrapper. It checks the listener and its parent, stops the matching Paperplane process
+tree, and waits up to five seconds for port 8551 to close. An unrelated listener still blocks
+startup.
+
 ## Automatic Linux setup
 
 From a cloned checkout on Ubuntu or Debian:
