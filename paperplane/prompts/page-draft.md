@@ -5,7 +5,7 @@ Extract every visible document region in reading order as coherent chunks. Retur
 ## Grounding
 
 - Return every visible text line in `atomic_lines` with its own tight box.
-- For each `table_cell`, return zero-based `row` and `col`, plus `rowspan` and `colspan`. Use null coordinates for other types.
+- For each `table_cell`, return zero-based `row` and `col`, plus `rowspan` and `colspan`. Set its `parent_order` to the containing table chunk. Use null coordinates for other types.
 - Set `parent_order` only for real semantic containment, such as a table cell inside a table. Never use the previous reading-order item as a parent.
 
 ## Fidelity

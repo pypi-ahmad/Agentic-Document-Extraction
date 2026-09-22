@@ -1033,7 +1033,12 @@ class V2PageProcessor:
             else chunk
             for chunk in chunks
         ]
-        markdown = "\n\n".join(chunk.markdown.strip() for chunk in chunks if chunk.markdown.strip())
+        markdown = "\n\n".join(
+            chunk.markdown.strip()
+            for chunk in chunks
+            if chunk.markdown.strip()
+            and not (chunk.type == "table_cell" and chunk.parent_id is not None)
+        )
         if self.model == "gpt-6-sol" and len(re.findall(r"[A-Za-z0-9]+", markdown)) >= 500:
             evidence_words = page.native_words
             source_model = "native_pdf"

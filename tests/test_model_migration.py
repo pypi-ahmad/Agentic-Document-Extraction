@@ -353,6 +353,68 @@ async def test_page_processor_replaces_overgenerated_model_page(monkeypatch):
     assert result.output_tokens == 20
 
 
+async def test_page_markdown_does_not_repeat_grounded_table_cells(monkeypatch):
+    table = {
+        "type": "table",
+        "text": "Name Value",
+        "markdown": "<table><tr><td>Name</td><td>Value</td></tr></table>",
+        "box": {"left": 0.1, "top": 0.1, "right": 0.9, "bottom": 0.4},
+        "parent_order": None,
+        "atomic_lines": [],
+        "row": None,
+        "col": None,
+        "rowspan": None,
+        "colspan": None,
+    }
+    cells = [
+        {
+            "type": "table_cell",
+            "text": value,
+            "markdown": value,
+            "box": {"left": left, "top": 0.1, "right": right, "bottom": 0.4},
+            "parent_order": 1,
+            "atomic_lines": [],
+            "row": 0,
+            "col": column,
+            "rowspan": 1,
+            "colspan": 1,
+        }
+        for column, (value, left, right) in enumerate([("Name", 0.1, 0.5), ("Value", 0.5, 0.9)])
+    ]
+
+    class TableAdapter:
+        async def generate_structured(self, **_kwargs):
+            return StructuredGeneration(
+                value={"chunks": [table, *cells]},
+                usage=OpenAIUsage(input_tokens=10, output_tokens=20),
+                latency_ms=1,
+            )
+
+    monkeypatch.setattr(
+        "paperplane.pipeline.assess_page_quality",
+        lambda _chunks, _image: type(
+            "Assessment", (), {"flagged": False, "reasons": (), "uncovered_ink_ratio": 0.0}
+        )(),
+    )
+    result = await V2PageProcessor(TableAdapter()).process_page(
+        source=b"pdf",
+        filename="form.pdf",
+        source_sha256="0" * 64,
+        page=RenderedPage(
+            page_number=1,
+            image_png=b"png",
+            width=612,
+            height=792,
+            native_words=[],
+        ),
+        mode=ProcessingMode.ECONOMY,
+    )
+
+    assert len(result.chunks) == 3
+    assert result.markdown == table["markdown"]
+    assert [chunk.parent_id for chunk in result.chunks[1:]] == [result.chunks[0].id] * 2
+
+
 @pytest.mark.parametrize("requested,expected", [("none", "low"), ("high", "high")])
 async def test_xai_keeps_its_reasoning_and_cache_behavior(requested, expected):
     def respond(request):
