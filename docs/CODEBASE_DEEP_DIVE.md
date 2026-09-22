@@ -205,7 +205,7 @@ migration already in progress, not a dependency risk.
   `.venv` DLL locks during dependency repair
 - Model downloads use the Windows certificate store, so a corporate root certificate trusted by
   Windows is also trusted when Docling retrieves its weights.
-  ([`Paperplane.cmd:15`](../Paperplane.cmd)).
+  ([`paperplane/model_store.py:15`](../paperplane/model_store.py)).
 - `uv sync` for this project is **inexact** by design — the docs explicitly note that
   separately installed `test`/`lint`/`docs` extras are not removed by a plain sync
   ([`docs/SETUP.md:57-58`](SETUP.md)) — a deliberate tradeoff, not a bug.
