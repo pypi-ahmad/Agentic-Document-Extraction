@@ -414,20 +414,25 @@ rapidocr = [
 name = "docling-core"
 version = "2.91.0"
 source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "sys_platform == 'win32'",
+    "sys_platform == 'emscripten'",
+    "sys_platform != 'darwin' and sys_platform != 'emscripten' and sys_platform != 'win32'",
+]
 dependencies = [
-    { name = "defusedxml" },
-    { name = "doclang" },
-    { name = "jsonref" },
-    { name = "jsonschema" },
-    { name = "latex2mathml" },
-    { name = "pandas" },
-    { name = "pillow" },
-    { name = "pydantic" },
-    { name = "pydantic-settings" },
-    { name = "pyyaml" },
-    { name = "tabulate" },
-    { name = "typer" },
-    { name = "typing-extensions" },
+    { name = "defusedxml", marker = "sys_platform != 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "doclang", marker = "sys_platform != 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "jsonref", marker = "sys_platform != 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "jsonschema", marker = "sys_platform != 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "latex2mathml", marker = "sys_platform != 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "pandas", marker = "sys_platform != 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "pillow", marker = "sys_platform != 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "pydantic", marker = "sys_platform != 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "pydantic-settings", marker = "sys_platform != 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "pyyaml", marker = "sys_platform != 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "tabulate", marker = "sys_platform != 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "typer", marker = "sys_platform != 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "typing-extensions", marker = "sys_platform != 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/e5/f5/5aaf6f1221242a4dd598b515786ffca796352a8d960a9c6a0deb614301f4/docling_core-2.91.0.tar.gz", hash = "sha256:dc40fe76524a2700f869265015a9ef86027888e73b5652f324b3b5c52a2df240", size = 344852, upload-time = "2026-08-06T14:23:07.919Z" }
 wheels = [
@@ -436,39 +441,112 @@ wheels = [
 
 [package.optional-dependencies]
 chunking = [
-    { name = "semchunk" },
-    { name = "transformers" },
-    { name = "tree-sitter" },
-    { name = "tree-sitter-c" },
-    { name = "tree-sitter-javascript" },
-    { name = "tree-sitter-python" },
-    { name = "tree-sitter-typescript" },
+    { name = "semchunk", marker = "sys_platform != 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "transformers", marker = "sys_platform != 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "tree-sitter", marker = "sys_platform != 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "tree-sitter-c", marker = "sys_platform != 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "tree-sitter-javascript", marker = "sys_platform != 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "tree-sitter-python", marker = "sys_platform != 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "tree-sitter-typescript", marker = "sys_platform != 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+]
+
+[[package]]
+name = "docling-core"
+version = "2.98.0"
+source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "sys_platform == 'darwin'",
+]
+dependencies = [
+    { name = "defusedxml", marker = "sys_platform == 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "doclang", marker = "sys_platform == 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "jsonref", marker = "sys_platform == 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "jsonschema", marker = "sys_platform == 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "latex2mathml", marker = "sys_platform == 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "pandas", marker = "sys_platform == 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "pillow", marker = "sys_platform == 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "pydantic", marker = "sys_platform == 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "pydantic-settings", marker = "sys_platform == 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "pyyaml", marker = "sys_platform == 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "requests", marker = "sys_platform == 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "tabulate", marker = "sys_platform == 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "typer", marker = "sys_platform == 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "typing-extensions", marker = "sys_platform == 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/6f/1f/03528148da2a97c35fcf0a0a9bc7614b7585cf1f63f624fce85aafaa60c9/docling_core-2.98.0.tar.gz", hash = "sha256:a5dd76d747d23b6e1c83b434e29285798a2547d6e23a0ddfc487ed09ff5663ea", size = 383348, upload-time = "2026-09-22T09:42:51.273Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/23/c6/479371d25ad9fd0137c3036bb21d0b1f96075b85958a81ce868aae4bc515/docling_core-2.98.0-py3-none-any.whl", hash = "sha256:655903b45f4c66c759842df8172237bda3ef35055197bf371fa5c855d3df0bd3", size = 305641, upload-time = "2026-09-22T09:42:49.591Z" },
+]
+
+[package.optional-dependencies]
+chunking = [
+    { name = "semchunk", marker = "sys_platform == 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "transformers", marker = "sys_platform == 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "tree-sitter", marker = "sys_platform == 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "tree-sitter-c", marker = "sys_platform == 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "tree-sitter-javascript", marker = "sys_platform == 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "tree-sitter-python", marker = "sys_platform == 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "tree-sitter-typescript", marker = "sys_platform == 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+]
+
+[[package]]
+name = "docling-ibm-models"
+version = "3.13.2"
+source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "sys_platform == 'darwin'",
+]
+dependencies = [
+    { name = "accelerate", marker = "sys_platform == 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "docling-core", version = "2.98.0", source = { registry = "https://pypi.org/simple" }, marker = "sys_platform == 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "huggingface-hub", marker = "sys_platform == 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "jsonlines", marker = "sys_platform == 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "numpy", marker = "sys_platform == 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "pillow", marker = "sys_platform == 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "pydantic", marker = "sys_platform == 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "rtree", marker = "sys_platform == 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "safetensors", extra = ["torch"], marker = "sys_platform == 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "torch", version = "2.13.0", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "(sys_platform == 'darwin' and extra == 'extra-27-agentic-document-extraction-cpu') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "torch", version = "2.13.0", source = { registry = "https://pypi.org/simple" }, marker = "(sys_platform == 'darwin' and extra != 'extra-27-agentic-document-extraction-cpu' and extra != 'extra-27-agentic-document-extraction-cu130') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "torch", version = "2.13.0+cu130", source = { registry = "https://download.pytorch.org/whl/cu130" }, marker = "(sys_platform == 'darwin' and extra == 'extra-27-agentic-document-extraction-cu130') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "torchvision", version = "0.28.0", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "(sys_platform == 'darwin' and extra == 'extra-27-agentic-document-extraction-cpu') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "torchvision", version = "0.28.0", source = { registry = "https://pypi.org/simple" }, marker = "(sys_platform == 'darwin' and extra != 'extra-27-agentic-document-extraction-cpu' and extra != 'extra-27-agentic-document-extraction-cu130') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "torchvision", version = "0.28.0+cu130", source = { registry = "https://download.pytorch.org/whl/cu130" }, marker = "(sys_platform == 'darwin' and extra == 'extra-27-agentic-document-extraction-cu130') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "tqdm", marker = "sys_platform == 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "transformers", marker = "sys_platform == 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/c1/25/84166f5751d7837612138966669019a4ef67c09bf6d3ef8d3cc1aa0e6268/docling_ibm_models-3.13.2.tar.gz", hash = "sha256:195e02dd119df34d2ce5f76ac614da82825851013e4898db7b0468cdf8740a3d", size = 98655, upload-time = "2026-04-23T11:04:23.517Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a4/fc/584f75ca31aa6694fed5338ecb54dc4c8341704b1e5b7b6a4528651f12fa/docling_ibm_models-3.13.2-py3-none-any.whl", hash = "sha256:5fa0838bf15a4e06d2fcb686d756a6f4c329ea0a8820d085f06d07abe96269ed", size = 94013, upload-time = "2026-04-23T11:04:22.227Z" },
 ]
 
 [[package]]
 name = "docling-ibm-models"
 version = "3.14.0"
 source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "sys_platform == 'win32'",
+    "sys_platform == 'emscripten'",
+    "sys_platform != 'darwin' and sys_platform != 'emscripten' and sys_platform != 'win32'",
+]
 dependencies = [
-    { name = "accelerate" },
-    { name = "docling-core" },
-    { name = "huggingface-hub" },
-    { name = "jsonlines" },
-    { name = "numpy" },
-    { name = "pillow" },
-    { name = "pydantic" },
-    { name = "rtree" },
-    { name = "safetensors", extra = ["torch"] },
-    { name = "torch", version = "2.13.0", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "(sys_platform == 'darwin' and extra == 'extra-27-agentic-document-extraction-cpu') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
-    { name = "torch", version = "2.13.0", source = { registry = "https://pypi.org/simple" }, marker = "(extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (extra != 'extra-27-agentic-document-extraction-cpu' and extra != 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "accelerate", marker = "sys_platform != 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "docling-core", version = "2.91.0", source = { registry = "https://pypi.org/simple" }, marker = "sys_platform != 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "huggingface-hub", marker = "sys_platform != 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "jsonlines", marker = "sys_platform != 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "numpy", marker = "sys_platform != 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "pillow", marker = "sys_platform != 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "pydantic", marker = "sys_platform != 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "rtree", marker = "sys_platform != 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "safetensors", extra = ["torch"], marker = "sys_platform != 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "torch", version = "2.13.0", source = { registry = "https://pypi.org/simple" }, marker = "(sys_platform != 'darwin' and extra != 'extra-27-agentic-document-extraction-cpu' and extra != 'extra-27-agentic-document-extraction-cu130') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
     { name = "torch", version = "2.13.0+cpu", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "(sys_platform != 'darwin' and extra == 'extra-27-agentic-document-extraction-cpu') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
-    { name = "torch", version = "2.13.0+cu130", source = { registry = "https://download.pytorch.org/whl/cu130" }, marker = "extra == 'extra-27-agentic-document-extraction-cu130'" },
-    { name = "torchvision", version = "0.28.0", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "(sys_platform == 'darwin' and extra == 'extra-27-agentic-document-extraction-cpu') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
-    { name = "torchvision", version = "0.28.0", source = { registry = "https://pypi.org/simple" }, marker = "(extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (extra != 'extra-27-agentic-document-extraction-cpu' and extra != 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "torch", version = "2.13.0+cu130", source = { registry = "https://download.pytorch.org/whl/cu130" }, marker = "(sys_platform != 'darwin' and extra == 'extra-27-agentic-document-extraction-cu130') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "torchvision", version = "0.28.0", source = { registry = "https://pypi.org/simple" }, marker = "(sys_platform != 'darwin' and extra != 'extra-27-agentic-document-extraction-cpu' and extra != 'extra-27-agentic-document-extraction-cu130') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
     { name = "torchvision", version = "0.28.0+cpu", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "(sys_platform != 'darwin' and extra == 'extra-27-agentic-document-extraction-cpu') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
-    { name = "torchvision", version = "0.28.0+cu130", source = { registry = "https://download.pytorch.org/whl/cu130" }, marker = "extra == 'extra-27-agentic-document-extraction-cu130'" },
-    { name = "tqdm" },
-    { name = "transformers" },
+    { name = "torchvision", version = "0.28.0+cu130", source = { registry = "https://download.pytorch.org/whl/cu130" }, marker = "(sys_platform != 'darwin' and extra == 'extra-27-agentic-document-extraction-cu130') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "tqdm", marker = "sys_platform != 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "transformers", marker = "sys_platform != 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/bd/b5/f95bd7df8acc3b792fd11c6d00c8a9ea3966b10edd734fb194d07be29606/docling_ibm_models-3.14.0.tar.gz", hash = "sha256:def964e3d524f66c7321ef9d48d4021278f14319f01d3f78058cd2324f641e22", size = 100765, upload-time = "2026-08-11T06:58:25.953Z" }
 wheels = [
@@ -480,7 +558,8 @@ name = "docling-parse"
 version = "7.13.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "docling-core" },
+    { name = "docling-core", version = "2.91.0", source = { registry = "https://pypi.org/simple" }, marker = "sys_platform != 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "docling-core", version = "2.98.0", source = { registry = "https://pypi.org/simple" }, marker = "sys_platform == 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
     { name = "pillow" },
     { name = "pydantic" },
     { name = "pywin32", marker = "sys_platform == 'win32' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
@@ -500,7 +579,8 @@ version = "2.120.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "certifi" },
-    { name = "docling-core" },
+    { name = "docling-core", version = "2.91.0", source = { registry = "https://pypi.org/simple" }, marker = "sys_platform != 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "docling-core", version = "2.98.0", source = { registry = "https://pypi.org/simple" }, marker = "sys_platform == 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
     { name = "filetype" },
     { name = "pluggy" },
     { name = "pydantic" },
@@ -522,8 +602,10 @@ standard = [
     { name = "accelerate" },
     { name = "beautifulsoup4" },
     { name = "defusedxml" },
-    { name = "docling-core", extra = ["chunking"] },
-    { name = "docling-ibm-models" },
+    { name = "docling-core", version = "2.91.0", source = { registry = "https://pypi.org/simple" }, extra = ["chunking"], marker = "sys_platform != 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "docling-core", version = "2.98.0", source = { registry = "https://pypi.org/simple" }, extra = ["chunking"], marker = "sys_platform == 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "docling-ibm-models", version = "3.13.2", source = { registry = "https://pypi.org/simple" }, marker = "sys_platform == 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "docling-ibm-models", version = "3.14.0", source = { registry = "https://pypi.org/simple" }, marker = "sys_platform != 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
     { name = "docling-parse" },
     { name = "httpx" },
     { name = "huggingface-hub" },
@@ -2261,7 +2343,7 @@ wheels = [
 
 [[package]]
 name = "transformers"
-version = "5.8.1"
+version = "5.10.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "huggingface-hub" },
@@ -2274,9 +2356,9 @@ dependencies = [
     { name = "tqdm" },
     { name = "typer" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/e7/e6/4134ea2fbea322cddc7ffc94a0d8ee47fe32ce8e876b320cd37d88edfc4d/transformers-5.8.1.tar.gz", hash = "sha256:4dd5b6de4105725104d84fd6abd74b305f4debfc251b38c648ee5dd087cf543b", size = 8532019, upload-time = "2026-05-13T03:21:57.234Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/65/d3/5b7c2f1a52ff0e57355efdc21554aab7e4602f6592ab4582a34c988ab956/transformers-5.10.1.tar.gz", hash = "sha256:31112d1dcdfcf9934242acbba891f44e2279ff74b9b8ba4595640e0e04195a3a", size = 8798372, upload-time = "2026-06-03T15:37:03.289Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/fc/b1/8be7e7ef0b5200491312201918b6125ef9c9df9dd0f0240ccef9ac824e6b/transformers-5.8.1-py3-none-any.whl", hash = "sha256:5340fb95962162cdfdae5cc91d7f8fedd92ed75216c1154c5e1f590fcf56dd0e", size = 10632882, upload-time = "2026-05-13T03:21:52.876Z" },
+    { url = "https://files.pythonhosted.org/packages/e3/8c/3119596c7fcd9b8b8d924d5b5ba1bfdfafd6d8738bdd81ca09c60b4a38b3/transformers-5.10.1-py3-none-any.whl", hash = "sha256:ccb919ea1b77338b44d0d45d23f7472081906b1bb6ed8e5f5cf4d692d1da03d4", size = 11003770, upload-time = "2026-06-03T15:37:00.433Z" },
 ]
 
 [[package]]
