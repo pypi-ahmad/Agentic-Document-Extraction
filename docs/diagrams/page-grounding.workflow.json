@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Page Grounding and Verification",
+    "quality_profile": "showcase",
+    "viewBox": [850, 520]
+  },
+  "lanes": [
+    { "id": "assessment", "label": "Page assessment" },
+    { "id": "reconciliation", "label": "Optional reconciliation" },
+    { "id": "grounding", "label": "Grounding and verification" }
+  ],
+  "mainPath": ["quality", "grounding", "result"],
+  "nodes": [
+    { "id": "quality", "lane": "assessment", "col": 0, "type": "backend", "label": "Quality gate", "sublabel": "assess page draft" },
+    { "id": "reconcile", "lane": "reconciliation", "col": 2, "type": "backend", "label": "Reconcile", "sublabel": "Audit / flagged Balanced", "width": 128 },
+    { "id": "grounding", "lane": "grounding", "col": 2, "type": "backend", "label": "Grounding", "sublabel": "exact match / crop", "width": 120 },
+    { "id": "result", "lane": "grounding", "col": 4, "type": "backend", "label": "Status", "sublabel": "verified / candidate / Audit unresolved", "width": 160, "height": 68 }
+  ],
+  "edges": [
+    { "from": "quality", "to": "reconcile", "role": "branch" },
+    { "from": "quality", "to": "grounding", "role": "main" },
+    { "from": "reconcile", "to": "grounding", "role": "main" },
+    { "from": "grounding", "to": "result", "role": "main" }
+  ]
+}

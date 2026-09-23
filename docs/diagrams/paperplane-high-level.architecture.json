@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Paperplane High-Level Architecture",
+    "quality_profile": "showcase"
+  },
+  "components": [
+    { "id": "workspace", "type": "frontend", "label": "Streamlit UI", "pos": [10, 300], "size": [150, 80] },
+    { "id": "batch-runtime", "type": "backend", "label": "Parallel runtime", "pos": [190, 300], "size": [150, 80] },
+    { "id": "engine-choice", "type": "backend", "label": "Explicit engine", "pos": [370, 300], "size": [150, 80] },
+    { "id": "local-engines", "type": "backend", "label": "Local engines", "sublabel": "Docling · PDF Inspector", "pos": [560, 100], "size": [160, 80] },
+    { "id": "cloud-vision", "type": "cloud", "label": "Cloud vision", "pos": [560, 300], "size": [160, 80] },
+    { "id": "ollama-stack", "type": "backend", "label": "Ollama stack", "sublabel": "PP-DocLayoutV3 · crop OCR", "pos": [560, 500], "size": [160, 80] },
+    { "id": "assembler", "type": "backend", "label": "Grounded assembler", "pos": [760, 300], "size": [180, 80] },
+    { "id": "intelligence", "type": "backend", "label": "Cross-page relations", "pos": [970, 300], "size": [170, 80] },
+    { "id": "outputs", "type": "backend", "label": "Markdown + ADE", "sublabel": "Paperplane v5", "pos": [1170, 300], "size": [170, 90] },
+    { "id": "organize", "type": "backend", "label": "Organize workflows", "sublabel": "Classify · Split · Section", "pos": [1170, 100], "size": [170, 90] },
+    { "id": "jobs", "type": "database", "label": "SQLite jobs", "sublabel": "Local artifacts", "pos": [1170, 500], "size": [170, 90] }
+  ],
+  "connections": [
+    { "from": "workspace", "to": "batch-runtime" },
+    { "from": "batch-runtime", "to": "engine-choice" },
+    { "from": "engine-choice", "to": "local-engines" },
+    { "from": "engine-choice", "to": "cloud-vision" },
+    { "from": "engine-choice", "to": "ollama-stack" },
+    { "from": "local-engines", "to": "assembler" },
+    { "from": "cloud-vision", "to": "assembler" },
+    { "from": "ollama-stack", "to": "assembler" },
+    { "from": "assembler", "to": "intelligence" },
+    { "from": "intelligence", "to": "outputs" },
+    { "from": "outputs", "to": "organize" },
+    { "from": "outputs", "to": "jobs" }
+  ]
+}

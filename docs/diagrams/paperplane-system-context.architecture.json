@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Paperplane System Context",
+    "quality_profile": "showcase",
+    "viewBox": [1100, 600]
+  },
+  "components": [
+    { "id": "user", "type": "external", "label": "Local user", "sublabel": "Browser", "pos": [40, 170], "size": [180, 90] },
+    { "id": "app", "type": "frontend", "label": "Paperplane Streamlit app", "sublabel": "Local process", "pos": [320, 170], "size": [230, 100] },
+    { "id": "cloud", "type": "cloud", "label": "Cloud vision", "sublabel": "OpenAI · xAI · Google · Anthropic · Agnes", "pos": [760, 20], "size": [240, 100] },
+    { "id": "ollama", "type": "backend", "label": "Local Ollama server", "sublabel": "Local HTTP · vision", "pos": [760, 150], "size": [220, 90] },
+    { "id": "docling", "type": "backend", "label": "Local document stack", "sublabel": "Docling · RapidOCR · PP-DocLayoutV3", "pos": [760, 280], "size": [260, 100] },
+    { "id": "disk", "type": "database", "label": "Paperplane local data", "sublabel": "%LOCALAPPDATA% · SQLite · 7-day TTL", "pos": [320, 370], "size": [280, 100] }
+  ],
+  "connections": [
+    { "from": "user", "to": "app", "label": "127.0.0.1:8551" },
+    { "from": "app", "to": "cloud", "label": "selected page images" },
+    { "from": "app", "to": "ollama" },
+    { "from": "app", "to": "docling", "label": "local inference" },
+    { "from": "app", "to": "disk", "label": "reads / writes", "fromSide": "bottom", "toSide": "top" }
+  ]
+}

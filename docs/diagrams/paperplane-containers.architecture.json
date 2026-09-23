@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Paperplane Containers",
+    "quality_profile": "showcase"
+  },
+  "components": [
+    { "id": "ui-pages", "type": "frontend", "label": "Streamlit pages", "sublabel": "Organize page", "pos": [30, 250], "size": [220, 100] },
+    { "id": "runtime", "type": "backend", "label": "paperplane.runtime", "sublabel": "Bounded parallel batches", "pos": [330, 250], "size": [220, 100] },
+    { "id": "parser", "type": "backend", "label": "AgenticDocumentParser", "sublabel": "paperplane.parser", "pos": [630, 250], "size": [220, 100] },
+    { "id": "pipeline", "type": "backend", "label": "V2PageProcessor", "sublabel": "Cloud vision pipeline", "pos": [950, 70], "size": [240, 100] },
+    { "id": "ollama-ocr", "type": "backend", "label": "Ollama OCR", "sublabel": "Local layout + OCR prompts", "pos": [950, 250], "size": [240, 100] },
+    { "id": "contracts", "type": "backend", "label": "Grounded contracts", "sublabel": "contracts.py · ade_contracts.py", "pos": [950, 430], "size": [200, 100] },
+    { "id": "intelligence", "type": "backend", "label": "Document intelligence", "sublabel": "Cross-page relations", "pos": [1175, 430], "size": [180, 100] },
+    { "id": "job-store", "type": "database", "label": "JobStore", "sublabel": "Local lifecycle + artifacts", "pos": [30, 500], "size": [220, 100] },
+    { "id": "cost-page", "type": "frontend", "label": "Cost page", "sublabel": "Browser-session usage", "pos": [950, 650], "size": [220, 90] }
+  ],
+  "connections": [
+    { "from": "ui-pages", "to": "runtime", "label": "Parse" },
+    { "from": "runtime", "to": "parser" },
+    { "from": "parser", "to": "pipeline" },
+    { "from": "parser", "to": "ollama-ocr" },
+    { "from": "parser", "to": "contracts" },
+    { "from": "contracts", "to": "intelligence" },
+    { "from": "ui-pages", "to": "job-store", "label": "Parse / Jobs", "fromSide": "bottom", "toSide": "top", "labelAt": [140, 364] },
+    { "from": "cost-page", "to": "contracts", "label": "model usage", "fromSide": "top", "toSide": "bottom" }
+  ]
+}

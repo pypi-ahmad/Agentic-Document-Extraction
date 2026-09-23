@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Paperplane Architecture",
+    "quality_profile": "showcase"
+  },
+  "components": [
+    { "id": "workspace", "type": "frontend", "label": "Streamlit + Cost", "sublabel": "Parse · Organize · Jobs", "pos": [10, 300], "size": [150, 80] },
+    { "id": "runtime", "type": "backend", "label": "Batch runtime", "sublabel": "Parallel files", "pos": [190, 300], "size": [150, 80] },
+    { "id": "engine-choice", "type": "backend", "label": "Engine choice", "pos": [370, 300], "size": [150, 80] },
+    { "id": "local-engines", "type": "backend", "label": "Local parser", "sublabel": "Docling · PDF Inspector", "pos": [560, 100], "size": [160, 80] },
+    { "id": "cloud-vision", "type": "cloud", "label": "Cloud vision", "pos": [560, 300], "size": [160, 80] },
+    { "id": "ollama-vision", "type": "backend", "label": "Ollama vision", "sublabel": "Layout · crop OCR", "pos": [560, 500], "size": [160, 80] },
+    { "id": "grounded-response", "type": "backend", "label": "Grounded response", "sublabel": "Assembly · cross-page relations", "pos": [760, 300], "size": [180, 80] },
+    { "id": "contracts", "type": "backend", "label": "ADE + Paperplane", "sublabel": "v2 + v5 contracts", "pos": [970, 300], "size": [160, 80] },
+    { "id": "exports-workflows", "type": "backend", "label": "Exports + workflows", "sublabel": "MD · HTML · JSON · PDF · ZIP", "pos": [1180, 200], "size": [160, 90] },
+    { "id": "local-retention", "type": "database", "label": "Local artifacts", "sublabel": "SQLite · private · 7-day", "pos": [1180, 400], "size": [160, 90] },
+    { "id": "usage-ledger", "type": "database", "label": "Session usage", "sublabel": "Per-model cost ledger", "pos": [970, 500], "size": [160, 90] }
+  ],
+  "connections": [
+    { "from": "workspace", "to": "runtime", "label": "Parse" },
+    { "from": "runtime", "to": "engine-choice" },
+    { "from": "engine-choice", "to": "local-engines" },
+    { "from": "engine-choice", "to": "cloud-vision" },
+    { "from": "engine-choice", "to": "ollama-vision" },
+    { "from": "local-engines", "to": "grounded-response" },
+    { "from": "cloud-vision", "to": "grounded-response" },
+    { "from": "ollama-vision", "to": "grounded-response" },
+    { "from": "grounded-response", "to": "contracts" },
+    { "from": "contracts", "to": "exports-workflows" },
+    { "from": "contracts", "to": "local-retention" },
+    { "from": "contracts", "to": "usage-ledger" }
+  ]
+}

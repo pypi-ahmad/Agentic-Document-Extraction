@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Cloud AI Parse Request",
+    "quality_profile": "showcase",
+    "column_fit": "spread",
+    "viewBox": [1700, 920]
+  },
+  "participants": [
+    { "id": "ui", "type": "frontend", "label": "streamlit_app.py" },
+    { "id": "runtime", "type": "backend", "label": "runtime" },
+    { "id": "parser", "type": "backend", "label": "AgenticDocumentParser" },
+    { "id": "processor", "type": "backend", "label": "V2PageProcessor" },
+    { "id": "cloud", "type": "cloud", "label": "Cloud provider API" },
+    { "id": "exporters", "type": "backend", "label": "Output builders" }
+  ],
+  "segments": [
+    { "from": 150, "to": 275, "label": "Request setup" },
+    { "from": 290, "to": 555, "label": "Page draft and repair" },
+    { "from": 570, "to": 740, "label": "Return and export" }
+  ],
+  "messages": [
+    { "from": "ui", "to": "runtime", "y": 180, "label": "runtime.parse_document(strategy=\"ai\", model, page range)", "variant": "emphasis" },
+    { "from": "runtime", "to": "parser", "y": 220, "label": "AgenticDocumentParser(V2PageProcessor(adapter))" },
+    { "from": "parser", "to": "processor", "y": 260, "label": "process_page(page image, mode)" },
+    { "from": "processor", "to": "cloud", "y": 310, "label": "page_draft_v8 structured request", "variant": "emphasis" },
+    { "from": "cloud", "to": "processor", "y": 350, "label": "chunks: text · box · Markdown", "variant": "return" },
+    { "from": "processor", "to": "cloud", "y": 405, "label": "page_reconciliation_v8", "note": "Only for Balanced/Audit pages with flagged quality." },
+    { "from": "cloud", "to": "processor", "y": 445, "label": "reconciled chunks", "variant": "return" },
+    { "from": "processor", "to": "cloud", "y": 500, "label": "crop_verification_v8 · bounded rounds", "note": "Only when a chunk needs crop verification." },
+    { "from": "cloud", "to": "processor", "y": 540, "label": "verdict + corrected box/text", "variant": "return" },
+    { "from": "processor", "to": "parser", "y": 595, "label": "PageResult: chunks · usage · warnings", "variant": "return" },
+    { "from": "parser", "to": "runtime", "y": 635, "label": "ParseResponse", "variant": "return" },
+    { "from": "runtime", "to": "ui", "y": 675, "label": "ParseResponse", "variant": "return" },
+    { "from": "ui", "to": "exporters", "y": 725, "label": "to_ade_v2_parse / to_paperplane_export" }
+  ]
+}
