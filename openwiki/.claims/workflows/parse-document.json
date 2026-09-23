@@ -1,0 +1,144 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:e6d78a517af5038732a946a3d0471cf511cbf2a86044c427ef8962109b6b3fc1",
+  "claims": [
+    {
+      "id": "claim_2e45caa69c16440ab61b4f79a18b9212",
+      "statement": "The Parse UI preflights uploads and page ranges, allows at most 20 files and 1 GiB combined, creates and starts a durable job per source, and stores the uploaded source as a job artifact before parsing.",
+      "evidence": [
+        {
+          "resource": "repo://paperplane/runtime.py#L34-L36",
+          "version": "repo-lines-v1:sha256:d3b7687c041e2283318f10094f5b259bac25ad36ae53832151a5ceaa2514ecf9:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOWM0ZmJiZWFhNjQxY2JhZGVlMmU0ZTY1MzU4YWQ2NGFkYzEyMThiMzQ3MDMwYjUyNmI5YTgxOGQ0NWMwZmM0MyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzczODE3M2U2MDA5ZTQ5YTY5OWE4OWMwYTc0MTJiMzZmM2ZhNTljOWY0NjZjYjc1YmY1NmQ4YWQwZGI0YTI0YSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDM2YTAyMDQ3YjdkZjUzZjQwYjhiMzUyYWYxODA0NGI2NmZmMWM0MGUxZTg0ZjYwOTJmN2QzMzI2NWE1ZDdhMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmYxMjU3OTI5YzRhYjgxNDk0YWJiMjVlZGYxNjRhZWZmNDRlNzkyY2RlY2I2ZmY0MzVkMmJhMWZmY2RkMGZmMyJ9"
+        },
+        {
+          "resource": "repo://streamlit_app.py#L572-L635",
+          "version": "repo-lines-v1:sha256:561a09cad9a38032bb8720f8ae60da19bce30f0a3514ff298b351c2a4c65d451:eyJzZWxlY3RlZExpbmVDb3VudCI6NjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM5MmJkZjQ4OGQ2ZjRiYmM5YjliZWY4YzM2ZWE0MmMyYTBjYWM0NzgxZDFhYzhlMDJlMzY5ZGEzMzUxODBjYzMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUwMDM5MjdhZDdjNTkyMGNiMTNjNzc2NGYwYWEyNGVkOTVjY2VhNTJlZjIyMWYxMmVkYjBhY2FiNjg2M2M2YzkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY1NWFlNDVlYWFjMDlkMjMxMzcxZmI2ZWU1YzNkYTQyNDI0YjE5M2VmZGU0MjBlZDMzZjUzOTQ4YjE0ZjgzM2YiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk2NDlhZDBhN2E0YzNiMDU1Njg0N2UzNTJhZTQ3NDVhNDY1NGY4MmZmYjIxMzQzMzU3YjQwOTdhMjI0ZDlkNTAifQ"
+        },
+        {
+          "resource": "repo://streamlit_app.py#L647-L674",
+          "version": "repo-lines-v1:sha256:a6eb7dd903d7f2e66e7717b077b45b1616304aacca158d0ff07e8782d923906a:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyZjBhNTllMjExZGRkNTMwY2FmNmE1ZGU3OThmNGY2YTZhNTI1ZGY2NjBjYTM3NmFjN2MwYTkxYTQyYWJhOWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI1OTkwYzJjZmExNjlkNGEzZDRhYmJjYWE1NGEyOTIyZmQ4M2YxODRlZGI0OWI1ZTQyMjg1Nzg3ZGVlYTkyODEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhiZjI2NWEzY2EwMjNmZDFlYzhiZmY0ZjQzNzY3ZmU3ZTIyZDRmZTBkMzBlNTVkODJlNTkyM2ZiZTA2ZDg2ZDYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY5ZWVkOGE2MDczOTk1NWMwOWUwNmVlYWQyYTNjNWM4MTNiZDgzNjM0NmE1NmMyOGRiODU1YWYyMDc1YzUyZDQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_740e14ab4aff41278955fda3422aa951",
+      "statement": "The runtime bounds batch concurrency at six and converts per-file expected and unexpected errors into individual failed outcomes while completing the rest of the gathered batch.",
+      "evidence": [
+        {
+          "resource": "repo://paperplane/runtime.py#L174-L200",
+          "version": "repo-lines-v1:sha256:edfce9b0599e666f340d1ad23e916d266526ad820211d1962bf9fd50bd1db58d:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRmMGY1YjJhYzFjZjMxMTM2OWIzM2RlODQzYWFjYTRjZTIxM2MzMWE4YzY5Y2NmYTJjMGYzZTMxMGQwZjNjYjEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdiOWU0NGY4Njc5NGJhNjg2OGY5Mzc5NTg1MGY4MWQ5ZGJiOGU5ZDc3ZDUzNTQ5YzM2NTBlYTBjNTUwYzQ5OTAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI2YWQyMzM1ZDM5NGEwMTE2NjAyYjcyMGNiNzJjNDdmN2NiNDk5YTM3MzM0MzMzMmEwNGU4OTRjMDE3MjkxMmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg1NGY4ZDJkNWFmZWNmNWNmOGZhZTRlOTA5MGJkMDUyYzJkZTU0ZGYxOWI2MTJlMWY0NzU0ODg1NmQ5YzRlYWYifQ"
+        },
+        {
+          "resource": "repo://paperplane/runtime.py#L200-L246",
+          "version": "repo-lines-v1:sha256:28686497785da9f569abb4f4652bd0bff1b10dbb7f059740daf12e579c3ed61b:eyJzZWxlY3RlZExpbmVDb3VudCI6NDcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdiOWU0NGY4Njc5NGJhNjg2OGY5Mzc5NTg1MGY4MWQ5ZGJiOGU5ZDc3ZDUzNTQ5YzM2NTBlYTBjNTUwYzQ5OTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk3NTRiMDU0ZmMyODQ3ZDVmZGMzOTAyMzZhZjM4Y2Q1M2E1YjU0MDE5YTRiMzM2OWRjZTZjNzI4M2NjNWQxMWIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIyZDYxNmVkYTRjNzM0M2JlOTU2ODlmOGJhNmUxNTUxYzY3OTQ2MzVmMWFjMGFlMGQxYThjOGRmY2JlYmQwY2MiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU1OTM5ZjQ4YTM2MmJjNjlkMzQwNmIyM2U2YzI3OWRiMGYzYjJiZWZlY2UxMGY5MWNiNjU0NGFkY2FjZTU1YjEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_199136fe874247efa791d3e627a5cdfd",
+      "statement": "Document inspection supports PDF, image, and Office inputs, applies size/type/page and image/canvas checks, converts Office files to PDF before inspection, and validates page ranges as one-based inclusive values.",
+      "evidence": [
+        {
+          "resource": "repo://paperplane/ingest.py#L121-L131",
+          "version": "repo-lines-v1:sha256:6d14099949765b56d109214e9fda21cda304ef96e46acb548af5d8b2fa822513:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc5MjVkZGM3ZWFmNjMzOTMyZDdkZWI3ZmZhNDcwNTc4ZjA0NjQ3Y2IyZmY1YWQyZjU3NzhmOWU1Yjg2OGEyNWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA1MWQ3M2UyYjllZTJkMzA4ZjcyMzY2NWQwZGQyNDAzZGNjMGIzNmMxOWRjNzk5MWE4N2E1N2NkZDc1MjZmZWYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhiOTc0ZGE0MDg2MzJhNGFhN2UyYWU4MGI4NjAzOTFhM2RjZDgyMTFjNzllY2FkN2NhOGU5NTEyOGIwMDE4MzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJlNTY0ZjY5OGU1ZWYwNTkxNTMxNjQwOWI1ZjE1YzNkNmJiZWFhZDkzYTcyNDU3ZGNjMmE1MzAxYjhlOTUzZGIifQ"
+        },
+        {
+          "resource": "repo://paperplane/ingest.py#L46-L118",
+          "version": "repo-lines-v1:sha256:0307e3839af3bfee7f4e7d3e84b6a041fc83daf91d3cc97dc8c0a26d04398990:eyJzZWxlY3RlZExpbmVDb3VudCI6NzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUwZGRiYWJlODI1NzhmZTUzNjlhMjJkZTU4ODNhMTc3MTBjYWU2OTMyOWQ3MGVlZDI1NjE2MjRiYjM4ODI3M2YiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM5MjIwNGM2NWY1MDJkYzE2NDU0YjYyNDA4NTZhOWFiN2FkZTAwM2E4ZTlmODYzMzNlYzBiN2M5ZTQwOTQ5MWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYyYjM1ZGE3YWY0YTljZmUwMTEwY2I3MDdjMjk0ODJhYTA0MTRlM2IzZWMxNGYzNmI1ZDBiOTUyNmVlOGFjNmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFmNzUwZDI4NjlhNTRkYjkyYmZjZTZlMjgyNzQ2NGY2OGQwNWU1MWZjNzg3OThhNTczYjJjYzMzZjU0ZTk4YWQifQ"
+        },
+        {
+          "resource": "repo://paperplane/parser.py#L196-L221",
+          "version": "repo-lines-v1:sha256:7bde9e50e792403186e61131c0b0de5e97989977eb1e72a8f30587fa8f3d3407:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI1OWU0ODkyMTQyMDljZmJhZGFiMjZiODRmOTg4NjU3M2UyNGYxNGY2YjNjYWQ1OWMzOThkZTY3MjI1YzAwNjQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMyNTg1NTI3YmExMzUxNGUxMGMxZmRlMmU2NzJhY2FiOTdhNzdhZjUxZGJkNWMzNzFjYThiM2UyOTYxMjU0N2YiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNiZTgxZjI1YTc5MjUzN2RjNmZjMGNjZjA3ZGQzNTU2MzU0NzdiYjY3YTNiYzM2YTIwNzQ3M2I5MTFhYjlhNTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNjMjJiM2I5ZDRhN2VlNGRjMGE4MWZkOGUxMWIxYjBhMWE2ZmQ4NDM0ZTBjY2ExMTM4MmE2ZDU4MjVmMWY5NjIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_dfa965c48a70441588ef3d0f9b431405",
+      "statement": "Docling and PDF Inspector enhancement strategies select pages for refinement based on parser success, confidence, OCR flags, and missing blocks; a DocumentInputError in the local parser triggers AI processing of selected pages for these enhancement strategies.",
+      "evidence": [
+        {
+          "resource": "repo://paperplane/parser.py#L275-L338",
+          "version": "repo-lines-v1:sha256:be8a1392d86e73ed2a650f16691aec93523c3e31280f41a64584070f052aeaa1:eyJzZWxlY3RlZExpbmVDb3VudCI6NjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA2ODA3NjgxNjBkMWNiN2MyZWJkNmRkZjM4Yjg0MTExMTRiZjQ1NmU2NTlmMDFkMjk3NGRiYTg5YTg4YWIwNWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUxMDM0ODFjNTdkMGYwZGMwZjc2Y2QyY2M4YjM2MDRjNGU4Mjk2ZGE0MTIyYWRkMTllODE3NDVkYzdlMzMxYTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI1YWY2YjI1MTEyOGZkODhkZGU0NGVkYjgwYzIyYzJjZjAzNjFkNWY3MmM2ODdhZjVlOTkzMTc3NTY1MjlkMzYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjYzNTA5NjU4YzU1YjdkNDA0ZDQ5OWM3NzNjYTQxMmY0NTgwYWQzNWQyOTI1NjhlZDNjNWZlMDQzZjUyYjc2NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_4282694b6a564079bd5757150c31535f",
+      "statement": "If AI refinement fails for a page with local blocks in a local-plus-AI strategy, the parser records a warning and keeps the local page; AI-only and Ollama strategies propagate the failure.",
+      "evidence": [
+        {
+          "resource": "repo://paperplane/parser.py#L344-L382",
+          "version": "repo-lines-v1:sha256:8f4a50bd9eaa269d2d17a116eb508a1d08064d3e546d0204c7778f3365a8312f:eyJzZWxlY3RlZExpbmVDb3VudCI6MzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE2NzY1N2E2ODYwNzdlMTBkZGEyMWVlMWNhN2QxZDU4NGJlMzA0NTNmOWViMDM2YjM5NDQ3OTQ2ZjczZTY1YzIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlkOGE5ZTljMzI1MjgyMGM2NWE4MTY1MjBiOGRiNDkzMjI4MDg0OWVjOGM3ZDJlYjYyNzJhZmRmZWJlMDU5YzMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBkY2Y4MTI3MzMwODhmOTIyZmRkNzY0YzliYzhjOGMyNWM2ODkyZDZkYTE3ZTVjNDNlOGJiNjRmMDJlODI3MzYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjUwZjU3Yjc4MTQ5OGFhYjdmODdkM2U2NzY4ZmE1NWZkYjgxZTVlMDQzNzU4ZDA3NWJjZGUyMjEyY2Y1ZDM1NmYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_2f5c753aba7646e1be977a79547460a3",
+      "statement": "The vision page processor can reconcile flagged drafts in Balanced mode and performs reconciliation in Audit mode within a verification-call budget; an OpenAI content-filter interruption falls back to native PDF words or local OCR when words are available.",
+      "evidence": [
+        {
+          "resource": "repo://paperplane/pipeline.py#L647-L699",
+          "version": "repo-lines-v1:sha256:7bfbc493cdf695e2b368a1310007ee25cd55bc5a6f15096d808473e2bfd3b9e3:eyJzZWxlY3RlZExpbmVDb3VudCI6NTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM2YWFiYzQ2YzRhMTFhYTM4MzNhZGU4NGUxMjY0OTk2YTNhNGUxOGQxODhmNmMyODE3NWE1ZjIyODE3MzI0NzAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZkMDAwNzg3NWRlOGY5MmQ5MmI3ODdhMDE4YzE2YzAwMDQxOGJkNWY5NDk5MjNiOTBmNGQ2M2M3ZWMxNmQ4M2EiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYyMGYxZTVlNjcyZjhlNzY4MjgxM2JkMWM1ZTE1ODlmOTE3NGU3YTljYjU5MDAxYzVkNmFkNTcxMjQzMjc1ZjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFhNDEyOWQ3MmE1YWIzMzAyMmNjNmU2MTcwYTIzNTQ5NWVjY2Q1OTEzOTU4YjQ5ZmYzZTQxMGNiOTFmYjVjODYifQ"
+        },
+        {
+          "resource": "repo://paperplane/pipeline.py#L730-L778",
+          "version": "repo-lines-v1:sha256:f7427a9fb0154e79ad07a75a66f88da2ef37a82d92a67a2b1e22df57f3c10f4d:eyJzZWxlY3RlZExpbmVDb3VudCI6NDksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA0ZTQ4ODc3ZjM2ZDk3M2UyZGFhMWMwZGNmYTk0OWE0ZjUwYTU5NDk3ZTYxOGIyOWM2Yjc1MmQxZDdlZGU3YmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMzNDY1NGZkZDQzNmU2OGZmZjI3ZTQzOWM0NzA5N2ZjNmY1OThhZDNiNGQxZjg1ZjZmMjI1MzA5MDc5ZDhiMWYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBlZTExMjFhNDI3ODVjMWQyMTE2Y2I3MDUwZGU5MGFiMDZmMTU5MmJhNDc1ZjdiOTlkMWE3YmRkMGY0NjY0M2IiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIxOGQwOTlkODdmNDg3MGYyY2NmOThlMjViYjA2MDkyZjAzYTFhN2Q3MjAxMjc3MzI0ZDViYzI0OGU0MmI1YzcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_885070263cd44415b118529121ff5129",
+      "statement": "The parser assembles ordered page output into Markdown with page-break markers, attaches usage and processing metadata, then adds grounded words; ParseResponse validates page structure, IDs, range bounds, and exact grounded-word text.",
+      "evidence": [
+        {
+          "resource": "repo://paperplane/contracts.py#L201-L276",
+          "version": "repo-lines-v1:sha256:ccb6205b703ff6b7206caed9724bcdda943eee66aac4b2a6f09719dc8e6fbf49:eyJzZWxlY3RlZExpbmVDb3VudCI6NzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhMjQ2MGVkNTAwMjIzYjJkMjc1NzA2ZjJmZTc1ZTlkMWU1ZWRmZTA5ZjM2NjY5OTVkODIxNTA0YTUyMGM1M2QiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM3NDAzMmJiNmIwOTY3MzRmYzFiYTU4NWRmNTQ1NTY1MzVjZjU2OGM0ZTYwY2Y2NTlhMThmNmUzNTYzNjJkYTgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc2NzNlMjg2Y2UzNGJkMzNmOTJkNWM4OTM0ZDU0NTVkYjFiOGI0YzdmZGRlOWQ3ZmM3MzI1MzE4Y2E4YWVhZTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImEyMGFiMjAwN2QwNmMwZjQ1M2NmMmI2OTAyZmZhZTkwMDFjOGVhZmEwOTkzYzQ4ZGE5YjA0NDY2YzM2ZGM3ZTMifQ"
+        },
+        {
+          "resource": "repo://paperplane/contracts.py#L348-L506",
+          "version": "repo-lines-v1:sha256:89ceebb452bedab900a3f7332991de0f25b2c8f607d40c4b6386f8d4277d3844:eyJzZWxlY3RlZExpbmVDb3VudCI6MTU5LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI3NjJjYTBiZTU5NjYxNDc5YmI5MDJmZjQ5YzNiNWRiN2FlZjNkODI4ZDVhODUyOGRhMmNkYjc4NGUwY2VkZjdmIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJjOTIyMDRjNjVmNTAyZGMxNjQ1NGI2MjQwODU2YTlhYjdhZGUwMDNhOGU5Zjg2MzMzZWMwYjdjOWU0MDk0OTFkIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI4Yjk3NGRhNDA4NjMyYTRhYTdlMmFlODBiODYwMzkxYTNkY2Q4MjExYzc5ZWNhZDdjYThlOTUxMjhiMDAxODMyIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIwMDAyMjM5OGE4NDg1YmViZjAwNGI5YTI0MDc3ZmZiZjY4NjVjMWM5MTdjMmJlMWRmZGZhZTk0OWQ2YWIwZTM2In0"
+        },
+        {
+          "resource": "repo://paperplane/parser.py#L409-L478",
+          "version": "repo-lines-v1:sha256:af013acecbc2a02eb22888d263db47dc7ead9bc193b130e8098ec3d6a06af94d:eyJzZWxlY3RlZExpbmVDb3VudCI6NzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNiMmYzNGY5YzgzNjdjZGY4ZjM3MTU5MzgyZGFiNmFiZTQwMmM4YjgzNTc2Y2UxOGMzZjUwYjA3YWQ5MWZlMTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhhODQ5NmVlOTY0MjcyZmM5MTFhMmMyMmVlNDFkYTBmY2U3Zjg0OWJmYWRlMzQwNjUxMmJlMWQyYzgxODhjZWYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM2NWFmZjFiMWIyYmU2OGUyZTAzOWFmZjcwM2U5NDQ3MmIwNWY2YjY5N2MyYmMyYmNlOWI0ZGU3NzQyYjgzZWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdlNDJkYTRiMTQxMjBjMWU3ZjlhOWY1MzYxYmNhMzI5Zjk2OWU0MGVjZGRkYTcwZmNiMGFhODgyNmUwOWFkNTIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_9e859913d70b4cb98acf5ff46135ec9c",
+      "statement": "The Parse UI offers Markdown, sanitized HTML, annotated PDF when available, Paperplane JSON, ADE v2 JSON, and a batch ZIP; the ZIP manifest records completed and failed source items and included files.",
+      "evidence": [
+        {
+          "resource": "repo://paperplane/outputs.py#L196-L210",
+          "version": "repo-lines-v1:sha256:28ae636e2fd13f7bda35578449582471a4151bae2de318111d03f50555934841:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRhYTA5NzRlOTU4MjU1MGU3MDU3MjQ2YjJjZjE5MTZlMGJhN2ZjYjhkYzhkZGY4NzJjZmRkNDk0N2YxYmM0NTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMwYzFmMTg4ZjE0MmVkN2E4MjQ2ODBiMjA3MTcyYzU1MTliYzYxNGE0OGZkYTdjZjE2N2VkYjhkZGY3OTk1NmMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhjYzRhN2QxY2M3OTZhYmEzZTQ2NzIzMzI3ZjUxN2U5ZjgxMTk4MmQyNTBmMDcwMjk4NmU0YjU3NjRhZDk1ODkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRmZjRlYjVkM2M4MWM0M2U2OGY5NGIwYzQ0NmQ4YzVkZWRkNWMyZTM4NzE0YjdlNGU5NGFmNTRkYjRiMjMwMzMifQ"
+        },
+        {
+          "resource": "repo://paperplane/outputs.py#L213-L253",
+          "version": "repo-lines-v1:sha256:0e33a23abe05c5e661593bf87c64e1d663c1d82e749fb52c273d85454e1d9784:eyJzZWxlY3RlZExpbmVDb3VudCI6NDEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQzNGQ3ZmU3NTYwNzQzOWEwOWMxZTc1MGQyNDQyODVmZDk2NmQzNzk1NjU3ODk4YWIzYzhkOGY5ZDAzMjZkYWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVlOGU3N2U4NzUyMjEyM2Y0N2JlM2I3OTE1M2U2ODJmOGY0NDhjN2VkYzRmZGE3MTAyYjNmYjI3YzIyZGY2ODAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhjYzRhN2QxY2M3OTZhYmEzZTQ2NzIzMzI3ZjUxN2U5ZjgxMTk4MmQyNTBmMDcwMjk4NmU0YjU3NjRhZDk1ODkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjcyMmRiNDExZTNiZDA5NWMxOWMwNzM4NWQxMTI1MmRlNTRkN2QwNjU1MDNlOTA5ZjM2MzBkZWFhYzdkMDc2OWEifQ"
+        },
+        {
+          "resource": "repo://streamlit_app.py#L365-L401",
+          "version": "repo-lines-v1:sha256:f8d69e69798de0778b449c06bce92685a38d1f641fb947806dd6d2184c10b821:eyJzZWxlY3RlZExpbmVDb3VudCI6MzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMzYzM0NzRkZmRlZDZmMTIwZDk2ODJhYjM5NDgwNjA0MDVlZDdmMTI0YWVjOWZlNjZjZWY0YTExZDg5N2FlZWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRmOTIwODg1NjUyMDk5Y2QzMTY0ODI2YTYxZDJjYzUzYzkyNGE1NmY0Yzg5MzI1YTg1N2Y1MDQ4ZmNlOTY4NGUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI2YWQyMzM1ZDM5NGEwMTE2NjAyYjcyMGNiNzJjNDdmN2NiNDk5YTM3MzM0MzMzMmEwNGU4OTRjMDE3MjkxMmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJjZDllN2M3ZGU4NzhhOWEzNzI0MjQzYjY1OTAyNGMxYjJkOGFkYzA0M2I2M2Q1YjViZjA3OWYyMWFlZGE0NGIifQ"
+        },
+        {
+          "resource": "repo://streamlit_app.py#L910-L976",
+          "version": "repo-lines-v1:sha256:9a1bca780ba6133c1ec2cc147c72fbc6e3eb78dfcf408a099ca61282ff9d20a2:eyJzZWxlY3RlZExpbmVDb3VudCI6NjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcwZmRkYWFmMTIxMzcwZjcxMmI1ZDVjM2ZkMjM5NzA4NTY2ZDdkZTdmYzc5ODYyNTc1N2ZkZjg4ZmRmMGU4ZGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM5MjIwNGM2NWY1MDJkYzE2NDU0YjYyNDA4NTZhOWFiN2FkZTAwM2E4ZTlmODYzMzNlYzBiN2M5ZTQwOTQ5MWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyODVmYmQyNWYzY2Q0ODhkYjc5NTlhM2FjY2IxYjdlNWQyNmFiMjU5ODdiZmFhNGI4NDJhYzQwODc1NThmMWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIxNWU4NWVkYzllOWFmN2Y0MjIxMzkxMjIwMWU0YzRjZWJjNTI4MzFkYTY3ZWViYTIxOTVlNGI1ZTAwMGFmY2QifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_ec5bbe8c37fe41469964305fd61b594d",
+      "statement": "After parsing, the UI keeps outcomes and annotated PDFs in session state and persists successful result JSON and available annotated PDFs as job artifacts; artifact-generation errors are recorded separately.",
+      "evidence": [
+        {
+          "resource": "repo://streamlit_app.py#L725-L755",
+          "version": "repo-lines-v1:sha256:ce70fa4f883057aa1276ecee5bac8fb8de38d73cdf7df3c8117b70a45e19c49e:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZhODc2OGQ2MzdiODdjNDY4MjIyMjVmNTkzMGFiODM2ODZlYjAwM2Y5Y2Q2YjYzMGM3ZDhiOGQ0YmZhZDVmYjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZkMDAwNzg3NWRlOGY5MmQ5MmI3ODdhMDE4YzE2YzAwMDQxOGJkNWY5NDk5MjNiOTBmNGQ2M2M3ZWMxNmQ4M2EiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdlOGYyNmI2OWE4NDY3NjY3MWNlNjk2Y2I5N2MwMDgwMzE1M2Y3ZjUwZGUzZTk4NDM1ZmI1ZmYzYTA3MTViY2UiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdhNjUzNjExNjU3NDk5NWEzZTdmMGVmMWUwODhiOWVhYzZmNmZlOWNkNjNiNGE1MjEzZjAzMjc5MDUxMzRlMTkifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.5.2",
+    "at": "2026-09-23T15:07:44.901Z"
+  }
+}

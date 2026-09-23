@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:5be396b78c0f0a6a22c33bc28b557e24ff05af64d26a4f04316cbad6ad6e4db1",
+  "claims": [
+    {
+      "id": "claim_c07154787e4d45f4b00deb4ff9cb0db1",
+      "statement": "The workspace entrypoint registers Parse, Organize, Jobs, and Cost as Streamlit navigation pages and initializes shared session usage state.",
+      "evidence": [
+        {
+          "resource": "repo://workspace_app.py#L13-L24",
+          "version": "repo-lines-v1:sha256:74d2608c163e652349175ce08c1b5ff6255dbed3d3538f08b19b0890ac40fad2:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRhZjY5MGVlNzYwNmY2YWI1NjdhZWY1ZWZmZWFhZjg1ZWUxMjRhNWJkYWJhM2QxNTlmZDU5MjA5OWJhODA5MDYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc2MTU2YjRmNDVlODAzZDBmNzU0MTI0NjBiMzAxOGYwZWE0ZDcxZGYwMzgyN2MyMDIzYTE2OTlmOTgxYjEzZGUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcwMzkwZjY3NGM0NDRiYzc3MzdjYjRjNGZjNGIyYzE5MDI3NjI3YzI2NGM2Y2FjNGQzZTMxYmUzMjg2ZmY0N2EiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQyM2Y3M2ZlNWViYmQyOTc3MGEzN2I1NmJiZTY0YTU2M2E4YjFiNmM3Mjk1NjZjMTA1MTJlMjhjZGQ5YTFjYmIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_541db2e7efea4c92a505382197c9b453",
+      "statement": "The Parse page owns upload and output UI, calls runtime.parse_documents for a batch, and stores batch outcomes and annotated PDFs in Streamlit session state.",
+      "evidence": [
+        {
+          "resource": "repo://streamlit_app.py#L162-L190",
+          "version": "repo-lines-v1:sha256:06eda4d69804b437e4a267dfc36ac9e2d578e0485307223a6c2b2bebeaa0247c:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZhMzhjOTZmMTdiNDJiYzg2MjI5ZmNmZjdmZjI3YTM1NDUyYjE5Y2RhY2I4ZDQ5NmRlMjA0OGNjMmZjZDE2Y2QiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ3NjAyNDU1MzgxYjc4ZjIyNjAzOGYzZWNlM2QyZDhlZmZhNjJkZjMzNWEyM2U0MDIwZTY0MDZhZmU3ZWU4NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI1ZWFmMGUyYWRmNzVkZDY5NTczODY2NjMzZDc4ZDRiYWI3MDFiYWExOWU0ZDY4ODE2ZTc1OTBjNTMwY2RmYjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNjMzg2NGQ1NzRjMDE3ZmNlMzI0OTliMjU2ZWQ2ZjM2YjkzODUzYTQ0ZTdlODA1MzMxZTM5OWNkZjdhZjIwNzYifQ"
+        },
+        {
+          "resource": "repo://streamlit_app.py#L707-L730",
+          "version": "repo-lines-v1:sha256:e4abeedb6a913e8ffc6bc5d66f2e90ebcbec5c7df73ef733d695bcec17949899:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIzZGMyNzQ3YmQ5OTAwNDIyZmFlZjRiYzAxNTZlNWUwMDNmNjAyZDI2ZGIyNWMyNTFjMzM1N2EwZjg0M2RmMDciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBjNjM2MzM2NmZiNTg4MWIxMjJiZjJlNWE4ZGYyMmQ4MGViOGVmM2VmNzZjOGZiNmNmNzc2MTdhYjlkZWYyZDciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM0NzI1ZGVlYWI5MWE0YjQ4OTBjNTA0NjZkYzc2M2JmYTYwOWQ2YWM4NjQ5OTZhNzkxNGYwZThlODAyY2VjNGQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQyNWRlMmMxYzBhOTkyYjg3OTViMGQyYjBiZWQ1NzM1Zjk1MzZiYThiZjE1ZDRhZjUxMDhmZWRlMjg2ZGY3ZDMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_0a683742eacd46a6be377a7a1b43cbe3",
+      "statement": "runtime.parse_document composes a strategy-specific adapter, V2PageProcessor, and AgenticDocumentParser, optionally supplying the Docling parser for Docling strategies.",
+      "evidence": [
+        {
+          "resource": "repo://paperplane/runtime.py#L114-L162",
+          "version": "repo-lines-v1:sha256:cc2791e16390322415d37cbe3c5fab40ead9aff374cde40520f6aa64a35f795a:eyJzZWxlY3RlZExpbmVDb3VudCI6NDksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE5ZjA2YTE5NTJhMzQzMGQ2NTc4YTg1NWJlMDMwZjkzNTQ4YTdkMWI0OTA0M2YzYzE1ZjJhOTNlYzJkMzU0MDIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJhOWY4YzJiYzdhMTQxYTAyMmFmM2ZlYjhhYjUwMDhlYzI1NzU3ZWYyNGFjZDA0OWY1MDg5YTc0YjdjOWFlODEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM1MThkZGQ4ZjA2NzViNDAwNjE5NTZmMjc2MDUxNDQ5N2FlOWFhZGMwN2U3NWI1MWM2MmYxMTI5MDc4MThjOTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZkN2Y2NTc2MTMwYjZlMjQ4N2IzMzllM2NjZGVhMGU0NzU2ODIxNGJmM2Q2NTNjNzcxNmE5NDRiYWE3NGEzYzUifQ"
+        },
+        {
+          "resource": "repo://paperplane/runtime.py#L163-L171",
+          "version": "repo-lines-v1:sha256:565242b3684903fd33d3bf8311d7f0495d9e06946b81aaa94f0a9f035e5ec86e:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiY2FmNjk2OGI2MjE5MGE4YTRhY2E4YTJlOGU5MmU2MzBjMzg1ZmQ3MTg1YzQ1NGQxZjAyZmJlZjkwYjkyMGQxMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMmE5ZjhjMmJjN2ExNDFhMDIyYWYzZmViOGFiNTAwOGVjMjU3NTdlZjI0YWNkMDQ5ZjUwODlhNzRiN2M5YWU4MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDNmODU4Yjg4MzgxMzIwYTFkYjA4ODE0ZmY2OGIxZmRhMTE0MDQwOWFkMTgxZGU0YjU0ZTgxMWFkNTkxZTU4OSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2ZjNjljNDc2OTA2YTE5MjRhMGQ5ZDk3OWI3ZTk4MDkwMTY0MDhhNDNkYzAzMWM0ZGJkOTZjYzFiYzMzM2RjNSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_89b4577e70d34f59851177dca1bb7a9d",
+      "statement": "Organize consumes successful Parse outcomes from session state, Cost aggregates session token usage, and Jobs reads persisted JobStore records.",
+      "evidence": [
+        {
+          "resource": "repo://app_pages/cost.py#L17-L27",
+          "version": "repo-lines-v1:sha256:c58659f21928a37068227f0470067bf9297f875d3fbdb3482ebe1826be90e1b2:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhODM3YTVjM2VkZTQwY2QxYzI0ODg4MTkyODFiOTE5N2U2Y2E3NmE1YTZiOTAwMDQ5ZmJkYjYyODNiNjExNWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEwZWZmNWJhYTA2OTg3Y2Q5NmZjOWEwMWZkODIwNTNiYzg0MjNjODU3ZjlmNTZkNzc0MGUzZWUzMWQyOTAyYzYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdhNTg5NTY5MjVmMDQzYzI0MDlkYmM3MzVmZDU3ZmEzNjcwZDE2ZDIzYWY4OGY2N2QyZWFiODdmYTY2MWQ1MTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjgwYzRhNDNkNmQ4MTlmNGIzZmQ2YWRlYzlkZjQzOTQ0MGEyZjY5MDkwMWMxMWMzNzM3NzQ3MGRhYjFjZTE0NjcifQ"
+        },
+        {
+          "resource": "repo://app_pages/jobs.py#L13-L24",
+          "version": "repo-lines-v1:sha256:671cdd3bdd9ebe15b10a6701e015455303e82e2efd53c3b1e411319c4a32df72:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM3NmJlNzJlNDFhZmMyMWRiMDczMmQyYzZiNDY0NTI4MTJiYTNhNGE4OTNkNmYwMGRkMzkyOTJlMDk1YjE2NjUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIyNzJjNWJlMWExY2Y4ZmNlYjlkY2NjN2FmZjgwMDMxNTc3MWY3ZTE0NzNiYmFlOTMyZTc3ZDEyMmQxOTAzNWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhlZTQxODY3ZTE5YzljYjRlMTQwYjVmNGRmYzYwOWE4ZjU3NTM0OWZkMmZmY2QzNzFiYjY5NmY2YTBkZTY2M2MiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRkOTE3NDEyODk1NjAyMjM4MTAwYWRkNmU4ZWYxNmIwMjE2YTM0NTk1MWI5NDA0Y2Y3MDJiZmZjYTQ1NWJjMDgifQ"
+        },
+        {
+          "resource": "repo://app_pages/organize.py#L19-L32",
+          "version": "repo-lines-v1:sha256:a348efde1462f9d04d168da2488597e7e96231eb547e7dd8b9cfdc8d0cfef935:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE4MDY5OGZkYjdlYTcwYWNhODE4YTUzZTBkMzI4NmVmMDE1OWRjNjRkNDRlNzAyYzVjZTg0MDE0OTc2NjA5ZTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZhZmJhMDUyN2MzOTUzYzRiNmUwZTViNTczOWJhODM2MTJmODA1M2JjZGM5NDY2NzMwMTkzY2QxZDU5MGI0MDgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM0NmE4NGJmN2Q1NWMyZmY5YWQxMWYwYjkxZmI0MjBjNTM4MGE3Y2FmNmFmYTQxMmE4MjE1YzJjN2UyM2E4MzMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjUyZmIxM2EwMjJhNTVmMjlmNjJmOGE3YTI3ZThmNWNkZDI2MGI3NzViMTRiOTgwMjRjMjE5ZTJmYWU2ZTM3NzcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_f7f219c011104ff681a5fbccc64fc074",
+      "statement": "The Parse page's result state and the job store have separate lifecycles: session result reset clears in-memory outcomes, while job metadata and artifacts are stored through JobStore.",
+      "evidence": [
+        {
+          "resource": "repo://streamlit_app.py#L133-L136",
+          "version": "repo-lines-v1:sha256:5d04816c3bd7f51a0270f80797a45566f59051355c43b35d56ed88187fe22575:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOWUzYzIxZjJkNTExOWQ3MDY3ODgwMWU2NTNhNmY2Nzk5OGNlMWM5NTc0NWZkOTE1Yjc1MzlkMWFkMDYxZDBhNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiN2ZiYTU1ZDVlODVhOTgxYzg3ZmIwYzQ1Yjc2MzUwZDY2Mzk5ODY3MTVjOGI5MDA1MjQzYTBlZjU0MjU5YzdhMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjRlZmZjMTczOTZmYjgyN2JhMGM2NTgzYWE0MDkwMDllNDI5YzBlNWNjZWVhYzJiYjg2ZjA2N2NlNjQwYzBlMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNmM2ZjRlOTFhNTkxMjRlYjhkMWM1ZTM4N2JhMDE4Mjk1ZDRhYjAxMzFhODNjNGYzMjlmN2Q5NmI5ZDFlYTdjZSJ9"
+        },
+        {
+          "resource": "repo://streamlit_app.py#L162-L179",
+          "version": "repo-lines-v1:sha256:12fb59066cc8ead59e3524290f82a1b2cfc3cdf54514aef1176e203ba958de64:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZhMzhjOTZmMTdiNDJiYzg2MjI5ZmNmZjdmZjI3YTM1NDUyYjE5Y2RhY2I4ZDQ5NmRlMjA0OGNjMmZjZDE2Y2QiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg3ODVmOWFjNjdkZmY4N2ZhNjI3MTBiOTlmNTgxZDQ1ZThjMmVmZGU3NmQxYThkYzZlZTNmYjZjMDM1ODhhYWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI1ZWFmMGUyYWRmNzVkZDY5NTczODY2NjMzZDc4ZDRiYWI3MDFiYWExOWU0ZDY4ODE2ZTc1OTBjNTMwY2RmYjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk4YWU2MmM1MzBmM2JmYmUwMWNhYzExZTIxY2FmNTdmNzU4NjU1NGViN2ZhYjY0MGVjMGIyMmFjZjBmYWM4NjYifQ"
+        },
+        {
+          "resource": "repo://streamlit_app.py#L648-L658",
+          "version": "repo-lines-v1:sha256:2cd69b773517a0239c0176eed5264ef7971c10345399b90eba562ae31b2ef7ee:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE3NDU1NDM0MDY1Mzk5YzRlYWEyMDhlNmQ0Y2JmNGUyMjA0YmQzNDEzN2NjY2M0NWRiOWEyMDZkOGYxNzI4MGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMyYmYwNjAwNGYxNTc5MDgzYzIwYmU4NTIyN2MwOWM1NDY4MzBhOGI4MmYxZjkyZjZhZjk3Njg4ZjU3MjVjMzMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjlmZTdkMzhmNDQzNWEzMTBmODFlZGU1ZjI0MWEzMGZmMDk1N2Y0NzNmYWQ5NjNiYzdmYWQ4MGI3MDUyOTVmZWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNlNzI2MzU2ZDRhOTE5MTQ2MWVkYTZkOGFlYzE4MjkzNGVlMTUzZjRjNjE2NDdhODVkZTRiODQ2YWJlMDgyNjgifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_0f661c9c8a864fe79061e80addbf9a9a",
+      "statement": "Stop and clear clears Streamlit caches and session state, schedules process exit, and uses a browser BroadcastChannel to blank other Paperplane tabs.",
+      "evidence": [
+        {
+          "resource": "repo://paperplane/shutdown.py#L8-L39",
+          "version": "repo-lines-v1:sha256:897895590420cf0c10db2e35d6514cba79811d982679d7012842d833f1bb8ab9:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc3MmUxMzE3NTUwMTY2M2Q1MDQ4YzllNTU4NTExMTk3MDE3ODg1NzBiMzM3OTE2ZTUwM2U3N2U5NWIzYTI1ZGYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY4YmMyM2VjOGZjNjdmYjU0OWVjYzAzZWRlZmVmZGZjNTk0ODNkNTIxM2I2ZDc1OTliYTRlNGQ4Y2ZjYmUwNjAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM4MmQzZjNlNjY5ZmMzNjM0NWIxOGNkYTdhNzE1ZjJhNjJiOTA4Y2I4ZmJjYjM0ZjZlODEwMDM5ZTdmZTA5ZTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJmMTQ2OGRiN2Y3ZDE2OTkyNDkxOGNkMzM3NjcxYTA5MmU5NGI0Y2YwNTkxMDhhNGQ1NDIwNTg2ZmI3MTExZDMifQ"
+        },
+        {
+          "resource": "repo://workspace_app.py#L27-L54",
+          "version": "repo-lines-v1:sha256:26132e105169a52dcda8df7158871c63f5d68d6888df8a9f7aeffee799cd8e5b:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgzOTUyY2NkZWM0MDBiYjQzMzQzNjNiYmI4YjY1YjE0MDNkNTdkNDFhZjY5M2UxOTdmNjRjNmE1NTUzNzMxOTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZlNTFhNDM4ZGVjZGQzMTZlZDA4ZDcxMmE3MjAwYzJiZDljNWRjNWIyOTA1YjM4MzQ0ZGQ1MTE4MzFmZjk2NjAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk4NzE0MmI5YjIxMTI0MGE0MjJiYjk3NTExNzk5ZjZiM2U0OWVhMjJmODZmYjNmNjcxYzZlNDM0NGE4N2I3NTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYwZjUxMjljMTMzYzNhYTdlYmVjMDM2YzRkNjgwMjBjMTE3YTNjNGMxYTNmN2Y4YjIwY2ZlNjgyMjI0OTFhMmEifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.5.2",
+    "at": "2026-09-23T15:07:44.901Z"
+  }
+}

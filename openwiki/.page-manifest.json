@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "pages": {
+    "/openwiki/architecture/job-storage-and-lifecycle.md": {
+      "pageVersion": "sha256:11cb0fe9e0b36b8864bd19c2dfc59aa65cdf4d9b0fdae132b132598386c915ca",
+      "completedBy": "codex",
+      "completedRunId": "f5df614d-f481-4b27-bb9b-cb8d63335438",
+      "gitHead": "a3bbd90c400e888617a3f50327c5e83d0ec9e9d2",
+      "sourceFingerprint": "sha256:3413832b7810176b99d422dcad57922f8fc8e16be53792ce3fc023862c4b104d"
+    },
+    "/openwiki/architecture/system-overview.md": {
+      "pageVersion": "sha256:5be396b78c0f0a6a22c33bc28b557e24ff05af64d26a4f04316cbad6ad6e4db1",
+      "completedBy": "codex",
+      "completedRunId": "f5df614d-f481-4b27-bb9b-cb8d63335438",
+      "gitHead": "a3bbd90c400e888617a3f50327c5e83d0ec9e9d2",
+      "sourceFingerprint": "sha256:3413832b7810176b99d422dcad57922f8fc8e16be53792ce3fc023862c4b104d"
+    },
+    "/openwiki/concepts/contracts-and-exports.md": {
+      "pageVersion": "sha256:0f558518ce3b5f63ee73a001ed9b6a8165685df3e881a2f95168cb456e0a2f04",
+      "completedBy": "codex",
+      "completedRunId": "f5df614d-f481-4b27-bb9b-cb8d63335438",
+      "gitHead": "a3bbd90c400e888617a3f50327c5e83d0ec9e9d2",
+      "sourceFingerprint": "sha256:3413832b7810176b99d422dcad57922f8fc8e16be53792ce3fc023862c4b104d"
+    },
+    "/openwiki/integrations/provider-catalog-and-cost.md": {
+      "pageVersion": "sha256:061e137d009c7f926882929bc441c00d7288d0797db0a61709ff0da9f56d789d",
+      "completedBy": "codex",
+      "completedRunId": "f5df614d-f481-4b27-bb9b-cb8d63335438",
+      "gitHead": "a3bbd90c400e888617a3f50327c5e83d0ec9e9d2",
+      "sourceFingerprint": "sha256:3413832b7810176b99d422dcad57922f8fc8e16be53792ce3fc023862c4b104d"
+    },
+    "/openwiki/operations/setup-and-model-store.md": {
+      "pageVersion": "sha256:14fafa6e6b3e49fe904f5914af0a7160cb17db2fd3f1acbd58ebf071f5bada98",
+      "completedBy": "codex",
+      "completedRunId": "f5df614d-f481-4b27-bb9b-cb8d63335438",
+      "gitHead": "a3bbd90c400e888617a3f50327c5e83d0ec9e9d2",
+      "sourceFingerprint": "sha256:3413832b7810176b99d422dcad57922f8fc8e16be53792ce3fc023862c4b104d"
+    },
+    "/openwiki/quickstart.md": {
+      "pageVersion": "sha256:4d392abfc5736a0af216b0743b5e66616e9777563501d76c6e1f0bac4fd55e45",
+      "completedBy": "codex",
+      "completedRunId": "f5df614d-f481-4b27-bb9b-cb8d63335438",
+      "gitHead": "a3bbd90c400e888617a3f50327c5e83d0ec9e9d2",
+      "sourceFingerprint": "sha256:3413832b7810176b99d422dcad57922f8fc8e16be53792ce3fc023862c4b104d"
+    },
+    "/openwiki/testing/CI-tests-and-benchmark.md": {
+      "pageVersion": "sha256:608c3c8e8bf9cd1fe72fc6a53f50162124647da780eb9ccd0a4d83fc0504f4d6",
+      "completedBy": "codex",
+      "completedRunId": "f5df614d-f481-4b27-bb9b-cb8d63335438",
+      "gitHead": "a3bbd90c400e888617a3f50327c5e83d0ec9e9d2",
+      "sourceFingerprint": "sha256:3413832b7810176b99d422dcad57922f8fc8e16be53792ce3fc023862c4b104d"
+    },
+    "/openwiki/workflows/organize.md": {
+      "pageVersion": "sha256:0a90b25401ebe0301d12c69d5649c910488052b48605e08ddadaaeaf6113e2a3",
+      "completedBy": "codex",
+      "completedRunId": "f5df614d-f481-4b27-bb9b-cb8d63335438",
+      "gitHead": "a3bbd90c400e888617a3f50327c5e83d0ec9e9d2",
+      "sourceFingerprint": "sha256:3413832b7810176b99d422dcad57922f8fc8e16be53792ce3fc023862c4b104d"
+    },
+    "/openwiki/workflows/parse-document.md": {
+      "pageVersion": "sha256:e6d78a517af5038732a946a3d0471cf511cbf2a86044c427ef8962109b6b3fc1",
+      "completedBy": "codex",
+      "completedRunId": "f5df614d-f481-4b27-bb9b-cb8d63335438",
+      "gitHead": "a3bbd90c400e888617a3f50327c5e83d0ec9e9d2",
+      "sourceFingerprint": "sha256:3413832b7810176b99d422dcad57922f8fc8e16be53792ce3fc023862c4b104d"
+    }
+  }
+}

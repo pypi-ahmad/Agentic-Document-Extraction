@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:608c3c8e8bf9cd1fe72fc6a53f50162124647da780eb9ccd0a4d83fc0504f4d6",
+  "claims": [
+    {
+      "id": "claim_02c270c8492948eabbf5d0478df60aaf",
+      "statement": "The checked-in pytest coverage is in tests/test_model_migration.py and uses mocked HTTP transport plus Streamlit AppTest for request and UI regression checks.",
+      "evidence": [
+        {
+          "resource": "repo://tests/test_model_migration.py#L1-L24",
+          "version": "repo-lines-v1:sha256:a76eeb2b002121884a966e3757c891f3b32106bb00a2cb882363dfa896a1eade:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhjZTY1NWM0MTMzZTg2MDYyYTlhNDkwNTBlY2Y1ODhjM2EyOTYyZTkxMTkyMjkxOWFlNjc5MGFhOGJkMmNkYzYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdlYjcwMjU3NTkzZGEwNmY2ODJhM2RkZGE1NGE5ZDI2MGQ0ZmM1MTRmNjQ1MjM3ZjVjYTc0YjA4ZjhkYTYxYTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjUzZWRlNTFhZTZkM2IxYjBjMjUzNzIwODU1OGMyMjQ3YjRmZTI1ZDZlM2VkZDQ1ZTk0MWJhZjI5ZGZjYmRjOTYifQ"
+        },
+        {
+          "resource": "repo://tests/test_model_migration.py#L45-L71",
+          "version": "repo-lines-v1:sha256:eede5c3ecc8c345009323c6d69b9692011d2c6d1121273c3b8f6eb564617abff:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZmMjk4NzA0MDI0Mjk5MmExNGRjNTcyNjEzMTcwZjQwOWJhMTI5MzYzZTQ1MjMxNTFjZTdmMGZiMjI5YzRjZTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdlYjcwMjU3NTkzZGEwNmY2ODJhM2RkZGE1NGE5ZDI2MGQ0ZmM1MTRmNjQ1MjM3ZjVjYTc0YjA4ZjhkYTYxYTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI0ZjIzMDAwNmFjYTNlNDU1NDg5NGMyMjcxNjMxM2I4MDFmZGNlOTg1NmU5NzBhNDY1MTc4YWQyYTgxMDgxZDEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjYxMTliYWQ2MTllMDE1NjEzNDVlYjljOGI5YmY2YWIwMjBiMGQ4YWFmZTkyMWY1MzQyNGNlYmQ5ODQ4MjZiM2MifQ"
+        },
+        {
+          "resource": "repo://tests/test_model_migration.py#L491-L524",
+          "version": "repo-lines-v1:sha256:463fc366aa3e582e8814eda2d1d3cc5e5b2aa72c88d24f013853abac72f2bf6b:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFiMTkzZWVjYzA1OTBiZGJkZjJkYmNjYTMyMWNkNGVhNTVmYmE5OGQxMzEwZjU3ZjUzNjRjZjY0OWM4MTc1ODAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRmMjZmZGVhYWUwMDc4ZTI1YWE1YWIyNjQ1MjMxNmFmZWE2OWJjYTJiNmNkZDJjM2VmYmY3NWZjN2ExNDYzNjUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE2OWEyMmQ5MzBhNzk4OWQ5NDYwZmYxNmNiMDE2NDhmNTRiNGM3ODhkMDY3ZDk4NWIzMTkzNTdlYjk0N2IwMzgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d809de5cfab74329ba214b7bf07787fe",
+      "statement": "The tests cover OpenAI request settings, usage and content-filter handling, local text or OCR fallback, overgeneration and table rendering, xAI request behavior, prompt files, cost estimates, and selected Cost and Parse page behavior.",
+      "evidence": [
+        {
+          "resource": "repo://tests/test_model_migration.py#L189-L273",
+          "version": "repo-lines-v1:sha256:6769b16ae1e5e8266e419ca491353da2fce17c93284a2ff7235cdff40cdc72ba:eyJzZWxlY3RlZExpbmVDb3VudCI6ODUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNkNjg1ZGY1Njg1ZjM2MTlhZjk3M2UwMDMxOGI5OTc4MjBmNGNmODMzNmI1NWIyMTNmY2Y1YmJhM2FhMmFjNGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQxYmYxODAwNmNmNGM1ZTU2YTQzZThkYTVkZTNjYTE2NjgyY2JlM2MxZjgzOWVhOTRhMWIzYjdiOTVmYmJjYzIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYzOTg5MGFiMzI4YmRlODQyZmEwZWZlNGZjYzZiZWU5MzdhYjcxYzQzYmM4MWFkNDMxMzhkODFlZTJlZGQ0YjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU4NDRjYTNlMjdhNjBkN2MxYzQzNzgyYTEwMjE3ODI3MWZmN2U4ZGJiZjQ0NDM0MTE0ZmNlODc1NTczYTllNDAifQ"
+        },
+        {
+          "resource": "repo://tests/test_model_migration.py#L26-L71",
+          "version": "repo-lines-v1:sha256:0bbad0298ee58dfdd1cc78684e2d5a43f9661e66eb36f0f557fc57ef66a732a8:eyJzZWxlY3RlZExpbmVDb3VudCI6NDYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU0YjkyMTM4YzM0ZDU1MDQ4MjBmOTM0NzcxMDc3NDQwNjBlM2U2Y2Y0ZTU5NDA3MWFjNzQ1M2VjZjAwNDlkMjQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdlYjcwMjU3NTkzZGEwNmY2ODJhM2RkZGE1NGE5ZDI2MGQ0ZmM1MTRmNjQ1MjM3ZjVjYTc0YjA4ZjhkYTYxYTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM0YTkwZGMyYjY3NTdjODJiMDA0OTM0MmQ5YzEyOWM0ZGFmYTM1ZTEzMmJhMGVjY2QxZjkzNzYxOGFkOWRhN2QiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjYxMTliYWQ2MTllMDE1NjEzNDVlYjljOGI5YmY2YWIwMjBiMGQ4YWFmZTkyMWY1MzQyNGNlYmQ5ODQ4MjZiM2MifQ"
+        },
+        {
+          "resource": "repo://tests/test_model_migration.py#L276-L415",
+          "version": "repo-lines-v1:sha256:3142a87bdf0fd6bf2158465265404e0ff1a009dae8a9e2ff0c69b4ba9a803e3c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQwLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI2YzE0YjZkYmVlZWE5YmQ1ZGQ5MmY0NDgwYjYyYTVhYWU2YzQ1NWZmNTcxYTM5MGU2Yzc3N2FmZTVkZTAzNzdjIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJjMWU1YzA1ZWE2Nzg5NWQzMDYzYzU3NTlkZmIwYTBkNDQ5ZjA3Y2EwYjJlN2JlYjdhZjYzNGM4NjFkNWM0YmFmIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJlYjY4OTFkZjQ4ZGVmYzY1OGNmZWJjMGVlYjZjNTYyNGU3MWE2Y2M1NmVkMzRhNDA0YWExZDMwYTQ0Nzc1ZjlkIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI1YzU4ZmNhOTBmOTFlNzVkZTllM2JmN2Y3NzkwMTY2MWVmYTljZjk3MDdkNjllYjdkNTMxY2NlZGEyODFiZjVmIn0"
+        },
+        {
+          "resource": "repo://tests/test_model_migration.py#L418-L524",
+          "version": "repo-lines-v1:sha256:4cd0548a7e2dbbcdb9317b5cf317cf70a3b45a57d4164678f0a3b323e5852f04:eyJzZWxlY3RlZExpbmVDb3VudCI6MTA3LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJmMjU0M2IzMDRjOWU3OTc0NGY2MDdmMjhjMGZlYTgxZjY3NTc4YzkwM2YzYzk5ZmRhODNlYjYyMjE4ZWU1NjAxIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJkZjI2ZmRlYWFlMDA3OGUyNWFhNWFiMjY0NTIzMTZhZmVhNjliY2EyYjZjZGQyYzNlZmJmNzVmYzdhMTQ2MzY1IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJmYjFmOTg5ZGJkYjY3YmQ2ZjliYzY4MjI5YjQ4ZTY2MGFmODkxNzBhMTc4MTMxNzk1OGUxMDI5MTUyNTg2NDJkIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MCwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1In0"
+        },
+        {
+          "resource": "repo://tests/test_model_migration.py#L73-L187",
+          "version": "repo-lines-v1:sha256:7f6822262c263e6d67f197f0952bc82d6533d8476bc2d0dae41bd48c755af785:eyJzZWxlY3RlZExpbmVDb3VudCI6MTE1LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI2MThhZmExODBmNWNjMWJiMDliNDhiNTVkMThjYWEyZjRjN2I5ZjFkNzQyOWZjZWNhYzE2YmI1NmJkZjRmN2JiIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI3ZWI3MDI1NzU5M2RhMDZmNjgyYTNkZGRhNTRhOWQyNjBkNGZjNTE0ZjY0NTIzN2Y1Y2E3NGIwOGY4ZGE2MWE2IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI0MThlYTIzNmJlNmEyMGNkNDgxNDczMjZhNDQ4MWFjZmU0NzNhMjQxMzdkMTFhNzFmNjZhOGU3MTgwMGJlOWIwIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI1ZjRkNTY0MzgxNTMzMTFlMzg2OTcwMzI4OWVjYjVhMWIxZWZmODA4NTY0YTdjY2ZjNzNmZTE2NjA4YTk1ODAwIn0"
+        }
+      ]
+    },
+    {
+      "id": "claim_9eb816ff8339473b8b24013d60009379",
+      "statement": "The CI workflow targets pushes and pull requests to main and supports manual dispatch; it checks Linux launcher syntax, locked dependency setup, Ruff, Pyright, pytest, generated documentation drift, benchmark corpus integrity, and Streamlit startup health.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/ci.yml#L1-L17",
+          "version": "repo-lines-v1:sha256:69f8e02f44168446419fdf347763a482f3b81d350081803d23fa6eaa34930252:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1NTk4NWUwOWQ1NDljYWExYWI3NjU0MTI5NjIzMjU1OGQ5ZTA5YjkzMzE4MWQzOTVhYTczNDViZDc1N2JlNDciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdlYjcwMjU3NTkzZGEwNmY2ODJhM2RkZGE1NGE5ZDI2MGQ0ZmM1MTRmNjQ1MjM3ZjVjYTc0YjA4ZjhkYTYxYTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY2YmIyMjE3YTYwNTkxOTllMWNlNzkxYjIxZmU2MmMxYmE2MjRjODYzNmZhOGU0OTQxMjJiNWViZmQxNTU5NzMifQ"
+        },
+        {
+          "resource": "repo://.github/workflows/ci.yml#L22-L58",
+          "version": "repo-lines-v1:sha256:a3f194e51d375b8dc09e23f8b7598337c5022efe183f73d5b8d69bbf1aa84aec:eyJzZWxlY3RlZExpbmVDb3VudCI6MzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFiNTRkYWE1MTYyNTFmN2I4YTNlN2YzZGNlNzQxOWM2MDI3ZmNiZjQ5NTgwYmUxODczYzllNTkzNjVkOThjOWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRhNDVkMDZjNGRhNDYyZWRkNzhmNGNhODYzYjRjOTVkYThlNGU3ZjAxMTU5MGU2OTcwZTMxMDM1YmYxYTdmN2MiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg1YWYwM2ExZjdlOGM0MzdlOGQ2YTZhNWVjNTdmYjYxMTk1NjBkNWM3OWFhZmMwNzdkMzAyN2ZmNWNkNDU0ODAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY1Njg3NzdjYTM3YTI0Yzk2MDdkYjk4MjE2NjQ2NTBmZTZhNTFjZDNmMDE2NTMwMTc1MTcxZTVjODgwNmM0ODAifQ"
+        },
+        {
+          "resource": "repo://.github/workflows/ci.yml#L60-L81",
+          "version": "repo-lines-v1:sha256:0c97b355d1b2e99068a5511d96b03b498a1e4d248f114373d7038c2d849a812d:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ1YjJiMzhkMjY1OGU4Yzg3NjdmNzVkYjJiODMzMDQ2N2U2NDNkYmNlNDQ3YTUyNzU2YTZkMjc4NWVkMjczZDciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY5ZjliODU0NmZiMmIyN2EyNTNkOGZmNDVkOGM5ODUxZjUzNWI5YjMzY2ZmYmZjNDk3MjQwZWEyZmJlNDkxOTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYxYTFiOTg3MjcxMTFhNmU1MjQ1Yzg5Njc2M2ZlNTRhYmI0ZjFiNzRhNTkwNWJmZTM0YTMzZDRhNGJjOTFmMTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c08c3a0d83114561bb05bd127aa85cdb",
+      "statement": "The current benchmark manifest contains one SHA-256-pinned public sample document and declares multiple engines and evaluation metrics.",
+      "evidence": [
+        {
+          "resource": "repo://benchmarks/manifest.json#L1-L39",
+          "version": "repo-lines-v1:sha256:b6b9d3595307b088a8486c79e8c3fb24c02ff22488b53a16f105d5695216291c:eyJzZWxlY3RlZExpbmVDb3VudCI6MzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE2ZmIwOGZkYTFhY2I5NTdiNjExNmJkMzc4MTFhMWZlNDFhMDE2MTFjMDYzMWVkYmY3ODZkNjg4OWEyN2E1NWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMwNjQ4Zjc3ZmQ1YTljNjNiM2NkZDBhZjQ5ZGFhMTI5OTIyMGI3NTQxZTg4Y2ExN2VmZTFhNmExMTRiOWZmMmEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b36100b6534e4e08896d4064624d2117",
+      "statement": "The benchmark report script validates the manifest and each input hash, emits a transparency HTML page, and displays a latest result bundle only if one exists; the report's CI step validates the corpus rather than running the listed engines.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/ci.yml#L57-L58",
+          "version": "repo-lines-v1:sha256:7e229b49ed50c76b62717f23cfd2580cb354ff40a56184a5580d7e18b6111ea4:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjZlYzUxYTI0MzNjYmQzYzFlZGQ4YTk4YmM0MmFiZjZiOTkxNmQ1OTViMjYwMWI1OTJkNDMwNTQ1NDgzZjFjOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZGE0NWQwNmM0ZGE0NjJlZGQ3OGY0Y2E4NjNiNGM5NWRhOGU0ZTdmMDExNTkwZTY5NzBlMzEwMzViZjFhN2Y3YyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMjdmMTBiOWQxYjQ3MWI2YzZiYzc0MjQ5MGVjZGQ3YzQ0ODg5NTRjOWFmNGYyNTA0YmFhYTgxNGZlZjU1YzE0NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZjU2ODc3N2NhMzdhMjRjOTYwN2RiOTgyMTY2NDY1MGZlNmE1MWNkM2YwMTY1MzAxNzUxNzFlNWM4ODA2YzQ4MCJ9"
+        },
+        {
+          "resource": "repo://scripts/benchmark_report.py#L16-L50",
+          "version": "repo-lines-v1:sha256:8aec8e3a77e67973b8c65721f59764f6b028fb6fb072d7a1f4b894ef73df9cdb:eyJzZWxlY3RlZExpbmVDb3VudCI6MzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcwYmM1MTI2NWRhM2M0OTRiZGQyOTQwOGMwZTE3NzY2NWJmZWFkNmZkMjc5MzZmMDU5ZDJjNTU3YjE5YTNjZTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM5NDg3MTNiMTMzNmMzNjZmNzVlNDVlNDU3MTRhMzA3YzEzZmZmYzU3NjQzYjBiMTM0ZjIxZjFjNWRhMTA2NjEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAzMmU2OTIyNTE4NDY1ZGVlOTg3MGU3NjAxNjU0YWVkZWI4OThiODQ5ZmJmNmMzZjA0OGM4YzE5MmY3M2JmMGUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_5429212b77db4183b8b4a5ab948fdce1",
+      "statement": "The benchmark README says the initial corpus is too small for accuracy claims and specifies the provenance and measurement data required for publishable results.",
+      "evidence": [
+        {
+          "resource": "repo://benchmarks/README.md#L3-L14",
+          "version": "repo-lines-v1:sha256:889177e07dea8535892205246674c469223686e691140ffbbfae9dd1754882c6:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJhY2FlNzFmY2E1MDk5NzM5MjljZWZlOTg0YzA1OGNiMmZlNGUxMDgzYTUxODRiM2U2ZGYyN2E4M2NjNDkzYjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjExODZhZDFlYmY0ZmJhOWQzZDE3ZjRmMGVmNDZjMTI3ZmFiYTJiYTNiMTBjMDFjNjkwOWQ3ZTc4MWVlNGM5N2UiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjoyLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI0ZGZkY2VlNGQ3NDQzZmExODQyM2YyNjllZmMzZjcyNzkwODA0ZjY4NmYxMTAxNThhNjNkNzZmMTU4ZDEzMjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.5.2",
+    "at": "2026-09-23T15:07:44.901Z"
+  }
+}

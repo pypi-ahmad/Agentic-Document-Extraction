@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:0f558518ce3b5f63ee73a001ed9b6a8165685df3e881a2f95168cb456e0a2f04",
+  "claims": [
+    {
+      "id": "claim_6e81413951f74cd9a66670acdba746f0",
+      "statement": "ParseResponse contains document Markdown, metadata, a structure tree, and observed grounded words. StructureNode requires ranges on content blocks, requires page and box geometry for grounded blocks, and forbids boxes on semantic-only blocks.",
+      "evidence": [
+        {
+          "resource": "repo://paperplane/contracts.py#L102-L140",
+          "version": "repo-lines-v1:sha256:6a4f6c6062225b64424ce471fe8d70d903ae761305cc4483f0faa2179263d631:eyJzZWxlY3RlZExpbmVDb3VudCI6MzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg3YzM5MDQwZGExY2E1MDlmMmVmMGUxMmRhOGNkMDljYmNlMTY3ZTYyMzY1N2NiMDNiYTdiYjlkMmRjZmQwZmEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRjNTQxN2M1NGQxZjliZjhlMDIzY2ZmYWJkZWQwNWJiYmJlZjU1MDA5Y2I4MDQ4N2U1YmZhNzA4ZGVhNWY4YzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJkZDBmMzY5OGRmNTBlMDA4YTA5ZDRjZjBjZWZjOGFlNGQ4MjVkNDgxZTc2NWMwMmMwOGVhMzg4NzkzNzJiY2EiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRkNjE0Y2RiNDk5NmRiMDdmNDE4YzhkZDYzNGJjMjU0NWIyMzI3NmQ2ZjYzZTgxMjhmMWYwZGI3MDYwZGU5NDkifQ"
+        },
+        {
+          "resource": "repo://paperplane/contracts.py#L201-L205",
+          "version": "repo-lines-v1:sha256:24587d6df3907c797b742641c615920c45f2938d8790eb888febb2d3dcb55e40:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZWEyNDYwZWQ1MDAyMjNiMmQyNzU3MDZmMmZlNzVlOWQxZTVlZGZlMDlmMzY2Njk5NWQ4MjE1MDRhNTIwYzUzZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiM2M1MzgzYjI1YTY0Yzg0YzY2MTA3MTU3YzliNGE2NjgxYzUzMzlmODljMjlkODM1NjM5YzBjMzIzMDE0N2RhMiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNzY3M2UyODZjZTM0YmQzM2Y5MmQ1Yzg5MzRkNTQ1NWRiMWI4YjRjN2ZkZGU5ZDdmYzczMjUzMThjYThhZWFlNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTQzMGZiNTMxOGUzN2VhYzIwOGE2N2YyMDY5YzgzZmU5NjllNjU1MGFlZTg3ZDk4Zjk2MmJmNzY0YTlkMjgxNyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_8bca42c728d54c5bb0bfac94d621a732",
+      "statement": "CodepointRange represents half-open Unicode code-point offsets and NormalizedBox constrains coordinates to [0, 1].",
+      "evidence": [
+        {
+          "resource": "repo://paperplane/contracts.py#L55-L80",
+          "version": "repo-lines-v1:sha256:92ce19d378a6adf9fcee1240330e23b0f7d4365c49b61d11341d6f5135d77709:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk5ZTdmNmMyY2E2MzlkNDM4Nzk4NGZjN2ZlYmY4NzljY2RmMjUxY2JjYjVkNjdiZWUwMmE1Y2Y4NWE5NTMyMGYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRjNTQxN2M1NGQxZjliZjhlMDIzY2ZmYWJkZWQwNWJiYmJlZjU1MDA5Y2I4MDQ4N2U1YmZhNzA4ZGVhNWY4YzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBjZjQ1YzU0YTFmMWZlMmFkMTNjM2QwNjg2OGYwYTg4NzE1OTZiNGE1ZGM5YTVlY2FlYTZjYjgyNTc1MWQ5MTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRiNzk5OTdkNzRlYTk2YjYzN2VmMTMwMjkyMjUzMGU3NjUyODIxOTE3NGVhZDNmNmI1MDQ1MDBkY2JlOWZhNGQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_2c7161df84d045e985be88cc3e82f536",
+      "statement": "assemble_parse_response joins ordered pages with page-break comments, assigns one-based per-type IDs, and records block Markdown spans as it assembles the response.",
+      "evidence": [
+        {
+          "resource": "repo://paperplane/contracts.py#L348-L429",
+          "version": "repo-lines-v1:sha256:ddaddca763dc0dca18af013f42f0a429961bdc3dfef1f4fe5fa6476877e03526:eyJzZWxlY3RlZExpbmVDb3VudCI6ODIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc2MmNhMGJlNTk2NjE0NzliYjkwMmZmNDljM2I1ZGI3YWVmM2Q4MjhkNWE4NTI4ZGEyY2RiNzg0ZTBjZWRmN2YiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZkMDAwNzg3NWRlOGY5MmQ5MmI3ODdhMDE4YzE2YzAwMDQxOGJkNWY5NDk5MjNiOTBmNGQ2M2M3ZWMxNmQ4M2EiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhiOTc0ZGE0MDg2MzJhNGFhN2UyYWU4MGI4NjAzOTFhM2RjZDgyMTFjNzllY2FkN2NhOGU5NTEyOGIwMDE4MzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJhNGU1MWZkNWVmOWU3MmRlZjMxODE1ODlmZjAyZjllMjY3MjViMWQ5ODAxMDJhMzlkNjUyYzcyZTJhZjUzOTQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_5bfe5eec3cf3480b83214fb3486cdc72",
+      "statement": "ParseResponse validation checks page and node identity/order, Markdown range bounds and overlap, atomic range containment, and exact text matching for words and atomic lines.",
+      "evidence": [
+        {
+          "resource": "repo://paperplane/contracts.py#L207-L276",
+          "version": "repo-lines-v1:sha256:8205e950e5488aa3e44c50904a974bda1da7a80edabd49485956f04299a238cb:eyJzZWxlY3RlZExpbmVDb3VudCI6NzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg4MjBmODgyZWY1MzZjMzJlMjQ1MzBhZmNiZWUzY2E2ZmNhODYxNzc2YzZlZTIwZDc3MmEwYTUzOTJkNjg4NWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM3NDAzMmJiNmIwOTY3MzRmYzFiYTU4NWRmNTQ1NTY1MzVjZjU2OGM0ZTYwY2Y2NTlhMThmNmUzNTYzNjJkYTgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM1ZTI3MzJiZGQwZjQ3ZWJkZmY5YzY3MTM3ZmMxOGExODJmY2FmZmVkODZhNmNiODllNDc0YWU5ZWU4YzgyNDgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImEyMGFiMjAwN2QwNmMwZjQ1M2NmMmI2OTAyZmZhZTkwMDFjOGVhZmEwOTkzYzQ4ZGE5YjA0NDY2YzM2ZGM3ZTMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_ff636c74b44141bdb26b4003fb7c0a6a",
+      "statement": "The ADE v2-style conversion assigns zero-based IDs by node type and exports Markdown, metadata, and structure with unicode_codepoints range units.",
+      "evidence": [
+        {
+          "resource": "repo://paperplane/ade_contracts.py#L151-L168",
+          "version": "repo-lines-v1:sha256:0b82205a7bbe1a23b3225cc30bf6f8ea42eefc948692650b4dee34f615a37af5:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY4YjEyYWFhMzE1OWE1MjhhMTIwYjlmMWM0ZGRmYTQ0YzY0MWQyYTBjYzg2ZDlkY2E0ZmMwY2Q1NzIzMWFlMmEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVkZGI1NGE4N2FjZjlkZGYzYWEzNWQ4Njc4MzM4Yjk1ZTBjZTlmOTEyNDhmMTI4NjUwNmQ3MTZkODc2M2U2NzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZhMDFjNDI4Yzc2YTUzODhkOTg2ZmMwOWZjMTczNmE5MDE4ZWQ1ZjQwZmI5ZTU2ZGRhMjkxMTY0MmJkYzUzNDAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMxMDI5YWMxZjcxMDljYjA3MmU0MWY1Y2YzNWRlZWE3MmMxZDZiYmI0MDM0OTEyNzdmZDAzOThkZjNiODRlMTAifQ"
+        },
+        {
+          "resource": "repo://paperplane/ade_contracts.py#L92-L109",
+          "version": "repo-lines-v1:sha256:074158c24746d65589f90f8d5a4989e1da34871eab6dd30e7a63b93757afe412:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU0MWM1ODVjYmJhYmNkOGMzNTc5MWJkYjA4YmYyZTdlNjRhMTEyZmJhODhmMDFmN2I1NWFjNWZjOGUzY2U4OWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJkZjNiN2E0ZThjOWJjNTk3NjY5Nzg3NWZjNTg0Zjk2MzI3YjZjZmI1YjQ0NTY0ODczZjI1M2I0ZTU0YzkyYWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImExMDMyNDY4MmRhNmJkMDg0NDE0M2JlYmUyNzdiNTdjZjQzNmQyMzU4N2EzN2IxMWMyOTlhYzFjNDljYzI5NmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjUyNTcwODNiYTA1ZmQ0OGMyZDY3MTg4YmU5MjdhMzU0MmQwN2JiNGVhMTY1MjQ1N2U3NTUyNjRmMTQyNjBhNTIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_6dea94ab094a48bdb483ccdd38b9f0bd",
+      "statement": "Paperplane v5 nests the ADE-shaped response and adds engine, provenance, words, relations, warnings, and model usage; default word confidence comes from the internal raw confidence field.",
+      "evidence": [
+        {
+          "resource": "repo://paperplane/ade_contracts.py#L112-L129",
+          "version": "repo-lines-v1:sha256:2a87629b756b4e66d56261a92ab8ba131064fa2a39ea8706b8cc32d082aa0377:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVjODM5OWQwNWEzZWE0NDBhZTQyZGI0YTJjNGZhZDUzYjBmMTVlMjI2MzBiMGZmNmUzNTVhODFhMjRhY2U0NTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ0MTE1OWE3ZWVjNWM3NTQ4NTY3NGU1YjUzODYxY2YzZjZmZDkxYjk2YjI2NDY2YTUxOWYwM2Q0YzE5ZmZkYWYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBlYjhhZWZjZWUyZjgxN2U3NWMwOWM0YzBkOTc2OTE0MjZmMzkwZTZhZTE1NDRhYmU4MDEwYTZiMTE1ZmFmZmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY3ZTVlZjY1NzhmMzdkZDEyYzg2YjZhOWNkNmQ0YzhkOTU4NmQ5OTk4NDVmZGM3ZTg0MGI0MmNkMzMwOTI5OWYifQ"
+        },
+        {
+          "resource": "repo://paperplane/ade_contracts.py#L244-L278",
+          "version": "repo-lines-v1:sha256:80ae3e77626aa176e789b7a0af403a7febd04ad0fc41032f1c2fb0984b166e20:eyJzZWxlY3RlZExpbmVDb3VudCI6MzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFlMmJlYWE4OTUzN2FmYjljNzYwY2U4MDA3ODIyNzViMDQwZWM3ODNhODAwY2NkMjY0YjdmZjU4YjdjMTJjZWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM5MjIwNGM2NWY1MDJkYzE2NDU0YjYyNDA4NTZhOWFiN2FkZTAwM2E4ZTlmODYzMzNlYzBiN2M5ZTQwOTQ5MWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhiOTc0ZGE0MDg2MzJhNGFhN2UyYWU4MGI4NjAzOTFhM2RjZDgyMTFjNzllY2FkN2NhOGU5NTEyOGIwMDE4MzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU1OTM5ZjQ4YTM2MmJjNjlkMzQwNmIyM2U2YzI3OWRiMGYzYjJiZWZlY2UxMGY5MWNiNjU0NGFkY2FjZTU1YjEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_819d29dfba84408eb3147f1893c2cd1a",
+      "statement": "The archive builder writes available Markdown, HTML, annotated PDF, and JSON files for completed entries plus a versioned status manifest; HTML conversion is sanitized through an explicit allowlist.",
+      "evidence": [
+        {
+          "resource": "repo://paperplane/outputs.py#L145-L155",
+          "version": "repo-lines-v1:sha256:5ec904d9766e0061d1244e636f07b11643e2711f87999eea06724d66244facc8:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM1NGQ2MzBiNDc4ZTU2ZDk4NWU5Yzk4ZDI2ODViNjU4ODAwMGM2ZjI5ODIwN2M1ZGQ4NTIyMTZkYWU2YWY2ZmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRhMzUzMmZkMGZkZTk4YzFiOTQxZWE1Y2Y3NTU3MjExYWMzYWMyNjgyZjAyYTRmOWI1MTIwNDEyMzAwY2NlYjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjlhOGI5Y2MwZmJmZGU2Y2ZlMGRiNjFlMTBjOGFmYTkzNzg4NDkxZTY5ZWViZGRhMjJkNWZjOWUzODkxODNlMzYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJmODRmN2EwYWFmMGFjYTQ4MmJiOWM3OTg0ZDMyMmIwM2Q0Y2YxOTZiYmMxYTQwOTkwZDNiOWRiZWUyMmVlYTkifQ"
+        },
+        {
+          "resource": "repo://paperplane/outputs.py#L196-L210",
+          "version": "repo-lines-v1:sha256:28ae636e2fd13f7bda35578449582471a4151bae2de318111d03f50555934841:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRhYTA5NzRlOTU4MjU1MGU3MDU3MjQ2YjJjZjE5MTZlMGJhN2ZjYjhkYzhkZGY4NzJjZmRkNDk0N2YxYmM0NTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMwYzFmMTg4ZjE0MmVkN2E4MjQ2ODBiMjA3MTcyYzU1MTliYzYxNGE0OGZkYTdjZjE2N2VkYjhkZGY3OTk1NmMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhjYzRhN2QxY2M3OTZhYmEzZTQ2NzIzMzI3ZjUxN2U5ZjgxMTk4MmQyNTBmMDcwMjk4NmU0YjU3NjRhZDk1ODkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRmZjRlYjVkM2M4MWM0M2U2OGY5NGIwYzQ0NmQ4YzVkZWRkNWMyZTM4NzE0YjdlNGU5NGFmNTRkYjRiMjMwMzMifQ"
+        },
+        {
+          "resource": "repo://paperplane/outputs.py#L213-L253",
+          "version": "repo-lines-v1:sha256:0e33a23abe05c5e661593bf87c64e1d663c1d82e749fb52c273d85454e1d9784:eyJzZWxlY3RlZExpbmVDb3VudCI6NDEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQzNGQ3ZmU3NTYwNzQzOWEwOWMxZTc1MGQyNDQyODVmZDk2NmQzNzk1NjU3ODk4YWIzYzhkOGY5ZDAzMjZkYWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVlOGU3N2U4NzUyMjEyM2Y0N2JlM2I3OTE1M2U2ODJmOGY0NDhjN2VkYzRmZGE3MTAyYjNmYjI3YzIyZGY2ODAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhjYzRhN2QxY2M3OTZhYmEzZTQ2NzIzMzI3ZjUxN2U5ZjgxMTk4MmQyNTBmMDcwMjk4NmU0YjU3NjRhZDk1ODkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjcyMmRiNDExZTNiZDA5NWMxOWMwNzM4NWQxMTI1MmRlNTRkN2QwNjU1MDNlOTA5ZjM2MzBkZWFhYzdkMDc2OWEifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.5.2",
+    "at": "2026-09-23T15:07:44.901Z"
+  }
+}

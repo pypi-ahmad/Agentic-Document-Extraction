@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:0a90b25401ebe0301d12c69d5649c910488052b48605e08ddadaaeaf6113e2a3",
+  "claims": [
+    {
+      "id": "claim_1564f1614dd940e1984441115c917725",
+      "statement": "Organize selects only Parse outcomes with a non-null result from the current Streamlit session and exposes Classify, Split, and Section tabs for the selected document.",
+      "evidence": [
+        {
+          "resource": "repo://app_pages/organize.py#L16-L45",
+          "version": "repo-lines-v1:sha256:36826d15de80836662b9b793cec62c2625d7831cfec4c4fb7efebb5985d8c8ca:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNmZjc1Yjc0MzdjZjZmMmY0ZjMxNzkzMDM4ODRlYTc4YTI2MjllOTA0ZGQ0MWE5M2YzOGEzZTU5NTFjN2FiOWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZhZmJhMDUyN2MzOTUzYzRiNmUwZTViNTczOWJhODM2MTJmODA1M2JjZGM5NDY2NzMwMTkzY2QxZDU5MGI0MDgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjEzOGJlNDhiODY4NDcwYzRjNzA4ODJhYTE3OWJiOWJiMGViMDJjNmM4MDYzNjlmMmQ3ODIzYThlOTE0MGEzMDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNmZWUxMTlhNGMxMWJmNzE0MmZmOTgyMjEwMzViZWQ0YzZkOTdlN2VhMzViN2M5MGIyMzM1OTBlM2ViMmEwZGQifQ"
+        },
+        {
+          "resource": "repo://app_pages/organize.py#L53-L97",
+          "version": "repo-lines-v1:sha256:9d8864a9f8987331d0b250467cee95a5c666b956ca84db563fe0e03b721188c6:eyJzZWxlY3RlZExpbmVDb3VudCI6NDUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk4N2M5MDQyMDM1MjIzMDEzMDdhMTY2NjcwNjlhMDI1ZmMxNzI1MzU5NDJlNzI1YmZhNjJiMGQ1ZDgwNDA0NWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU5MDlhNTNhNjE4ZDAyOGUxZDMwMDBjMGE3YWJjZWVjYmU1ZmIzN2Y0ZTUxMWVmZTQ2NjQzZmFkNmU2Njg3MmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNhMjhmZjgxNTdmYTgzZmE1NzM3ZjE5MjU0NDMwMGI0NTc4NWI0YzI4ZjExZTkxOTdjZDRmODRlZGUyN2Q4YWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_5b23fc4eb56a4b97b16d166e451e8583",
+      "statement": "The UI turns each supplied class name into both the class name and description; classification scans classes in order for matching terms longer than three characters and uses the first class with a warning when no match exists.",
+      "evidence": [
+        {
+          "resource": "repo://app_pages/organize.py#L48-L50",
+          "version": "repo-lines-v1:sha256:fe8f59cb7c8e145c3410d78ee39e3548be231dbef5622dd7a578b0fa2a41b445:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMjk2MmUzZGRlMmUyNTU1MzA1YjliNDJiZTkzZWVjNjI0ZThhMTcwNjJmMzM1ZDM4ZDFmY2NlZGJmNWFhZjU2YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDRkZWY4MjRjOTFlNjZlNDc1NWM1ZGFlNjdlNjJmNzdjZDkwOWE1Njc4NzUzMTIyMGU3ZDkyOTNlYzMwMTUyYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTk4YjA2M2Q5YjQ3ZTY1Mzc5NjI1NTcyY2NlMTk3NjY5ZDU3NjdlMTJjMThiZTA3NTY1MmI4Y2Q5ODFjZThkNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDJmYTY0NTI5NmUwNTY2OWU5ZmY4ZjUzNjdiMTVhZDVhZDZlOGI3MDA0YWE3MjlhZjJhYjgwNTJhODhhM2RmMCJ9"
+        },
+        {
+          "resource": "repo://paperplane/ade_workflows.py#L70-L98",
+          "version": "repo-lines-v1:sha256:2b5ff3ddeded0399099d470b4e83abaa96d1c348ca90a85cc4cccd6217cc5c9f:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI0MDZkMjg5OTI4N2E3MDQ0MWNiYTRlNzJlZmI5NTA5ODNmMTVhODkyNDdkMTFiMTA0N2EyMDRkZmY4OTgzMmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ5YjQ2ZTcwNzFmZGNlNjkyYzgzYzdmMWNmNWVlMGMzNzM5ZWIwMDliZmM1NjA4NzRmMTMxYTQxZDExZmU5ZjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhjYzRhN2QxY2M3OTZhYmEzZTQ2NzIzMzI3ZjUxN2U5ZjgxMTk4MmQyNTBmMDcwMjk4NmU0YjU3NjRhZDk1ODkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk5NWQ5Yzc1OWVkYzA2YmVjNzEyMjgyYzA2MDRjNjQ5OGVmNDAxM2E1M2IwYTU2OGZiMzAzYmJlY2U0MzM2ZjMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b2bad25918c04f6dbf9dfcb12bc7bbda",
+      "statement": "Split groups classified pages by label, returns their page numbers and grounded ranges, and joins their Markdown slices with a PAGE BREAK marker while carrying classification warnings.",
+      "evidence": [
+        {
+          "resource": "repo://paperplane/ade_workflows.py#L126-L146",
+          "version": "repo-lines-v1:sha256:aea756c894d0c106d9019651d0714db16d0bd64e3a9844cb2f27830218b80f65:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImExYjUwZmY0MjM1NjY3YWYyYmNkOGFiODZhMWYzN2JjYzUyZTUzMWFmMTBiY2I2YzNmODVhMmQ1Yjk5NGE2YTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVjMzJjODQxZjA1ODVjZjMzZjA5ZWViZmM5Njg1ZDY3YjM5Y2ZmMTAyZmJlNDA4MmY1MTkyMTc4MzJiNWRjYmMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ0MjVkMDczOWM4OTVhNGEzMWZkNzRhZGQzYzFjNjc2MmZiNTE1NTBjYWE1ZWVkMDk4MDdiMGMzYTE4MTNiZmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNiMjM2N2JkMGRmMGE2MmRmYzNkMTIxOTkxYjI5OGZlNGU5YzNkMzI2NzUyZTY5ODU1OTQzYjZjZjRiMjQ4M2QifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b1702adab336441e89fce9e6ab44eb3f",
+      "statement": "Section uses the first grounded block on each page as the section start, warns when that block is not a title or heading, and caps the first-line section title at 160 characters.",
+      "evidence": [
+        {
+          "resource": "repo://paperplane/ade_workflows.py#L101-L123",
+          "version": "repo-lines-v1:sha256:e1f115c1e0159a732799d1b981cb2cedd6b49c24ec35b228e1733c8692d478ab:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZjNjAwNTk3NzdiMWMyNjUwNjM1MTlhMzljMTQ1YWRmYjBhZjg4MmZhMTRjZmQ4NGFkMDdlM2EyNjZiZjdhNmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUwYWYxNWFmOGEwMGFiYWRmMjAwMmI0ZTVmZWVkMTA0OTg2ODE4MDFhYzMxNzUxNDA1YjQ2YzU2MjFkM2JkYWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQyZGM1MDI0YmY4YmQ3MTdkMjNkNDZiYTI3YzNmYjdlNzI2ODAzZDUxNjA2Mzc1YTMyN2E4MDYwMDk5NTZhNTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjliZTkyNzA5ZTgzNzRmMjFjZWEyMWYwMWM1ZDVkNTk4ZmNlODMyZmYwMjk3Njc1NmY4NDViMzhlM2VlNzFiYTQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_24d9fa2dcf944f48b7b2662f76f34beb",
+      "statement": "The Organize page displays workflow results as JSON and offers a sections.json download for the section map.",
+      "evidence": [
+        {
+          "resource": "repo://app_pages/organize.py#L67-L97",
+          "version": "repo-lines-v1:sha256:4fd8ee9d1881d23d0ad7a48595a370178d72f4404dafd779aecc19d361579dd2:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUzZDQyNGQyZjZkZDRkZmFjZTgwYzk3YmJkODUyODE4ODNiZjc2M2VjM2RmNjZmMDk1YzRhNWQwZDNhYzg2MWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU5MDlhNTNhNjE4ZDAyOGUxZDMwMDBjMGE3YWJjZWVjYmU1ZmIzN2Y0ZTUxMWVmZTQ2NjQzZmFkNmU2Njg3MmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk3ODcxYWZlMzE2YTk4YTM1ZWYwYWFiNzg5ZjIyMjg3MWM4YzA3ZTFiMjgzZjVhNjYwMTVmMWI5NGRmYmIxYjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_4b55c89df073414abd71758d49167391",
+      "statement": "CodepointRange offsets are half-open Unicode code-point offsets into document Markdown.",
+      "evidence": [
+        {
+          "resource": "repo://paperplane/contracts.py#L70-L80",
+          "version": "repo-lines-v1:sha256:e4be723911dab6569277d907bb16407879ab4722f2ea3d6b8eb7626fd938609e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI2NWQ0YjU3MzkyNjA1Y2M0NDRiODRlZTEwYmQ3NDIwY2Y3MTdiMDNiNGNlYmY0NGNmNjNiMTA0YmI5Nzc4NjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRjNTQxN2M1NGQxZjliZjhlMDIzY2ZmYWJkZWQwNWJiYmJlZjU1MDA5Y2I4MDQ4N2U1YmZhNzA4ZGVhNWY4YzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc2NzNlMjg2Y2UzNGJkMzNmOTJkNWM4OTM0ZDU0NTVkYjFiOGI0YzdmZGRlOWQ3ZmM3MzI1MzE4Y2E4YWVhZTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRiNzk5OTdkNzRlYTk2YjYzN2VmMTMwMjkyMjUzMGU3NjUyODIxOTE3NGVhZDNmNmI1MDQ1MDBkY2JlOWZhNGQifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.5.2",
+    "at": "2026-09-23T15:07:44.901Z"
+  }
+}

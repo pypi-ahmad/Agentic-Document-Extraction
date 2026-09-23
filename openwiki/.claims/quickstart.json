@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:4d392abfc5736a0af216b0743b5e66616e9777563501d76c6e1f0bac4fd55e45",
+  "claims": [
+    {
+      "id": "claim_d0f5d209b39c43b8b875b4bc09a4bc11",
+      "statement": "Paperplane.cmd on Windows and Paperplane.sh on Linux launch the local Streamlit workspace on port 8551.",
+      "evidence": [
+        {
+          "resource": "repo://Paperplane.cmd#L144-L155",
+          "version": "repo-lines-v1:sha256:5d7573f4d6d404d4792ade50b76d5cdc76b1cc56546126d2a5ca5dcf005d831f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFjODVmNjY4MjY1N2ZhZmI0ZmVhM2NlYzIwOGIxZGEwNjJiMzFlMmM5MjZmZDY0OThlZTM3MTgwNDMyNTFmYzQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJjNjI1ZTBjNmNjZTA5OTQyZGY4YWU3ZDZjYTdhMjFjNGVhNDgzZjM1YmJhNDE4YjNiM2U0ZmVlNTNmOTg4NzkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI3NjQ5NDMxMmU3YmUxMjk5YWY4MTM1NjRkMTUyNzRmM2ZlNjY2NTM4YjBmNThhOTY3NGEyZGUzMjkwYmI3YjEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ0MDEzZDI3YzhiODM1MmUyNmQ3MjkzMWU0MTU4MmYwMjJjOTg2MTc3MzU5MWRlNWI5YzM0ZGRhMzc4ZDY0NDAifQ"
+        },
+        {
+          "resource": "repo://Paperplane.sh#L142-L157",
+          "version": "repo-lines-v1:sha256:9432cecc546d75ca893f8f4a83ede584e79e829bd865aab1eabdfc40831367a9:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ0MjE2ZDIxZDc1MjMzNmE5MzlkMmFlYTY5MzViN2RjMzA2NmQyMDdiMjAzYjkyZDlmMjhjZDc5N2I0Yjk3M2UiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJlNzZjNTQyNWM2Yjk3NjMyZjJmMWU1YjhiOTUyNzQ2ZDhmNzFkNmY3MTE3YjNlZjg4YmE0NWY1MzVlYzM2ZjAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIxMTg4YTI4NjdhM2RkZjAzNDAwOTU3NTEwZjc3Yzc2Yjk4ZGQ1MjU0ZWRlNzdhODNiMTJkYmUxYjE4OWFjYmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_8849f460aec24b539ce21944f0b06689",
+      "statement": "The documented first-parse flow is to select an engine, optionally choose a cloud or Ollama model or enable local-engine cloud enhancement, upload files with page ranges, parse, download outputs, and continue to Organize or Jobs.",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L459-L470",
+          "version": "repo-lines-v1:sha256:91549db8fe6951cb534f0d8dcc6ea55a7dd4a8cfa05a2d16355bcb2df043482f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVhMmJmODIwNzg0MzY0NmQ4MDFjZWFhMjI4YmVlNzNiYjdiNmVhYWIyNWFkMzkyMjM3MDI0ZTYzYTIwNmJjYjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVjMTBjZWZlYTA2OTA4NDhiNjBiMjRmNTkyYzg0ZDI3MTUxM2Q0ZjEyNmE2NjY5YTJiNDY2M2UyYmNiOWRmMDEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjllNzU5NWFjZTE1MGQ0NGNhMGViNmM3YmY2NWZhNjU3MTdiMmFiNjFiMDAyZjBiOTI1ZTg4Y2I5YTRjZDkxMGQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjVmYTA0ODQ1ZjNkMWE0ZjM4MzhmZGM5NTI1ZTI3OWFlZDM2YjUyYzZiYjcwZjc1OTNkMzQxMDFlZDM2YzQ0YWQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_a7cb6ad00da54ab0b0a83858c81fe5f2",
+      "statement": "The workspace registers four pages: Parse, Organize, Jobs, and Cost.",
+      "evidence": [
+        {
+          "resource": "repo://workspace_app.py#L13-L21",
+          "version": "repo-lines-v1:sha256:90d52b1ea41546b9e217bcf064eec58d81ae4d5990d46c39a8f552635a9d393e:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNGFmNjkwZWU3NjA2ZjZhYjU2N2FlZjVlZmZlYWFmODVlZTEyNGE1YmRhYmEzZDE1OWZkNTkyMDk5YmE4MDkwNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYWRkMjQ0NTgyYjZmYjAzZDIzYjg0MTVhYmVjZDM0NmIwYzlmNDY2YjZmNzUyYjA2ODE4OWNlN2U5YTJkYzM1MCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNzAzOTBmNjc0YzQ0NGJjNzczN2NiNGM0ZmM0YjJjMTkwMjc2MjdjMjY0YzZjYWM0ZDNlMzFiZTMyODZmZjQ3YSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDQ0YTU2Zjc5YzIxNjJlMjc4MzIwZDIzNDY2NDY4YWY5YjU4Y2Y0MjY2MmZhNGRiM2FjMWY0MDM5ODJhMjY1ZiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_c2700337c0b74076b6840930767b87ce",
+      "statement": "The Cost page aggregates provider-reported token usage from the current browser session and estimates cost by model.",
+      "evidence": [
+        {
+          "resource": "repo://app_pages/cost.py#L1-L10",
+          "version": "repo-lines-v1:sha256:5ab2929dd902f0fad6079b9a4912a6ea95f8abc5b9ef8bd73d383f554f6d3942:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRiZGVlZWI1YTZkNWMzNTdjYjUwMjQ2MzZjODY5NjEyZGU3YWU1NmYzZGI3NjI4MGFjNDNhMWQ0ODhjNjM0MDciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxNWQ2M2I2NjU2YjQ0Nzk4M2I3YWYyZWQ2YmRjOWZjMGZhZjNmZmVkYjUyOTkyYzhhODAzOTc5MjBmMmE5Y2UiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg3ODRlMjA3ZTljNDM4MDkzMDE2N2EwYjM1ODc2ODFlNTFjNTQxYTg4NmRkZjcyZjQ0MGJiZDgwODcxNTkxNjcifQ"
+        },
+        {
+          "resource": "repo://app_pages/cost.py#L17-L39",
+          "version": "repo-lines-v1:sha256:0c5c81fd31851a6211033bf2868a6231b8a4512cc95a3b9862937944441551b3:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhODM3YTVjM2VkZTQwY2QxYzI0ODg4MTkyODFiOTE5N2U2Y2E3NmE1YTZiOTAwMDQ5ZmJkYjYyODNiNjExNWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFiNjBjYTVjNGQxNzc4NGRmMWU3MTE5ZDgyNjUwNDliOTdmMjM0OTkwMzZhNzA0Y2EyZGZkZDBkYTkxZWQ5ZTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdhNTg5NTY5MjVmMDQzYzI0MDlkYmM3MzVmZDU3ZmEzNjcwZDE2ZDIzYWY4OGY2N2QyZWFiODdmYTY2MWQ1MTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNkYzE4YWRhNzBmNWNkZTAxOTI5OGFhYmZjODliZjM5ZTc3MzdkZGU2NTk1MDhhZjEwMTNlNzVhZjJlYzE0MTgifQ"
+        },
+        {
+          "resource": "repo://app_pages/cost.py#L42-L45",
+          "version": "repo-lines-v1:sha256:ed1aaad41ace1aed3bf19d31d9328963c0e566dafa954a9d1f5e205c2f39a929:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODkzYWNiNjU0ZWY1MWIwNGNmYzg3MmE5ZDY1YTRkOGJiOGI2YzZmNzZjZTdiYWY3ZWI1N2Y3NTlmMDVhYmMxMyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDVjN2Q0YjI4ZmY4MTg3YTRhZmMwNjVjYzdjZGM5Yzk3NTUzNDIwOTAzMWYyNzhiOGY5MjdjMGY5YzQ2N2Q3ZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDdjYjZlZTFkNmFlNGNmMGFlMTRjOGZmZGJhZmZjYmFlMmM0YmFkNDdkMmUxMTk1NTUzYTA4NjQxOTAzNWI2NCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzM2MDQwYWQ2ODdmMzgxYWUxMjY5ZDZkNzk1NTE3YjM1YTdjNzcwMWY0MDZkZmU1ZjBmYzQ0YzQ3YmI3MzQ1MCJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.5.2",
+    "at": "2026-09-23T15:07:44.901Z"
+  }
+}

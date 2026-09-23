@@ -55,3 +55,11 @@ Canonical governed project knowledge lives in `knowledge/index.md`.
 - Warn before relying on draft, deprecated, stale, or unverified concepts.
 - Native instructions govern behavior; current source and tests govern factual conflicts.
 <!-- okf:end -->
+
+<!-- OPENWIKI:START -->
+
+## OpenWiki
+
+@AGENTS.md
+
+<!-- OPENWIKI:END -->

@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:11cb0fe9e0b36b8864bd19c2dfc59aa65cdf4d9b0fdae132b132598386c915ca",
+  "claims": [
+    {
+      "id": "claim_620bf4c1c0cb4232953db14c414eaeb5",
+      "statement": "The Streamlit Parse and Jobs pages instantiate JobStore with SQLite and per-job artifacts under the user's local Paperplane data directory, using a seven-day TTL.",
+      "evidence": [
+        {
+          "resource": "repo://app_pages/jobs.py#L13-L16",
+          "version": "repo-lines-v1:sha256:d85f766813095fb652262e5d3429b594fdbcf40090f546538ce4ac5f0da94f8a:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzc2YmU3MmU0MWFmYzIxZGIwNzMyZDJjNmI0NjQ1MjgxMmJhM2E0YTg5M2Q2ZjAwZGQzOTI5MmUwOTViMTY2NSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMWJiMTk0ODQ0NTFhNzAxYTgzODQ2ZTUwY2EyMGFkMGE1OGQ4Mjg4MjAyZDllZWJhZTYzNmYyNTg3Zjk2MDc0YyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOGVlNDE4NjdlMTljOWNiNGUxNDBiNWY0ZGZjNjA5YThmNTc1MzQ5ZmQyZmZjZDM3MWJiNjk2ZjZhMGRlNjYzYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYWZkOGM0M2MzYjNiYWMzNzVhOTQ4ODM4NWUwOGU0ZDE4ZDc2ZTQzZGY1NjBlMWUzM2Y1YjhjMDRlMzZhNDliYSJ9"
+        },
+        {
+          "resource": "repo://streamlit_app.py#L133-L136",
+          "version": "repo-lines-v1:sha256:5d04816c3bd7f51a0270f80797a45566f59051355c43b35d56ed88187fe22575:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOWUzYzIxZjJkNTExOWQ3MDY3ODgwMWU2NTNhNmY2Nzk5OGNlMWM5NTc0NWZkOTE1Yjc1MzlkMWFkMDYxZDBhNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiN2ZiYTU1ZDVlODVhOTgxYzg3ZmIwYzQ1Yjc2MzUwZDY2Mzk5ODY3MTVjOGI5MDA1MjQzYTBlZjU0MjU5YzdhMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjRlZmZjMTczOTZmYjgyN2JhMGM2NTgzYWE0MDkwMDllNDI5YzBlNWNjZWVhYzJiYjg2ZjA2N2NlNjQwYzBlMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNmM2ZjRlOTFhNTkxMjRlYjhkMWM1ZTM4N2JhMDE4Mjk1ZDRhYjAxMzFhODNjNGYzMjlmN2Q5NmI5ZDFlYTdjZSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_91d7587535864bd1990b5ac97717f744",
+      "statement": "JobStore stores job metadata in SQLite with WAL mode and records identity, engine, page range, status, timestamps, checkpoint page, result summary, and error.",
+      "evidence": [
+        {
+          "resource": "repo://paperplane/jobs.py#L22-L35",
+          "version": "repo-lines-v1:sha256:5d28b87b0364a14463aa791df217276087eec6a12e0e3dd4f1d990d70670d767:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU4ZDhiN2VjZGYyZjU1NmNjNzVlYzBkNjE0NjZlZjZhYzI2NTRkMDRhNTcxMjkyNmJhMTFlODVjY2M4YmQ5MGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdlYjcwMjU3NTkzZGEwNmY2ODJhM2RkZGE1NGE5ZDI2MGQ0ZmM1MTRmNjQ1MjM3ZjVjYTc0YjA4ZjhkYTYxYTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjgzNmJkMTIxNTMzYWM4Njg5N2FiYzA2MjdhMzhjZGZlNWU5ZDU4ZmE3ZTc2NjViM2NjZGRmOTJjYzc4Nzk3MDEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjVmMzU1NjkyMzcyZDliNDBiYjU3MjcyZTgyNzdkYmRkZjQxM2YyZWZlMDY2ZmI0ODQ3MTI3ZTE0YTk2NTU2ZDAifQ"
+        },
+        {
+          "resource": "repo://paperplane/jobs.py#L53-L73",
+          "version": "repo-lines-v1:sha256:168134a07bd597f2acdcacb74a14c6bc4c3298b4252692ce11bca2ada1617c54:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRmMWIzZDU1YjRjMTdkODE1YjYyOWRiNzFkYzI2MDI1YmJhODU2OWU0MTdjZWZkMzkxMGEzNDU4ZDdkMzIxMTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZkMDAwNzg3NWRlOGY5MmQ5MmI3ODdhMDE4YzE2YzAwMDQxOGJkNWY5NDk5MjNiOTBmNGQ2M2M3ZWMxNmQ4M2EiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjgwNDBhZmIxNDliZTVjM2NiMzc2MzNkODEwZjc4YzU1MGQ0M2Y4YzM0MmRjYmI5NzczZTYzNTI1ZGI2MzEzNzQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRmMDAzODQwOThjMjVjNTM3YTEzMGNjMzYyOGFlZjBlOWI3YWY4ZTg4YmVkMTk1ZjE2YTMzMWM1YjMxODQxODIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_fe409aa452d84b8daadeb41868e73598",
+      "statement": "The active Parse page creates and starts one stored job per upload, saves the source, then records failure or saves the Paperplane v5 result and available annotated PDF before marking success.",
+      "evidence": [
+        {
+          "resource": "repo://streamlit_app.py#L648-L658",
+          "version": "repo-lines-v1:sha256:2cd69b773517a0239c0176eed5264ef7971c10345399b90eba562ae31b2ef7ee:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE3NDU1NDM0MDY1Mzk5YzRlYWEyMDhlNmQ0Y2JmNGUyMjA0YmQzNDEzN2NjY2M0NWRiOWEyMDZkOGYxNzI4MGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMyYmYwNjAwNGYxNTc5MDgzYzIwYmU4NTIyN2MwOWM1NDY4MzBhOGI4MmYxZjkyZjZhZjk3Njg4ZjU3MjVjMzMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjlmZTdkMzhmNDQzNWEzMTBmODFlZGU1ZjI0MWEzMGZmMDk1N2Y0NzNmYWQ5NjNiYzdmYWQ4MGI3MDUyOTVmZWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNlNzI2MzU2ZDRhOTE5MTQ2MWVkYTZkOGFlYzE4MjkzNGVlMTUzZjRjNjE2NDdhODVkZTRiODQ2YWJlMDgyNjgifQ"
+        },
+        {
+          "resource": "repo://streamlit_app.py#L731-L755",
+          "version": "repo-lines-v1:sha256:e2d36ac79db9d07aa0bedae2100a2a45428b07969581f9479f7560df236046e4:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIxMGRkMzI2N2FlNTRlZWQ2N2VlMGYyNTZkYzI4NTRiMWI4MGVkNTdlOWE4ZWQwNmEzMmM4MjdmMWUyMjdhZGYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZkMDAwNzg3NWRlOGY5MmQ5MmI3ODdhMDE4YzE2YzAwMDQxOGJkNWY5NDk5MjNiOTBmNGQ2M2M3ZWMxNmQ4M2EiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkzMDBjYmVkZjAxZjEyZmFlNDBhZWZmYTQ3OGRlNWNjODAxNGIyMDlmNGFkNDJjNjc0ZjdkOTFlOWMwOThlYTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdhNjUzNjExNjU3NDk5NWEzZTdmMGVmMWUwODhiOWVhYzZmNmZlOWNkNjNiNGE1MjEzZjAzMjc5MDUxMzRlMTkifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_a8eab4c5a41a4bcb84e7a9d4b4dd738f",
+      "statement": "The current parse batch calls runtime.parse_documents in the Streamlit process; its UI integration uses JobStore directly and does not call DurableJobService or the checkpoint read/write methods.",
+      "evidence": [
+        {
+          "resource": "repo://paperplane/jobs.py#L137-L168",
+          "version": "repo-lines-v1:sha256:087691d61336beacc29035d0e9b66a7a0f3404a1af59031716f05d224099c654:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ0MjA2ZDdjMTVhMjE3ODBiNTAyMTJmYmFjNTlmMWQ4MjhjY2JmOTk3MDA0NTk0ZDMyODZjNGYxNWNhMzI4MGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhjN2Q2OWFkNTg4MzM3Y2ZiNTdlYzY0NTNlZThmZTNiNmUwZjc4ODg0MGZiN2MzMWFhN2NkMmU2MWRmNDgyYjUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA0ODRmYTAxNmU4ZmRhMWZmMjVmMDE0NTk5YmY4Nzc2YmEyZjYxMDc1ZTRlNjQyMWFjZDk1NzgxNzZhZjBiODEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI3MTQ4OGY2YWQ1OGE0Nzk5YWVjNjk4OGVhZmZjMzA2NTMzZGEzZjY1OWM4YjJkMjMzZDU0M2M0ZmIwMzE1Y2IifQ"
+        },
+        {
+          "resource": "repo://paperplane/jobs.py#L191-L217",
+          "version": "repo-lines-v1:sha256:d27bdd71846eee8b6d30cec452608001861cae8c546c18c6ef16284dceb0ea36:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhlYjY5NDA0NDYxMGVlYThlYmI2MmYzMzQ0YmI0MGE4NjVmMDMzYTdkMDJhZjAwNzZlOWIxOWIyNjU1M2VmMDQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxNTUwNTU0ZGFlZWY5NDJhZDM2MWRkYzAwNjNkZmFjYWMxYzEzYjA2MWQ2ZDRiYWY3NzRiY2Q0NTIzOWI5ZTAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU5MDM1YTYwOTU3MmEwOWJhMzYzYzI5ZWYxMDhiMDFmYmVjYzNhYmEzNDQ2NGMwNjFiNzU2YmEzMjQ1NTVjZWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhiNTk0YjQ2ZDk2ODU1NjEwYjUzYjA0MTk0NzUwZDczOTU3YTAwN2U1ZmQyYjYxMzQ5YTBlZmJkMTgxNjQxNzcifQ"
+        },
+        {
+          "resource": "repo://streamlit_app.py#L648-L658",
+          "version": "repo-lines-v1:sha256:2cd69b773517a0239c0176eed5264ef7971c10345399b90eba562ae31b2ef7ee:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE3NDU1NDM0MDY1Mzk5YzRlYWEyMDhlNmQ0Y2JmNGUyMjA0YmQzNDEzN2NjY2M0NWRiOWEyMDZkOGYxNzI4MGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMyYmYwNjAwNGYxNTc5MDgzYzIwYmU4NTIyN2MwOWM1NDY4MzBhOGI4MmYxZjkyZjZhZjk3Njg4ZjU3MjVjMzMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjlmZTdkMzhmNDQzNWEzMTBmODFlZGU1ZjI0MWEzMGZmMDk1N2Y0NzNmYWQ5NjNiYzdmYWQ4MGI3MDUyOTVmZWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNlNzI2MzU2ZDRhOTE5MTQ2MWVkYTZkOGFlYzE4MjkzNGVlMTUzZjRjNjE2NDdhODVkZTRiODQ2YWJlMDgyNjgifQ"
+        },
+        {
+          "resource": "repo://streamlit_app.py#L707-L709",
+          "version": "repo-lines-v1:sha256:ea6e722619895ebabc5a603a7b35cf0475a030b1e51384a607ae7a9075002297:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjNkYzI3NDdiZDk5MDA0MjJmYWVmNGJjMDE1NmU1ZTAwM2Y2MDJkMjZkYjI1YzI1MWMzMzU3YTBmODQzZGYwNyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMmE5ZjhjMmJjN2ExNDFhMDIyYWYzZmViOGFiNTAwOGVjMjU3NTdlZjI0YWNkMDQ5ZjUwODlhNzRiN2M5YWU4MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzQ3MjVkZWVhYjkxYTRiNDg5MGM1MDQ2NmRjNzYzYmZhNjA5ZDZhYzg2NDk5NmE3OTE0ZjBlOGU4MDJjZWM0ZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYWFjN2FlNDMzOTlkYTJkNjYwY2Q3Mzc0OWJkNzczMzgxYThmY2ZiM2JkM2EwYzQzODQ2NWY1YTQyZTkzMDA0MiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_fc48b177b26d415da8a95456a4494d99",
+      "statement": "The Jobs page presents cancel controls for pending/running records, while the cancellation method updates the stored status to cancelled; it does not cancel the parse coroutine.",
+      "evidence": [
+        {
+          "resource": "repo://app_pages/jobs.py#L52-L55",
+          "version": "repo-lines-v1:sha256:28ed140635ba03b8a8ce3202abdd73a0c230a9e5929f13767dfd0bc6dd766f23:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTA1YmY1ZThmMGE3NTEwNDg2OTYwM2I2Zjc2ZDgxZjk2ZmM0MTkyMTM4OTczNWRhMmIxYzIzZTM3YmJmZThkNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzM5YTA0ZmFlZTEwNjY5MDAxZDlhMjY0YWUzNjI1ZjFlYTA1ZTllNGE2MWI2MTlhODZlNGMwZGEzNGY5MjdhOCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDBlN2U5NThiYTFiMzViNzMyNGZmYmUwNzQ4YTZjNGU1YmMzODAxNWUzZTIxNzFmYzBhNGRlYTA2NGI4MTkyYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzU1YjhkZTJjNzllYjlkMWY2MTkyNzhmNWRiYmRkMDUyODA5YWY1ODJmYjRjZDQ1Y2U2YjYxYjMzZTBmNTk4OSJ9"
+        },
+        {
+          "resource": "repo://paperplane/jobs.py#L111-L135",
+          "version": "repo-lines-v1:sha256:70ec8773ae1442c6e2019f5fed2dc7a510bfaaa1a540729381df3bb0e77c4547:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVjNzY3M2IyZWRkMTA3N2MyMDFiYjE4MmIxYjVlMGE5OTk3ZTRhMjNlMTEwZWY2NjZmMjg1NTRlMjZiNWVkZjAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU4ZmY0ZmMwMTQwOTE0ZmRmMjE5ZjhjNDRjZTk5YzRiYWU0ZDFiZjljYTE1MTVkNjI4M2NhN2E5NjE4OWY4MDIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJjNjIwMjcxYWI0YjdkZjk2MmJmYjZkYTZjZmJkMzc0OGFlYmJiZmVjZTI1MjYzNTIwOTk5YTk1Yzc2ZTg4MWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI3OTE4ZjY4NDk4Nzc5MzlkZjk3MTI5YjFjYmZiZjNhMmQ0OWUyZDNhNTNlNmE1ODdlYzNiNDZjZTFmODQyMWQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_914df712617b4940b91bfe77c52c1bda",
+      "statement": "Expired jobs are selected by updated_at against the configured TTL and deleted with their artifact directories; the Parse and Jobs pages purge on page execution.",
+      "evidence": [
+        {
+          "resource": "repo://app_pages/jobs.py#L19-L23",
+          "version": "repo-lines-v1:sha256:8830608a8469e079d74c18340d390682b562c3f65fef519c95cba37d8696a7de:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNzlhM2M2YWY4NDJhOWY1MmMxOWI5YThjODU5ZTQ0MjYzM2Q1NjMxMTZmMTk1NDYzZWI3MGJjMTFlMDU2ZTUyOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDQyYTRjMzRmNzJiMjIyODZiYmJmZDE1MTc2MGRmMjBlZTdhY2VhZGIzMTQ1ZWQ4YTY4MmIyMDUxMDNkZDNjMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZmJlNTU3MThiMjRkODM3MjgzMjkyY2QwZWRkMWIwYTgwYjE5MWY0NDMyYTAwMDhlNzU0N2RmMWYxNTJjNWNiMiJ9"
+        },
+        {
+          "resource": "repo://paperplane/jobs.py#L170-L188",
+          "version": "repo-lines-v1:sha256:491dad7c1b791cfdd04a8ee3536c2ba66b2086bdbcf135ca657d9aa2df14a373:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZiMzljNDg2YmQwYmViYzgyMGViODA4MjRlZjk5NWM1YTkwODU2Mzk1OTZhMzgzMTJmMWMxNGEzNDYwODI4ZGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0YzdmYjQ3MTQzNGRlMWZkNTVlYmNjODBlYzg5NTk3YzRiYmNjYmNiMWI0NjNlNGJhMjZjODhlZTU5OTc2YmEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY1Yjk1NjVmYTgzODE2YWIyOGQxOTg1MzRmYWUyNTg2ZWI0OGIzZWEzMGUzMjIwYWRmN2I0NTE0ZWFkMmViNDMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjViODY5ZmU5YWRjMTA4ZjBlMDk5ZGYzNjE3MDlkYWU5NGU2ZmRiZjM2ZTU2YzdhNTNmMTg0NTAzOWY1NDhiNTAifQ"
+        },
+        {
+          "resource": "repo://streamlit_app.py#L428-L431",
+          "version": "repo-lines-v1:sha256:4ba4a6e5fedb9c890f32933a7d3df2cbdf0a2e2f67a65375ed592b1413f47970:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZWViNDkwZmQ1ZGViYjYwOGQ3NWQ5NWFmZmMwYjliMTg5N2E2ZDlhYWNkYjMyNzYyNWVlZGMxNjhhM2Q4MDRjMiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZGM1MmJjYzE1NjNjN2UzMjY5OTIwY2UzYTkzMTAzOTYyMGZmYThiZDc4Y2Q4MTNiYzkwNDUzZjlkZGFjZGJkYiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjdlYmMzZjZhMWMxMzI2NDg4OTZiZGUzZGRmYmVjZTM1OTMxNmZjNzI5NWIxM2JkM2JmYjIwZTg2YjNlOGMxMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTlkNzY1ZWM5MjlmNDI3ZWI2NjU4NmY0ZGVmNWU5ZmM0YTA1ZjFlNjJkN2Q4YTYwNzg2NWUxYjhhMGExMGFmNSJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.5.2",
+    "at": "2026-09-23T15:07:44.901Z"
+  }
+}

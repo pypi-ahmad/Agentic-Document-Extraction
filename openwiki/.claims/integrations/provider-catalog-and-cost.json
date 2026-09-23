@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:061e137d009c7f926882929bc441c00d7288d0797db0a61709ff0da9f56d789d",
+  "claims": [
+    {
+      "id": "claim_458e1445c1004cdfb14334b16bdf991b",
+      "statement": "EngineOptions allows at most one of Docling, PDF Inspector, Cloud AI, and Ollama, and forbids combining Cloud AI with the separate enhancement toggle.",
+      "evidence": [
+        {
+          "resource": "repo://paperplane/ade_contracts.py#L13-L31",
+          "version": "repo-lines-v1:sha256:503985fed0847e4dbdf04301c7cacf921f387dd71f8b10db05484d24fa67a58b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiOWM5MTcxNDQwZmZiMTkzZDlhNmQ2NTEzOGEzMWFkZDUzZDdlMGI3YzYzOTY4NTRlNWQxZDY0OTY0NDYxZDgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRjNTQxN2M1NGQxZjliZjhlMDIzY2ZmYWJkZWQwNWJiYmJlZjU1MDA5Y2I4MDQ4N2U1YmZhNzA4ZGVhNWY4YzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY5MmZkODBmMjZhYjFhNWQwMWVjZWQ3YjczNjE2OTViOGY3MDBiYjQ5ZTZhOTVhYjIwYzc3Yzk1YTZkNDFlMmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYwYzE0ZWY5ZWQxNWVhYmU3MDY1NmU3YmZhZWQ0ZjVhZGQ0NjNjM2U3NWFjNTAzN2ZkYWNjMzA3YTM5MjFlNmMifQ"
+        },
+        {
+          "resource": "repo://streamlit_app.py#L216-L224",
+          "version": "repo-lines-v1:sha256:82470f7b7d4073cbda5f680610688caa98add4b1491c0a55c2e5afd8480d02ba:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMjE4Mzg5NDMxMjA5NjY3YmMwYzg5OTBiMjM1MjU4Y2NjODIyM2I3Mjk5ODJkMGU4YTg0MmQ5NDE2YTIxZjc3NyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiN2ViNzAyNTc1OTNkYTA2ZjY4MmEzZGRkYTU0YTlkMjYwZDRmYzUxNGY2NDUyMzdmNWNhNzRiMDhmOGRhNjFhNiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTFhYTQzMzJhYmZhNTg2N2IwZDUyNTdiYWE4YjI0MGIwYjMzMmJmNzFiYjc3NjAyNzA1NjY4YmQ3OTcyZWIzNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjljNjcxZmU2NzA2OWQyOTI5MmYxOWZmN2VkZWUxYzBlZWJlZjA2MzNmM2IzYjRiMjM5ZjBkMGM1NTdiN2NhMyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_3e703bd17de841d8b669a1b7065461e4",
+      "statement": "The UI maps local engines with optional enhancement to distinct processing strategies, while the parser restricts PDF Inspector strategies to PDF inputs.",
+      "evidence": [
+        {
+          "resource": "repo://paperplane/parser.py#L198-L201",
+          "version": "repo-lines-v1:sha256:69209d4fbd9a25c724945a743ffa2d5b5feff5e3b3bb983c8792c1a220f875f1:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzYxZDZkYTY1MGJmYWNlMTY1OGRiYWY3NzdkOWZkMWRiYzI5MWU4NmMwZThiZGRmODE0NTk2MjZkMTMwOTM0YSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTUwMzJlOTY0ZDA5MzIzNTFlNWQxODUyNjkyODFiMTcxYTNhMDliMDhiMjg2ZTY2MWVhNDcwMzIzYzgyZWI0ZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiN2YwNDJlMGM1NjdlMjA3NWMxOTUzOWMxZGU0NTY4NjU5ZTc2ZmFlYTM5NzQ1NGY5NmJiOGY1MGVkZjA0NzVjZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZjMwMTNjOWMyODllZWZjMzk5M2ExZDcyM2U5ODZmMDMxMjg3ZWQzYWU3NzZjNDliZDgzMzM2ZGQ2M2FmZDI4YiJ9"
+        },
+        {
+          "resource": "repo://streamlit_app.py#L461-L485",
+          "version": "repo-lines-v1:sha256:53795bcad068211aa83834de1385fc9557e812c3c2fe71209fab344d68735aee:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZmYWQwZmU4M2MxMTM4NTQ4N2E4MmU5ZjIwNTk4ZDM2MGU2Mzk5NDI4NWJjYWMwNDYyMTUxMGJhOTVmOGE0NjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM5MjIwNGM2NWY1MDJkYzE2NDU0YjYyNDA4NTZhOWFiN2FkZTAwM2E4ZTlmODYzMzNlYzBiN2M5ZTQwOTQ5MWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhkMGMzODlkNDExMTg1ZDU5YTM5YTA1YTk5NDZjNDNkZGZlODg1ZWI2NmY4NjViMDIzYzA2MGUyYTg3NDBiMzkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZhODJhZmViNWQyMWJiNmI5M2M5NTU5OWRmZGY4NTgzZjM5MmNmNThjNDQ3ZDBjZmI2NjYxYzk0ZTk4OTk3OGQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_8108e3327f1d4c9fbdd4e3cd35b8d0a6",
+      "statement": "runtime.parse_document maps the selected catalog provider to a cloud adapter and uses a local Ollama adapter for Ollama strategies; ollama_ai chains local and cloud adapters.",
+      "evidence": [
+        {
+          "resource": "repo://paperplane/runtime.py#L114-L162",
+          "version": "repo-lines-v1:sha256:cc2791e16390322415d37cbe3c5fab40ead9aff374cde40520f6aa64a35f795a:eyJzZWxlY3RlZExpbmVDb3VudCI6NDksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE5ZjA2YTE5NTJhMzQzMGQ2NTc4YTg1NWJlMDMwZjkzNTQ4YTdkMWI0OTA0M2YzYzE1ZjJhOTNlYzJkMzU0MDIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJhOWY4YzJiYzdhMTQxYTAyMmFmM2ZlYjhhYjUwMDhlYzI1NzU3ZWYyNGFjZDA0OWY1MDg5YTc0YjdjOWFlODEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM1MThkZGQ4ZjA2NzViNDAwNjE5NTZmMjc2MDUxNDQ5N2FlOWFhZGMwN2U3NWI1MWM2MmYxMTI5MDc4MThjOTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZkN2Y2NTc2MTMwYjZlMjQ4N2IzMzllM2NjZGVhMGU0NzU2ODIxNGJmM2Q2NTNjNzcxNmE5NDRiYWE3NGEzYzUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_688a0ea0289f4d6d81c03f3cd2aedf75",
+      "statement": "For AI processing, the parser selects pages for processing or refinement and V2PageProcessor passes each rendered page image to the chosen structured adapter.",
+      "evidence": [
+        {
+          "resource": "repo://paperplane/parser.py#L310-L372",
+          "version": "repo-lines-v1:sha256:90ef46604a934b9631c040eeec33813073c0a0dc027b219281f39831ae731a78:eyJzZWxlY3RlZExpbmVDb3VudCI6NjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU1MTVmY2QzMmIwNTlmNDc4MDkyYTE3NDc0YmM2OTllMjdhZDU5YjAxZTQzZjg3NzJhNWZlNjY5MDFjODg0N2UiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUxMDM0ODFjNTdkMGYwZGMwZjc2Y2QyY2M4YjM2MDRjNGU4Mjk2ZGE0MTIyYWRkMTllODE3NDVkYzdlMzMxYTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjMyZWZkNGZlYzk3MzdjNGEzN2UxM2U5YzdmYjFmYzIxMjMyNDNlZjJjNTM4ODc3ZmM5ZjQzZDM0MzAwNjg1YmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM2N2RhMmFmN2ZkZjY1N2E1NjFlYjVlNDBkYWY4NTEzMzI4YjMyOWRkNmFmNjdmNjM5NTNjNmUwNjE4YmNjNWQifQ"
+        },
+        {
+          "resource": "repo://paperplane/pipeline.py#L647-L673",
+          "version": "repo-lines-v1:sha256:3c3d04ef2c1223efa91c81c974c86802f053aa265e379471938a6496e4005199:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM2YWFiYzQ2YzRhMTFhYTM4MzNhZGU4NGUxMjY0OTk2YTNhNGUxOGQxODhmNmMyODE3NWE1ZjIyODE3MzI0NzAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZkMDAwNzg3NWRlOGY5MmQ5MmI3ODdhMDE4YzE2YzAwMDQxOGJkNWY5NDk5MjNiOTBmNGQ2M2M3ZWMxNmQ4M2EiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYyMGYxZTVlNjcyZjhlNzY4MjgxM2JkMWM1ZTE1ODlmOTE3NGU3YTljYjU5MDAxYzVkNmFkNTcxMjQzMjc1ZjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBhYWU2ZDljMDlmMDAxNmNjMjdkYTZjNmIxMjFjYWMxYjI5OTk2MGY4OWI2NWI2NjQxYmQxNzIxNTA4Y2MwYzcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_2a2edbe06c8f432fba115233f4ca730e",
+      "statement": "Ollama requests post image content to the configured base URL, which defaults to 127.0.0.1:11434; the UI disables parsing for installed models that do not report vision capability.",
+      "evidence": [
+        {
+          "resource": "repo://paperplane/ollama_document.py#L28-L29",
+          "version": "repo-lines-v1:sha256:34b464e60ad667509197ba99d2da71c59dad7e3c797b04af29fa55a634736a82:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzE1MzdiNDliM2EzZDNhNGEwNWI3MDkxZTk5ZTVkNjg5ZDE5MDg2NTc0YTlkYjZjMjViNjAyNTMwMWY1ZDFlNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMTgwYjlhNGViYjZhZDNjMmRiYmRlYTRlMTNlOWQwNGQ3OGVhNWY1YmRlM2Y0YzEwYTE4MDlmZTg0M2FjOWJmMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMWY3MzBhOWRiMzIwZGVmNTFlMDcwZTFiNjIzMDk2MDA2YTk5MzgxZDgyMWJkZjMzZDQ1ZTE5YWIwNWM4YWQxNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMWVlZmZiYzYyMzg4NTJkMjM1NzJlZmE5NGEyZTA4NTlhMWZjOGZkYmYzZTM4MmFjZTkwMzgxODQwNjdmM2NlYSJ9"
+        },
+        {
+          "resource": "repo://paperplane/ollama_document.py#L50-L60",
+          "version": "repo-lines-v1:sha256:a22d550f47e4d2b29a0506537cf68806650a156e1047c95322301fde31219b09:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUzZTcxZjQ1YTRiZjExNWI2Y2VmMjExZDZhNWFkZTQ4NzFjNjYwZDc5MTYzOWQyODM4ZWJhOGQ2NTk1MjJkOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhmOTczMmFlZTM4NDFkMzY0MTliZjRlYzhhMDRiZjIxNWZmN2U3OGMyOTk2MTAxNzc0Y2M2NzMwZTkzZDlkMWMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQwZGM3NTRjODRhYzE2ZGMxZDM1OWMzZDE1ZmM5ZGViN2U3N2Y3ZDNiMjAzYmRiZWZiMDNkNjRlYmM0OGM3YTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImEyMzQ4YjYwZGJlNWQ4N2E0NmIxNzI3YWJlYzQ3OGE2OTljMmZlZjQzZDA0ZGM2YzZkOWI3NGVmYTE3YzQ1NzUifQ"
+        },
+        {
+          "resource": "repo://paperplane/ollama_document.py#L83-L120",
+          "version": "repo-lines-v1:sha256:44864c0f28fd66bc7b960101a4ce01e7182e9cfdaa7f3de99aa8e5f071c93ae4:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkxZjY1MWQzMTBmY2Q5MDc5NTRiMjI4ZDEyYmJkMzEzYTZhNjliODk5ZDgwOGExMWZjNTFkODMwYzFhMmU1ZDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyZjUwOGE1YTdlMzQzYjNmYTZjYTdjZmQ4YTQ2YTE3MGZhNDE3MmY1OGNiMzhlMjJhNTNhY2QwYjMwNGNiODYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjlkMDUyNWRjMmNmYjRlMzgwNTY2N2M3NGJmYjIwNzgzNTJjMjgwYjRhOTdhZmYxZWVhNTdmNzQ1MmIyOWFkMWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMwZWQ4N2ViZTU5Yjk0NjNjZGYyMjcwMjkxYmFhZmY3NGIyM2JkOTlkY2M0Y2JhNGQ1YjFlOGY1OWRiYzg2NWMifQ"
+        },
+        {
+          "resource": "repo://streamlit_app.py#L493-L516",
+          "version": "repo-lines-v1:sha256:ff5386dd4363ecd51509aca63beac60a9eeab6fafe44e4bee541cc6a38529af6:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlkOWMzYzNlZTkxYzJkM2FkOWYyNGI1YWIyNDdlODNlOTJiMzhmMTllZWFkNTc4NDc1YmExNTAzNmYzYzdlNjciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU5Y2U4NDUxMzIxZjk4MjZmNWQ2OTczZTQ1OTA4ZTc2ZDczNjk0N2M1MTU5NTc0ZGMwMmIyZjZmMTdmNTUyMjUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ4YTc1ZWNlZTE3MDEwMTQ3YzBhMjRmOTkyMWY5NDI3NmM1MTI2M2ZlMjFmZGU4ZWJmOTMwYzM3NTU5ZmU5ZjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImExZTg3OGRhZjgxNmFmZTEwODZkNzUzZTEzZWYyM2Q1OGMzMmU5MDVhZGM4OWRiN2I3OTQzNTU1YTg4NzQzMTIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_dc87a4ddb3ae43a8a9a2fc492fa83166",
+      "statement": "The model catalog defines supported cloud model providers, required credential environment-variable names, and configured token rates; the UI resolves settings from the process environment or Streamlit secrets and supports GEMINI_API_KEY as a Google fallback.",
+      "evidence": [
+        {
+          "resource": "repo://paperplane/model_catalog.py#L34-L103",
+          "version": "repo-lines-v1:sha256:28ee7ec80f677b7ca5eafa182733e91ba1bd140de2964418d63a6461ea69c48f:eyJzZWxlY3RlZExpbmVDb3VudCI6NzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM3YTVmY2JkNWIwNzA3OGU2MDBiYzcxNDI5ZDE1YmExMjE5NTE3N2FiNWEzOGJmZWFkNTRlNzBjYjlhOTJmMDYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjliMzllMDIyZTBkODU0MTIwMDAzZDc5MGMyOGI3NTk2MmVkZDMwMzc1NmQ1MTMzM2RmNzQ1Y2ZiODZlYTExY2UiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE0NTI0Y2ZkMWE4ZTE4MGMzMzQyOWExMjhiM2UzMzhmOGNmNDQ0ODExNTgyMTQ0NTY1YjVmNjAzNjVkNTc5MGIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIwMDg5ZDE1ZTZiZjQxNDg4OWFjYzk5YzMwYmY3ODhlMzJiMzFhMjVlMmE1YzU1MzE4NjI5Zjc4MWEyNTNiODMifQ"
+        },
+        {
+          "resource": "repo://paperplane/model_catalog.py#L9-L24",
+          "version": "repo-lines-v1:sha256:ab7418feedc052fbc6b19e2636db8e08640c5c13a829977cf01644a580947fc5:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVkZmZmMTA0MzdmNTZhZGViOTczZTU5MmE0YjU3ZGNiNTU1OGM1Y2QxMzIxOWYxNGU4N2QzOWM5MDJmOGMzMGYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJjNzQwMjE2NzYxZDNmMDg4OWNlYzA4OTYwMjAwMjlkMWVhZmIwNGNmN2ZmMzQ3N2YzMjJmZTk1YWE1M2I4NTciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU5NmYyYmY5NzQ3ODJlOGNlZTc5YzNhNjZmOTlhMTJlNWVkOWY2MzQ1ZmI3NzI0ZTE1ZDllY2RhZjgwNzUwMmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY4ODUyM2NlYWVhMmIzYjY1NDRhZDY0YjdiN2M2ODI0ZDY1MjNlMjE0YTYyYzcwNTIzZThlOThhODhiYmNkZTgifQ"
+        },
+        {
+          "resource": "repo://streamlit_app.py#L114-L130",
+          "version": "repo-lines-v1:sha256:eaaf31f8954a6bb58b79e2ad60c58c6cfde70fe87fded48c331f3518aba4c7c7:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFlMzI5YzAyMTk4NDM3ZmUzM2E3MTQ2N2MxZGFhYzMzOWRmNmI3MzhmMmViMzU0MTBiOGYzZjgxZWIwM2NjMzUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI4MTc1ZjI4MjJiNzkyNjk5MzkyM2QxMWU1MDhmYjE1Mzc3NTdhMGMxZTlkYzhhMDQyYzNhNzJjMTQ5ZjY4YzQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjUzNjgwMDhjNTg1YjIxOWQ5NWYxMzRiZDQwMGM2YjVjYWEwYzYzOWIzZjdhMjNiMjcwMzNkMGZkMTA0OTYzNTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIyYWVmNmQ1NTY1YWM5YTdlNzMzNjY1N2JhMGNiOGFjYzNmMmIwODA5YzIzMGU1ZDliMGQ1MzNhMmUxNDhjNWMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_5208807447544dd7897ace9d74458b95",
+      "statement": "Cost estimates use configured per-million-token rates, separate cached and cache-write input where configured, and clamp negative token counts to zero; the Cost page aggregates usage for the current browser session.",
+      "evidence": [
+        {
+          "resource": "repo://app_pages/cost.py#L17-L63",
+          "version": "repo-lines-v1:sha256:0786ae8dc43ba3d9fbc987d235d3ea6d291654091dc565119b84ca96a42071c5:eyJzZWxlY3RlZExpbmVDb3VudCI6NDcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhODM3YTVjM2VkZTQwY2QxYzI0ODg4MTkyODFiOTE5N2U2Y2E3NmE1YTZiOTAwMDQ5ZmJkYjYyODNiNjExNWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiZDI1NWQzMDFmYzUyM2Q0N2I3NDZlZjgyNTEwYTczOTEwMTViOGVjMWViNTEzNmI3ZTUxOTFlYWE1YmU5MWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdhNTg5NTY5MjVmMDQzYzI0MDlkYmM3MzVmZDU3ZmEzNjcwZDE2ZDIzYWY4OGY2N2QyZWFiODdmYTY2MWQ1MTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc3MDZjOWUyNWMwNGIxMmZlYjZiOGFmZTRkMmI4ZDUzZWMyNzMzNGVmZTNhYmRmNTc1OTRmZDFjYzI3Njg5MDQifQ"
+        },
+        {
+          "resource": "repo://paperplane/model_catalog.py#L118-L148",
+          "version": "repo-lines-v1:sha256:5a9232f831741278a832adf5854e0413cc06131201f91766d3cf42e37450ac0e:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJjYzkzMjQzYmE2ZGJiNjE1ZTIzYmZhZTZlZWYxZjY0ZTYyMDI2OGY5NmVkN2ZmMjVmYzhkNjdjY2NjZWViMWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM5MjIwNGM2NWY1MDJkYzE2NDU0YjYyNDA4NTZhOWFiN2FkZTAwM2E4ZTlmODYzMzNlYzBiN2M5ZTQwOTQ5MWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhlMzI1Mjg4ZGMyZTJlNTk3ZWI4MDE2Nzg1MzI2NTE3Y2ZlNjdiMTVlMjMwNmYzMGQzNThjNzU2MjM0NjAwOGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU1OTM5ZjQ4YTM2MmJjNjlkMzQwNmIyM2U2YzI3OWRiMGYzYjJiZWZlY2UxMGY5MWNiNjU0NGFkY2FjZTU1YjEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_bf805394bce9414fab0419f55dc666e7",
+      "statement": "The regression suite contains checks for GPT-6 Sol request settings and cache usage, xAI's separate reasoning/cache behavior, token cost categories, and cache-write reporting in the Cost page.",
+      "evidence": [
+        {
+          "resource": "repo://tests/test_model_migration.py#L26-L70",
+          "version": "repo-lines-v1:sha256:656f9a711775083c0602c665e4dc66ed448568bce80375686b318557780c1ee6:eyJzZWxlY3RlZExpbmVDb3VudCI6NDUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU0YjkyMTM4YzM0ZDU1MDQ4MjBmOTM0NzcxMDc3NDQwNjBlM2U2Y2Y0ZTU5NDA3MWFjNzQ1M2VjZjAwNDlkMjQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxOTA1MDc1OGFhNjkyZjE4N2EwNGEyY2VmOGY0ZjY3N2U0MDY3MWRhMTViYjAxZDk3MjkyNWUzMjgzYjNlZjgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM0YTkwZGMyYjY3NTdjODJiMDA0OTM0MmQ5YzEyOWM0ZGFmYTM1ZTEzMmJhMGVjY2QxZjkzNzYxOGFkOWRhN2QiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjcyN2Y0Yjk2YjBkNjg1NzZkMjlhNjhlOTczYzVhZmU3NzI4Y2ZjYTFlZjBhZmY0NGNmMGU2ZDFjYjY4MWI1MTQifQ"
+        },
+        {
+          "resource": "repo://tests/test_model_migration.py#L418-L446",
+          "version": "repo-lines-v1:sha256:577dfc8a5ba4dcdb104f608b6bfbf234c6c32f131853bcdafa26ae0e4e277711:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYyNTQzYjMwNGM5ZTc5NzQ0ZjYwN2YyOGMwZmVhODFmNjc1NzhjOTAzZjNjOTlmZGE4M2ViNjIyMThlZTU2MDEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJhOWY4YzJiYzdhMTQxYTAyMmFmM2ZlYjhhYjUwMDhlYzI1NzU3ZWYyNGFjZDA0OWY1MDg5YTc0YjdjOWFlODEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZiMWY5ODlkYmRiNjdiZDZmOWJjNjgyMjliNDhlNjYwYWY4OTE3MGExNzgxMzE3OTU4ZTEwMjkxNTI1ODY0MmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk5NmY3YWRiODk5ZWJhYzc2Njk0YmQ0OTliOGRkZWUzYTVlNTU4NmE3YWY5ODRmODE4NDY1M2RlYzE4NDE0MmYifQ"
+        },
+        {
+          "resource": "repo://tests/test_model_migration.py#L457-L510",
+          "version": "repo-lines-v1:sha256:79dec590e489e68a0bcfb9e75879d72bface261e28761e8469f8483bfddf2dcb:eyJzZWxlY3RlZExpbmVDb3VudCI6NTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQzODVjZGRlMzhhY2IwYThjNDgxNGJmNGU0ODAwNDFiNWY2NjcwM2VlNjVhMDJiNzBmNjk4NjdkMTk5MTVmNzEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFiMzNlNGU5ZjQzMzQ0YjJlYjg3YjMyNjgwMmM4NGViZjk1MWQ2MjQzZGU2NGRiNzE3MjNiN2ZmMTI0NmEzNmQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQxNWIzNTkyYjRlNzZkYzhlMTljYWJmYWZjMjJmNjc0MzQ5ZDk0YjBiMzA0YTU3MGQyMmU3MmEzOThmNTg4OTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNhNTE0MjgxZWJiMzIzOGU5ZmY3Nzc2YmUxMDlhNGJiNTEzMDE0ODM1MDY3MmJlNGIwZmNjYWMzYTE0YWUyYzMifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.5.2",
+    "at": "2026-09-23T15:07:44.901Z"
+  }
+}
