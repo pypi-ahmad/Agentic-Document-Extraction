@@ -27,22 +27,19 @@ Keeping them as two named contracts (`ADEParseResponse` vs.
 from the Paperplane extension fields. A merged schema would add fields that can break simple
 ADE-shaped parsers or require the richer data to be reconstructed from a flatter structure.
 
-## What "ADE-compatible" actually means here
+## What "ADE-compatible" means here
 
-The README is explicit about the boundary of this compatibility claim (see
-`README.md`'s "Outputs and contracts" section): "ADE-compatible" describes
-Paperplane's own versioned Python/Pydantic and JSON contracts and durable job
-semantics: it does not mean Paperplane calls LandingAI's API, promises a
-drop-in replacement for it, or inherits LandingAI's accuracy numbers. Paperplane
-is, in the project's own words, "an independent implementation" inspired by
-LandingAI ADE's observable Parse workflow and evidence model, not a
-reimplementation of its API surface.
+The README's "Outputs and contracts" section defines the boundary: "ADE-compatible"
+describes Paperplane's versioned Python/Pydantic and JSON contracts and durable job
+semantics. Paperplane does not call LandingAI's API, promise a drop-in replacement, or claim
+LandingAI's accuracy numbers. It is "an independent implementation" inspired by LandingAI
+ADE's observable Parse workflow and evidence model, and does not reimplement its API surface.
 
 Concretely, that means:
 
 - The ADE v2-style shape here (`markdown` / `metadata` / `structure`) mirrors
-  the *documented style* of an ADE Parse response closely enough that tooling
-  built against that style of contract can read it: but every field's
+  the *documented style* of an ADE Parse response closely enough for tooling
+  built against that style of contract to read it. Each field's
   semantics (ID numbering, `range_units`, `billing`, `openapi_spec` string) is
   defined by Paperplane's own `ade_contracts.py`, not by calling out to an
   external service.
@@ -51,9 +48,8 @@ Concretely, that means:
   benchmark manifest publish only measurements taken against Paperplane's own
   outputs.
 
-Maintaining the honest, narrower framing: "compatible contract shape and job
-semantics," not "compatible product": is why the two-export design stays
-worth the extra file: it lets Paperplane be transparent about exactly how much
-compatibility it is and isn't claiming, one field at a time.
+The two exports keep the supported contract shape and job semantics separate
+from Paperplane-specific fields. Consumers can use the documented-style shape
+or read the full Paperplane export.
 
 See also: [Reference: ADE JSON schema](../reference/ade-json-schema.md).

@@ -1,9 +1,9 @@
 # Paperplane: Codebase Deep Dive
 
-This document is a definitive, cited technical map of the Paperplane repository as checked
+This document is a cited technical map of the Paperplane repository as checked
 out locally. It complements the short [`docs/ARCHITECTURE.md`](ARCHITECTURE.md) overview
-with verified detail: exact commands, deployment surface, subsystem internals, and an
-honest confidence rating per claim area. Every non-obvious claim below cites a real file
+with verified detail: exact commands, deployment surface, subsystem internals, and a
+confidence rating per claim area. Every non-obvious claim below cites a real file
 path (relative to the repository root); paths with a line number were opened and read at
 that line.
 
@@ -131,9 +131,9 @@ locally-run desktop-style app. The runtime surface instead consists of:
 | Torch CUDA index | `cu130` (CUDA 13.0) explicit index, `cpu` index alternative | [`pyproject.toml:53-63`](../pyproject.toml) |
 | Local model-set version | `v1` (`PaddlePaddle/PP-DocLayoutV3_safetensors` pinned to a specific commit) | [`paperplane/model_store.py:15-17`](../paperplane/model_store.py) |
 
-There is no build-vs-run drift risk here because there is no separate build artifact: the
-same `uv sync --locked` environment both builds and runs the app on the developer's machine.
-This is a deliberate architectural choice (local-first, no deployment pipeline), not a gap.
+There is no separate build artifact. The same `uv sync --locked` environment builds and runs
+the app on the developer's machine, consistent with its local-first design and lack of a
+deployment pipeline.
 
 ### EOL / dead-dependency scan
 
@@ -473,10 +473,10 @@ flowchart TD
     ModeCheck -->|Balanced / scan-like| Candidate[CANDIDATE, best-effort text kept]
 ```
 
-**Load-bearing risk:** the agreement threshold (`overlap_over_smaller_area >= 0.50` and
-`SequenceMatcher` ratio `>= 0.92`) and the verification budgets from `processing_recipe` are
-the entire precision/recall tradeoff of Balanced mode: changing either constant changes how
-often real content gets a second, more expensive crop-verification call. `[INFERRED]`.
+**Risk:** the agreement thresholds (`overlap_over_smaller_area >= 0.50` and
+`SequenceMatcher` ratio `>= 0.92`) and the verification budgets in `processing_recipe`
+control how often Balanced mode sends real content for a second, more expensive crop
+verification call. Changing them affects the precision/recall tradeoff. `[INFERRED]`.
 
 ### 2. `paperplane/runtime.py`: parallel batch orchestration and provider composition
 
@@ -505,10 +505,9 @@ often real content gets a second, more expensive crop-verification call. `[INFER
   ([`paperplane/runtime.py:41-54`](../paperplane/runtime.py)); it also opportunistically
   builds a CPU fallback converter when CUDA is available, for resilience.
 
-**Load-bearing risk:** the semaphore bound (6) and byte/file caps are the only backpressure
-mechanism: there is no queue, retry, or persistence layer if the Streamlit process itself
-is killed mid-batch (consistent with the documented limitation that job execution does not
-survive a stopped process, [`docs/LIMITATIONS.md:5-6`](LIMITATIONS.md)).
+**Risk:** the semaphore bound (6) and byte/file caps are the only backpressure mechanisms.
+If the Streamlit process stops mid-batch, there is no queue, retry, or persistence layer to
+resume the work ([`docs/LIMITATIONS.md:5-6`](LIMITATIONS.md)).
 
 ### 3. `paperplane/ollama_ocr.py`: local layout detection + family-native OCR
 
@@ -538,10 +537,9 @@ DeepSeek-OCR served through a local Ollama server:
   ([`paperplane/ollama_ocr.py:147`](../paperplane/ollama_ocr.py)): a specific fix for
   vertical marginal text that would otherwise defeat OCR.
 
-**Load-bearing risk:** region-based OCR means **one Ollama recognition call per detected
-region**: the documented latency-scales-with-page-density tradeoff
-([`docs/LIMITATIONS.md:16-17`](LIMITATIONS.md)) is a direct, structural consequence of this
-module's design, not a performance bug to be optimized away later.
+Region-based OCR makes **one Ollama recognition call per detected region**, so latency scales
+with page density ([`docs/LIMITATIONS.md:16-17`](LIMITATIONS.md)). This follows from the
+module's design.
 
 ---
 

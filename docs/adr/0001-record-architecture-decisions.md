@@ -7,14 +7,14 @@ Accepted (2026-06-22); reviewed for Paperplane 5.0.0 (2026-08-14).
 ## Context
 
 Paperplane has changed from a multi-service application to a local Streamlit workspace.
-Future contributors need a durable record of why important boundaries exist, especially
-when removed technologies remain visible in Git history or archived plans.
+This directory records why its architectural boundaries exist, including decisions that
+can be hard to understand when older technologies still appear in Git history or archived plans.
 
 ## Decision
 
-Significant architectural choices use short Markdown ADRs in this directory. Each ADR has
-Context, Decision, Consequences, and a status of Proposed, Accepted, Deprecated, or
-Superseded. New ADRs use the next free numeric prefix.
+Record significant architectural choices as short Markdown ADRs in this directory. Each ADR
+includes Context, Decision, Consequences, and one status: Proposed, Accepted, Deprecated, or
+Superseded. Give each new ADR the next free numeric prefix.
 
 An ADR describes the decision that was true at its date. When the architecture changes,
 preserve the historical reason and add an explicit supersession note or a replacement ADR;
