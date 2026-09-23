@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>graphify - graphify-out\graph.html</title>
+<title>graphify - graphify-out/graph.html</title>
 <script src="https://unpkg.com/vis-network@9.1.6/standalone/umd/vis-network.min.js"
         integrity="sha384-Ux6phic9PEHJ38YtrijhkzyJ8yQlH8i/+buBR8s3mAZOJrP1gwyvAcIYl3GWtpX1"
         crossorigin="anonymous"></script>
@@ -281,6 +281,27 @@ LEGEND.forEach(c => {
 const hyperedges = [{"id": "ade_json_contract_docs", "label": "ADE v2 / Paperplane v5 JSON Contract Documentation", "nodes": ["docs_explanation_why_two_json_contracts_doc", "docs_how_to_extract_grounding_and_confidence_doc", "docs_reference_ade_json_schema_doc", "docs_tutorials_read_the_json_output_doc"], "relation": "participate_in", "confidence": "EXTRACTED", "confidence_score": 0.9, "source_file": "docs/reference/ade-json-schema.md"}, {"id": "organize_workflow_docs", "label": "Organize Workflow Documentation (Classify/Split/Section)", "nodes": ["docs_explanation_why_organize_is_deterministic_doc", "docs_how_to_tune_classify_classes_doc", "docs_reference_organize_schemas_doc", "docs_tutorials_organize_a_document_doc"], "relation": "participate_in", "confidence": "EXTRACTED", "confidence_score": 0.9, "source_file": "docs/tutorials/organize-a-document.md"}, {"id": "provider_extension_docs", "label": "Provider Contract and Extension Documentation", "nodes": ["docs_reference_provider_contract_doc", "docs_tutorials_add_a_provider_doc", "docs_how_to_extend_a_provider_doc"], "relation": "participate_in", "confidence": "EXTRACTED", "confidence_score": 0.9, "source_file": "docs/reference/provider-contract.md"}, {"id": "release_versioning_flow", "label": "Release and versioning flow", "nodes": ["release", "changelog", "scripts_release", "streamlit_app"], "relation": "participate_in", "confidence": "EXTRACTED", "confidence_score": 0.9, "source_file": "RELEASE.md"}, {"id": "github_contribution_intake_templates", "label": "GitHub Contribution Intake Templates", "nodes": ["_github_issue_template_bug_report_template", "_github_issue_template_feature_request_template", "_github_issue_template_provider_request_template", "_github_pull_request_template_doc", "_github_issue_template_config_template"], "relation": "form", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": ".github/ISSUE_TEMPLATE/config.yml"}, {"id": "generated_docs_drift_gate", "label": "Generated Documentation Drift Gate", "nodes": ["docs_codebase_deep_dive_codebasedeepdive", "docs_zero_to_mastery_zerotomastery", "docs_zero_to_mastery_rich_richhtml"], "relation": "form", "confidence": "INFERRED", "confidence_score": 0.75, "source_file": "docs/CODEBASE_DEEP_DIVE.md"}, {"id": "engine_exclusivity_pattern", "label": "Exclusive Engine Selection Pattern Across Docs", "nodes": ["docs_codebase_deep_dive_enginesoptionsvalidator", "docs_engines_enginetoggleexclusivity", "docs_migration_guide_v4tov5enginereplacement", "docs_adr_0002_langgraph_for_pipeline_directboundedpageprocessing"], "relation": "participate_in", "confidence": "INFERRED", "confidence_score": 0.8, "source_file": "docs/ENGINES.md"}, {"id": "no_fabricated_accuracy_claim_stance", "label": "No Fabricated Accuracy Claim Stance", "nodes": ["docs_quality_benchmarkpolicy", "docs_limitations_landingaidisclaimer", "docs_codebase_deep_dive_confidencecalibrationmatch"], "relation": "participate_in", "confidence": "INFERRED", "confidence_score": 0.8, "source_file": "docs/QUALITY.md"}, {"id": "oss_governance_docs", "label": "Open-source governance documentation set", "nodes": ["code_of_conduct", "contributing", "support", "security", "disclaimer"], "relation": "form", "confidence": "INFERRED", "confidence_score": 0.8, "source_file": "CONTRIBUTING.md"}, {"id": "ai_agent_instruction_duplication", "label": "Duplicate AI agent contract/instruction files", "nodes": ["agents", "claude", "codebuddy", "qoder", "kiro_steering_code_review_graph"], "relation": "form", "confidence": "INFERRED", "confidence_score": 0.85, "source_file": "CLAUDE.md"}, {"id": "code_review_graph_tool_family", "label": "Code-Review-Graph MCP Tool Family", "nodes": ["concept_query_graph_tool", "concept_semantic_search_nodes_tool", "concept_detect_changes_tool", "concept_get_impact_radius_tool", "concept_get_affected_flows_tool", "concept_refactor_tool"], "relation": "participate_in", "confidence": "INFERRED", "confidence_score": 0.85, "source_file": ".github/code-review-graph.instruction.md"}, {"id": "token_efficiency_rules_pattern", "label": "Token Efficiency Rules Convention", "nodes": ["_claude_skills_debug_issue_skill_workflow", "_claude_skills_explore_codebase_skill_workflow", "_claude_skills_refactor_safely_skill_workflow", "_claude_skills_review_changes_skill_workflow", "concept_get_minimal_context_tool"], "relation": "form", "confidence": "INFERRED", "confidence_score": 0.85, "source_file": ".claude/skills/debug-issue/SKILL.md"}];
 // afterDrawing passes ctx already transformed to network coordinate space.
 // Draw node positions raw — no manual pan/zoom/DPR math needed.
+
+// Andrew's monotone chain. Returns the hull in counter-clockwise order, which
+// is what the perimeter must be traced in. Collinear and duplicate points
+// collapse to the extremes, so degenerate member sets render as a segment
+// rather than a zero-area crossed path.
+function convexHull(pts) {
+    const p = pts.slice().sort((a, b) => (a.x - b.x) || (a.y - b.y));
+    if (p.length < 3) return p;
+    const cross = (o, a, b) => (a.x - o.x) * (b.y - o.y) - (a.y - o.y) * (b.x - o.x);
+    const build = seq => {
+        const out = [];
+        for (const q of seq) {
+            while (out.length >= 2 && cross(out[out.length - 2], out[out.length - 1], q) <= 0) out.pop();
+            out.push(q);
+        }
+        out.pop();
+        return out;
+    };
+    const hull = build(p).concat(build(p.slice().reverse()));
+    return hull.length >= 3 ? hull : p;
+}
 network.on('afterDrawing', function(ctx) {
     hyperedges.forEach(h => {
         const positions = h.nodes
@@ -293,10 +314,14 @@ network.on('afterDrawing', function(ctx) {
         ctx.strokeStyle = '#6366f1';
         ctx.lineWidth = 2;
         ctx.beginPath();
-        // Centroid and expanded hull in network coordinates
+        // Centroid and expanded hull in network coordinates.
+        // The perimeter must follow hull order, not h.nodes order: tracing the
+        // raw member order self-intersects whenever the layout does not happen
+        // to place members in angular order, filling as crossed wedges.
         const cx = positions.reduce((s, p) => s + p.x, 0) / positions.length;
         const cy = positions.reduce((s, p) => s + p.y, 0) / positions.length;
-        const expanded = positions.map(p => ({
+        const hull = convexHull(positions);
+        const expanded = hull.map(p => ({
             x: cx + (p.x - cx) * 1.15,
             y: cy + (p.y - cy) * 1.15
         }));
