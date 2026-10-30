@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 5
 requires-python = "==3.12.*"
 resolution-markers = [
     "sys_platform == 'darwin'",
@@ -24,7 +24,7 @@ dependencies = [
     { name = "pyyaml" },
     { name = "safetensors" },
     { name = "torch", version = "2.13.0", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "(sys_platform == 'darwin' and extra == 'extra-27-agentic-document-extraction-cpu') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
-    { name = "torch", version = "2.13.0", source = { registry = "https://pypi.org/simple" }, marker = "(extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (extra != 'extra-27-agentic-document-extraction-cpu' and extra != 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "torch", version = "2.13.0", source = { registry = "https://pypi.org/simple" }, marker = "(extra != 'extra-27-agentic-document-extraction-cpu' and extra != 'extra-27-agentic-document-extraction-cu130') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
     { name = "torch", version = "2.13.0+cpu", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "(sys_platform != 'darwin' and extra == 'extra-27-agentic-document-extraction-cpu') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
     { name = "torch", version = "2.13.0+cu130", source = { registry = "https://download.pytorch.org/whl/cu130" }, marker = "extra == 'extra-27-agentic-document-extraction-cu130'" },
 ]
@@ -203,11 +203,11 @@ wheels = [
 
 [[package]]
 name = "certifi"
-version = "2026.6.17"
+version = "2026.10.18"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/c9/c7/424b75da314c1045981bd9777432fad05a9e0c69daa4ed7e308bbaffe405/certifi-2026.6.17.tar.gz", hash = "sha256:024c88eeec92ca068db80f02b8b07c9cef7b9fe261d1d535abfd5abd6f6af432", size = 134594, upload-time = "2026-06-17T10:31:07.894Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/7e/eb/a2aa1ac3ea30dd3f30ca57f40232138b6b0040719316ecb85daf61167771/certifi-2026.10.18.tar.gz", hash = "sha256:b9995d97b64d0431a5af837d8ca8cd6238104d1f319f04bd93ea43124d6c861e", size = 135227, upload-time = "2026-10-18T16:21:07.655Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ef/2f/c5464532e965badff2f4c4c1a3a83f5697f0d7c407ed0cda44aaa99bb451/certifi-2026.6.17-py3-none-any.whl", hash = "sha256:2227dcbaafe0d2f59279d1762ddddc37783ed4354594f194ffc31d20f41fc3db", size = 133289, upload-time = "2026-06-17T10:31:06.348Z" },
+    { url = "https://files.pythonhosted.org/packages/08/ba/95dd616042484f7c83a06974388b37b837732740ee70bc5dc715b5fcd55a/certifi-2026.10.18-py3-none-any.whl", hash = "sha256:73191c47aaa79da394e8fee2dbc2ec827432cab56311122c9e47abf79e390f62", size = 134093, upload-time = "2026-10-18T16:21:06.276Z" },
 ]
 
 [[package]]
@@ -240,7 +240,7 @@ name = "click"
 version = "8.4.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "colorama", marker = "sys_platform == 'win32' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "colorama", marker = "sys_platform == 'win32'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/76/d4/81420972a676e8ffea40450d8c8c92943e7218a78fe9b64359836cc9876b/click-8.4.2.tar.gz", hash = "sha256:9a6cea6e60b17ebe0a44c5cc636d94f09bd66142c1cd7d8b4cd731c4917a15f6", size = 338000, upload-time = "2026-06-24T17:45:15.148Z" }
 wheels = [
@@ -261,7 +261,7 @@ name = "colorlog"
 version = "6.12.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "colorama", marker = "sys_platform == 'win32' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "colorama", marker = "sys_platform == 'win32'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/8c/55/ba79756cb90c8d69d599d57785398ac87bba7b19c80e87f4e8a562197c93/colorlog-6.12.0.tar.gz", hash = "sha256:2a7924c1dadf18b22a0eb8b06d1c7b01d5341707ec1641eb6fcc4fde0c3e8e5f", size = 18151, upload-time = "2026-07-23T13:40:40.71Z" }
 wheels = [
@@ -323,43 +323,43 @@ wheels = [
 
 [package.optional-dependencies]
 cublas = [
-    { name = "nvidia-cublas", marker = "(platform_machine != 'aarch64' and platform_machine != 'x86_64' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (platform_machine == 'aarch64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (platform_machine == 'aarch64' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (platform_machine == 'x86_64' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (sys_platform != 'linux' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
-    { name = "nvidia-cuda-nvrtc", marker = "(platform_machine != 'aarch64' and platform_machine != 'x86_64' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (platform_machine == 'aarch64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (platform_machine == 'aarch64' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (platform_machine == 'x86_64' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (sys_platform != 'linux' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "nvidia-cublas", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "nvidia-cuda-nvrtc", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
 ]
 cudart = [
-    { name = "nvidia-cuda-runtime", marker = "(platform_machine != 'aarch64' and platform_machine != 'x86_64' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (platform_machine == 'aarch64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (platform_machine == 'aarch64' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (platform_machine == 'x86_64' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (sys_platform != 'linux' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "nvidia-cuda-runtime", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
 ]
 cufft = [
-    { name = "nvidia-cufft", marker = "(platform_machine != 'aarch64' and platform_machine != 'x86_64' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (platform_machine == 'aarch64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (platform_machine == 'aarch64' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (platform_machine == 'x86_64' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (sys_platform != 'linux' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
-    { name = "nvidia-nvjitlink", marker = "(platform_machine != 'aarch64' and platform_machine != 'x86_64' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (platform_machine == 'aarch64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (platform_machine == 'aarch64' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (platform_machine == 'x86_64' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (sys_platform != 'linux' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "nvidia-cufft", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "nvidia-nvjitlink", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
 ]
 cufile = [
-    { name = "nvidia-cufile", marker = "(platform_machine != 'aarch64' and platform_machine != 'x86_64' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (platform_machine == 'aarch64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (platform_machine == 'aarch64' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (platform_machine == 'x86_64' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (sys_platform != 'linux' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "nvidia-cufile", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
 ]
 cupti = [
-    { name = "nvidia-cuda-cupti", marker = "(platform_machine != 'aarch64' and platform_machine != 'x86_64' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (platform_machine == 'aarch64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (platform_machine == 'aarch64' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (platform_machine == 'x86_64' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (sys_platform != 'linux' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "nvidia-cuda-cupti", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
 ]
 curand = [
-    { name = "nvidia-curand", marker = "(platform_machine != 'aarch64' and platform_machine != 'x86_64' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (platform_machine == 'aarch64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (platform_machine == 'aarch64' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (platform_machine == 'x86_64' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (sys_platform != 'linux' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "nvidia-curand", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
 ]
 cusolver = [
-    { name = "nvidia-cublas", marker = "(platform_machine != 'aarch64' and platform_machine != 'x86_64' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (platform_machine == 'aarch64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (platform_machine == 'aarch64' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (platform_machine == 'x86_64' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (sys_platform != 'linux' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
-    { name = "nvidia-cusolver", marker = "(platform_machine != 'aarch64' and platform_machine != 'x86_64' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (platform_machine == 'aarch64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (platform_machine == 'aarch64' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (platform_machine == 'x86_64' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (sys_platform != 'linux' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
-    { name = "nvidia-cusparse", marker = "(platform_machine != 'aarch64' and platform_machine != 'x86_64' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (platform_machine == 'aarch64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (platform_machine == 'aarch64' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (platform_machine == 'x86_64' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (sys_platform != 'linux' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
-    { name = "nvidia-nvjitlink", marker = "(platform_machine != 'aarch64' and platform_machine != 'x86_64' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (platform_machine == 'aarch64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (platform_machine == 'aarch64' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (platform_machine == 'x86_64' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (sys_platform != 'linux' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "nvidia-cublas", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "nvidia-cusolver", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "nvidia-cusparse", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "nvidia-nvjitlink", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
 ]
 cusparse = [
-    { name = "nvidia-cusparse", marker = "(platform_machine != 'aarch64' and platform_machine != 'x86_64' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (platform_machine == 'aarch64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (platform_machine == 'aarch64' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (platform_machine == 'x86_64' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (sys_platform != 'linux' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
-    { name = "nvidia-nvjitlink", marker = "(platform_machine != 'aarch64' and platform_machine != 'x86_64' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (platform_machine == 'aarch64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (platform_machine == 'aarch64' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (platform_machine == 'x86_64' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (sys_platform != 'linux' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "nvidia-cusparse", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "nvidia-nvjitlink", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
 ]
 nvjitlink = [
-    { name = "nvidia-nvjitlink", marker = "(platform_machine != 'aarch64' and platform_machine != 'x86_64' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (platform_machine == 'aarch64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (platform_machine == 'aarch64' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (platform_machine == 'x86_64' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (sys_platform != 'linux' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "nvidia-nvjitlink", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
 ]
 nvrtc = [
-    { name = "nvidia-cuda-nvrtc", marker = "(platform_machine != 'aarch64' and platform_machine != 'x86_64' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (platform_machine == 'aarch64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (platform_machine == 'aarch64' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (platform_machine == 'x86_64' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (sys_platform != 'linux' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "nvidia-cuda-nvrtc", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
 ]
 nvtx = [
-    { name = "nvidia-nvtx", marker = "(platform_machine != 'aarch64' and platform_machine != 'x86_64' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (platform_machine == 'aarch64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (platform_machine == 'aarch64' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (platform_machine == 'x86_64' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (sys_platform != 'linux' and extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "nvidia-nvtx", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
 ]
 
 [[package]]
@@ -460,11 +460,11 @@ dependencies = [
     { name = "rtree" },
     { name = "safetensors", extra = ["torch"] },
     { name = "torch", version = "2.13.0", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "(sys_platform == 'darwin' and extra == 'extra-27-agentic-document-extraction-cpu') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
-    { name = "torch", version = "2.13.0", source = { registry = "https://pypi.org/simple" }, marker = "(extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (extra != 'extra-27-agentic-document-extraction-cpu' and extra != 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "torch", version = "2.13.0", source = { registry = "https://pypi.org/simple" }, marker = "(extra != 'extra-27-agentic-document-extraction-cpu' and extra != 'extra-27-agentic-document-extraction-cu130') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
     { name = "torch", version = "2.13.0+cpu", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "(sys_platform != 'darwin' and extra == 'extra-27-agentic-document-extraction-cpu') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
     { name = "torch", version = "2.13.0+cu130", source = { registry = "https://download.pytorch.org/whl/cu130" }, marker = "extra == 'extra-27-agentic-document-extraction-cu130'" },
     { name = "torchvision", version = "0.28.0", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "(sys_platform == 'darwin' and extra == 'extra-27-agentic-document-extraction-cpu') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
-    { name = "torchvision", version = "0.28.0", source = { registry = "https://pypi.org/simple" }, marker = "(extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (extra != 'extra-27-agentic-document-extraction-cpu' and extra != 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "torchvision", version = "0.28.0", source = { registry = "https://pypi.org/simple" }, marker = "(extra != 'extra-27-agentic-document-extraction-cpu' and extra != 'extra-27-agentic-document-extraction-cu130') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
     { name = "torchvision", version = "0.28.0+cpu", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "(sys_platform != 'darwin' and extra == 'extra-27-agentic-document-extraction-cpu') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
     { name = "torchvision", version = "0.28.0+cu130", source = { registry = "https://download.pytorch.org/whl/cu130" }, marker = "extra == 'extra-27-agentic-document-extraction-cu130'" },
     { name = "tqdm" },
@@ -483,7 +483,7 @@ dependencies = [
     { name = "docling-core" },
     { name = "pillow" },
     { name = "pydantic" },
-    { name = "pywin32", marker = "sys_platform == 'win32' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "pywin32", marker = "sys_platform == 'win32'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/ba/80/861612a7ee977ec27cf4966337cbfa9033e9a58378fbeb0449e732b6fe31/docling_parse-7.13.0.tar.gz", hash = "sha256:23575b21b8722466899135340b254124792d0c19d18cd223cad437dc4283f8f5", size = 6864422, upload-time = "2026-08-14T06:28:50.233Z" }
 wheels = [
@@ -544,11 +544,11 @@ standard = [
     { name = "rtree" },
     { name = "scipy" },
     { name = "torch", version = "2.13.0", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "(sys_platform == 'darwin' and extra == 'extra-27-agentic-document-extraction-cpu') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
-    { name = "torch", version = "2.13.0", source = { registry = "https://pypi.org/simple" }, marker = "(extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (extra != 'extra-27-agentic-document-extraction-cpu' and extra != 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "torch", version = "2.13.0", source = { registry = "https://pypi.org/simple" }, marker = "(extra != 'extra-27-agentic-document-extraction-cpu' and extra != 'extra-27-agentic-document-extraction-cu130') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
     { name = "torch", version = "2.13.0+cpu", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "(sys_platform != 'darwin' and extra == 'extra-27-agentic-document-extraction-cpu') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
     { name = "torch", version = "2.13.0+cu130", source = { registry = "https://download.pytorch.org/whl/cu130" }, marker = "extra == 'extra-27-agentic-document-extraction-cu130'" },
     { name = "torchvision", version = "0.28.0", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "(sys_platform == 'darwin' and extra == 'extra-27-agentic-document-extraction-cpu') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
-    { name = "torchvision", version = "0.28.0", source = { registry = "https://pypi.org/simple" }, marker = "(extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (extra != 'extra-27-agentic-document-extraction-cpu' and extra != 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "torchvision", version = "0.28.0", source = { registry = "https://pypi.org/simple" }, marker = "(extra != 'extra-27-agentic-document-extraction-cpu' and extra != 'extra-27-agentic-document-extraction-cu130') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
     { name = "torchvision", version = "0.28.0+cpu", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "(sys_platform != 'darwin' and extra == 'extra-27-agentic-document-extraction-cpu') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
     { name = "torchvision", version = "0.28.0+cu130", source = { registry = "https://download.pytorch.org/whl/cu130" }, marker = "extra == 'extra-27-agentic-document-extraction-cu130'" },
     { name = "typer" },
@@ -569,7 +569,7 @@ name = "faker"
 version = "40.36.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "tzdata", marker = "sys_platform == 'win32' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "tzdata", marker = "sys_platform == 'win32'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/98/d2/026af1e002bbc6df534d1f8262b18ec79a974f928e9290bfbfdfe7c7b2af/faker-40.36.0.tar.gz", hash = "sha256:754048c76c03afa7de83eee8f4bcee3cf668cbb7d995f54a4e9678db7f110308", size = 2025903, upload-time = "2026-07-24T21:11:33.088Z" }
 wheels = [
@@ -687,7 +687,7 @@ dependencies = [
     { name = "click" },
     { name = "filelock" },
     { name = "fsspec" },
-    { name = "hf-xet", marker = "platform_machine == 'AMD64' or platform_machine == 'aarch64' or platform_machine == 'amd64' or platform_machine == 'arm64' or platform_machine == 'x86_64' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "hf-xet", marker = "platform_machine == 'AMD64' or platform_machine == 'aarch64' or platform_machine == 'amd64' or platform_machine == 'arm64' or platform_machine == 'x86_64'" },
     { name = "httpx" },
     { name = "packaging" },
     { name = "pyyaml" },
@@ -894,7 +894,7 @@ version = "2.10.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pygments" },
-    { name = "pywin32", marker = "sys_platform == 'win32' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "pywin32", marker = "sys_platform == 'win32'" },
     { name = "tqdm" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/3a/93/80ac75c20ce54c785648b4ed363c88f148bf22637e10c9863db4fbe73e74/mpire-2.10.2.tar.gz", hash = "sha256:f66a321e93fadff34585a4bfa05e95bd946cf714b442f51c529038eb45773d97", size = 271270, upload-time = "2024-05-07T14:00:31.815Z" }
@@ -1228,7 +1228,7 @@ source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "numpy" },
     { name = "python-dateutil" },
-    { name = "tzdata", marker = "sys_platform == 'emscripten' or sys_platform == 'win32' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "tzdata", marker = "sys_platform == 'emscripten' or sys_platform == 'win32'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/be/4f/5f3422a2afec5ffc46308b79e53291365a93748b498ac2e58bead0197916/pandas-3.0.5.tar.gz", hash = "sha256:dca3734d6ab7c906e6730f0788b0a1dbb9f2467731f9711f77995c8e9d62d712", size = 4658219, upload-time = "2026-07-22T22:19:28.819Z" }
 wheels = [
@@ -1508,7 +1508,7 @@ name = "pytest"
 version = "9.1.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "colorama", marker = "sys_platform == 'win32' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "colorama", marker = "sys_platform == 'win32'" },
     { name = "iniconfig" },
     { name = "packaging" },
     { name = "pluggy" },
@@ -1838,7 +1838,7 @@ wheels = [
 torch = [
     { name = "numpy" },
     { name = "torch", version = "2.13.0", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "(sys_platform == 'darwin' and extra == 'extra-27-agentic-document-extraction-cpu') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
-    { name = "torch", version = "2.13.0", source = { registry = "https://pypi.org/simple" }, marker = "(extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (extra != 'extra-27-agentic-document-extraction-cpu' and extra != 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "torch", version = "2.13.0", source = { registry = "https://pypi.org/simple" }, marker = "(extra != 'extra-27-agentic-document-extraction-cpu' and extra != 'extra-27-agentic-document-extraction-cu130') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
     { name = "torch", version = "2.13.0+cpu", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "(sys_platform != 'darwin' and extra == 'extra-27-agentic-document-extraction-cpu') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
     { name = "torch", version = "2.13.0+cu130", source = { registry = "https://download.pytorch.org/whl/cu130" }, marker = "extra == 'extra-27-agentic-document-extraction-cu130'" },
 ]
@@ -1970,7 +1970,7 @@ dependencies = [
     { name = "toml" },
     { name = "typing-extensions" },
     { name = "uvicorn" },
-    { name = "watchdog", marker = "sys_platform != 'darwin' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "watchdog", marker = "sys_platform != 'darwin'" },
     { name = "websockets" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/ad/4a/6d0bf2f78de59924564caf47298341c09f61bf3814f15f0d15ef09fe1e3d/streamlit-1.61.1.tar.gz", hash = "sha256:68acf1ff1b6005b19205c2777d832deea0c1edd6fbbf7f43f091b96220e5e35f", size = 9907073, upload-time = "2026-08-05T14:51:01.956Z" }
@@ -2090,18 +2090,18 @@ resolution-markers = [
 dependencies = [
     { name = "cuda-bindings", marker = "(sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu' and extra != 'extra-27-agentic-document-extraction-cu130') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
     { name = "cuda-toolkit", extra = ["cublas", "cudart", "cufft", "cufile", "cupti", "curand", "cusolver", "cusparse", "nvjitlink", "nvrtc", "nvtx"], marker = "(sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu' and extra != 'extra-27-agentic-document-extraction-cu130') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
-    { name = "filelock", marker = "(extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (extra != 'extra-27-agentic-document-extraction-cpu' and extra != 'extra-27-agentic-document-extraction-cu130')" },
-    { name = "fsspec", marker = "(extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (extra != 'extra-27-agentic-document-extraction-cpu' and extra != 'extra-27-agentic-document-extraction-cu130')" },
-    { name = "jinja2", marker = "(extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (extra != 'extra-27-agentic-document-extraction-cpu' and extra != 'extra-27-agentic-document-extraction-cu130')" },
-    { name = "networkx", marker = "(extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (extra != 'extra-27-agentic-document-extraction-cpu' and extra != 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "filelock", marker = "(extra != 'extra-27-agentic-document-extraction-cpu' and extra != 'extra-27-agentic-document-extraction-cu130') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "fsspec", marker = "(extra != 'extra-27-agentic-document-extraction-cpu' and extra != 'extra-27-agentic-document-extraction-cu130') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "jinja2", marker = "(extra != 'extra-27-agentic-document-extraction-cpu' and extra != 'extra-27-agentic-document-extraction-cu130') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "networkx", marker = "(extra != 'extra-27-agentic-document-extraction-cpu' and extra != 'extra-27-agentic-document-extraction-cu130') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
     { name = "nvidia-cudnn-cu13", marker = "(sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu' and extra != 'extra-27-agentic-document-extraction-cu130') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
     { name = "nvidia-cusparselt-cu13", marker = "(sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu' and extra != 'extra-27-agentic-document-extraction-cu130') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
     { name = "nvidia-nccl-cu13", marker = "(sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu' and extra != 'extra-27-agentic-document-extraction-cu130') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
     { name = "nvidia-nvshmem-cu13", marker = "(sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu' and extra != 'extra-27-agentic-document-extraction-cu130') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
-    { name = "setuptools", marker = "(extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (extra != 'extra-27-agentic-document-extraction-cpu' and extra != 'extra-27-agentic-document-extraction-cu130')" },
-    { name = "sympy", marker = "(extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (extra != 'extra-27-agentic-document-extraction-cpu' and extra != 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "setuptools", marker = "(extra != 'extra-27-agentic-document-extraction-cpu' and extra != 'extra-27-agentic-document-extraction-cu130') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "sympy", marker = "(extra != 'extra-27-agentic-document-extraction-cpu' and extra != 'extra-27-agentic-document-extraction-cu130') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
     { name = "triton", marker = "(sys_platform == 'linux' and extra != 'extra-27-agentic-document-extraction-cpu' and extra != 'extra-27-agentic-document-extraction-cu130') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
-    { name = "typing-extensions", marker = "(extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (extra != 'extra-27-agentic-document-extraction-cpu' and extra != 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "typing-extensions", marker = "(extra != 'extra-27-agentic-document-extraction-cpu' and extra != 'extra-27-agentic-document-extraction-cu130') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
 ]
 wheels = [
     { url = "https://files.pythonhosted.org/packages/c4/3a/ed0f4d4d1dcde03bced7aac9a28e800abcdc0cbd06b6775044c9fbd877b7/torch-2.13.0-cp312-cp312-macosx_14_0_arm64.whl", hash = "sha256:2fe228aba290d14b9f31b049be550dbd469c3fd3013d7a19705b30454da97027", size = 111213045, upload-time = "2026-07-08T16:05:22.997Z" },
@@ -2195,9 +2195,9 @@ resolution-markers = [
     "sys_platform != 'darwin' and sys_platform != 'emscripten' and sys_platform != 'win32'",
 ]
 dependencies = [
-    { name = "numpy", marker = "(extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (extra != 'extra-27-agentic-document-extraction-cpu' and extra != 'extra-27-agentic-document-extraction-cu130')" },
-    { name = "pillow", marker = "(extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (extra != 'extra-27-agentic-document-extraction-cpu' and extra != 'extra-27-agentic-document-extraction-cu130')" },
-    { name = "torch", version = "2.13.0", source = { registry = "https://pypi.org/simple" }, marker = "(extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130') or (extra != 'extra-27-agentic-document-extraction-cpu' and extra != 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "numpy", marker = "(extra != 'extra-27-agentic-document-extraction-cpu' and extra != 'extra-27-agentic-document-extraction-cu130') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "pillow", marker = "(extra != 'extra-27-agentic-document-extraction-cpu' and extra != 'extra-27-agentic-document-extraction-cu130') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "torch", version = "2.13.0", source = { registry = "https://pypi.org/simple" }, marker = "(extra != 'extra-27-agentic-document-extraction-cpu' and extra != 'extra-27-agentic-document-extraction-cu130') or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
 ]
 wheels = [
     { url = "https://files.pythonhosted.org/packages/15/49/c1cab1ecbb3ff1a380a3f99283db1dee61b8afe354f6352c643b65937130/torchvision-0.28.0-cp312-cp312-macosx_14_0_arm64.whl", hash = "sha256:e9f54c30cd52e3ef7fd034cc69b7bb7e0964e1c8f8743e018ab92e95b40f9eee", size = 1856020, upload-time = "2026-07-08T16:07:52.182Z" },
@@ -2252,7 +2252,7 @@ name = "tqdm"
 version = "4.70.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "colorama", marker = "sys_platform == 'win32' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "colorama", marker = "sys_platform == 'win32'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/21/3b/6c24bec5be5e743ffd99576daa5cc077722fc7d5bbc00bd133fa0c698dc6/tqdm-4.70.0.tar.gz", hash = "sha256:55b0b0dbd97462d06ebee91e4dac24ed4d4702be82b24f07e6c1d27e08cea220", size = 795438, upload-time = "2026-07-27T11:33:15.271Z" }
 wheels = [
@@ -2382,7 +2382,7 @@ version = "0.26.8"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "annotated-doc" },
-    { name = "colorama", marker = "sys_platform == 'win32' or (extra == 'extra-27-agentic-document-extraction-cpu' and extra == 'extra-27-agentic-document-extraction-cu130')" },
+    { name = "colorama", marker = "sys_platform == 'win32'" },
     { name = "rich" },
     { name = "shellingham" },
 ]
@@ -2449,9 +2449,6 @@ version = "6.0.0"
 source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/db/7d/7f3d619e951c88ed75c6037b246ddcf2d322812ee8ea189be89511721d54/watchdog-6.0.0.tar.gz", hash = "sha256:9ddf7c82fda3ae8e24decda1338ede66e1c99883db93711d8fb941eaa2d8c282", size = 131220, upload-time = "2024-11-01T14:07:13.037Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/39/ea/3930d07dafc9e286ed356a679aa02d777c06e9bfd1164fa7c19c288a5483/watchdog-6.0.0-cp312-cp312-macosx_10_13_universal2.whl", hash = "sha256:bdd4e6f14b8b18c334febb9c4425a878a2ac20efd1e0b231978e7b150f92a948", size = 96471, upload-time = "2024-11-01T14:06:37.745Z" },
-    { url = "https://files.pythonhosted.org/packages/12/87/48361531f70b1f87928b045df868a9fd4e253d9ae087fa4cf3f7113be363/watchdog-6.0.0-cp312-cp312-macosx_10_13_x86_64.whl", hash = "sha256:c7c15dda13c4eb00d6fb6fc508b3c0ed88b9d5d374056b239c4ad1611125c860", size = 88449, upload-time = "2024-11-01T14:06:39.748Z" },
-    { url = "https://files.pythonhosted.org/packages/5b/7e/8f322f5e600812e6f9a31b75d242631068ca8f4ef0582dd3ae6e72daecc8/watchdog-6.0.0-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:6f10cb2d5902447c7d0da897e2c6768bca89174d0c6e1e30abec5421af97a5b0", size = 89054, upload-time = "2024-11-01T14:06:41.009Z" },
     { url = "https://files.pythonhosted.org/packages/a9/c7/ca4bf3e518cb57a686b2feb4f55a1892fd9a3dd13f470fca14e00f80ea36/watchdog-6.0.0-py3-none-manylinux2014_aarch64.whl", hash = "sha256:7607498efa04a3542ae3e05e64da8202e58159aa1fa4acddf7678d34a35d4f13", size = 79079, upload-time = "2024-11-01T14:06:59.472Z" },
     { url = "https://files.pythonhosted.org/packages/5c/51/d46dc9332f9a647593c947b4b88e2381c8dfc0942d15b8edc0310fa4abb1/watchdog-6.0.0-py3-none-manylinux2014_armv7l.whl", hash = "sha256:9041567ee8953024c83343288ccc458fd0a2d811d6a0fd68c4c22609e3490379", size = 79078, upload-time = "2024-11-01T14:07:01.431Z" },
     { url = "https://files.pythonhosted.org/packages/d4/57/04edbf5e169cd318d5f07b4766fee38e825d64b6913ca157ca32d1a42267/watchdog-6.0.0-py3-none-manylinux2014_i686.whl", hash = "sha256:82dc3e3143c7e38ec49d61af98d6558288c415eac98486a5c581726e0737c00e", size = 79076, upload-time = "2024-11-01T14:07:02.568Z" },
